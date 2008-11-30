@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://nant.sourceforge.net/release/latest/nant.xsd"
+	name="Azuki"
+	basedir="."
+	default="usage">
+
+	<target name="usage">
+		<echo message="please specify target. available targets are:" />
+		<echo message="    build       build for .NET Framework" />
+		<echo message="    cf          build for .NET Compact Framework" />
+		<echo message="    test        build unit test program" />
+		<echo message="    clean       clean up" />
+	</target>
+
+	<target name="build">
+		<nant target="build" buildfile="Azuki/Azuki.build"/>
+		<nant target="build" buildfile="Ann/Ann.build"/>
+	</target>
+	
+	<target name="cf">
+		<nant target="cf" buildfile="Azuki/Azuki.build"/>
+		<nant target="cf" buildfile="Ann/Ann.build"/>
+	</target>
+
+	<target name="test">
+		<nant target="test" buildfile="Azuki/Azuki.build"/>
+	</target>
+	
+	<target name="clean">
+		<nant target="clean" buildfile="Azuki/Azuki.build"/>
+		<nant target="clean" buildfile="Ann/Ann.build"/>
+	</target>
+
+
+</project>

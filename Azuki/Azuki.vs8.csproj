@@ -1,0 +1,105 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9910474A-AA51-4DFF-8499-CB661216B200}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>
+    </AppDesignerFolder>
+    <RootNamespace>Sgry.Azuki</RootNamespace>
+    <AssemblyName>Azuki</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\package\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\package\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DocumentationFile>..\package\Azuki.xml</DocumentationFile>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions.cs" />
+    <Compile Include="Actions.Selection.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AutoIndentLogic.cs" />
+    <Compile Include="CaretMoveLogic.cs" />
+    <Compile Include="Document\CharClass.cs" />
+    <Compile Include="Document\TextBuffer.cs" />
+    <Compile Include="Highlighter\HighlighterUtl.cs" />
+    <Compile Include="Highlighter\JavaHighlighter.cs" />
+    <Compile Include="Highlighter\RubyHighlighter.cs" />
+    <Compile Include="Highlighter\CSharpHighlighter.cs" />
+    <Compile Include="IUserInterface.cs" />
+    <Compile Include="Test\KeywordHighlighterTest.cs" />
+    <Compile Include="UiImpl.cs" />
+    <Compile Include="UserPref.cs" />
+    <Compile Include="DebugUtl.cs" />
+    <Compile Include="LineLogic.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="View\DrawingOption.cs" />
+    <Compile Include="WordLogic.cs" />
+    <Compile Include="Document\Document.cs" />
+    <Compile Include="Document\EditAction.cs" />
+    <Compile Include="Document\EditHistory.cs" />
+    <Compile Include="Document\SplitArray.cs" />
+    <Compile Include="Highlighter\IHighlighter.cs" />
+    <Compile Include="Highlighter\Highlighters.cs" />
+    <Compile Include="Highlighter\DummyHighlighter.cs" />
+    <Compile Include="Highlighter\KeywordHighlighter.cs" />
+    <Compile Include="Highlighter\CppHighlighter.cs" />
+    <Compile Include="Highlighter\XmlHighlighter.cs" />
+    <Compile Include="Test\DocumentTest.cs" />
+    <Compile Include="Test\EditHistoryTest.cs" />
+    <Compile Include="Test\LineLogicTest.cs" />
+    <Compile Include="Test\SplitArrayTest.cs" />
+    <Compile Include="Test\TestDriver.cs" />
+    <Compile Include="View\ColorScheme.cs" />
+    <Compile Include="View\PropView.cs" />
+    <Compile Include="View\PropWrapView.cs" />
+    <Compile Include="View\View.cs" />
+    <Compile Include="View\View.Paint.cs" />
+    <Compile Include="View\ViewType.cs" />
+    <Compile Include="Windows\PlatWin.cs" />
+    <Compile Include="Windows\WinApi.cs" />
+    <Compile Include="Windows\AzukiControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://nant.sourceforge.net/release/latest/nant.xsd"
+	name="Ann"
+	basedir="."
+	default="build"
+>
+
+<!--=======================
+    properties
+========================-->
+
+<!-- description -->
+<description>
+Small application to test Azuki.
+</description>
+
+<!-- output directory -->
+<property name="output_dir"
+	value="${path::combine(
+		directory::get-parent-directory( project::get-base-directory() ),
+		'package')}"
+/>
+
+<!-- assembly name -->
+<property name="assembly_name" value="Ann.exe"/>
+<property name="pdb_name" value="${path::change-extension(assembly_name, 'pdb')}"/>
+
+<property name="assembly_name_cf" value="AnnCompact.exe"/>
+<property name="pdb_name_cf" value="${path::change-extension(assembly_name_cf, 'pdb')}"/>
+
+
+<!--=======================
+    target 'clean'
+========================-->
+<target name="clean">
+	<!-- delete built assembly -->
+	<foreach property="file_name" item="String" delim=";"
+		in="${assembly_name};${pdb_name};${assembly_name_cf};${pdb_name_cf}"
+	>
+		<do>
+			<delete file="${path::combine( output_dir, file_name )}" if="${file::exists( path::combine(output_dir, file_name) )}"/>
+		</do>
+	</foreach>
+</target>
+
+
+<!--=======================
+    target 'build'
+========================-->
+<target name="build">
+	<!-- compile to assembly -->
+	<csc target="winexe"
+		output="${assembly_name}"
+		unsafe="true"
+		optimize="true"
+		warninglevel="4"
+	>
+		<references>
+			<lib>
+				<include name="..\package"/>
+			</lib>
+			<include name="Azuki.dll"/>
+		</references>
+		<sources>
+			<include name="*.cs"/>
+		</sources>
+	</csc>
+	
+	<!-- move to package dir -->
+	<move file="${assembly_name}" todir="${output_dir}" overwrite="true" if="${file::exists(assembly_name)}" />
+	<move file="${pdb_name}"      todir="${output_dir}" overwrite="true" if="${file::exists(pdb_name)}" />
+	
+</target>
+
+
+<!--=======================
+    target 'cf'
+========================-->
+<target name="cf">
+	<property name="nant.settings.currentframework" value="netcf-2.0" />
+	
+	<!-- compile to assembly -->
+	<csc target="winexe"
+			output="${assembly_name_cf}"
+			unsafe="true"
+			optimize="true"
+			noconfig="true"
+			nostdlib="true"
+			define="PocketPC"
+			warninglevel="4"
+		>
+		<references>
+			<lib>
+				<include name="..\package"/>
+			</lib>
+			<include name="AzukiCompact.dll"/>
+			<include name="mscorlib.dll"/>
+			<include name="System.dll"/>
+			<include name="System.Drawing.dll"/>
+			<include name="System.Windows.Forms.dll"/>
+		</references>
+		<sources>
+			<include name="*.cs"/>
+		</sources>
+	</csc>
+	
+	<!-- move to package dir -->
+	<move file="${assembly_name_cf}" todir="${output_dir}" overwrite="true" if="${file::exists(assembly_name_cf)}" />
+	<move file="${pdb_name_cf}" todir="${output_dir}" overwrite="true" if="${file::exists(pdb_name_cf)}" />
+	
+</target>
+
+
+</project>

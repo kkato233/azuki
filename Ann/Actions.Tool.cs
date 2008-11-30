@@ -1,0 +1,63 @@
+// 2008-10-26
+using System;
+using System.Windows.Forms;
+
+namespace Sgry.Ann
+{
+	static partial class Actions
+	{
+		/// <summary>
+		/// Set editing mode to Text mode.
+		/// </summary>
+		public static AnnAction SetToTextMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.TextFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to C/C++ mode.
+		/// </summary>
+		public static AnnAction SetToCppMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.CppFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to C# mode.
+		/// </summary>
+		public static AnnAction SetToCSharpMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.CSharpFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to Java mode.
+		/// </summary>
+		public static AnnAction SetToJavaMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.JavaFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to Ruby mode.
+		/// </summary>
+		public static AnnAction SetToRubyMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.RubyFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to XML mode.
+		/// </summary>
+		public static AnnAction SetToXmlMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.XmlFileType );
+		};
+	}
+}

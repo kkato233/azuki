@@ -1,4 +1,4 @@
-// 2008-11-24
+// 2008-12-06
 using System;
 using Sgry.Azuki;
 using IHighlighter = Sgry.Azuki.Highlighter.IHighlighter;
@@ -35,6 +35,7 @@ namespace Sgry.Ann
 				if( _TextFileType == null )
 				{
 					_TextFileType = new FileType();
+					_TextFileType._AutoIndentHook = AutoIndentLogic.GenericHook;
 					_TextFileType._Name = "Text";
 				}
 				return _TextFileType;
@@ -124,6 +125,7 @@ namespace Sgry.Ann
 				{
 					_XmlFileType = new FileType();
 					_XmlFileType._Highlighter = Highlighters.Xml;
+					_XmlFileType._AutoIndentHook = AutoIndentLogic.GenericHook;
 					_XmlFileType._Name = "XML";
 				}
 				return _XmlFileType;

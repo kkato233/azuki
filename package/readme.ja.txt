@@ -1,37 +1,37 @@
-“¯«•¨‚Ìà–¾
+åŒæ¢±ç‰©ã®èª¬æ˜Ž
                                                                      2008-10-26
                                                                 YAMAMOTO Suguru
                                                    http://azuki.sourceforge.jp/
 
 - Azuki.dll
-	.NET Framework ”Å‚Ì Azuki ‚Å‚·B
-	ƒfƒXƒNƒgƒbƒvƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å Azuki ‚ðŽg‚¤ê‡‚Í
-	‚±‚Ì DLL ‚ðŽQÆ‚µ‚Ü‚·B
+	.NET Framework ç‰ˆã® Azuki ã§ã™ã€‚
+	ãƒ‡ã‚¹ã‚¯ãƒˆãƒƒãƒ—ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ Azuki ã‚’ä½¿ã†å ´åˆã¯
+	ã“ã® DLL ã‚’å‚ç…§ã—ã¾ã™ã€‚
 
 - AzukiCompact.dll
-	.NET Compact Framework ”Å‚Ì Azuki ‚Å‚·B
-	ƒ‚ƒoƒCƒ‹ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å Azuki ‚ðŽg‚¤ê‡‚Í
-	‚±‚Ì DLL ‚ðŽQÆ‚µ‚Ü‚·B
+	.NET Compact Framework ç‰ˆã® Azuki ã§ã™ã€‚
+	ãƒ¢ãƒã‚¤ãƒ«ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ Azuki ã‚’ä½¿ã†å ´åˆã¯
+	ã“ã® DLL ã‚’å‚ç…§ã—ã¾ã™ã€‚
 
 - Ann.exe
-	.NET Framework ”Å Azuki ‚Ì“®ìŠm”F—pƒTƒ“ƒvƒ‹ƒvƒƒOƒ‰ƒ€‚Å‚·B
-	‚¨‚»‚ç‚­ Windows 2000AXPAVista ‚Å“®ì‚µ‚Ü‚·B
+	.NET Framework ç‰ˆ Azuki ã®å‹•ä½œç¢ºèªç”¨ã‚µãƒ³ãƒ—ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§ã™ã€‚
+	ãŠãã‚‰ã Windows 2000ã€XPã€Vista ã§å‹•ä½œã—ã¾ã™ã€‚
 
 - AnnCompact.exe
-	.NET Compact Framework ”Å Azuki ‚Ì
-	“®ìŠm”F—pƒTƒ“ƒvƒ‹ƒvƒƒOƒ‰ƒ€‚Å‚·B
-	“®ì‚ðŠm”F‚µ‚½‚¢•û‚Í AzukiCompact.dll ‚Æ
-	‚±‚Ìƒtƒ@ƒCƒ‹‚ð Windows Mobile ‹@‚ÉƒRƒs[‚µ‚Ä
-	ŽÀs‚µ‚Ä‚Ý‚Ä‚­‚¾‚³‚¢
-	iŒ»Ý SHARP » Advanced W-ZERO3 [es] ‚Å‚Ì‚Ý“®ìŠm”FjB
+	.NET Compact Framework ç‰ˆ Azuki ã®
+	å‹•ä½œç¢ºèªç”¨ã‚µãƒ³ãƒ—ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§ã™ã€‚
+	å‹•ä½œã‚’ç¢ºèªã—ãŸã„æ–¹ã¯ AzukiCompact.dll ã¨
+	ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ Windows Mobile æ©Ÿã«ã‚³ãƒ”ãƒ¼ã—ã¦
+	å®Ÿè¡Œã—ã¦ã¿ã¦ãã ã•ã„
+	ï¼ˆç¾åœ¨ SHARP è£½ Advanced W-ZERO3 [es] ã§ã®ã¿å‹•ä½œç¢ºèªï¼‰ã€‚
 
 - Azuki.xml
-	Azuki.dll ‚Ì XML ƒhƒLƒ…ƒƒ“ƒg‚ª“ü‚Á‚Ä‚¢‚Ü‚·B
-	Visual Studio ‚È‚Ç“‡ŠJ”­ŠÂ‹«‚Å Azuki ‚ðŽg‚¤ê‡‚Í
-	Azuki.dll ‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚ÉƒZƒbƒg‚ÅƒRƒs[‚µ‚Ü‚·B
+	Azuki.dll ã® XML ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆãŒå…¥ã£ã¦ã„ã¾ã™ã€‚
+	Visual Studio ãªã©çµ±åˆé–‹ç™ºç’°å¢ƒã§ Azuki ã‚’ä½¿ã†å ´åˆã¯
+	Azuki.dll ã¨åŒã˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ã‚»ãƒƒãƒˆã§ã‚³ãƒ”ãƒ¼ã—ã¾ã™ã€‚
 
 - AzukiCompact.xml
-	.NET Framework ”Å‚Ì Azuki ‚Å‚·B
-	ƒfƒXƒNƒgƒbƒvƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å Azuki ‚ðŽg‚¤ê‡‚Í
-	‚±‚Ì DLL ‚ðŽQÆ‚µ‚Ü‚·B
+	.NET Framework ç‰ˆã® Azuki ã§ã™ã€‚
+	ãƒ‡ã‚¹ã‚¯ãƒˆãƒƒãƒ—ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ Azuki ã‚’ä½¿ã†å ´åˆã¯
+	ã“ã® DLL ã‚’å‚ç…§ã—ã¾ã™ã€‚
 

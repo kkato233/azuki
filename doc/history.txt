@@ -1,0 +1,101 @@
+[1.2.2] 2008-11-24
+- fix: if a token which is used to begin enclosing comment exists in line comment, Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
+- add: [Ann] added New command in File menu
+- add: [Ann] now Ann opens drag & dropped files
+- fix: [Ann] set auto-indent mode according to selected file mode
+- fix: [Ann] now opening a file which is already opened will not open it but activate the document object of the file
+- fix: [Ann] fixed problems caused on opening files that was opened by other processes in non-share mode
+
+[1.2.1] 2008-11-03
+- add: many improvements for Ann 
+- add: exposed AzukiControl.DrawingOption property 
+- fix: 1px-width graphical noise line appears in line-wrapped view at right most edge 
+- fix: threading issue that content modification during highlighting could breaks highlighting logic's assumptions and causes exception. 
+- fix: loading files whose size match specific condition will cause exception 
+- fix: C# highlighter now parses /// as doc comment line. 
+- fix: hide language specialized highlighter classes. 
+
+[1.2.0] 2008-11-01
+- add: changed sample application to "Ann" 
+- add: SmartHome action 
+- add: built-in highlighter for C/C++ 
+- add: built-in highlighter for C# 
+- add: built-in highlighter for Java 
+- add: built-in highlighter for Ruby 
+- add: built-in highlighter for XML 
+- add: added method to get already associated action from key-code 
+- add: improved caret movement 
+- add: added GetWordAt method 
+- add: added IsDirty and DirtyStateChanged 
+- add: now literals begins with "0x" is treated as one word on caret movement 
+- fix: changing AzukiControl.Highlighter had not do clearing highlight information nor invalidating view 
+- fix: DesiredColumn had not been updated after Undo nor Redo 
+- fix: if insertion or deletion divides/creates a CR+LF, inner data structure will be broken
+
+[1.1.0] 2008-08-15
+- add: feature to convert input tab character to
+       corresponding number of spaces automatically
+- add: feature to convert a full-width space character
+       to a half-width space character
+- mod: disabled double-buffering feature on Windows Mobile for performance
+- fix: changing the document of a window in line-wrapping mode
+       did not re-calculate wrapped line positions
+- fix: when a document was opened in multiple windows,
+       shows caret graphic only on focused window
+
+[1.0.2] 2008-07-24
+- fix: now setting tab-width updates graphics properly
+
+[1.0.1] 2008-07-21
+- fix: in line-wrapping mode under some condition,
+       wrapped line position was mis-calculated and text layout was broken
+- fix: when used by Visual Studio's visual designer,
+       ColorScheme object that any member color is black was set to the Azuki
+
+[1.0.0] 2008-07-20
+- add: syntax highlighter support
+- add: multiple-document support
+- add: number of lines scrolled by mouse wheel is now determined by OS setting
+- add: PageDown / PageUp suppoort
+- fix: in overwrite mode and caret is on a tab, caret width is always tab width
+- fix: now setting AzukiControl.Text property automatically calls ScrollToCaret
+
+[0.9.3] 2008-06-14
+- fix: AzukiControl.ShowHScrollBar property always be set true
+       after modifying/scrolling in Windows Mobile
+- fix: current line highlight does not disappear when selection begins if vertically scrolled
+
+[0.9.2] 2008-06-08
+- add: color of the EOL graphics can be specified sperately
+- add: added overload method of Azuki.SetKeyBind for ease of use
+- add: added feature to show/hide horizontal scroll bar
+- add: improve auto-indentation logic
+- add: mouse cursor hovering over AzukiControl is now not an arrow but an I-Beam
+- fix: modifying content of final line without EOL code break line wrapping data
+- fix: joining non-empty final line to previous line break line wrapping data
+- fix: pressing Ctrl+Shift+Left could not select back to previous line
+- fix: lines were not properly wrapped when only EOL graphic cross the right edge
+- fix: when scrolling up under Windows Mobile, 1 px graphic noise appears at line number area
+- fix: auto-indentation does not work if caret is not at the end of a line
+- fix: exception occured when double clicking EOF position
+
+[0.9.1] 2008-06-04
+- fix: fixed that scroll bar range may not be updated when AzukiControl.Text property was changed
+- fix: graphical noize appeard when chars were added/removed from final line (only in wrapping mode)
+- mod: changed method name from AzukiControl.ClearUndo to ClearHistory
+
+[0.9.0] 2008-06-01
+- add: lines can be wrapped with specified width
+- add: added auto-indent feature (standard auto-indent and C-style auto-indent)
+- add: added overwrite mode
+- add: added read-only mode
+- add: added block-indent feature
+
+[0.8.2]
+- fix: doing 64 or more action breaks UNDO stack and program aborted
+
+[0.8.1]
+- fix: removed debug code left
+
+[0.8.0]
+- first release

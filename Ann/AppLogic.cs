@@ -1,4 +1,4 @@
-// 2008-11-23
+// 2008-12-06
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,7 +86,7 @@ namespace Sgry.Ann
 
 				// activate document
 				_DAD_ActiveDocument = value;
-				_MainForm.Azuki.Document = ActiveDocument.AzukiDoc;
+				MainForm.Azuki.Document = ActiveDocument.AzukiDoc;
 				MainForm.Azuki.ScrollToCaret();
 
 				// update UI
@@ -453,6 +453,9 @@ namespace Sgry.Ann
 
 			// delegate to overwrite logic
 			SaveDocument( doc );
+
+			// finally, update UI because the name of the document was changed
+			MainForm.ResetText();
 		}
 
 		/// <summary>

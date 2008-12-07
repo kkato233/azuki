@@ -38,6 +38,14 @@ namespace Sgry.Ann
 		List<Document> _DAD_Documents = new List<Document>(); // Dont Access Directly
 		Document _DAD_ActiveDocument = null; // Dont Access Directly
 		int _UntitledFileCount = 1;
+		string _InitOpenFilePath = null;
+		#endregion
+
+		#region Init / Dispose
+		public AppLogic( string initOpenFilePath )
+		{
+			_InitOpenFilePath = initOpenFilePath;
+		}
 		#endregion
 
 		#region Properties
@@ -50,6 +58,7 @@ namespace Sgry.Ann
 			set
 			{
 				_MainForm = value;
+				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 
@@ -532,6 +541,24 @@ namespace Sgry.Ann
 		#endregion
 
 		#region UI Event Handlers
+		void MainForm_Load( object sender, EventArgs e )
+		{
+			if( _InitOpenFilePath == null )
+				return;
+
+			Document prevActiveDoc;
+
+			// try to open initial document
+			prevActiveDoc = ActiveDocument;
+			OpenDocument( _InitOpenFilePath, null, false );
+
+			// close default empty document if successfully opened
+			if( prevActiveDoc != ActiveDocument )
+			{
+				CloseDocument( prevActiveDoc );
+			}
+		}
+
 		void MainForm_Closing( object sender, CancelEventArgs e )
 		{
 			DialogResult result;

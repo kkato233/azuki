@@ -11,8 +11,16 @@ namespace Sgry.Ann
 #		endif
 		static void Main( string[] args )
 		{
+			AppLogic app;
+			string initOpenFilePath = null;
+
+			if( 1 <= args.Length )
+			{
+				initOpenFilePath = args[0];
+			}
+
 			AppConfig.Load();
-			AppLogic app = new AppLogic();
+			app = new AppLogic( initOpenFilePath );
 			app.MainForm = new AnnForm( app );
 
 #			if !PocketPC

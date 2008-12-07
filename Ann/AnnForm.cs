@@ -100,6 +100,13 @@ namespace Sgry.Ann
 
 		void InitMenuMap()
 		{
+			// Action of top level menu of CF version is same as File/Save menu item
+			// but Ann's menu-action mapping does not handle multiple menu items for same action.
+			// Here we directly set menu action to the menu to ensure that mapping logic properly works.
+#			if PocketPC
+			_MI_Save.Click += delegate{ Actions.SaveDocument(_App); };
+#			endif
+
 			_MenuMap[ _MI_File_New ]		= Actions.CreateNewDocument;
 			_MenuMap[ _MI_File_Open ]		= Actions.OpenDocument;
 			_MenuMap[ _MI_File_Save ]		= Actions.SaveDocument;
@@ -226,21 +233,19 @@ namespace Sgry.Ann
 
 		void InitMenuComponents()
 		{
-			// construct menu structure
+			// construct root menu structure
 #			if PocketPC
-			MenuItem mi_menu = new MenuItem();
-			MenuItem mi_save = new MenuItem();
-			mi_save.Text = "Save";
-			mi_menu.Text = "Menu";
-			_MainMenu.MenuItems.Add( mi_save );
-			_MainMenu.MenuItems.Add( mi_menu );
+			_MI_Save.Text = "Save";
+			_MI_Menu.Text = "Menu";
+			_MainMenu.MenuItems.Add( _MI_Save );
+			_MainMenu.MenuItems.Add( _MI_Menu );
 
-			mi_menu.MenuItems.Add( _MI_File );
-			mi_menu.MenuItems.Add( _MI_Edit );
-			mi_menu.MenuItems.Add( _MI_View );
-			mi_menu.MenuItems.Add( _MI_Mode );
-			mi_menu.MenuItems.Add( _MI_Window );
-			mi_menu.MenuItems.Add( _MI_Help );
+			_MI_Menu.MenuItems.Add( _MI_File );
+			_MI_Menu.MenuItems.Add( _MI_Edit );
+			_MI_Menu.MenuItems.Add( _MI_View );
+			_MI_Menu.MenuItems.Add( _MI_Mode );
+			_MI_Menu.MenuItems.Add( _MI_Window );
+			_MI_Menu.MenuItems.Add( _MI_Help );
 #			else
 			_MainMenu.MenuItems.Add( _MI_File );
             _MainMenu.MenuItems.Add( _MI_Edit );
@@ -250,6 +255,7 @@ namespace Sgry.Ann
             _MainMenu.MenuItems.Add( _MI_Help );
 #			endif
 
+			// construct descendant menu structure
 			_MI_File.MenuItems.Add( _MI_File_New );
 			_MI_File.MenuItems.Add( _MI_File_Open );
 			_MI_File.MenuItems.Add( _MI_File_Save );
@@ -313,7 +319,7 @@ namespace Sgry.Ann
 			_MI_Help_About.Text = "&About";
 
 			// bind menu actions
-			EventHandler menuActionHandler = new EventHandler( this.HandleMenuAction );
+			EventHandler menuActionHandler = this.HandleMenuAction;
 			foreach( MenuItem mi in _MainMenu.MenuItems )
 			{
 				foreach( MenuItem mi2 in mi.MenuItems )
@@ -368,6 +374,10 @@ namespace Sgry.Ann
 
 		#region UI Components
 		MainMenu _MainMenu			= new MainMenu();
+#		if PocketPC
+		MenuItem _MI_Menu = new MenuItem();
+		MenuItem _MI_Save = new MenuItem();
+#		endif
 		MenuItem _MI_File			= new MenuItem();
 		MenuItem _MI_File_New		= new MenuItem();
 		MenuItem _MI_File_Open		= new MenuItem();

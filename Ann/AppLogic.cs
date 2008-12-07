@@ -15,7 +15,7 @@ namespace Sgry.Ann
 	class AppLogic
 	{
 		#region Fields
-		const string OpenFileFilter = "All files(*.*)|*.*|Text files(*.txt, *.c, ...)|*.txt;*.tex;*.java;*.rb;*.pl;*.py;*.c;*.cpp;*.cxx;*.cs;*.h;*.hpp;*.hxx;*.vbs;*.bat;*.log;*.ini;*.inf;*.js;*.htm;*.html;*.xml";
+		const string OpenFileFilter = "All files(*.*)|*.*|" + SaveFileFilter;
 		const string SaveFileFilter = 
 			"Text file(*.txt, *.log, *.ini, ...)|*.txt;*.log;*.ini;*.inf;*.tex"
 			+ "|HTML file(*.htm, *.html)|*.htm;*.html"
@@ -438,7 +438,16 @@ namespace Sgry.Ann
 						dialog.InitialDirectory = dirPath;
 					}
 				}
+
+				// Set file filter ONLY FOR Full Framework environment.
+				// For example, in Windows Mobile's SaveFileDialog,
+				// selecting filter item like "Text File|*.txt;*.log"
+				// and enter file name and tap OK button, file name will be
+				// "foo.txt;*.log". Of cource this is an invalid file name
+				// so exception will be thrown.
+#				if !PocketPC
 				dialog.Filter = SaveFileFilter;
+#				endif
 
 				// show dialog
 				result = dialog.ShowDialog();

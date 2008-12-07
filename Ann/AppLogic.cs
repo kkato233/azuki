@@ -1,4 +1,4 @@
-// 2008-12-06
+// 2008-12-07
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +9,9 @@ using Sgry.Azuki.Windows;
 using Debug = System.Diagnostics.Debug;
 using AzukiDocument = Sgry.Azuki.Document;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
+#if PocketPC
+using System.Text.RegularExpressions;
+#endif
 
 namespace Sgry.Ann
 {
@@ -16,7 +19,7 @@ namespace Sgry.Ann
 	{
 		#region Fields
 		const string OpenFileFilter = "All files(*.*)|*.*|" + SaveFileFilter;
-		const string SaveFileFilter = 
+		const string SaveFileFilter =
 			"Text file(*.txt, *.log, *.ini, ...)|*.txt;*.log;*.ini;*.inf;*.tex"
 			+ "|HTML file(*.htm, *.html)|*.htm;*.html"
 			+ "|CSS file(*.css)|*.css"
@@ -425,6 +428,7 @@ namespace Sgry.Ann
 			Debug.Assert( doc != null );
 			SaveFileDialog dialog = null;
 			DialogResult result;
+			string fileName;
 			
 			using( dialog = new SaveFileDialog() )
 			{
@@ -437,17 +441,11 @@ namespace Sgry.Ann
 					{
 						dialog.InitialDirectory = dirPath;
 					}
-				}
 
-				// Set file filter ONLY FOR Full Framework environment.
-				// For example, in Windows Mobile's SaveFileDialog,
-				// selecting filter item like "Text File|*.txt;*.log"
-				// and enter file name and tap OK button, file name will be
-				// "foo.txt;*.log". Of cource this is an invalid file name
-				// so exception will be thrown.
-#				if !PocketPC
+					// set initial file name
+					dialog.FileName = Path.GetFileName( doc.FilePath );
+				}
 				dialog.Filter = SaveFileFilter;
-#				endif
 
 				// show dialog
 				result = dialog.ShowDialog();
@@ -456,9 +454,23 @@ namespace Sgry.Ann
 					return;
 				}
 
-				// associate the file path
-				doc.FilePath = dialog.FileName;
+				fileName = dialog.FileName;
 			}
+
+			// associate the file path
+#			if PocketPC
+			// In Windows Mobile's SaveFileDialog,
+			// if we select filter item "Text File|*.txt;*.log"
+			// and enter file name "foo" and tap OK button, then,
+			// FileName property value will be "foo.txt;*.log".
+			// Of cource this is not expected so we cut off trailing garbages here.
+			Match match = Regex.Match( fileName, @"(;\*\.[a-zA-Z0-9_#!$~]+)+" );
+			if( match.Success )
+			{
+				fileName = fileName.Substring( 0, fileName.Length - match.Length );
+			}
+#			endif
+			doc.FilePath = fileName;
 
 			// delegate to overwrite logic
 			SaveDocument( doc );

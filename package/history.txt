@@ -1,3 +1,15 @@
+[1.2.3] 2008-12-07
+- fix: now size of the scrollbar thumbs are properly set
+- fix: scrolling with high-resolution mouse wheel could be difficult
+- fix: now Azuki can handle broken wheel event properly which is sent by 64 bit Windows sometimes
+- fix: now switching document properly updates scrollbar parameters
+- add: [Ann] Ann now opens the file specified by command line parameter
+- mod: [Ann] Ann now uses basic auto-indent logic under Text mode and XML mode
+- mod: [Ann] in document list window, now an item can be selected by double click
+- fix: [Ann] window title now properly updated after "Save as" action
+- fix: [Ann] (Compact Framework version) fixed problem that "Save as" action always throws an exception
+- fix: [Ann] (Compact Framework version) "Save" top level menu item now works properly
+
 [1.2.2] 2008-11-24
 - fix: if a token which is used to begin enclosing comment exists in line comment, Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
 - add: [Ann] added New command in File menu

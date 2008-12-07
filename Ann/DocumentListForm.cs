@@ -1,4 +1,4 @@
-// 2008-11-03
+// 2008-12-07
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -116,13 +116,10 @@ namespace Sgry.Ann
 			}
 		}
 
-		void _ListView_KeyDown( object sender, KeyEventArgs e )
+		void _ListView_ItemActivate( object sender, EventArgs e )
 		{
-			if( e.KeyCode == Keys.Enter )
-			{
-				DialogResult = DialogResult.OK;
-				this.Close();
-			}
+			DialogResult = DialogResult.OK;
+			this.Close();
 		}
 
 		protected override void OnClosed( EventArgs e )
@@ -153,7 +150,7 @@ namespace Sgry.Ann
 			_ListView.Name = "_ListView";
 			_ListView.TabIndex = 0;
 			_ListView.View = View.Details;
-			_ListView.KeyDown += _ListView_KeyDown;
+			_ListView.ItemActivate += _ListView_ItemActivate;
 			// 
 			// _CH_FileName
 			// 
@@ -167,6 +164,7 @@ namespace Sgry.Ann
 			// 
 			// DocumentListForm
 			// 
+			MinimizeBox = false;
 			Controls.Add( _ListView );
 			Name = "DocumentListForm";
 			Text = "DocumentListForm";

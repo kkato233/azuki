@@ -1,3 +1,8 @@
+[1.2.4] 2008-12-28
+- fix: registering multiple pairs that one pair's start/end pattern contains another pair's start/end parttern to built-in highlighters may cause invalid highlighting result
+- fix: using same type of built-in highlighter for multiple document may cause invalid highlighting result
+- fix: [Ann] using same type of built-in highlighter for multiple document may cause invalid highlighting result
+
 [1.2.3] 2008-12-07
 - fix: now size of the scrollbar thumbs are properly set
 - fix: scrolling with high-resolution mouse wheel could be difficult

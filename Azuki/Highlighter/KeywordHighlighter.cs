@@ -37,9 +37,9 @@ namespace Sgry.Azuki.Highlighter
 #			endif
 		}
 
-		List<KeywordSet> _Keywords = new List<KeywordSet>();
-		List<Enclosure> _Enclosures = new List<Enclosure>();
-		List<Enclosure> _LineHighlights = new List<Enclosure>();
+		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
+		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
+		List<Enclosure> _LineHighlights = new List<Enclosure>( 2 );
 #		if DEBUG
 		internal
 #		endif

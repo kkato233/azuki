@@ -2,7 +2,7 @@
 // brief: Data structure holding a 'gap' in it for efficient insert/delete operation.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-06-28
+// update: 2008-12-28
 //=========================================================
 //#define ENABLE_TRACE_WITH_DUMP
 using System;
@@ -37,15 +37,22 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
-		public SplitArray( int initGapSize, int growSize )
+		public SplitArray( int initBufferSize )
+			: this( initBufferSize, 0 )
+		{}
+
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public SplitArray( int initBufferSize, int growSize )
 		{
-			_Data = new T[ initGapSize ];
+			_Data = new T[ initBufferSize ];
 			_GrowSize = growSize;
-			_GapLen = initGapSize;
+			_GapLen = initBufferSize;
 			_Count = 0;
 			_GapPos = 0;
 			
-			__set_insanity_data__( 0, initGapSize );
+			__set_insanity_data__( 0, initBufferSize );
 			__check_sanity__();
 		}
 		#endregion
@@ -432,11 +439,16 @@ namespace Sgry.Azuki
 				// move gap to the end
 				MoveGapTo( _Data.Length - _GapLen );
 
-				// make least number by adding GrowSize
-				// until it becomes larger than insertion length
-				int newSize = _Data.Length + _GrowSize;
-				while( newSize < _Count+insertLength )
-					newSize += _GrowSize;
+				// calculate buffer size to be expanded
+				int newSize = _Data.Length;
+				do
+				{
+					if( 0 < _GrowSize )
+						newSize += _GrowSize;
+					else
+						newSize *= 2;
+				}
+				while( newSize < _Count+insertLength );
 
 				// expand buffer
 				ResizeArray( ref _Data, newSize );

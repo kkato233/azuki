@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2008-11-01
+// update: 2008-12-28
 //=========================================================
 using System;
 using System.Collections;
@@ -21,7 +21,7 @@ namespace Sgry.Azuki
 	{
 		#region Fields
 		TextBuffer _Buffer = new TextBuffer();
-		SplitArray<int> _LHI = new SplitArray<int>( 64, 32 ); // line head indexes
+		SplitArray<int> _LHI = new SplitArray<int>( 64 ); // line head indexes
 		EditHistory _History = new EditHistory();
 		ColorScheme _ColorScheme = ColorScheme.Default;
 		int _CaretIndex = 0;

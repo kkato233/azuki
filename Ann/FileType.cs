@@ -1,4 +1,4 @@
-// 2008-12-06
+// 2008-12-28
 using System;
 using Sgry.Azuki;
 using IHighlighter = Sgry.Azuki.Highlighter.IHighlighter;
@@ -9,13 +9,6 @@ namespace Sgry.Ann
 	class FileType
 	{
 		#region Fields
-		static FileType _TextFileType = null;
-		static FileType _CppFileType = null;
-		static FileType _CSharpFileType = null;
-		static FileType _JavaFileType = null;
-		static FileType _RubyFileType = null;
-		static FileType _XmlFileType = null;
-
 		string _Name = null;
 		IHighlighter _Highlighter = null;
 		AutoIndentHook _AutoIndentHook = null;
@@ -24,118 +17,100 @@ namespace Sgry.Ann
 		private FileType()
 		{}
 
-		#region Repository
+		#region Factory
 		/// <summary>
-		/// Text file type.
+		/// Gets a new Text file type.
 		/// </summary>
 		public static FileType TextFileType
 		{
 			get
 			{
-				if( _TextFileType == null )
-				{
-					_TextFileType = new FileType();
-					_TextFileType._AutoIndentHook = AutoIndentLogic.GenericHook;
-					_TextFileType._Name = "Text";
-				}
-				return _TextFileType;
+				FileType fileType = new FileType();
+				fileType._AutoIndentHook = AutoIndentLogic.GenericHook;
+				fileType._Name = "Text";
+				return fileType;
 			}
 		}
 
 		/// <summary>
-		/// C/C++ file type.
+		/// Gets a new C/C++ file type.
 		/// </summary>
 		public static FileType CppFileType
 		{
 			get
 			{
-				if( _CppFileType == null )
-				{
-					_CppFileType = new FileType();
-					_CppFileType._Highlighter = Highlighters.Cpp;
-					_CppFileType._AutoIndentHook = AutoIndentLogic.CHook;
-					_CppFileType._Name = "C/C++";
-				}
-				return _CppFileType;
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Cpp;
+				fileType._AutoIndentHook = AutoIndentLogic.CHook;
+				fileType._Name = "C/C++";
+				return fileType;
 			}
 		}
 
 		/// <summary>
-		/// C# file type.
+		/// Gets a new C# file type.
 		/// </summary>
 		public static FileType CSharpFileType
 		{
 			get
 			{
-				if( _CSharpFileType == null )
-				{
-					_CSharpFileType = new FileType();
-					_CSharpFileType._Highlighter = Highlighters.CSharp;
-					_CSharpFileType._AutoIndentHook = AutoIndentLogic.CHook;
-					_CSharpFileType._Name = "C#";
-				}
-				return _CSharpFileType;
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.CSharp;
+				fileType._AutoIndentHook = AutoIndentLogic.CHook;
+				fileType._Name = "C#";
+				return fileType;
 			}
 		}
 
 		/// <summary>
-		/// Java file type.
+		/// Gets a new Java file type.
 		/// </summary>
 		public static FileType JavaFileType
 		{
 			get
 			{
-				if( _JavaFileType == null )
-				{
-					_JavaFileType = new FileType();
-					_JavaFileType._Highlighter = Highlighters.Java;
-					_JavaFileType._AutoIndentHook = AutoIndentLogic.CHook;
-					_JavaFileType._Name = "Java";
-				}
-				return _JavaFileType;
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Java;
+				fileType._AutoIndentHook = AutoIndentLogic.CHook;
+				fileType._Name = "Java";
+				return fileType;
 			}
 		}
 
 		/// <summary>
-		/// Ruby file type.
+		/// Gets a new Ruby file type.
 		/// </summary>
 		public static FileType RubyFileType
 		{
 			get
 			{
-				if( _RubyFileType == null )
-				{
-					_RubyFileType = new FileType();
-					_RubyFileType._Highlighter = Highlighters.Ruby;
-					_RubyFileType._AutoIndentHook = AutoIndentLogic.GenericHook;
-					_RubyFileType._Name = "Ruby";
-				}
-				return _RubyFileType;
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Ruby;
+				fileType._AutoIndentHook = AutoIndentLogic.GenericHook;
+				fileType._Name = "Ruby";
+				return fileType;
 			}
 		}
 
 		/// <summary>
-		/// XML file type.
+		/// Gets a new XML file type.
 		/// </summary>
 		public static FileType XmlFileType
 		{
 			get
 			{
-				if( _XmlFileType == null )
-				{
-					_XmlFileType = new FileType();
-					_XmlFileType._Highlighter = Highlighters.Xml;
-					_XmlFileType._AutoIndentHook = AutoIndentLogic.GenericHook;
-					_XmlFileType._Name = "XML";
-				}
-				return _XmlFileType;
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Xml;
+				fileType._AutoIndentHook = AutoIndentLogic.GenericHook;
+				fileType._Name = "XML";
+				return fileType;
 			}
 		}
 		#endregion
 
 		#region Properties
 		/// <summary>
-		/// Gets highlighter.
+		/// Gets an associated highlighter object.
 		/// </summary>
 		public IHighlighter Highlighter
 		{
@@ -151,7 +126,7 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
-		/// Gets mode name.
+		/// Gets the name of the file mode.
 		/// </summary>
 		public String Name
 		{

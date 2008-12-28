@@ -1,4 +1,4 @@
-// 2008-11-01
+// 2008-12-28
 #if DEBUG
 using System;
 using System.Collections;
@@ -146,13 +146,7 @@ namespace Sgry.Azuki.Test
 			// GetCharIndexFromLineColumnIndex
 			//
 			Console.WriteLine( "test {0} - GetCharIndexFromLineColumnIndex()", testNum++ );
-			Debug.Assert( LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0, 0) == 0, "expected 0 but "+LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0, 0) );
-			Debug.Assert( LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 2, 1) == 34, "expected 34 but "+LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 2, 1) );
-			Debug.Assert( LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) == 71, "expected 71 but "+LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) ); // EOF
-			try{ LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 19); Debug.Fail("exception must be thrown here."); }
-			catch( Exception ex ){ Debug.Assert( ex is ArgumentException, "unexpected type of exception thrown:"+ex ); }
-			try{ LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0, 100); Debug.Fail("exception must be thrown here."); }
-			catch( Exception ex ){ Debug.Assert( ex is ArgumentException ); }
+			TestUtl.Do( Test_GetCharIndexFromLineColumnIndex );
 
 			//
 			// GetLineIndexFromCharIndex
@@ -198,6 +192,34 @@ namespace Sgry.Azuki.Test
 
 			Console.WriteLine( "done." );
 			Console.WriteLine();
+		}
+
+		static void Test_GetCharIndexFromLineColumnIndex()
+		{
+			// TEST DATA:
+			// --------------------
+			// "keep it as simple as possible\r\n (head: 0, len:31)
+			// \n                                 (head:32, len: 1)
+			// but\n                              (head:33, len: 4)
+			// \r                                 (head:37, len: 1)
+			// not simpler."\r                    (head:38, len:14)
+			// \r                                 (head:52, len: 1)
+			//  - Albert Einstein                 (head:53, len:18)
+			// --------------------
+			const string TestData = "\"keep it as simple as possible\r\n\nbut\n\rnot simpler.\"\r\r - Albert Einstein";
+			TextBuffer text = new TextBuffer( 1, 1 );
+			SplitArray<int> lhi = new SplitArray<int>( 1, 8 );
+			lhi.Add( 0 );
+			LineLogic.LHI_Insert( lhi, text, TestData, 0 );
+			text.Insert( 0, TestData.ToCharArray() );
+
+			TestUtl.AssertEquals(  0, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0,  0) );
+			TestUtl.AssertEquals( 34, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 2,  1) );
+			TestUtl.AssertEquals( 71, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) );
+			try{ LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 19); Debug.Fail("exception must be thrown here."); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>( ex ); }
+			try{ LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0, 100); Debug.Fail("exception must be thrown here."); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>( ex ); }
 		}
 
 		static void Test_NextLineHead()

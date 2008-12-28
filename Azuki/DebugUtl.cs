@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2008-07-20
+// update: 2008-12-28
 //=========================================================
 using System;
 using System.IO;
@@ -233,7 +233,7 @@ namespace Sgry
 #	if DEBUG
 	class TestUtl
 	{
-		public static bool ErrorOccured = true;
+		public static bool ErrorOccured = false;
 		public static int ErrorCount = 0;
 
 		[Conditional("DEBUG")]
@@ -248,6 +248,13 @@ namespace Sgry
 			{
 				throw new AssertException( "Objects were not equal.\nExpected: "+expected+"\nActual:   "+actual );
 			}
+		}
+
+		[Conditional("DEBUG")]
+		public static void AssertType<T>( object obj )
+		{
+			if( obj.GetType() != typeof(T) )
+				throw new AssertException( "object type is not "+typeof(T).Name+" but "+obj.GetType()+"." );
 		}
 
 		[Conditional("DEBUG")]

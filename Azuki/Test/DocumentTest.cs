@@ -1,4 +1,4 @@
-﻿// 2008-05-31
+﻿// 2008-12-28
 #if DEBUG
 using System;
 using System.Collections;
@@ -117,7 +117,7 @@ namespace Sgry.Azuki.Test
 
 			// out of range
 			try{ doc.GetLineIndexFromCharIndex(50); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
 		static void Test_GetText()
@@ -176,11 +176,11 @@ namespace Sgry.Azuki.Test
 			{
 				// invalid range (before begin to middle)
 				try{ doc.GetTextInRange(-1, -1, 1, 1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex, typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				try{ doc.GetTextInRange(-1, 0, 1, 1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex, typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				try{ doc.GetTextInRange(1, -1, 1, 1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex, typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				
 				// valid range (begin to middle)
 				TestUtl.AssertEquals( "ke", doc.GetTextInRange(0, 0, 0, 2) );
@@ -195,17 +195,17 @@ namespace Sgry.Azuki.Test
 				
 				// invalid range (middle to after end)
 				try{ doc.GetTextInRange(2, 2, 3, 13); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex, typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				try{ doc.GetTextInRange(2, 2, 4, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				try{ doc.GetTextInRange(2, 2, 4, 13); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// invalid range (minus range)
 				try{ doc.GetTextInRange(1, 1, 1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				try{ doc.GetTextInRange(1, 1, 0, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 			}
 		}
 
@@ -285,7 +285,7 @@ namespace Sgry.Azuki.Test
 
 			// invalid range (before begin to middle)
 			try{ doc.Replace("FOO", -1, 10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// valid range (begin to middle)
 			{
@@ -414,7 +414,7 @@ namespace Sgry.Azuki.Test
 			
 			// invalid range (middle to after end)
 			try{ doc.Replace("PIYO", 51, 53); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
 		static void Test_Replace_SelectionRange()
@@ -557,7 +557,7 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( 0, doc.GetLineLength(5) );
 			TestUtl.AssertEquals( 12, doc.GetLineLength(6) );
 			try{ doc.GetLineLength(7); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
 		static void Test_Selection()
@@ -569,7 +569,7 @@ namespace Sgry.Azuki.Test
 
 			// before head to head
 			try{ doc.SetSelection(-1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 			
 			// head to head
 			doc.SetSelection( 0, 0 );
@@ -622,7 +622,7 @@ namespace Sgry.Azuki.Test
 						
 			// end to after end
 			try{ doc.SetSelection(33, 36); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 	}
 }

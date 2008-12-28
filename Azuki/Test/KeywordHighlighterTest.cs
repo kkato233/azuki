@@ -1,4 +1,4 @@
-﻿// 2008-07-05
+﻿// 2008-12-28
 #if DEBUG
 using System;
 
@@ -38,9 +38,7 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - Enclosing Pairs", testNum++);
 			TestUtl.Do( Test_EnclosingPairs );
 
-			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine( "done." );
-			Console.ResetColor();
 			Console.WriteLine();
 		}
 
@@ -109,7 +107,7 @@ ho//ge";
 			for( ; i<4; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "-int"
 			doc.Text = "int";
@@ -124,7 +122,7 @@ ho//ge";
 			for( ; i<4; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// in --> int
 			doc.Text = "in";
@@ -137,7 +135,7 @@ ho//ge";
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// it --> int
 			doc.Text = "it";
@@ -150,7 +148,7 @@ ho//ge";
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// nt --> int
 			doc.Text = "nt";
@@ -163,7 +161,7 @@ ho//ge";
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "insert at" --> int
 			doc.Text = "insert at";
@@ -176,7 +174,7 @@ ho//ge";
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "hoge" --> "h int e"
 			doc.Text = "hoge";
@@ -193,7 +191,7 @@ ho//ge";
 			for( ; i<7; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(7); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "if!"
 			doc.Text = "int";
@@ -208,7 +206,7 @@ ho//ge";
 			for( ; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "inte"
 			doc.Text = "int";
@@ -221,7 +219,7 @@ ho//ge";
 			for( i=0; i<4; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "interface"
 			doc.Text = "int";
@@ -234,13 +232,14 @@ ho//ge";
 			for( i=0; i<9; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			try{ doc.GetCharClass(10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex , typeof(ArgumentOutOfRangeException)); }
+			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
 		static void Test_EnclosingPairs_EPI_Asym()
 		{
 			Document doc = new Document();
 			KeywordHighlighter h = new KeywordHighlighter();
+			SplitArray<int> epi = h._EPI;
 			int begin_, end_;
 			h.AddEnclosure( "/*", "*/", CharClass.Comment );
 			doc.Highlighter = h;
@@ -250,7 +249,7 @@ ho//ge";
 			{
 				doc.Text = initText;
 				h.Highlight( doc );
-				TestUtl.AssertEquals( "4 17 28 42", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 28 42", epi.ToString() );
 			}
 
 			// replace from out to in
@@ -265,7 +264,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The **XX**EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "26 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "26 40", epi.ToString() );
 
 				// opener
 				doc.Text = initText;
@@ -274,7 +273,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*XX**EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 15 26 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 15 26 40", epi.ToString() );
 
 				// closer
 				doc.Text = initText;
@@ -283,7 +282,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The **XX*/EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "26 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "26 40", epi.ToString() );
 
 				// opener + closer
 				doc.Text = initText;
@@ -292,7 +291,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*XX*/EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 10 26 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 10 26 40", epi.ToString() );
 
 				// closer + opener
 				doc.Text = initText;
@@ -301,7 +300,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The */XX/*EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "8 15 26 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "8 15 26 40", epi.ToString() );
 			}
 
 			// replace from in to in
@@ -315,7 +314,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*Up**XX**EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 19 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 19 30 44", epi.ToString() );
 
 				// opener
 				doc.Text = initText;
@@ -324,7 +323,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*Up/*XX**EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 19 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 19 30 44", epi.ToString() );
 
 				// closer
 				doc.Text = initText;
@@ -333,7 +332,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*Up**XX*/EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 14 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 14 30 44", epi.ToString() );
 
 				// opener + closer
 				doc.Text = initText;
@@ -342,7 +341,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*Up/*XX*/EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 14 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 14 30 44", epi.ToString() );
 
 				// closer + opener
 				doc.Text = initText;
@@ -351,7 +350,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*Up*/XX/*EPI*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 10 12 19 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 10 12 19 30 44", epi.ToString() );
 			}
 
 			// replace from in to out
@@ -365,7 +364,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateE**XX** method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 44", epi.ToString() );
 
 				// opener
 				doc.Text = initText;
@@ -374,7 +373,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateE/*XX** method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 44", epi.ToString() );
 
 				// closer
 				doc.Text = initText;
@@ -383,7 +382,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateE**XX*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 19 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 19 30 44", epi.ToString() );
 
 				// opener + closer
 				doc.Text = initText;
@@ -392,7 +391,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateE/*XX*/ method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 19 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 19 30 44", epi.ToString() );
 
 				// closer + opener
 				doc.Text = initText;
@@ -401,7 +400,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateE*/XX/* method is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 15 17 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 15 17 44", epi.ToString() );
 			}
 
 			// replace from out to out
@@ -415,7 +414,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateEPI*/ m**XX**d is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 17 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 30 44", epi.ToString() );
 
 				// opener
 				doc.Text = initText;
@@ -424,7 +423,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateEPI*/ m**XX/*d is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 17 23 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 23 44", epi.ToString() );
 
 				// closer
 				doc.Text = initText;
@@ -433,7 +432,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateEPI*/ m**XX*/d is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 17 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 30 44", epi.ToString() );
 
 				// opener + closer
 				doc.Text = initText;
@@ -442,7 +441,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateEPI*/ m/*XX*/d is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 17 19 25 30 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 19 25 30 44", epi.ToString() );
 
 				// closer + opener
 				doc.Text = initText;
@@ -451,7 +450,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The /*UpdateEPI*/ m*/XX/*d is /*currently */main target.", doc.Text );
-				TestUtl.AssertEquals( "4 17 23 44", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 23 44", epi.ToString() );
 			}
 		}
 
@@ -459,6 +458,7 @@ ho//ge";
 		{
 			Document doc = new Document();
 			KeywordHighlighter h = new KeywordHighlighter();
+			SplitArray<int> epi = h._EPI;
 			int begin_, end_;
 			h.AddEnclosure( "\"", "\"", CharClass.String, '\\' );
 			doc.Highlighter = h;
@@ -468,7 +468,7 @@ ho//ge";
 			{
 				doc.Text = initText;
 				h.Highlight( doc );
-				TestUtl.AssertEquals( "4 15 26 38", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 15 26 38", epi.ToString() );
 			}
 
 			// replace from out to in
@@ -482,7 +482,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The XXXXEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "11 24 34", h._EPI.ToString() );
+				TestUtl.AssertEquals( "11 24 34", epi.ToString() );
 
 				// odd number of pairs
 				doc.Text = initText;
@@ -491,7 +491,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The X\"XXEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "5 12 23 35", h._EPI.ToString() );
+				TestUtl.AssertEquals( "5 12 23 35", epi.ToString() );
 
 				// even number of pairs
 				doc.Text = initText;
@@ -500,7 +500,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The X\"X\"EPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "5 8 11 24 34", h._EPI.ToString() );
+				TestUtl.AssertEquals( "5 8 11 24 34", epi.ToString() );
 			}
 
 			// replace from in to in
@@ -514,7 +514,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"Uph/og/eEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 17 28 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 17 28 40", epi.ToString() );
 
 				// odd number of pairs
 				doc.Text = initText;
@@ -523,7 +523,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"Uph\"og/eEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 9 16 29 39", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 9 16 29 39", epi.ToString() );
 
 				// even number of pairs
 				doc.Text = initText;
@@ -532,7 +532,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"Uph\"og\"eEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 9 11 17 28 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 9 11 17 28 40", epi.ToString() );
 			}
 
 			// replace from in to out
@@ -546,7 +546,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateXXXX method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 27 37", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 27 37", epi.ToString() );
 
 				// odd number of pairs
 				doc.Text = initText;
@@ -555,7 +555,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateXX\"X method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 14 26 38", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 14 26 38", epi.ToString() );
 
 				// even number of pairs
 				doc.Text = initText;
@@ -564,7 +564,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"Update\"XX\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 12 14 27 37", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 12 14 27 37", epi.ToString() );
 			}
 
 			// replace from out to out
@@ -578,7 +578,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateEPI\" mh/og/ed is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 15 28 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 15 28 40", epi.ToString() );
 
 				// odd number of pairs
 				doc.Text = initText;
@@ -587,7 +587,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateEPI\" mh\"og/ed is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 15 18 29 39", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 15 18 29 39", epi.ToString() );
 
 				// even number of pairs
 				doc.Text = initText;
@@ -596,7 +596,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateEPI\" mh\"og\"ed is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 15 18 22 28 40", h._EPI.ToString() );
+				TestUtl.AssertEquals( "4 15 18 22 28 40", epi.ToString() );
 			}
 		}
 

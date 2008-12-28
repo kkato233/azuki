@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2008-11-23
+// update: 2008-12-28
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -506,15 +506,18 @@ dirtyEnd = doc.Length;
 					break; // no matching closer
 				}
 
-				// remember closer index
+				// remember closer index and skip to the closer
 				if( pair.closer != null )
+				{
 					_EPI.Insert( epiIndex, closePos + pair.closer.Length );
+					i = closePos + pair.closer.Length;
+				}
 				else
+				{
 					_EPI.Insert( epiIndex, closePos );
+					i = closePos;
+				}
 				epiIndex++;
-
-				// skip this pair
-				i = closePos;
 			}
 		}
 		#endregion

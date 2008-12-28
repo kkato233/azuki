@@ -15,4 +15,4 @@ using System.Resources;
 [assembly: ComVisible(true)]
 [assembly: Guid("700D5467-332C-4dd8-B004-827923E566F2")]
 
-[assembly: AssemblyVersion("1.0.0.*")]
+[assembly: AssemblyVersion("1.0.1.*")]

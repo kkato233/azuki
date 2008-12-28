@@ -64,7 +64,6 @@ echo ========================================
 echo   [3/4] generating API document
 echo ========================================
 call doc.bat
-echo "%ERRORLEVEL%"
 if not "%ERRORLEVEL%" == "0" (
 	goto :EOF
 )

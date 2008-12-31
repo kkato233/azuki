@@ -1,9 +1,10 @@
-﻿// 2008-12-28
+// 2008-12-31
 #if DEBUG
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sgry.Azuki.Test
 {
@@ -46,6 +47,14 @@ namespace Sgry.Azuki.Test
 			// SetSelection
 			Console.WriteLine("test {0} - SetSelection", testNum++);
 			TestUtl.Do( Test_Selection );
+
+			// Find
+			Console.WriteLine("test {0} - Find", testNum++);
+			TestUtl.Do( Test_Find );
+
+			// Find
+			Console.WriteLine("test {0} - Find (regex)", testNum++);
+			TestUtl.Do( Test_Find_Regex );
 
 			Console.WriteLine("done.");
 			Console.WriteLine();
@@ -565,7 +574,7 @@ namespace Sgry.Azuki.Test
 			Document doc = new Document();
 			int begin, end;
 
-			doc.Text = "臼と似た形をした文字「\xd85a\xdd51」は、Unicode の第２面に位置する";
+			doc.Text = "臼と似た形をした文字「\xd85a\xdd51」は、UCS 文字空間の第２面に位置する";
 
 			// before head to head
 			try{ doc.SetSelection(-1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
@@ -619,10 +628,77 @@ namespace Sgry.Azuki.Test
 			doc.GetSelection( out begin, out end );
 			TestUtl.AssertEquals( begin, 13 );
 			TestUtl.AssertEquals( end, 33 );
-						
+
 			// end to after end
 			try{ doc.SetSelection(33, 36); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+		}
+
+		static void Test_Find()
+		{
+			String str = "aababcabcd";
+			TextBuffer buf = new TextBuffer( 16, 4 );
+			buf.Insert( 0, str.ToCharArray() );
+
+			// black box test (interface test)
+			{
+				TestUtl.AssertEquals( -1, buf.Find("a", 0, 0) );
+				TestUtl.AssertEquals(  0, buf.Find("a", 0, 1) );
+				TestUtl.AssertEquals(  1, buf.Find("ab", 0, buf.Count) );
+				TestUtl.AssertEquals(  3, buf.Find("abc", 0, buf.Count) );
+				TestUtl.AssertEquals(  6, buf.Find("abcd", 0, buf.Count) );
+				TestUtl.AssertEquals( -1, buf.Find("abcde", 0, buf.Count) );
+
+				TestUtl.AssertEquals( -1, buf.Find("aBcD", 0, buf.Count, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals(  6, buf.Find("aBcD", 0, buf.Count, StringComparison.InvariantCultureIgnoreCase) );
+			}
+
+			// white box test (test of the gap condition. test only result.)
+			{
+				// aaba......bcabcd
+				//  ^
+				buf.Insert( 4, "".ToCharArray() ); // move gap position
+				TestUtl.AssertEquals( 1, buf.Find("ab", 0, buf.Count) );
+
+				// aaba......bcabcd
+				//    ^
+				buf.Insert( 4, "".ToCharArray() ); // move gap position
+				TestUtl.AssertEquals( 3, buf.Find("abc", 0, buf.Count) );
+
+				// aaba......bcabcd
+				//             ^
+				buf.Insert( 4, "".ToCharArray() ); // move gap position
+				TestUtl.AssertEquals( 6, buf.Find("abcd", 0, buf.Count) );
+			}
+		}
+
+		static void Test_Find_Regex()
+		{
+			String str = "aababcabcd";
+			TextBuffer buf = new TextBuffer( 16, 4 );
+			buf.Insert( 0, str.ToCharArray() );
+
+			// buf = "aaba......bcabcd"
+			{
+				buf.Insert( 4, "".ToCharArray() ); // set gap position
+				TestUtl.AssertEquals( -1, buf.Find(new Regex("a.d"), 0, buf.Count) );
+
+				// (search in pre-gap part)
+				buf.Insert( 4, "".ToCharArray() ); // set gap position
+				TestUtl.AssertEquals( 1, buf.Find(new Regex("a.a"), 0, 4) );
+
+				// (search in while part)
+				buf.Insert( 4, "".ToCharArray() ); // set gap position
+				TestUtl.AssertEquals( 1, buf.Find(new Regex("a.a"), 0, buf.Count) );
+
+				// aaba......bcabcd
+				buf.Insert( 4, "".ToCharArray() ); // set gap position
+				TestUtl.AssertEquals( 3, buf.Find(new Regex("a.c"), 0, buf.Count) );
+
+				// aaba......bcabcd
+				buf.Insert( 4, "".ToCharArray() ); // set gap position
+				TestUtl.AssertEquals( 7, buf.Find(new Regex("[bc]+d"), 0, buf.Count) );
+			}
 		}
 	}
 }

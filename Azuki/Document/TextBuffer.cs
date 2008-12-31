@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2008-10-31
+// update: 2008-12-31
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -135,77 +135,64 @@ namespace Sgry.Azuki
 
 		#region Text Search
 		/// <summary>
-		/// Find text pattern by regular expression.
+		/// Find a text pattern.
 		/// </summary>
-		/// <param name="regex">Regex object to be used</param>
-		/// <param name="begin">Index of where to start the search</param>
-		/// <param name="end">Index of where the search must be terminated</param>
-		/// <returns>Index of where the pattern was found or -1 if not found</returns>
-		public int Find( Regex regex, int begin, int end )
-		{
-			int start, length;
-			int foundIndex;
-
-			if( end < begin )
-				throw new ArgumentException( "endIndex must be greater than startIndex." );
-
-			// move gap to safe position to execute regex search
-			if( begin <= _GapPos )
-			{
-				MoveGapTo( begin );
-			}
-
-			// prepare indexes
-			start = begin + _GapLen;
-			length = end - begin;
-
-			// find
-			foundIndex = regex.Match( new String(_Data), start, length ).Index;
-			if( foundIndex == -1 )
-			{
-				return -1;
-			}
-
-			return foundIndex - _GapLen;
-		}
-
-		/// <summary>
-		/// Find text pattern.
-		/// </summary>
-		/// <param name="value">String to find</param>
-		/// <param name="begin">Index of where to start the search</param>
-		/// <param name="end">Index of where the search must be terminated</param>
-		/// <returns>Index of where the pattern was found or -1 if not found</returns>
+		/// <param name="value">The String to find.</param>
+		/// <param name="begin">The search starting position.</param>
+		/// <param name="end">The search terminating position.</param>
+		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
+		/// <remarks>
+		/// </remarks>
 		public int Find( string value, int begin, int end )
 		{
 			return Find( value, begin, end, StringComparison.InvariantCulture );
 		}
 
 		/// <summary>
-		/// Find text pattern.
+		/// Find a text pattern.
 		/// </summary>
-		/// <param name="value">String to find</param>
-		/// <param name="begin">Index of where to start the search</param>
-		/// <param name="end">Index of where the search must be terminated</param>
-		/// <param name="comparisonType">String comparison option to be used</param>
-		/// <returns>Index of where the pattern was found or -1 if not found</returns>
+		/// <param name="value">The String to find.</param>
+		/// <param name="begin">The search starting position.</param>
+		/// <param name="end">The search terminating position.</param>
+		/// <param name="comparisonType">Options for string comparison.</param>
+		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
 		public int Find( string value, int begin, int end, StringComparison comparisonType )
 		{
+			// [example]
+			// Document.Find( "abc", 1, 10, ? );
+			// # |  buffer | value | begin | end |(*)g.m.b.| start
+			//---+---------+-------+-------+-----+---------+-------
+			// 1 |aab...abc|  ab   |   0   |  3  |aab...abc|   0
+			// 2 |aab...abc|  ab   |   0   |  6  |aababc...|   0
+			// 3 |aab...abc|  abc  |   2   |  6  |aa...babc|   5
+			// 4 |aab...abc|  abc  |   3   |  6  |aab...abc|   6
+			// (* g.m.b = gap moved buffer)
 			int start, length;
 			int foundIndex;
-
-			if( end < begin )
-				throw new ArgumentException( "endIndex must be greater than startIndex." );
 			
-			// move gap to safe position to execute regex search
-			if( begin < _GapPos && _GapPos <= end )
+			if( value == null )
+				throw new ArgumentNullException( "value" );
+			if( end < begin )
+				throw new ArgumentException( "parameter end must be greater than parameter begin." );
+			if( _Count < end )
+				throw new ArgumentOutOfRangeException( "end must not greater than character count. (end:"+end+", Count:"+_Count+")" );
+
+			// in any cases, search length is "end - begin".
+			length = end - begin;
+
+			// determine where the gap should be moved to
+			if( end <= _GapPos )
 			{
+				// search must stop before reaching the gap so there is no need to move gap
+				start = begin;
+			}
+			else
+			{
+				// search may not stop before reaching to the gap
+				// so move gap to ensure there is no gap in the search range
+				start = begin + _GapLen;
 				MoveGapTo( begin );
 			}
-			
-			// prepare indexes
-			start = begin + _GapLen;
-			length = end - begin;
 
 			// find
 			foundIndex = new String(_Data).IndexOf( value, start, length, comparisonType );
@@ -214,7 +201,70 @@ namespace Sgry.Azuki
 				return -1;
 			}
 
-			return foundIndex - _GapLen;
+			// return found index
+			if( start == begin )
+				return foundIndex;
+			else
+				return foundIndex - _GapLen;
+		}
+
+		/// <summary>
+		/// Find a text pattern by regular expression.
+		/// </summary>
+		/// <param name="regex">A Regex object expressing the text pattern.</param>
+		/// <param name="begin">The search starting position.</param>
+		/// <param name="end">Index of where the search must be terminated</param>
+		/// <returns>Index of where the pattern was found or -1 if not found</returns>
+		/// <remarks>
+		/// This method find a text pattern
+		/// expressed by a regular expression in the current content.
+		/// The text matching process continues for the index
+		/// specified with the <paramref name="end"/> parameter
+		/// and does not stop at line ends nor null-characters.
+		/// </remarks>
+		public int Find( Regex regex, int begin, int end )
+		{
+			int start, length;
+			Match match;
+			int foundIndex = -1;
+
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+			if( end < begin )
+				throw new ArgumentException( "parameter end must be greater than parameter begin." );
+			if( _Count < end )
+				throw new ArgumentOutOfRangeException( "end must not greater than character count. (end:"+end+", Count:"+_Count+")" );
+
+			// in any cases, search length is "end - begin".
+			length = end - begin;
+
+			// determine where the gap should be moved to
+			if( end <= _GapPos )
+			{
+				// search must stop before reaching the gap so there is no need to move gap
+				start = begin;
+			}
+			else
+			{
+				// search may not stop before reaching to the gap
+				// so move gap to ensure there is no gap in the search range
+				start = begin + _GapLen;
+				MoveGapTo( begin );
+			}
+
+			// find
+			match = regex.Match( new String(_Data), start, length );
+			if( match.Success == false )
+			{
+				return -1;
+			}
+			foundIndex = match.Index;
+
+			// return found index
+			if( start == begin )
+				return foundIndex;
+			else
+				return foundIndex - _GapLen;
 		}
 		#endregion
 

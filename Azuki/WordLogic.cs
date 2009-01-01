@@ -1,7 +1,7 @@
 ﻿// file: WordLogic.cs
 // brief: Word detection logic for well Japanese handling
 // author: YAMAMOTO Suguru
-// update: 2008-10-13
+// update: 2009-01-01
 //=========================================================
 using System;
 using System.Text;
@@ -427,13 +427,13 @@ namespace Sgry.Azuki
 			if( ch == 0x2e ) // '.' for float literal
 				return true;
 			
-			// include some postfixe alphabets
+			// include some postfix alphabets
 			// (i, j is for complex numbers in Python)
 			if( (ch == 'f' || ch == 'l' || ch == 'i' || ch == 'j')
 				&& 1 <= index )
 			{
 				char ch2 = text[ index-1 ];
-				if( '0' <= ch && ch <= '9' )
+				if( '0' <= ch2 && ch2 <= '9' )
 					return true;
 			}
 

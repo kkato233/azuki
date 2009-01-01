@@ -223,7 +223,7 @@ namespace Sgry.Azuki.Highlighter
 
 			int index, nextIndex;
 			bool highlighted;
-			int lastChangedCharIndex = 0;
+//			int lastChangedCharIndex = 0;
 
 			// update EPI and get index to start highlighting
 			UpdateEPI( doc, dirtyBegin, out dirtyBegin, out dirtyEnd );
@@ -273,7 +273,7 @@ dirtyEnd = doc.Length;
 				{
 					doc.SetCharClass( i, CharClass.Normal );
 				}
-				lastChangedCharIndex = nextIndex-1;
+//				lastChangedCharIndex = nextIndex-1;
 				index = nextIndex;
 			}
 		}

@@ -141,8 +141,6 @@ namespace Sgry.Azuki
 		/// <param name="begin">The search starting position.</param>
 		/// <param name="end">The search terminating position.</param>
 		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
-		/// <remarks>
-		/// </remarks>
 		public int Find( string value, int begin, int end )
 		{
 			return Find( value, begin, end, StringComparison.InvariantCulture );

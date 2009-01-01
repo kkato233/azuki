@@ -195,7 +195,6 @@ namespace Sgry.Azuki.Windows
 			public static void SetClipboardText( IntPtr ownerWnd, string text, bool isLineObj )
 			{
 				Int32 rc; // result code
-				char[] chars = text.ToCharArray();
 				UInt32 format = CF_UNICODETEXT;
 
 				if( isLineObj )

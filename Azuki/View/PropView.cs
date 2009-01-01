@@ -16,7 +16,7 @@ namespace Sgry.Azuki
 	/// </summary>
 	class PropView : View
 	{
-		int _PrevCaretLine, _PrevCaretColumn, _PrevAnchorLine, _PrevAnchorColumn;
+		int _PrevCaretLine, _PrevAnchorLine;
 
 		#region Init / Dispose
 		/// <summary>
@@ -254,9 +254,7 @@ namespace Sgry.Azuki
 
 			// remember last selection for next invalidation
 			_PrevCaretLine = caretLine;
-			_PrevCaretColumn = caretColumn;
 			_PrevAnchorLine = anchorLine;
-			_PrevAnchorColumn = anchorColumn;
 		}
 
 		void Doc_SelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
@@ -304,8 +302,8 @@ namespace Sgry.Azuki
 		void Doc_SelectionChanged_OnExpandSel( SelectionChangedEventArgs e, int caretLine, int caretColumn )
 		{
 			Document doc = this.Document;
-			int begin, beginL, beginC;
-			int end, endL, endC;
+			int begin, beginL;
+			int end, endL;
 			int beginLineHead, endLineHead;
 
 			// get range between old caret and current caret
@@ -313,19 +311,15 @@ namespace Sgry.Azuki
 			{
 				begin = e.OldCaret;
 				beginL = _PrevCaretLine;
-				beginC = _PrevCaretColumn;
 				end = doc.CaretIndex;
 				endL = caretLine;
-				endC = caretColumn;
 			}
 			else
 			{
 				begin = doc.CaretIndex;
 				beginL = caretLine;
-				beginC = caretColumn;
 				end = e.OldCaret;
 				endL = _PrevCaretLine;
-				endC = _PrevCaretColumn;
 			}
 			beginLineHead = GetLineHeadIndex( beginL );
 			endLineHead = GetLineHeadIndex( endL ); // if old caret is the end pos and if the pos exceeds current text length, this will fail.
@@ -340,27 +334,23 @@ namespace Sgry.Azuki
 			// old anchor pos and old caret pos.
 			Document doc = base.Document;
 			int beginLineHead, endLineHead;
-			int begin, beginL, beginC;
-			int end, endL, endC;
+			int begin, beginL;
+			int end, endL;
 
 			// get old selection range
 			if( e.OldAnchor < e.OldCaret )
 			{
 				begin = e.OldAnchor;
 				beginL = _PrevAnchorLine;
-				beginC = _PrevAnchorColumn;
 				end = e.OldCaret;
 				endL = _PrevCaretLine;
-				endC = _PrevCaretColumn;
 			}
 			else
 			{
 				begin = e.OldCaret;
 				beginL = _PrevCaretLine;
-				beginC = _PrevCaretColumn;
 				end = e.OldAnchor;
 				endL = _PrevAnchorLine;
-				endC = _PrevAnchorColumn;
 			}
 			beginLineHead = GetLineHeadIndexFromCharIndex( begin );
 			endLineHead = GetLineHeadIndexFromCharIndex( end );
@@ -576,10 +566,10 @@ namespace Sgry.Azuki
 				// if the token area crosses the RIGHT boundary, cut off extra
 				if( clipRect.Right < tokenEndPos.X )
 				{
-					int visibleCharCount, visibleWidth;
+					int visibleCharCount;
 
 					// calculate how many chars can be drawn in the clip-rect
-					visibleWidth = MeasureTokenEndX( token, pos.X, clipRect.Right, out visibleCharCount );
+					MeasureTokenEndX( token, pos.X, clipRect.Right, out visibleCharCount );
 
 					// set the position to cut extra trailings of this token
 					if( visibleCharCount == token.Length )

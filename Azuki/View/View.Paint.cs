@@ -83,7 +83,7 @@ namespace Sgry.Azuki
 			// tab
 			else if( token == "\t" )
 			{
-				int bgLeft, bgRight, bgWidth;
+				int bgLeft, bgRight;
 				int fgLeft, fgRight;
 				int fgTop = tokenPos.Y + (_LineHeight * 1 / 3);
 				int fgBottom = tokenPos.Y + (_LineHeight * 2 / 3);
@@ -98,7 +98,6 @@ namespace Sgry.Azuki
 				fgLeft = tokenPos.X + 2;
 				fgRight = bgRight - 2;
 				bgLeft = tokenPos.X;
-				bgWidth = fgRight - fgLeft;
 
 				// draw background
 				_Gra.FillRectangle( bgLeft, tokenPos.Y, bgRight-bgLeft, LineSpacing );

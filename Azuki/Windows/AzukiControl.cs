@@ -67,6 +67,7 @@ namespace Sgry.Azuki.Windows
 			// rewrite window procedure at first
 			// (force to create window by accessing Handle property)
 			IntPtr dummy = this.Handle;
+			dummy.ToInt32(); // (suppress warning to unreferenced variable)
 			RewriteWndProc();
 			
 			// generate core implementation

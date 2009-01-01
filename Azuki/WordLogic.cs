@@ -345,6 +345,7 @@ namespace Sgry.Azuki
 			return index;
 		}
 
+		/*
 		/// <summary>
 		/// Skips backward only one EOL code.
 		/// </summary>
@@ -377,6 +378,7 @@ namespace Sgry.Azuki
 
 			return index;
 		}
+		*/
 		#endregion
 
 		#region Character classification

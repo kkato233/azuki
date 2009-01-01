@@ -509,11 +509,6 @@ namespace Sgry.Azuki
 			array = value;
 #			endif
 		}
-
-		static T NullConverter( T value )
-		{
-			return value;
-		}
 		#endregion
 
 		#region DebugUtl Utilities (only works when T is System.Char)

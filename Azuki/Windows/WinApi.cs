@@ -113,12 +113,12 @@ namespace Sgry.Azuki.Windows
 		[StructLayout(LayoutKind.Sequential)]
 		public struct PAINTSTRUCT
 		{
-			IntPtr hDC;
-			Int32 bErase;
+			public IntPtr hDC;
+			public Int32 bErase;
 			public RECT paint;
-			Int32 bRestore;
-			Int32 bIncUpdate;
-			Int64 reserved0, reserved1, reserved2, reserved3, reserved4;
+			public Int32 bRestore;
+			public Int32 bIncUpdate;
+			public Int64 reserved0, reserved1, reserved2, reserved3, reserved4;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]

@@ -249,7 +249,6 @@ namespace Sgry.Azuki
 		public static void Copy( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
 			string text;
 			int begin, end;
 			

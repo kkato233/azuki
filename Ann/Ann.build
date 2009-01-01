@@ -55,12 +55,17 @@ Small application to test Azuki.
 		output="${assembly_name}"
 		unsafe="true"
 		optimize="true"
+		nostdlib="true"
 		warninglevel="4"
 	>
 		<references>
 			<lib>
 				<include name="..\package"/>
 			</lib>
+			<include name="mscorlib.dll"/>
+			<include name="System.dll"/>
+			<include name="System.Drawing.dll"/>
+			<include name="System.Windows.Forms.dll"/>
 			<include name="Azuki.dll"/>
 		</references>
 		<sources>

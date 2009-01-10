@@ -201,7 +201,7 @@ namespace Sgry.Azuki
 		/// Gets or sets hook delegate to execute auto-indentation.
 		/// If null, auto-indentation will not be performed.
 		/// </summary>
-		/// <seealso cref="AutoIndentLogic"/>
+		/// <seealso cref="AutoIndentLogic">AutoIndentLogic</seealso>
 		public AutoIndentHook AutoIndentHook
 		{
 			get{ return _AutoIndentHook; }
@@ -416,7 +416,7 @@ namespace Sgry.Azuki
 
 		public void HandlePaint( Rectangle clipRect )
 		{
-			View.Paint( clipRect );
+			_View.Paint( clipRect );
 		}
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )

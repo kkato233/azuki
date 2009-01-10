@@ -1,8 +1,7 @@
 // file: SplitArray.cs
 // brief: Data structure holding a 'gap' in it for efficient insert/delete operation.
 // author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2008-12-28
+// update: 2009-01-10
 //=========================================================
 //#define ENABLE_TRACE_WITH_DUMP
 using System;
@@ -16,22 +15,15 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// The array structure with 'gap' for efficient insertion/deletion.
 	/// </summary>
-	public class SplitArray<T> : IEnumerable<T>
+	class SplitArray<T> : IEnumerable<T>
 	{
-		/// <summary>buffer</summary>
+		#region Fields
 		protected T[] _Data = null;
-		
-		/// <summary>grow size</summary>
 		protected int _GrowSize;
-		
-		/// <summary>count of holding elements</summary>
 		protected int _Count;
-
-		/// <summary>position of the gap</summary>
 		protected int _GapPos;
-		
-		/// <summary>length of the gap</summary>
 		protected int _GapLen;
+		#endregion
 
 		#region Init / Dispose
 		/// <summary>
@@ -585,7 +577,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// The enumerator class for the SplitArray.
 	/// </summary>
-	public class SplitArrayEnumerator<T> : IEnumerator<T>
+	class SplitArrayEnumerator<T> : IEnumerator<T>
 	{
 		SplitArray<T> _Array;
 		int _Index = -1;

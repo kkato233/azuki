@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2008-12-31
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -13,21 +13,13 @@ namespace Sgry.Azuki
 	/// Specialized SplitArray for char with text search feature without copying content.
 	/// This is the core data structure of Azuki.
 	/// </summary>
-	/// <seealso cref="SplitArray&lt;T&gt;"/>
-	public class TextBuffer : SplitArray<Char>
+	class TextBuffer : SplitArray<Char>
 	{
 		#region Fields
 		SplitArray<CharClass> _Classes;
 		#endregion
 
 		#region Init / Dispose
-		/// <summary>
-		/// Creates a new instance.
-		/// </summary>
-		public TextBuffer()
-			: this( 256, 128 )
-		{}
-
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>

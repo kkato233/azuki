@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-10
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Collections;
@@ -20,7 +20,7 @@ namespace Sgry.Azuki
 	public class Document : IEnumerable
 	{
 		#region Fields
-		TextBuffer _Buffer = new TextBuffer();
+		TextBuffer _Buffer = new TextBuffer( 2048, 1024 );
 		SplitArray<int> _LHI = new SplitArray<int>( 64 ); // line head indexes
 		EditHistory _History = new EditHistory();
 		ColorScheme _ColorScheme = ColorScheme.Default;
@@ -261,17 +261,32 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets currently inputted character's count.
-		/// Note that a surrogate pair will be counted as two.
+		/// Gets number of characters currently held in this document.
+		/// Note that a surrogate pair will be counted as two characters.
 		/// </summary>
+		/// <remarks>
+		/// This property is the number of characters currently held in this document.
+		/// Since Azuki stores characters in form of UTF-16,
+		/// surrogate pairs will not be counted as "1 character" in this property.
+		/// </remarks>
 		public int Length
 		{
 			get{ return _Buffer.Count; }
 		}
 
 		/// <summary>
-		/// Gets number of the logical line.
+		/// Gets number of the logical lines.
 		/// </summary>
+		/// <remarks>
+		/// Through this property,
+		/// number of the logical lines in this document can be retrieved.
+		/// "Logical line" here means a string simply separated by EOL codes.
+		/// and differs from "physical line" (a text line drawn as a graphc).
+		/// To retrieve count of the logical lines,
+		/// use <see cref="Sgry.Azuki.IView.LineCount">IView.LineCount</see> or
+		/// <see cref="Sgry.Azuki.IUserInterface.LineCount">
+		/// IUserInterface.LineCount</see> instead.
+		/// </remarks>
 		public int LineCount
 		{
 			get{ return _LHI.Count; }
@@ -676,7 +691,7 @@ namespace Sgry.Azuki
 		/// Note that setting new value to this property will not invalidate graphics.
 		/// To update graphic, set value via IUserInterface.Highlighter.
 		/// </summary>
-		/// <seealso cref="IUserInterface.Highlighter"/>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.Highlighter">IUserInterface.Highlighter</seealso>
 		public IHighlighter Highlighter
 		{
 			get{ return _Highlighter; }

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2008-11-30
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -139,7 +139,7 @@ namespace Sgry.Azuki.Windows
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 #		endif
-		public View View
+		public IView View
 		{
 			get{ return _Impl.View; }
 		}
@@ -278,11 +278,11 @@ namespace Sgry.Azuki.Windows
 				return;
 
 			// calculate caret size
-			_CaretSize.Width = Utl.CalcOverwriteCaretWidth( Document, View, CaretIndex, IsOverwriteMode );
+			_CaretSize.Width = Utl.CalcOverwriteCaretWidth( Document, _Impl.View, CaretIndex, IsOverwriteMode );
 
 			// calculate caret position and show/hide caret
 			Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
-			if( newCaretPos.X < View.TextAreaX
+			if( newCaretPos.X < _Impl.View.TextAreaX
 				|| newCaretPos.Y < 0 )
 			{
 				WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y );
@@ -496,10 +496,10 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public int ViewWidth
 		{
-			get{ return View.TextAreaWidth + View.TextAreaX; }
+			get{ return _Impl.View.TextAreaWidth + _Impl.View.TextAreaX; }
 			set
 			{
-				View.TextAreaWidth = value - View.TextAreaX;
+				_Impl.View.TextAreaWidth = value - _Impl.View.TextAreaX;
 				Refresh();
 				UpdateCaretGraphic();
 			}
@@ -563,7 +563,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets hook delegate to execute auto-indentation.
 		/// If null, auto-indentation will not be performed.
 		/// </summary>
-		/// <seealso cref="AutoIndentLogic"/>
+		/// <seealso cref="AutoIndentLogic">AutoIndentLogic</seealso>
 #		if !PocketPC
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -936,8 +936,8 @@ namespace Sgry.Azuki.Windows
 		public void Scroll( Rectangle rect, int vOffset, int hOffset )
 		{
 			WinApi.ScrollWindow( Handle, vOffset, hOffset, rect );
-			WinApi.SetScrollPos( Handle, false, View.FirstVisibleLine );
-			WinApi.SetScrollPos( Handle, true, View.ScrollPosX );
+			WinApi.SetScrollPos( Handle, false, _Impl.View.FirstVisibleLine );
+			WinApi.SetScrollPos( Handle, true, _Impl.View.ScrollPosX );
 			UpdateCaretGraphic();
 		}
 
@@ -999,9 +999,9 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets highlighter for currently active document.
 		/// Setting null to this property will disable highlighting.
 		/// See built-in highlighters for
-		/// <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighters</see>.
+		/// <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see>.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.Highlighter.Highlighters"/>
+		/// <seealso cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</seealso>
 		/// <remarks>
 		/// Note that user can create and specify custom highlighter object.
 		/// If you want to create a keyword-based highlighter,
@@ -1077,7 +1077,7 @@ namespace Sgry.Azuki.Windows
 
 		void HandleHScrollEvent( int scrollType )
 		{
-			int newPos = View.ScrollPosX;
+			int newPos = _Impl.View.ScrollPosX;
 			int scrollUnit = View.TabWidthInPx >> 1;
 
 			if( scrollType == WinApi.SB_LINEUP )
@@ -1110,7 +1110,7 @@ namespace Sgry.Azuki.Windows
 			else if( scrollType == WinApi.SB_ENDSCROLL )
 				return;
 			
-			int delta = newPos - View.ScrollPosX;
+			int delta = newPos - _Impl.View.ScrollPosX;
 			View.HScroll( delta );
 		}
 
@@ -1177,7 +1177,7 @@ namespace Sgry.Azuki.Windows
 
 		void Control_Resized( object sender, EventArgs e )
 		{
-			View.HandleSizeChanged( ClientSize );
+			_Impl.View.HandleSizeChanged( ClientSize );
 			Invalidate();
 		}
 		#endregion

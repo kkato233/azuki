@@ -85,6 +85,7 @@
     <Compile Include="Platform.cs" />
     <Compile Include="UserPref.cs" />
     <Compile Include="View\DrawingOption.cs" />
+    <Compile Include="View\IView.cs" />
     <Compile Include="WordLogic.cs" />
     <Compile Include="Document\CharClass.cs" />
     <Compile Include="Document\Document.cs" />

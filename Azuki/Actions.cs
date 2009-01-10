@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-10-13
+// update: 2009-01-10
 //=========================================================
 using System;
 
@@ -25,7 +25,7 @@ namespace Sgry.Azuki
 		public static void BackSpace( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 
 			// nothing selected?
 			if( doc.AnchorIndex == doc.CaretIndex )
@@ -71,7 +71,7 @@ namespace Sgry.Azuki
 		public static void BackSpaceWord( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 
 			if( doc.IsReadOnly )
 			{
@@ -108,7 +108,7 @@ namespace Sgry.Azuki
 		public static void Delete( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 
 			if( doc.IsReadOnly )
 			{
@@ -159,7 +159,7 @@ namespace Sgry.Azuki
 		public static void DeleteWord( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 
 			if( doc.IsReadOnly )
 			{
@@ -336,7 +336,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void Undo( IUserInterface ui )
 		{
-			View view = ui.View;
+			IView view = ui.View;
 			if( view.Document.CanUndo == false
 				|| view.Document.IsReadOnly )
 			{
@@ -354,7 +354,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void Redo( IUserInterface ui )
 		{
-			View view = ui.View;
+			IView view = ui.View;
 			if( view.Document.CanRedo == false
 				|| view.Document.IsReadOnly )
 			{

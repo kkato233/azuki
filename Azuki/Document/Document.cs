@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2008-12-28
+// update: 2009-10-10
 //=========================================================
 using System;
 using System.Collections;
@@ -645,7 +645,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates logical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
 		{
 			if( charIndex < 0 || _Buffer.Count < charIndex )

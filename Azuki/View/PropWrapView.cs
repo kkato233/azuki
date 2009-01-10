@@ -1,8 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (propotional, line-wrap).
 // author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2008-11-03
+// update: 2009-01-10
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -121,6 +120,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override Point GetVirPosFromIndex( int index )
 		{
 			int line, column;
@@ -139,6 +139,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override Point GetVirPosFromIndex( int lineIndex, int columnIndex )
 		{
 			if( lineIndex < 0 || columnIndex < 0 )
@@ -231,6 +232,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets the index of the first char in the line.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetLineHeadIndex( int lineIndex )
 		{
 			Debug.Assert( 0 <= lineIndex && lineIndex < _PLHI.Count );
@@ -241,7 +243,7 @@ namespace Sgry.Azuki
 		/// Gets the index of the first char in the physical line
 		/// which contains the specified char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetLineHeadIndexFromCharIndex( int charIndex )
 		{
 			if( charIndex < 0 || Document.Length < charIndex )
@@ -255,7 +257,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates physical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
 		{
 			if( charIndex < 0 || Document.Length < charIndex )
@@ -269,7 +271,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates char-index from physical line/column index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
 		{
 			if( lineIndex < 0 || LineCount < lineIndex )
@@ -561,7 +563,7 @@ namespace Sgry.Azuki
 		/// Paints content to a graphic device.
 		/// </summary>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
-		internal override void OnPaint( Rectangle clipRect )
+		public override void Paint( Rectangle clipRect )
 		{
 			Debug.Assert( Font != null, "invalid state; Font is null" );
 			Debug.Assert( Document != null, "invalid state; Document is null" );

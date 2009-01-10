@@ -1,8 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (propotional).
 // author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2008-10-28
+// update: 2009-01-10
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -59,6 +58,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public override Point GetVirPosFromIndex( int index )
 		{
 			int line, column;
@@ -69,10 +69,13 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public override Point GetVirPosFromIndex( int lineIndex, int columnIndex )
 		{
-			if( lineIndex < 0 || columnIndex < 0 )
-				throw new ArgumentException( "invalid index was given (minus value)", String.Format("lineIndex:{0} columnIndex:{1}", lineIndex, columnIndex) );
+			if( lineIndex < 0 )
+				throw new ArgumentOutOfRangeException( "lineIndex("+lineIndex+")" );
+			if( columnIndex < 0 )
+				throw new ArgumentOutOfRangeException( "columnIndex("+columnIndex+")" );
 
 			Point pos = new Point( 0, LineSpacing*lineIndex ); // init value is for when the columnIndex is 0
 
@@ -143,6 +146,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets the index of the first char in the line.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetLineHeadIndex( int lineIndex )
 		{
 			return Document.GetLineHeadIndex( lineIndex );
@@ -152,7 +156,7 @@ namespace Sgry.Azuki
 		/// Gets the index of the first char in the physical line
 		/// which contains the specified char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetLineHeadIndexFromCharIndex( int charIndex )
 		{
 			return Document.GetLineHeadIndexFromCharIndex( charIndex );
@@ -161,7 +165,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates physical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
 		{
 			Document.GetLineColumnIndexFromCharIndex( charIndex, out lineIndex, out columnIndex );
@@ -454,7 +458,7 @@ namespace Sgry.Azuki
 		/// Paints content to a graphic device.
 		/// </summary>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
-		internal override void OnPaint( Rectangle clipRect )
+		public override void Paint( Rectangle clipRect )
 		{
 			Debug.Assert( Font != null, "invalid state; Font is null" );
 			Debug.Assert( Document != null, "invalid state; Document is null" );
@@ -485,7 +489,7 @@ namespace Sgry.Azuki
 			_Gra.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
 
 			// flush drawing results BEFORE updating current line highlight
-			// because the highlight graphic is never limited to clipping rect
+			// because the highlight graphic can be drawn outside of the clipping rect
 #			if !DRAW_SLOWLY && !PocketPC
 			_Gra.EndPaint();
 #			endif

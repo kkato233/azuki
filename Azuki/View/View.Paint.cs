@@ -1,8 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2008-07-20
+// update: 2009-01-10
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -13,13 +12,13 @@ using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
-	public abstract partial class View
+	abstract partial class View
 	{
 		/// <summary>
 		/// Paints content to a graphic device.
 		/// </summary>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
-		internal abstract void OnPaint( Rectangle clipRect );
+		public abstract void Paint( Rectangle clipRect );
 
 		/// <summary>
 		/// Paints a token including special characters.

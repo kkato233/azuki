@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2008-11-30
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -416,7 +416,7 @@ namespace Sgry.Azuki
 
 		public void HandlePaint( Rectangle clipRect )
 		{
-			View.OnPaint( clipRect );
+			View.Paint( clipRect );
 		}
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )

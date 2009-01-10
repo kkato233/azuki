@@ -1,8 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2008-11-03
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Drawing;
@@ -28,7 +27,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets the associated view object.
 		/// </summary>
-		View View
+		IView View
 		{
 			get;
 		}

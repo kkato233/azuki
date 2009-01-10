@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine (actions to change selection).
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-09-25
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Drawing;
@@ -20,7 +20,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void MoveRight( IUserInterface ui )
 		{
-			View view = ui.View;
+			IView view = ui.View;
 			int selBegin, selEnd;
 
 			// if there are something selected,
@@ -45,7 +45,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void MoveLeft( IUserInterface ui )
 		{
-			View view = ui.View;
+			IView view = ui.View;
 			int selBegin, selEnd;
 
 			// if there are something selected,
@@ -201,7 +201,7 @@ namespace Sgry.Azuki
 		public static void MovePageDown( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 			Point pt;
 			int nextIndex;
 			int diff = (view.VisibleSize.Height / view.LineSpacing);
@@ -231,7 +231,7 @@ namespace Sgry.Azuki
 		public static void MovePageUp( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 			Point pt;
 			int nextIndex;
 			int diff = (view.VisibleSize.Height / view.LineSpacing);
@@ -410,7 +410,7 @@ namespace Sgry.Azuki
 		public static void SelectToPageDown( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 			Point pt;
 			int nextIndex;
 			int diff = (view.VisibleSize.Height / view.LineSpacing);
@@ -440,7 +440,7 @@ namespace Sgry.Azuki
 		public static void SelectToPageUp( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 			Point pt;
 			int nextIndex;
 			int diff = (view.VisibleSize.Height / view.LineSpacing);
@@ -493,7 +493,7 @@ namespace Sgry.Azuki
 		public static void SelectAll( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			View view = ui.View;
+			IView view = ui.View;
 			
 			// set parameters
 			doc.SetSelection( 0, doc.Length );

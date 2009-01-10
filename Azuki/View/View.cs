@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2008-11-03
+// update: 2009-01-10
 //=========================================================
 using System;
 using System.Drawing;
@@ -13,37 +13,23 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Platform independent view of Azuki.
 	/// </summary>
-	/// <remarks>
-	/// HandleXXX method is designed to be called by UI module (AzukiControl) to handle platform event.
-	/// </remarks>
-	public abstract partial class View : IDisposable
+	abstract partial class View : IView, IDisposable
 	{
 		#region Fields and Types
-		/// <summary>platform dependent layer of user interface</summary>
 		protected IUserInterface _UI;
 		Document _Document = null;
 		Font _Font;
 		int _FirstVisibleLine = 0;
 		int _ScrollPosX;
 		int _TextAreaWidth = 300;
-
-		/// <summary>when the caret moves up or down, Azuki tries to set next caret's column index to this value.</summary>
 		int _DesiredColumn = 0;
 
 		//--- for drawing ---
 		Size _VisibleSize = new Size( 300, 300 );
-
-		/// <summary>Interface to draw graphic.</summary>
 		protected IGraphics _Gra = null;
-		
-		/// <summary>Width of the line number area in pixel.</summary>
-		protected int _LineNumWidth = 0;
-
-		/// <summary>Width of a space char (U+0020) in pixel.</summary>
-		protected int _SpaceWidth;
-
-		/// <summary>Width of a full-width space char (U+3000) in pixel.</summary>
-		protected int _FullSpaceWidth = 0;
+		protected int _LineNumWidth = 0;	// Width of the line number area in pixel
+		protected int _SpaceWidth;			// Width of a space char (U+0020) in pixel
+		protected int _FullSpaceWidth = 0;	// Width of a full-width space char (U+3000) in pixel
 		int _LineHeight;
 		int _TabWidth = 8;
 		int _TabWidthInPx;
@@ -377,7 +363,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Appearance States
+		#region States
 		/// <summary>
 		/// Gets or sets index of the line which is displayed at top of this view.
 		/// </summary>
@@ -407,7 +393,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets height of a line in pixel.
+		/// Gets height of each lines in pixel.
 		/// </summary>
 		public int LineHeight
 		{
@@ -425,21 +411,25 @@ namespace Sgry.Azuki
 
 		#region Desired Column Management
 		/// <summary>
-		/// Sets desired column to current column index
-		/// (When the caret moves up or down,
-		/// Azuki tries to set next caret's column index to this value).
+		/// Sets column index of the current caret position to "desired column" value.
 		/// </summary>
+		/// <remarks>
+		/// When the caret moves up or down,
+		/// Azuki tries to set next caret's column index to this value.
+		/// </remarks>
 		public void SetDesiredColumn()
 		{
 			_DesiredColumn = GetVirPosFromIndex( _Document.CaretIndex ).X;
 		}
 
 		/// <summary>
-		/// Gets "desired column"
-		/// (When the caret moves up or down,
-		/// Azuki tries to set next caret's column index to this value).
+		/// Gets current "desired column" value.
 		/// </summary>
-		internal int GetDesiredColumn()
+		/// <remarks>
+		/// When the caret moves up or down,
+		/// Azuki tries to set next caret's column index to this value.
+		/// </remarks>
+		public int GetDesiredColumn()
 		{
 			return _DesiredColumn;
 		}
@@ -449,11 +439,13 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public abstract Point GetVirPosFromIndex( int index );
 
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public abstract Point GetVirPosFromIndex( int lineIndex, int columnIndex );
 
 		/// <summary>
@@ -481,30 +473,30 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets the index of the first char in the line.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetLineHeadIndex( int lineIndex );
 
 		/// <summary>
 		/// Gets the index of the first char in the physical line
 		/// which contains the specified char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetLineHeadIndexFromCharIndex( int charIndex );
 
 		/// <summary>
 		/// Calculates physical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex );
 
 		/// <summary>
 		/// Calculates char-index from physical line/column index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex );
 		#endregion
 
-		#region Scroll
+		#region Operations
 		/// <summary>
 		/// Scroll to where the caret is.
 		/// </summary>
@@ -642,7 +634,31 @@ namespace Sgry.Azuki
 			_ScrollPosX += deltaInPx;
 			_UI.Scroll( clipRect, -deltaInPx, 0 );
 		}
-		#endregion
+
+		/// <summary>
+		/// Requests to invalidate whole area.
+		/// </summary>
+		public void Invalidate()
+		{
+			_UI.Invalidate();
+		}
+
+		/// <summary>
+		/// Requests to invalidate specified area.
+		/// </summary>
+		/// <param name="rect">rectangle area to be invalidate (in screen coordinate)</param>
+		public void Invalidate( Rectangle rect )
+		{
+//DEBUG//_Gra.ForeColor=Color.Red;_Gra.DrawLine(rect.Left,rect.Top,rect.Right,rect.Bottom);_Gra.DrawLine(rect.Left,rect.Bottom,rect.Right,rect.Top);DebugUtl.Sleep(400);
+			_UI.Invalidate( rect );
+		}
+
+		/// <summary>
+		/// Requests to invalidate area covered by given text range.
+		/// </summary>
+		/// <param name="beginIndex">Begin text index of the area to be invalidated.</param>
+		/// <param name="endIndex">End text index of the area to be invalidated.</param>
+		public abstract void Invalidate( int beginIndex, int endIndex );
 
 		/// <summary>
 		/// Sets font size to larger one.
@@ -671,6 +687,7 @@ namespace Sgry.Azuki
 			// apply
 			Font = new Font( Font.Name, newSize, Font.Style );
 		}
+		#endregion
 
 		#region Communication between UI Module
 		/// <summary>
@@ -681,31 +698,6 @@ namespace Sgry.Azuki
 		{
 			_VisibleSize = newSize;
 		}
-
-		/// <summary>
-		/// Requests invalidation of whole area.
-		/// </summary>
-		public void Invalidate()
-		{
-			_UI.Invalidate();
-		}
-
-		/// <summary>
-		/// Requests invalidation of specified area.
-		/// </summary>
-		/// <param name="rect">rectangle area to be invalidate (in screen coordinate)</param>
-		public void Invalidate( Rectangle rect )
-		{
-//DEBUG//_Gra.ForeColor=Color.Red;_Gra.DrawLine(rect.Left,rect.Top,rect.Right,rect.Bottom);_Gra.DrawLine(rect.Left,rect.Bottom,rect.Right,rect.Top);DebugUtl.Sleep(400);
-			_UI.Invalidate( rect );
-		}
-
-		/// <summary>
-		/// Requests to invalidate area covered by given text range.
-		/// </summary>
-		/// <param name="beginIndex">Begin text index of the area to be invalidated.</param>
-		/// <param name="endIndex">End text index of the area to be invalidated.</param>
-		public abstract void Invalidate( int beginIndex, int endIndex );
 		#endregion
 
 		#region Utilities

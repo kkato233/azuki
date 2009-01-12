@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2008-12-31
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.IO;
@@ -12,19 +12,35 @@ using Assembly = System.Reflection.Assembly;
 
 namespace Sgry
 {
+	/// <summary>
+	/// Exception class for testable assertion.
+	/// </summary>
+	class AssertException : Exception
+	{
+		public AssertException()  {}
+		public AssertException( string message ) : base(message)  {}
+		public AssertException( string message, Exception innerException ) : base(message, innerException)  {}
+	}
+
+	/// <summary>
+	/// Debug utilities.
+	/// </summary>
 	static class DebugUtl
 	{
-#		if DEBUG || ENABLE_LOG
-		#region Logging
-		static Object LockKey = new Object();
-
+		#region Fields and Constants
 #		if !PocketPC
-		public static string LogDateHeader = "MM-dd hh:mm.ss ";
+		public const string kernel32_dll = "kernel32";
+		public const string LogDateHeader = "MM-dd hh:mm.ss ";
 #		else
-		public static string LogDateHeader = "mm.ss ";
+		public const string kernel32_dll = "coredll";
+		public const string LogDateHeader = "mm.ss ";
 #		endif
-
+		static Object LockKey = new Object();
 		static string _LogFilePath = null;
+		static AutoLogger _AutoLogger = null;
+		#endregion
+
+		#region Logging
 		public static string LogFilePath
 		{
 			get
@@ -108,7 +124,9 @@ namespace Sgry
 			catch{}
 		}
 
-		static AutoLogger _AutoLogger = null;
+		/// <summary>
+		/// Log writer object that actually write just before the application ends.
+		/// </summary>
 		public static AutoLogger AutoLogger
 		{
 			get
@@ -122,16 +140,14 @@ namespace Sgry
 			}
 		}
 		#endregion
-#		endif
 
 		#region Diagnostics
-#		if !PocketPC
-		[DllImport("kernel32")]
-#		else
-		[DllImport("coredll")]
-#		endif
+		[DllImport(kernel32_dll)]
 		public static extern void Sleep( int millisecs );
 
+		/// <summary>
+		/// Gets system performance counter value in millisecond.
+		/// </summary>
 		public static double GetCounterMsec()
 		{
 			long count;
@@ -141,18 +157,10 @@ namespace Sgry
 			return count / (double)freq * 1000;
 		}
 
-#		if !PocketPC
-		[DllImport("kernel32")]
-#		else
-		[DllImport("coredll")]
-#		endif
+		[DllImport(kernel32_dll)]
 		static extern Int32 QueryPerformanceCounter( out Int64 count );
 
-#		if !PocketPC
-		[DllImport("kernel32")]
-#		else
-		[DllImport("coredll")]
-#		endif
+		[DllImport(kernel32_dll)]
 		static extern Int32 QueryPerformanceFrequency( out Int64 count );
 		#endregion
 
@@ -179,11 +187,13 @@ namespace Sgry
 		#endregion
 	}
 
-#	if DEBUG || ENABLE_LOG
 	class AutoLogger
 	{
+		#region Fields
 		StringBuilder _Buf = new StringBuilder();
+		#endregion
 
+		#region Init / Dispose
 		~AutoLogger()
 		{
 			using( StreamWriter file = new StreamWriter(DebugUtl.LogFilePath, true) )
@@ -192,7 +202,9 @@ namespace Sgry
 				file.WriteLine();
 			}
 		}
+		#endregion
 
+		#region Write
 		/// <summary>
 		/// Writes message to a log file with date and time.
 		/// </summary>
@@ -209,28 +221,14 @@ namespace Sgry
 			}
 			catch{}
 		}
-	}
-#	endif
-
-	/// <summary>
-	/// Exception class for testable assertion.
-	/// </summary>
-	class AssertException : Exception
-	{
-		public AssertException()
-		{}
-
-		public AssertException( string message )
-			: base(message)
-		{}
-
-		public AssertException( string message, Exception innerException )
-			: base(message, innerException)
-		{}
+		#endregion
 	}
 
 	#region Minimal Testing Framework
 #	if DEBUG
+	/// <summary>
+	/// Test utility.
+	/// </summary>
 	class TestUtl
 	{
 		public static int ErrorCount = 0;
@@ -240,7 +238,11 @@ namespace Sgry
 			get{ return (0 < ErrorCount); }
 		}
 
-		[Conditional("DEBUG")]
+		public static void Fail( string message )
+		{
+			throw new AssertException( message );
+		}
+
 		public static void AssertEquals( object expected, object actual )
 		{
 			if( expected == null )
@@ -254,14 +256,12 @@ namespace Sgry
 			}
 		}
 
-		[Conditional("DEBUG")]
 		public static void AssertType<T>( object obj )
 		{
 			if( obj.GetType() != typeof(T) )
 				throw new AssertException( "object type is not "+typeof(T).Name+" but "+obj.GetType()+"." );
 		}
 
-		[Conditional("DEBUG")]
 		public static void AssertExceptionType( Exception ex, Type type )
 		{
 			if( ex.GetType() == type )
@@ -315,6 +315,7 @@ namespace Sgry
 			}
 		}
 		
+		#region Utilities
 		static void WriteLineWithChar( TextWriter stream, char ch )
 		{
 			for( int i=0; i<Console.BufferWidth-1; i++ )
@@ -380,6 +381,7 @@ namespace Sgry
 				return 0;
 			}
 		}
+		#endregion
 	}
 #	endif
 	#endregion

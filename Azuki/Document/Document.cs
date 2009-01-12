@@ -24,7 +24,6 @@ namespace Sgry.Azuki
 		TextBuffer _Buffer = new TextBuffer( 2048, 1024 );
 		SplitArray<int> _LHI = new SplitArray<int>( 64 ); // line head indexes
 		EditHistory _History = new EditHistory();
-		ColorScheme _ColorScheme = ColorScheme.Default;
 		int _CaretIndex = 0;
 		int _AnchorIndex = 0;
 		bool _IsRecordingHistory = true;
@@ -808,21 +807,6 @@ namespace Sgry.Azuki
 				// associate with new highlighter object and highlight whole content
 				_Highlighter = value;
 				_Highlighter.Highlight( this );
-			}
-		}
-
-		/// <summary>
-		/// Color scheme for this document.
-		/// </summary>
-		public ColorScheme ColorScheme
-		{
-			get{ return _ColorScheme; }
-			set
-			{
-				if( value == null )
-					value = ColorScheme.Default;
-
-				_ColorScheme = value;
 			}
 		}
 		#endregion

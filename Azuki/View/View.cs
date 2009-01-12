@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Drawing;
@@ -25,6 +25,7 @@ namespace Sgry.Azuki
 		int _DesiredColumn = 0;
 
 		//--- for drawing ---
+		ColorScheme _ColorScheme = ColorScheme.Default;
 		Size _VisibleSize = new Size( 300, 300 );
 		protected IGraphics _Gra = null;
 		protected int _LineNumWidth = 0;	// Width of the line number area in pixel
@@ -328,8 +329,14 @@ namespace Sgry.Azuki
 		/// </summary>
 		public ColorScheme ColorScheme
 		{
-			get{ return Document.ColorScheme; }
-			set{ Document.ColorScheme = value; }
+			get{ return _ColorScheme; }
+			set
+			{
+				if( value == null )
+					value = ColorScheme.Default;
+
+				_ColorScheme = value;
+			}
 		}
 
 		/// <summary>

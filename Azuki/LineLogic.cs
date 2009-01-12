@@ -1,8 +1,7 @@
 // file: LineLogic.cs
 // brief: Logics to manipulate line/column in a string.
 // author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2008-11-03
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Collections;
@@ -37,7 +36,7 @@ namespace Sgry.Azuki
 				}
 				else
 				{
-					throw new ArgumentOutOfRangeException( String.Format("specified column index was too large (given:{0} actual line length:{1})", columnIndex, lineLength) );
+					DebugUtl.Fail( "specified column index was too large (given:"+columnIndex+" actual line length:"+lineLength+")" );
 				}
 			}
 #			endif

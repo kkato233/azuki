@@ -8,9 +8,9 @@ namespace Sgry.Azuki.Test
 	{
 		static int Main()
 		{
-			LineLogicTest.Test();
 			EditHistoryTest.Test();
 			SplitArrayTest.Test();
+			LineLogicTest.Test();
 			DocumentTest.Test();
 			KeywordHighlighterTest.Test();
 			

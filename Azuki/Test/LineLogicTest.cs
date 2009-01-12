@@ -1,4 +1,4 @@
-// 2008-12-28
+// 2009-01-12
 #if DEBUG
 using System;
 using System.Collections;
@@ -62,59 +62,51 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine( "test {0} - PrevLineHead()", testNum++ );
 			i=71;
 			for( ; 53<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 53, "expected 53 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 53, LineLogic.PrevLineHead(text, i) );
 			for( ; 52<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 52, "expected 52 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 52, LineLogic.PrevLineHead(text, i) );
 			for( ; 38<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 38, "expected 38 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 38, LineLogic.PrevLineHead(text, i) );
 			for( ; 37<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 37, "expected 37 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 37, LineLogic.PrevLineHead(text, i) );
 			for( ; 33<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 33, "expected 33 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 33, LineLogic.PrevLineHead(text, i) );
 			for( ; 32<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 32, "expected 32 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 32, LineLogic.PrevLineHead(text, i) );
 			for( ; 0<=i; i-- )
-				Debug.Assert( LineLogic.PrevLineHead(text, i) == 0, "expected 0 but "+LineLogic.PrevLineHead(text, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 0,  LineLogic.PrevLineHead(text, i) );
 
 			//
 			// GetLineLengthByCharIndex
 			//
 			Console.WriteLine( "test {0} - GetLineLengthByCharIndex()", testNum++ );
-			i=0;
-			for( ; i<32; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 32, "expected 32 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			for( ; i<33; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 1, "expected 1 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			for( ; i<37; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 4, "expected 4 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			for( ; i<38; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 1, "expected 1 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			for( ; i<52; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 14, "expected 14 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			for( ; i<53; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 1, "expected 1 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			for( ; i<71; i++ )
-				Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 17, "expected 17 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" );
-			Debug.Assert( LineLogic.GetLineLengthByCharIndex(text, i) == 17, "expected -1 but "+LineLogic.GetLineLengthByCharIndex(text, i)+" (i="+i+")" ); // EOF
+			TestUtl.Do( Test_GetLineLengthByCharIndex );
 
 			//
 			// GetLineRangeWithEol
 			//
 			Console.WriteLine( "test {0} - GetLineRangeWithEol()", testNum++ );
 			LineLogic.GetLineRangeWithEol( text, lhi, 0, out head, out end );
-			Debug.Assert( head == 0 && end == 32, String.Format("expected (0, 32) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 0, head );
+			TestUtl.AssertEquals( 32, end );
 			LineLogic.GetLineRangeWithEol( text, lhi, 1, out head, out end );
-			Debug.Assert( head == 32 && end == 33, String.Format("expected (32, 33) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 32, head );
+			TestUtl.AssertEquals( 33, end );
 			LineLogic.GetLineRangeWithEol( text, lhi, 2, out head, out end );
-			Debug.Assert( head == 33 && end == 37, String.Format("expected (33, 37) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 33, head );
+			TestUtl.AssertEquals( 37, end );
 			LineLogic.GetLineRangeWithEol( text, lhi, 3, out head, out end );
-			Debug.Assert( head == 37 && end == 38, String.Format("expected (37, 38) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 37, head );
+			TestUtl.AssertEquals( 38, end );
 			LineLogic.GetLineRangeWithEol( text, lhi, 4, out head, out end );
-			Debug.Assert( head == 38 && end == 52, String.Format("expected (38, 52) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 38, head );
+			TestUtl.AssertEquals( 52, end );
 			LineLogic.GetLineRangeWithEol( text, lhi, 5, out head, out end );
-			Debug.Assert( head == 52 && end == 53, String.Format("expected (52, 53) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 52, head );
+			TestUtl.AssertEquals( 53, end );
 			LineLogic.GetLineRangeWithEol( text, lhi, 6, out head, out end );
-			Debug.Assert( head == 53 && end == 71, String.Format("expected (53, 71) but ({0}, {1})", head, end) );
+			TestUtl.AssertEquals( 53, head );
+			TestUtl.AssertEquals( 71, end );
 
 			//
 			// GetLineRange
@@ -159,15 +151,19 @@ namespace Sgry.Azuki.Test
 			//
 			Console.WriteLine( "test {0} - GetLineColumnIndexFromCharIndex()", testNum++ );
 			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 0, out l, out c );
-			Debug.Assert( l == 0 && c == 0, String.Format("expected (0, 0) but ({0}, {1})", l, c) );
+			TestUtl.AssertEquals( 0, l );
+			TestUtl.AssertEquals( 0, c );
 			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 2, out l, out c );
-			Debug.Assert( l == 0 && c == 2, String.Format("expected (0, 2) but ({0}, {1})", l, c) );
+			TestUtl.AssertEquals( 0, l );
+			TestUtl.AssertEquals( 2, c );
 			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 40, out l, out c );
-			Debug.Assert( l == 4 && c == 2, String.Format("expected (4, 2) but ({0}, {1})", l, c) );
+			TestUtl.AssertEquals( 4, l );
+			TestUtl.AssertEquals( 2, c );
 			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 71, out l, out c ); // 71 --> EOF
-			Debug.Assert( l == 6 && c == 18, String.Format("expected (6, 18) but ({0}, {1})", l, c) );
-			//try{ LineLogic.GetLineColumnIndexFromCharIndex(text, lhi, 72, out l, out c); DebugUtl.Fail("exception must be thrown here."); }
-			//catch( Exception ex ){ DebugUtl.Assert( ex is ArgumentException, "unexpected type of exception thrown:"+ex ); }
+			TestUtl.AssertEquals( 6, l );
+			TestUtl.AssertEquals( 18, c );
+			try{ LineLogic.GetLineColumnIndexFromCharIndex(text, lhi, 72, out l, out c); Debug.Fail("exception must be thrown here."); }
+			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 
 			//
 			// LineHeadIndexFromCharIndex
@@ -175,20 +171,21 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine( "test {0} - LineHeadIndexFromCharIndex()", testNum++ );
 			i=0;
 			for( ; i<32; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 0, "expected 0 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
+				TestUtl.AssertEquals(  0, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<33; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 32, "expected 32 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 32, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<37; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 33, "expected 33 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 33, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<38; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 37, "expected 37 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 37, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<52; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 38, "expected 38 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 38, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<53; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 52, "expected 52 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
+				TestUtl.AssertEquals( 52, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<=71; i++ )
-				Debug.Assert( LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) == 53, "expected 53 but "+LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i)+" (i="+i+")" );
-			//MUST_FAIL//LineLogic.LineHeadIndexFromCharIndex(text, lhi, i);
+				TestUtl.AssertEquals( 53, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+			try{ LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i); Debug.Fail("exception must be thrown here."); }
+			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 
 			Console.WriteLine( "done." );
 			Console.WriteLine();
@@ -217,9 +214,9 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( 34, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 2,  1) );
 			TestUtl.AssertEquals( 71, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) );
 			try{ LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 19); Debug.Fail("exception must be thrown here."); }
-			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>( ex ); }
+			catch( Exception ex ){ TestUtl.AssertType<AssertException>( ex ); }
 			try{ LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0, 100); Debug.Fail("exception must be thrown here."); }
-			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>( ex ); }
+			catch( Exception ex ){ TestUtl.AssertType<AssertException>( ex ); }
 		}
 
 		static void Test_NextLineHead()
@@ -240,8 +237,8 @@ namespace Sgry.Azuki.Test
 			text.Insert( 0, TestData.ToCharArray() );
 			int i = 0;
 
-			try{ LineLogic.NextLineHead(text, -1); DebugUtl.Fail("exception must be thrown here."); }
-			catch( Exception ex ){ DebugUtl.Assert(ex is IndexOutOfRangeException); }
+			try{ LineLogic.NextLineHead(text, -1); Debug.Fail("exception must be thrown here."); }
+			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 
 			for( ; i<32; i++ )
 				TestUtl.AssertEquals( 32, LineLogic.NextLineHead(text, i) );
@@ -258,6 +255,41 @@ namespace Sgry.Azuki.Test
 			for( ; i<71; i++ )
 				TestUtl.AssertEquals( -1, LineLogic.NextLineHead(text, i) );
 			TestUtl.AssertEquals( -1, LineLogic.NextLineHead(text, i) );
+		}
+
+		static void Test_GetLineLengthByCharIndex()
+		{
+			// TEST DATA:
+			// --------------------
+			// "keep it as simple as possible\r\n (head: 0, len:31)
+			// \n                                 (head:32, len: 1)
+			// but\n                              (head:33, len: 4)
+			// \r                                 (head:37, len: 1)
+			// not simpler."\r                    (head:38, len:14)
+			// \r                                 (head:52, len: 1)
+			//  - Albert Einstein                 (head:53, len:18)
+			// --------------------
+			const string TestData = "\"keep it as simple as possible\r\n\nbut\n\rnot simpler.\"\r\r - Albert Einstein";
+			TextBuffer text = new TextBuffer( 1, 32 );
+			SplitArray<int> lhi = new SplitArray<int>( 1, 8 );
+			text.Insert( 0, TestData.ToCharArray() );
+			int i = 0;
+
+			for( ; i<32; i++ )
+				TestUtl.AssertEquals( 32, LineLogic.GetLineLengthByCharIndex(text, i) );
+			for( ; i<33; i++ )
+				TestUtl.AssertEquals(  1, LineLogic.GetLineLengthByCharIndex(text, i) );
+			for( ; i<37; i++ )
+				TestUtl.AssertEquals(  4, LineLogic.GetLineLengthByCharIndex(text, i) );
+			for( ; i<38; i++ )
+				TestUtl.AssertEquals(  1, LineLogic.GetLineLengthByCharIndex(text, i) );
+			for( ; i<52; i++ )
+				TestUtl.AssertEquals( 14, LineLogic.GetLineLengthByCharIndex(text, i) );
+			for( ; i<53; i++ )
+				TestUtl.AssertEquals(  1, LineLogic.GetLineLengthByCharIndex(text, i) );
+			for( ; i<71; i++ )
+				TestUtl.AssertEquals( 17, LineLogic.GetLineLengthByCharIndex(text, i) );
+			TestUtl.AssertEquals( 17, LineLogic.GetLineLengthByCharIndex(text, i) ); // EOF
 		}
 
 		static void Test_GetLineIndexFromCharIndex()
@@ -452,7 +484,7 @@ namespace Sgry.Azuki.Test
 
 			// invalid range (before begin to middle)
 			try{ LineLogic.LHI_Delete(lhi, text, -1, 5); throw new ApplicationException(); }
-			catch( Exception ex ){ TestUtl.AssertExceptionType(ex, typeof(AssertException)); }
+			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 
 			//--- delete range between different lines ---
 			lhi.Clear();

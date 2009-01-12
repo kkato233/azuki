@@ -1,7 +1,7 @@
 // file: SplitArray.cs
 // brief: Data structure holding a 'gap' in it for efficient insert/delete operation.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-12
 //=========================================================
 //#define ENABLE_TRACE_WITH_DUMP
 using System;
@@ -93,7 +93,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public T GetAt( int index )
 		{
-			DebugUtl.Assert( index < _Count, "argument out of range: requested index is "+index+" but _Count is "+_Count );
+			DebugUtl.Assert( 0 <= index && index < _Count, "argument out of range: requested index is "+index+" but _Count is "+_Count );
 
 			if( index < _GapPos )
 			{
@@ -110,7 +110,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void GetRange<S>( int begin, int end, ref S[] outBuffer, Converter<T, S> converter )
 		{
-			DebugUtl.Assert( begin <= _Count && begin < end, "argument out of range: requested data at invalid range ["+begin+", "+end+")." );
+			DebugUtl.Assert( 0 <= begin && begin <= _Count && begin < end, "argument out of range: requested data at invalid range ["+begin+", "+end+")." );
 
 			int count = end - begin;
 			for( int i=0; i<count; i++ )
@@ -134,11 +134,9 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Overwrites an element at specified index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">invalid index was given</exception>
 		public void SetAt( T value, int index )
 		{
-			if( _Count <= index )
-				throw new ArgumentOutOfRangeException();
+			DebugUtl.Assert( index < _Count );
 
 			if( index < _GapPos )
 			{

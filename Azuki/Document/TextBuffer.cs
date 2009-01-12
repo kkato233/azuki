@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -132,18 +132,6 @@ namespace Sgry.Azuki
 		/// <param name="value">The String to find.</param>
 		/// <param name="begin">The search starting position.</param>
 		/// <param name="end">The search terminating position.</param>
-		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
-		public int Find( string value, int begin, int end )
-		{
-			return Find( value, begin, end, StringComparison.InvariantCulture );
-		}
-
-		/// <summary>
-		/// Find a text pattern.
-		/// </summary>
-		/// <param name="value">The String to find.</param>
-		/// <param name="begin">The search starting position.</param>
-		/// <param name="end">The search terminating position.</param>
 		/// <param name="comparisonType">Options for string comparison.</param>
 		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
 		public int Find( string value, int begin, int end, StringComparison comparisonType )
@@ -160,12 +148,9 @@ namespace Sgry.Azuki
 			int start, length;
 			int foundIndex;
 			
-			if( value == null )
-				throw new ArgumentNullException( "value" );
-			if( end < begin )
-				throw new ArgumentException( "parameter end must be greater than parameter begin." );
-			if( _Count < end )
-				throw new ArgumentOutOfRangeException( "end must not greater than character count. (end:"+end+", Count:"+_Count+")" );
+			DebugUtl.Assert( value != null );
+			DebugUtl.Assert( begin <= end );
+			DebugUtl.Assert( end <= _Count );
 
 			// in any cases, search length is "end - begin".
 			length = end - begin;

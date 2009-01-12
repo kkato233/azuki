@@ -1,13 +1,14 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Color = System.Drawing.Color;
+using Regex = System.Text.RegularExpressions.Regex;
 using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
@@ -49,11 +50,14 @@ namespace Sgry.Azuki
 
 		#region States
 		/// <summary>
-		/// Gets whether modifications for this document which is not saved yet exists or not.
-		/// Note that although any changes sets this flag true automatically,
-		/// setting this flag false never be done because Document has no 'save' feature.
-		/// Thus the application is responsible to setting this flag back to false after saving content.
+		/// Gets or sets the flag that is true if there are any unsaved modifications.
 		/// </summary>
+		/// <remarks>
+		/// Dirty flag is the flag that is true if there are any unsaved modifications.
+		/// Although any changes occured in Azuki sets this flag true automatically,
+		/// setting this flag back to false must be done manually
+		/// so application is responsible to do so after saving content.
+		/// </remarks>
 		public bool IsDirty
 		{
 			get{ return _IsDirty; }
@@ -129,8 +133,14 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="lineIndex">new line index of where the caret is at</param>
 		/// <param name="columnIndex">new column index of where the caret is at</param>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public void SetCaretIndex( int lineIndex, int columnIndex )
 		{
+			if( lineIndex < 0 || columnIndex < 0 )
+				throw new ArgumentOutOfRangeException( "lineIndex or columnIndex", "index must not be negative value. (lineIndex:"+lineIndex+", columnIndex:"+columnIndex+")" );
+			if( _LHI.Count <= lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex", "too large line index was given (given:"+lineIndex+" actual line count:"+_LHI.Count+")" );
+			
 			int caretIndex = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI, lineIndex, columnIndex );
 			SetSelection( caretIndex, caretIndex );
 		}
@@ -150,12 +160,14 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="anchor">new index of the selection anchor</param>
 		/// <param name="caret">new index of the caret</param>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public void SetSelection( int anchor, int caret )
 		{
 			if( anchor < 0 || _Buffer.Count < anchor
 				|| caret < 0 || _Buffer.Count < caret )
+			{
 				throw new ArgumentOutOfRangeException( "'anchor' or 'caret'", "Invalid line index was given (anchor:"+anchor+", caret:"+caret+")." );
+			}
 			
 			int oldAnchor, oldCaret;
 
@@ -210,6 +222,11 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets currently inputted text.
 		/// </summary>
+		/// <remarks>
+		/// Getting text content through this property
+		/// will copy all characters from internal buffer
+		/// to a string object and returns it.
+		/// </remarks>
 		public string Text
 		{
 			get
@@ -223,6 +240,9 @@ namespace Sgry.Azuki
 			}
 			set
 			{
+				if( value == null )
+					value = String.Empty;
+
 				Replace( value, 0, this.Length );
 				SetSelection( 0, 0 );
 			}
@@ -231,22 +251,22 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets a character at specified index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public char GetCharAt( int index )
 		{
 			if( index < 0 || _Buffer.Count <= index )
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", this.Length:"+Length+")." );
 
-			return _Buffer[ index ];
+			return _Buffer.GetAt( index );
 		}
 
 		/// <summary>
 		/// Gets a word at specified index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetWordAt( int index )
 		{
-			if( index < 0 || _Buffer.Count < index )
+			if( index < 0 || _Buffer.Count < index ) // index can be equal to char-count
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", this.Length:"+Length+")." );
 
 			int begin, end;
@@ -295,7 +315,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets length of the logical line.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public int GetLineLength( int lineIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
@@ -313,7 +333,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets content of the logical line.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetLineContent( int lineIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
@@ -339,14 +359,14 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets content of the logical line without trimming EOL code.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetLineContentWithEolCode( int lineIndex )
 		{
-			int begin, end;
-			char[] lineContent;
-
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
 				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid line index was given (lineIndex:"+lineIndex+", this.LineCount:"+LineCount+")." );
+
+			int begin, end;
+			char[] lineContent;
 
 			// prepare buffer to store line content
 			LineLogic.GetLineRangeWithEol( _Buffer, _LHI, lineIndex, out begin, out end );
@@ -367,7 +387,7 @@ namespace Sgry.Azuki
 		/// Note that if given index is at middle of a surrogate pair,
 		/// given range will be automatically expanded to avoid dividing the pair.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified range was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetTextInRange( int begin, int end )
 		{
 			if( end < 0 || _Buffer.Count < end )
@@ -392,7 +412,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets text in the range [ (fromLineIndex, fromColumnIndex), (toLineIndex, toColumnIndex) ).
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified range was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetTextInRange( int beginLineIndex, int beginColumnIndex, int endLineIndex, int endColumnIndex )
 		{
 			if( endLineIndex < 0 || _LHI.Count <= endLineIndex )
@@ -424,14 +444,14 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "?", String.Format("Invalid index was given (calculated range:[{4}, {5}) / beginLineIndex:{0}, beginColumnIndex:{1}, endLineIndex:{2}, endColumnIndex:{3}", beginLineIndex, beginColumnIndex, endLineIndex, endColumnIndex, begin, end) );
 			}
 
-			// copy content part
+			// copy the portion of content
 			return GetTextInRange( begin, end );
 		}
 
 		/// <summary>
 		/// Gets class of the character at given index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public CharClass GetCharClass( int index )
 		{
 			if( Length <= index )
@@ -444,7 +464,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Sets class of the character at given index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public void SetCharClass( int index, CharClass klass )
 		{
 			if( Length <= index )
@@ -456,6 +476,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Replaces current selection.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">Parameter text is null.</exception>
 		public void Replace( string text )
 		{
 			int begin, end;
@@ -471,7 +492,8 @@ namespace Sgry.Azuki
 		/// <param name="text">specified range will be replaced with this text</param>
 		/// <param name="begin">begin index of the range to be replaced</param>
 		/// <param name="end">end index of the range to be replaced</param>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentNullException">Parameter text is null.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public void Replace( string text, int begin, int end )
 		{
 			if( begin < 0 || _Buffer.Count < begin )
@@ -601,19 +623,20 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets EOL Code used in this document.
-		/// Note that setting this property does nothing to the content.
-		/// This is provided for other classes to determine EOL code to be used;
-		/// for example, choosing EOL code to be input with Enter key,
-		/// setting/getting by engine's client for any usage.
+		/// Gets or sets default EOL Code of this document.
 		/// </summary>
+		/// <remarks>
+		/// This value will be used when an Enter key was pressed,
+		/// but setting this property itself does nothing to the content.
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Specified EOL code is not supported.</exception>
 		public string EolCode
 		{
 			get{ return _EolCode; }
 			set
 			{
 				if( value != "\r\n" && value != "\r" && value != "\n" )
-					throw new InvalidOperationException( "invalid EOL code was set." );
+					throw new InvalidOperationException( "unsupported type of EOL code was set." );
 				_EolCode = value;
 			}
 		}
@@ -623,7 +646,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets the index of the first char in the logical line.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public int GetLineHeadIndex( int lineIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
@@ -636,10 +659,10 @@ namespace Sgry.Azuki
 		/// Gets the index of the first char in the logical line
 		/// which contains the specified char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public int GetLineHeadIndexFromCharIndex( int charIndex )
 		{
-			if( charIndex < 0 || _Buffer.Count < charIndex )
+			if( charIndex < 0 || _Buffer.Count < charIndex ) // charIndex can be char-count
 				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", this.Length:"+Length+")." );
 
 			return LineLogic.GetLineHeadIndexFromCharIndex( _Buffer, _LHI, charIndex );
@@ -648,10 +671,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates logical line index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public int GetLineIndexFromCharIndex( int charIndex )
 		{
-			if( charIndex < 0 || _Buffer.Count < charIndex )
+			if( charIndex < 0 || _Buffer.Count < charIndex ) // charIndex can be char-count
 				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", this.Length:"+Length+")." );
 
 			return LineLogic.GetLineIndexFromCharIndex( _LHI, charIndex );
@@ -660,10 +683,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates logical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
 		{
-			if( charIndex < 0 || _Buffer.Count < charIndex )
+			if( charIndex < 0 || _Buffer.Count < charIndex ) // charIndex can be char-index
 				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", this.Length:"+Length+")." );
 
 			LineLogic.GetLineColumnIndexFromCharIndex( _Buffer, _LHI, charIndex, out lineIndex, out columnIndex );
@@ -672,7 +695,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates char-index from logical line/column index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
@@ -680,7 +703,86 @@ namespace Sgry.Azuki
 			if( columnIndex < 0 )
 				throw new ArgumentOutOfRangeException( "columnIndex", "Invalid index was given (columnIndex:"+columnIndex+")." );
 
-			return LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI, lineIndex, columnIndex );
+			int index;
+
+			index = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI, lineIndex, columnIndex );
+			if( _Buffer.Count < index )
+			{
+				// strict validation of column index is only done in debug build (for performance)
+				// but exceeding buffer size may crash application so checks only that problem
+				index = _Buffer.Count;
+			}
+
+			return index;
+		}
+		#endregion
+
+		#region Text Search
+		/// <summary>
+		/// Find a text pattern.
+		/// </summary>
+		/// <param name="value">The String to find.</param>
+		/// <param name="begin">The search starting position.</param>
+		/// <param name="end">The search terminating position.</param>
+		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
+		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
+		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
+		public int Find( string value, int begin, int end )
+		{
+			return Find( value, begin, end, StringComparison.InvariantCulture );
+		}
+
+		/// <summary>
+		/// Find a text pattern.
+		/// </summary>
+		/// <param name="value">The String to find.</param>
+		/// <param name="begin">The search starting position.</param>
+		/// <param name="end">The search terminating position.</param>
+		/// <param name="comparisonType">Options for string comparison.</param>
+		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
+		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
+		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
+		public int Find( string value, int begin, int end, StringComparison comparisonType )
+		{
+			if( end < begin )
+				throw new ArgumentException( "parameter end must be greater than parameter begin." );
+			if( value == null )
+				throw new ArgumentNullException( "value" );
+			if( _Buffer.Count < end )
+				throw new ArgumentOutOfRangeException( "end must not be greater than character count. (end:"+end+", Count:"+_Buffer.Count+")" );
+
+			return _Buffer.Find( value, begin, end, comparisonType );
+		}
+
+		/// <summary>
+		/// Find a text pattern by regular expression.
+		/// </summary>
+		/// <param name="regex">A Regex object expressing the text pattern.</param>
+		/// <param name="begin">The search starting position.</param>
+		/// <param name="end">Index of where the search must be terminated</param>
+		/// <returns>Index of where the pattern was found or -1 if not found</returns>
+		/// <remarks>
+		/// This method find a text pattern
+		/// expressed by a regular expression in the current content.
+		/// The text matching process continues for the index
+		/// specified with the <paramref name="end"/> parameter
+		/// and does not stop at line ends nor null-characters.
+		/// </remarks>
+		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
+		/// <exception cref="ArgumentNullException">parameter regex is null.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
+		public int Find( Regex regex, int begin, int end )
+		{
+			if( end < begin )
+				throw new ArgumentException( "parameter end must be greater than parameter begin." );
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+			if( _Buffer.Count < end )
+				throw new ArgumentOutOfRangeException( "end must not be greater than character count. (end:"+end+", Count:"+_Buffer.Count+")" );
+
+			return _Buffer.Find( regex, begin, end );
 		}
 		#endregion
 
@@ -718,7 +820,8 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value == null )
-					throw new InvalidOperationException( "ColorScheme must not be null." );
+					value = ColorScheme.Default;
+
 				_ColorScheme = value;
 			}
 		}

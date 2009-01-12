@@ -1,7 +1,7 @@
 ﻿// file: WordLogic.cs
 // brief: Word detection logic for well Japanese handling
 // author: YAMAMOTO Suguru
-// update: 2009-01-01
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Text;
@@ -9,9 +9,9 @@ using System.Text;
 namespace Sgry.Azuki
 {
 	/// <summary>
-	/// Custom word detection logic for Azuki.
+	/// Word detection logic of Azuki.
 	/// </summary>
-	public class WordLogic
+	class WordLogic
 	{
 		delegate bool ClassifyCharProc( TextBuffer text, int index );
 

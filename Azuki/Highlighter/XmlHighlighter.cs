@@ -1,7 +1,7 @@
 // file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2008-11-03
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -102,7 +102,7 @@ namespace Sgry.Azuki.Highlighter
 				else
 				{
 					// set class for '<'
-					doc.SetCharClass( index, CharClass.Keyword );
+					doc.SetCharClass( index, CharClass.Delimitter );
 					index++;
 					if( doc.Length <= index )
 					{
@@ -113,7 +113,7 @@ namespace Sgry.Azuki.Highlighter
 					nextCh = doc[ index ];
 					if( nextCh == '?' || nextCh == '/' || nextCh == '!' )
 					{
-						doc.SetCharClass( index, CharClass.Keyword );
+						doc.SetCharClass( index, CharClass.Delimitter );
 						index++;
 						if( doc.Length <= index )
 							return; // reached to the end
@@ -131,7 +131,7 @@ namespace Sgry.Azuki.Highlighter
 					nextIndex = HighlighterUtl.FindNextToken( doc, index );
 					for( int i=index; i<nextIndex; i++ )
 					{
-						doc.SetCharClass( i, CharClass.Keyword2 );
+						doc.SetCharClass( i, CharClass.ElementName );
 					}
 					index = nextIndex;
 
@@ -151,7 +151,7 @@ namespace Sgry.Azuki.Highlighter
 						nextIndex = HighlighterUtl.FindNextToken( doc, index );
 						for( int i=index; i<nextIndex; i++ )
 						{
-							doc.SetCharClass( i, CharClass.Keyword3 );
+							doc.SetCharClass( i, CharClass.Attribute );
 						}
 						index = nextIndex;
 					}
@@ -159,9 +159,9 @@ namespace Sgry.Azuki.Highlighter
 					// highlight '>'
 					if( index < doc.Length )
 					{
-						doc.SetCharClass( index, CharClass.Keyword );
+						doc.SetCharClass( index, CharClass.Delimitter );
 						if( 1 <= index && doc[index-1] == '/' )
-							doc.SetCharClass( index-1, CharClass.Keyword );
+							doc.SetCharClass( index-1, CharClass.Delimitter );
 					}
 				}
 

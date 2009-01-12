@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-12
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -371,7 +371,7 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( nextLineHead <= buf.Count );
 
 			char firstCh, ch;
-			CharClass firstClazz, klass;
+			CharClass firstKlass, klass;
 			bool isFirstInSel, isInSel;
 			
 			// if given index is out of range,
@@ -385,8 +385,8 @@ namespace Sgry.Azuki
 			// get first char class and selection state
 			isFirstInSel = IsInSelection( index );
 			firstCh = buf[ index ];
-			firstClazz = buf.GetCharClassAt( index );
-			out_klass = (isFirstInSel) ? CharClass.Selection : firstClazz;
+			firstKlass = buf.GetCharClassAt( index );
+			out_klass = (isFirstInSel) ? CharClass.Selection : firstKlass;
 			if( Utl.IsSpecialChar(firstCh) )
 			{
 				// treat 1 special char as 1 token
@@ -423,7 +423,7 @@ namespace Sgry.Azuki
 					return index;
 				}
 				// or, character class changed; token ended
-				else if( klass != firstClazz )
+				else if( klass != firstKlass )
 				{
 					return index;
 				}
@@ -450,17 +450,7 @@ namespace Sgry.Azuki
 					return;
 				}
 
-				try
-				{
-					ColorPair pair = cs[ klass ];
-					fore = pair.Fore;
-					back = pair.Back;
-				}
-				catch( KeyNotFoundException )
-				{
-					fore = cs.BackColor;
-					back = cs.ForeColor;
-				}
+				cs.GetColor( klass, out fore, out back );
 			}
 
 			/// <summary>

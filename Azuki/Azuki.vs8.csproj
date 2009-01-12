@@ -50,7 +50,7 @@
     <Compile Include="Actions.cs" />
     <Compile Include="Actions.Selection.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="AutoIndentLogic.cs" />
+    <Compile Include="AutoIndentHooks.cs" />
     <Compile Include="CaretMoveLogic.cs" />
     <Compile Include="Document\CharClass.cs" />
     <Compile Include="Document\TextBuffer.cs" />

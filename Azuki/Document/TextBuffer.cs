@@ -94,7 +94,7 @@ namespace Sgry.Azuki
 		public override void Insert( int insertIndex, char[] values, int valueBegin, int valueEnd )
 		{
 			base.Insert( insertIndex, values, valueBegin, valueEnd );
-			_Classes.Insert( insertIndex, new CharClass[ valueEnd - valueBegin ] );
+			_Classes.Insert( insertIndex, new CharClass[valueEnd - valueBegin] );
 		}
 
 		/// <summary>

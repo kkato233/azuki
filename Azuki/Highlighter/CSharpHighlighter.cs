@@ -1,7 +1,7 @@
 ﻿// file: CSharpHighlighter.cs
 // brief: C# highlighter.
 // author: YAMAMOTO Suguru
-// update: 2008-11-03
+// update: 2009-01-12
 //=========================================================
 using System;
 using Color = System.Drawing.Color;
@@ -44,7 +44,7 @@ namespace Sgry.Azuki.Highlighter
 				"#define", "#elif", "#else", "#endif",
 				"#endregion", "#error", "#if", "#line",
 				"#region", "#undef", "#warning"
-			}, CharClass.PreProcessor );
+			}, CharClass.Macro );
 
 			AddEnclosure( "'", "'", CharClass.String, '\\' );
 			AddEnclosure( "@\"", "\"", CharClass.String, '\"' );

@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2008-12-28
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -104,12 +104,14 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Sets keywords to be highlighted.
-		/// Note that 'keywords' parameter must be sorted alphabetically
-		/// otherwise highlighting will not work properly.
+		/// Sets sorted array of keywords to be highlighted.
 		/// </summary>
 		/// <param name="keywords">Sorted array of keywords.</param>
 		/// <param name="klass">Char-class to be applied to the keyword set.</param>
+		/// <remarks>
+		/// If array of keywords is not sorted alphabetically,
+		/// highlighting will not work properly.
+		/// </remarks>
 		public void SetKeywords( string[] keywords, CharClass klass )
 		{
 			KeywordSet set = new KeywordSet();

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -563,7 +563,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets hook delegate to execute auto-indentation.
 		/// If null, auto-indentation will not be performed.
 		/// </summary>
-		/// <seealso cref="AutoIndentLogic">AutoIndentLogic</seealso>
+		/// <seealso cref="AutoIndentHooks">AutoIndentHooks</seealso>
 #		if !PocketPC
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

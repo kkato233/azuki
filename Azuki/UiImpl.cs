@@ -201,7 +201,7 @@ namespace Sgry.Azuki
 		/// Gets or sets hook delegate to execute auto-indentation.
 		/// If null, auto-indentation will not be performed.
 		/// </summary>
-		/// <seealso cref="AutoIndentLogic">AutoIndentLogic</seealso>
+		/// <seealso cref="AutoIndentHooks">AutoIndentHooks</seealso>
 		public AutoIndentHook AutoIndentHook
 		{
 			get{ return _AutoIndentHook; }

@@ -825,31 +825,6 @@ namespace Sgry.Azuki
 				_ColorScheme = value;
 			}
 		}
-
-		/// <summary>
-		/// Registers a new character class used in this document.
-		/// </summary>
-		/// <param name="klass">New character class to be registered.</param>
-		/// <param name="fore">Foreground color to draw characters of this class.</param>
-		public void RegisterCharClass( CharClass klass, Color fore )
-		{
-			if( klass.Id < 10 )
-				throw new ArgumentException( "ID of a user defined char-class must be larger than 10." );
-			_ColorScheme[klass] = new ColorPair( fore, _ColorScheme.BackColor );
-		}
-
-		/// <summary>
-		/// Registers a new character class used in this document.
-		/// </summary>
-		/// <param name="klass">New character class to be registered.</param>
-		/// <param name="fore">Foreground color to draw characters of this class.</param>
-		/// <param name="back">Background color to draw characters of this class.</param>
-		public void RegisterCharClass( CharClass klass, Color fore, Color back )
-		{
-			if( klass.Id < 10 )
-				throw new ArgumentException( "ID of a user defined char-class must be larger than 10." );
-			_ColorScheme[klass] = new ColorPair( fore, _ColorScheme.BackColor );
-		}
 		#endregion
 
 		#region Events

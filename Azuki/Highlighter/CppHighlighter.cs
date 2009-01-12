@@ -1,7 +1,7 @@
 ﻿// file: CppHighlighter.cs
 // brief: C/C++ highlighter.
 // author: YAMAMOTO Suguru
-// update: 2008-11-01
+// update: 2009-01-12
 //=========================================================
 using System;
 using Color = System.Drawing.Color;
@@ -48,7 +48,7 @@ namespace Sgry.Azuki.Highlighter
 				"#define", "#elif", "#else", "#endif", "#error",
 				"#if", "#ifdef", "#ifndef", "#include", "#import",
 				"#line", "#pragma", "#undef"
-			}, CharClass.PreProcessor );
+			}, CharClass.Macro );
 
 			AddEnclosure( "'", "'", CharClass.String, '\\' );
 			AddEnclosure( "\"", "\"", CharClass.String, '\\' );

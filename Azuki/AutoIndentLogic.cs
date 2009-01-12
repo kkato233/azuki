@@ -1,7 +1,7 @@
 ﻿// file: AutoIndentLogic.cs
 // brief: Logic around auto-indentation.
 // author: YAMAMOTO Suguru
-// update: 2008-06-08
+// update: 2009-01-12
 //=========================================================
 using System;
 using System.Text;
@@ -22,7 +22,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Static class containing hook delegates for auto-indentation.
 	/// </summary>
-	public static class AutoIndentLogic
+	public static class AutoIndentHooks
 	{
 		/// <summary>
 		/// Hook delegate to execute basic auto-indentation;

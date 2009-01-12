@@ -1,4 +1,4 @@
-// 2008-12-28
+// 2009-01-12
 using System;
 using Sgry.Azuki;
 using IHighlighter = Sgry.Azuki.Highlighter.IHighlighter;
@@ -26,7 +26,7 @@ namespace Sgry.Ann
 			get
 			{
 				FileType fileType = new FileType();
-				fileType._AutoIndentHook = AutoIndentLogic.GenericHook;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = "Text";
 				return fileType;
 			}
@@ -41,7 +41,7 @@ namespace Sgry.Ann
 			{
 				FileType fileType = new FileType();
 				fileType._Highlighter = Highlighters.Cpp;
-				fileType._AutoIndentHook = AutoIndentLogic.CHook;
+				fileType._AutoIndentHook = AutoIndentHooks.CHook;
 				fileType._Name = "C/C++";
 				return fileType;
 			}
@@ -56,7 +56,7 @@ namespace Sgry.Ann
 			{
 				FileType fileType = new FileType();
 				fileType._Highlighter = Highlighters.CSharp;
-				fileType._AutoIndentHook = AutoIndentLogic.CHook;
+				fileType._AutoIndentHook = AutoIndentHooks.CHook;
 				fileType._Name = "C#";
 				return fileType;
 			}
@@ -71,7 +71,7 @@ namespace Sgry.Ann
 			{
 				FileType fileType = new FileType();
 				fileType._Highlighter = Highlighters.Java;
-				fileType._AutoIndentHook = AutoIndentLogic.CHook;
+				fileType._AutoIndentHook = AutoIndentHooks.CHook;
 				fileType._Name = "Java";
 				return fileType;
 			}
@@ -86,7 +86,7 @@ namespace Sgry.Ann
 			{
 				FileType fileType = new FileType();
 				fileType._Highlighter = Highlighters.Ruby;
-				fileType._AutoIndentHook = AutoIndentLogic.GenericHook;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = "Ruby";
 				return fileType;
 			}
@@ -101,7 +101,7 @@ namespace Sgry.Ann
 			{
 				FileType fileType = new FileType();
 				fileType._Highlighter = Highlighters.Xml;
-				fileType._AutoIndentHook = AutoIndentLogic.GenericHook;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = "XML";
 				return fileType;
 			}

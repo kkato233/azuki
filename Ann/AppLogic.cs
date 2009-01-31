@@ -1,4 +1,4 @@
-// 2008-12-07
+// 2009-01-31
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,6 +39,8 @@ namespace Sgry.Ann
 		Document _DAD_ActiveDocument = null; // Dont Access Directly
 		int _UntitledFileCount = 1;
 		string _InitOpenFilePath = null;
+		FindContext _FindContext;
+		int _FindStartIndex = 0;
 		#endregion
 
 		#region Init / Dispose
@@ -61,11 +63,16 @@ namespace Sgry.Ann
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Azuki.Resize += Azuki_Resize;
+				_MainForm.Finder.PatternUpdated += Finder_PatternUpdated;
+				_MainForm.Finder.PatternFixed += Finder_PatternFixed;
 
 				// handle initially set document
 				Document doc = new Document( value.Azuki.Document );
 				AddDocument( doc );
 				ActiveDocument = doc;
+
+				// reference find context object of Finder
+				_FindContext = _MainForm.Finder.Context;
 
 				// apply config
 				MainForm.Azuki.Font = AppConfig.Font;
@@ -120,7 +127,16 @@ namespace Sgry.Ann
 				_UntitledFileCount++;
 			}
 			doc.AzukiDoc.DirtyStateChanged += Doc_DirtyStateChanged;
+			doc.AzukiDoc.SelectionChanged += Doc_SelectionChanged;
 			_DAD_Documents.Add( doc );
+		}
+
+		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
+		{
+			Debug.Assert( sender is AzukiDocument );
+
+			if( _FindContext.PatternFixed )
+				_FindStartIndex = ((AzukiDocument)sender).CaretIndex;
 		}
 
 		void Doc_DirtyStateChanged( object sender, EventArgs e )
@@ -328,6 +344,7 @@ namespace Sgry.Ann
 					}
 				}
 				dialog.Filter = OpenFileFilter;
+				dialog.FilterIndex = 2;
 
 				// show dialog
 				result = dialog.ShowDialog();
@@ -537,6 +554,66 @@ namespace Sgry.Ann
 					MessageBoxIcon.Exclamation,
 					MessageBoxDefaultButton.Button2
 				);
+		}
+		#endregion
+
+		#region Text Search
+		void Finder_PatternUpdated( bool forward )
+		{
+			if( forward )
+				FindNext();
+			else
+				FindPrev();
+		}
+
+		void Finder_PatternFixed( object sender, EventArgs e )
+		{
+			_FindContext.PatternFixed = true;
+			_FindStartIndex = ActiveDocument.AzukiDoc.CaretIndex;
+		}
+
+		public void FindNext()
+		{
+			AzukiDocument doc = MainForm.Azuki.Document;
+			int foundIndex;
+			int selEnd;
+
+			if( _FindContext.Regex == null )
+			{
+				foundIndex = doc.FindNext( _FindContext.TextPattern, _FindStartIndex, doc.Length, _FindContext.ComparisonType );
+				if( foundIndex != -1 )
+				{
+					selEnd = foundIndex + _FindContext.TextPattern.Length;
+					MainForm.Azuki.Document.SetSelection( foundIndex, selEnd );
+					MainForm.Azuki.ScrollToCaret();
+				}
+			}
+			else
+			{
+return;
+			}
+		}
+
+		public void FindPrev()
+		{
+			AzukiDocument doc = MainForm.Azuki.Document;
+			int foundIndex;
+			int selBegin;
+
+			if( _FindContext.Regex == null )
+			{
+				foundIndex = doc.FindPrev( _FindContext.TextPattern, 0, _FindStartIndex, _FindContext.ComparisonType );
+				if( foundIndex != -1 )
+				{
+					selBegin = foundIndex + _FindContext.TextPattern.Length;
+					MainForm.Azuki.Document.SetSelection( selBegin, foundIndex );
+					MainForm.Azuki.ScrollToCaret();
+				}
+			}
+			else
+			{
+return;
+			}
 		}
 		#endregion
 

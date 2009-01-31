@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-31
 //=========================================================
 using System;
 using System.Text;
@@ -14,7 +14,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// The interface for invoking Platform API.
 	/// </summary>
-	interface IPlatform
+	public interface IPlatform
 	{
 		#region UI Notification
 		/// <summary>
@@ -157,7 +157,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// The singleton class of platform API caller.
 	/// </summary>
-	static class Plat
+	public static class Plat
 	{
 		static IPlatform _Plat = null;
 

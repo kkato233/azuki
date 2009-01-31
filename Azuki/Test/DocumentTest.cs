@@ -1,4 +1,4 @@
-// 2009-01-12
+// 2009-01-31
 #if DEBUG
 using System;
 using System.Collections;
@@ -643,33 +643,33 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// invalid arguments
-				try{ doc.Find((string)null, 0, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext((string)null, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
-				try{ doc.Find((Regex)null, 0, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindRegex((Regex)null, 0, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
-				try{ doc.Find("a", -1, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", -1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.Find("a", 0, doc.Length+1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", 0, doc.Length+1, StringComparison.Ordinal); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.Find("a", 1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", 1, 0, StringComparison.Ordinal); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
 
 				// find in empty range
-				TestUtl.AssertEquals( -1, doc.Find("a", 0, 0) );
+				TestUtl.AssertEquals( -1, doc.FindNext("a", 0, 0, StringComparison.Ordinal) );
 
 				// find in valid range
-				TestUtl.AssertEquals(  0, doc.Find("a", 0, 1) );
-				TestUtl.AssertEquals(  1, doc.Find("ab", 0, doc.Length) );
-				TestUtl.AssertEquals(  3, doc.Find("abc", 0, doc.Length) );
-				TestUtl.AssertEquals(  6, doc.Find("abcd", 0, doc.Length) );
-				TestUtl.AssertEquals( -1, doc.Find("abcde", 0, doc.Length) );
+				TestUtl.AssertEquals(  0, doc.FindNext("a", 0, 1, StringComparison.Ordinal) );
+				TestUtl.AssertEquals(  1, doc.FindNext("ab", 0) );
+				TestUtl.AssertEquals(  3, doc.FindNext("abc", 0) );
+				TestUtl.AssertEquals(  6, doc.FindNext("abcd", 0) );
+				TestUtl.AssertEquals( -1, doc.FindNext("abcde", 0) );
 
 				// find empty string (returns begin index)
-				TestUtl.AssertEquals( 1, doc.Find("", 1, doc.Length) );
+				TestUtl.AssertEquals( 1, doc.FindNext("", 1) );
 
 				// comp. options
-				TestUtl.AssertEquals( -1, doc.Find("aBcD", 0, doc.Length, StringComparison.InvariantCulture) );
-				TestUtl.AssertEquals(  6, doc.Find("aBcD", 0, doc.Length, StringComparison.InvariantCultureIgnoreCase) );
+				TestUtl.AssertEquals( -1, doc.FindNext("aBcD", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals(  6, doc.FindNext("aBcD", 0, doc.Length, StringComparison.InvariantCultureIgnoreCase) );
 			}
 
 			// white box test (test of the gap condition. test only result.)
@@ -677,17 +677,17 @@ namespace Sgry.Azuki.Test
 				// aaba......bcabcd
 				//  ^
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 1, doc.Find("ab", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals( 1, doc.FindNext("ab", 0, doc.Length, StringComparison.InvariantCulture) );
 
 				// aaba......bcabcd
 				//    ^
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 3, doc.Find("abc", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals( 3, doc.FindNext("abc", 0, doc.Length, StringComparison.InvariantCulture) );
 
 				// aaba......bcabcd
 				//             ^
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 6, doc.Find("abcd", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals( 6, doc.FindNext("abcd", 0, doc.Length, StringComparison.InvariantCulture) );
 			}
 		}
 
@@ -699,19 +699,19 @@ namespace Sgry.Azuki.Test
 			// doc = "aaba......bcabcd"
 			{
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( -1, doc.Find(new Regex("a.d"), 0, doc.Length) );
+				TestUtl.AssertEquals( -1, doc.FindRegex(new Regex("a.d"), 0, doc.Length) );
 
 				// search in pre-gap part
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 1, doc.Find(new Regex("a.a"), 0, 4) );
+				TestUtl.AssertEquals( 1, doc.FindRegex(new Regex("a.a"), 0, 4) );
 
 				// search pattern that strids the gap
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 3, doc.Find(new Regex("ab[^a]"), 0, doc.Length) );
+				TestUtl.AssertEquals( 3, doc.FindRegex(new Regex("ab[^a]"), 0, doc.Length) );
 
 				// search in post-gap part
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 7, doc.Find(new Regex("[bc]+d"), 0, doc.Length) );
+				TestUtl.AssertEquals( 7, doc.FindRegex(new Regex("[bc]+d"), 0, doc.Length) );
 			}
 		}
 	}

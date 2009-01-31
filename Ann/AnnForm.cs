@@ -1,5 +1,6 @@
-// 2008-11-23
+// 2009-01-31
 using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
@@ -35,6 +36,7 @@ namespace Sgry.Ann
 #			if !PocketPC
 			_Azuki.UseCtrlTabToMoveFocus = false;
 			Font = SystemInformation.MenuFont;
+			_Finder.Font = SystemInformation.MenuFont;
 			AllowDrop = true;
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
@@ -117,6 +119,9 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Edit_Cut ]		= Actions.Cut;
 			_MenuMap[ _MI_Edit_Copy ]		= Actions.Copy;
 			_MenuMap[ _MI_Edit_Paste ]		= Actions.Paste;
+			_MenuMap[ _MI_Edit_Find ]		= Actions.Find;
+			_MenuMap[ _MI_Edit_FindNext ]	= Actions.FindNext;
+			_MenuMap[ _MI_Edit_FindPrev ]	= Actions.FindPrev;
 			_MenuMap[ _MI_Edit_SelectAll ]	= Actions.SelectAll;
 			
 			_MenuMap[ _MI_View_ShowSpecialChar ]	= Actions.SelectSpecialCharVisibility;
@@ -136,21 +141,24 @@ namespace Sgry.Ann
 
 		void InitKeyMap()
 		{
-			_KeyMap[ Keys.N|Keys.Control ]	= Actions.CreateNewDocument;
-			_KeyMap[ Keys.O|Keys.Control ]	= Actions.OpenDocument;
-			_KeyMap[ Keys.S|Keys.Control ]	= Actions.SaveDocument;
+			_KeyMap[ Keys.N|Keys.Control ]				= Actions.CreateNewDocument;
+			_KeyMap[ Keys.O|Keys.Control ]				= Actions.OpenDocument;
+			_KeyMap[ Keys.S|Keys.Control ]				= Actions.SaveDocument;
 			_KeyMap[ Keys.S|Keys.Control|Keys.Shift ]	= Actions.SaveDocumentAs;
-			_KeyMap[ Keys.W|Keys.Control ]	= Actions.CloseDocument;
-			_KeyMap[ Keys.Q|Keys.Control ]	= Actions.Exit;
+			_KeyMap[ Keys.W|Keys.Control ]				= Actions.CloseDocument;
+			_KeyMap[ Keys.Q|Keys.Control ]				= Actions.Exit;
 
-			_KeyMap[ Keys.C|Keys.Control ]	= Actions.Cut;
-			_KeyMap[ Keys.V|Keys.Control ]	= Actions.Copy;
-			_KeyMap[ Keys.P|Keys.Control ]	= Actions.Paste;
-			_KeyMap[ Keys.A|Keys.Control ]	= Actions.SelectAll;
+			_KeyMap[ Keys.C|Keys.Control ]				= Actions.Cut;
+			_KeyMap[ Keys.V|Keys.Control ]				= Actions.Copy;
+			_KeyMap[ Keys.P|Keys.Control ]				= Actions.Paste;
+			_KeyMap[ Keys.F|Keys.Control ]				= Actions.Find;
+			_KeyMap[ Keys.G|Keys.Control ]				= Actions.FindNext;
+			_KeyMap[ Keys.G|Keys.Control|Keys.Shift ]	= Actions.FindPrev;
+			_KeyMap[ Keys.A|Keys.Control ]				= Actions.SelectAll;
 
-			_KeyMap[ Keys.PageDown|Keys.Control ]	= Actions.ActivateNextDocument;
-			_KeyMap[ Keys.PageUp|Keys.Control ]		= Actions.ActivatePrevDocument;
-			_KeyMap[ Keys.D|Keys.Control ]			= Actions.ShowDocumentList;
+			_KeyMap[ Keys.PageDown|Keys.Control ]		= Actions.ActivateNextDocument;
+			_KeyMap[ Keys.PageUp|Keys.Control ]			= Actions.ActivatePrevDocument;
+			_KeyMap[ Keys.D|Keys.Control ]				= Actions.ShowDocumentList;
 
 			_KeyMap[ Keys.Tab|Keys.Control ]			= Actions.ActivateNextDocument;
 			_KeyMap[ Keys.Tab|Keys.Control|Keys.Shift ]	= Actions.ActivatePrevDocument;
@@ -207,28 +215,42 @@ namespace Sgry.Ann
 #		endif
 		#endregion
 
+		public Finder Finder
+		{
+			get{ return _Finder; }
+		}
+
+		public void ActivateFinder()
+		{
+			_Finder.Activate();
+		}
+
 		#region UI Component Initialization
 		void InitUIComponent()
 		{
-			this._Azuki = new Sgry.Azuki.Windows.AzukiControl();
-			this.SuspendLayout();
+			_Azuki = new AzukiControl();
+			SuspendLayout();
 			// 
 			// _Azuki
 			// 
-			this._Azuki.Dock = DockStyle.Fill;
-			this._Azuki.Location = new System.Drawing.Point( 0, 0 );
-			this._Azuki.Name = "_Azuki";
-			this._Azuki.TabIndex = 0;
-			this._Azuki.TabWidth = 8;
-			this._Azuki.ViewWidth = 235;
-			// 
+			_Azuki.Dock = DockStyle.Fill;
+			_Azuki.Location = new Point( 0, 0 );
+			_Azuki.TabWidth = 8;
+			_Azuki.ViewWidth = 235;
+			//
+			// _Finder
+			//
+			_Finder.Dock = DockStyle.Bottom;
+			_Finder.Enabled = false;
+			_Finder.Visible = false;
+			//
 			// AnnForm
 			// 
-			this.ClientSize = new System.Drawing.Size( 360, 400 );
-			this.Controls.Add( this._Azuki );
-			this.Name = "AnnForm";
-			this.Text = "Ann";
-			this.ResumeLayout( false );
+			ClientSize = new Size( 360, 400 );
+			Controls.Add( _Azuki );
+			Controls.Add( _Finder );
+			Text = "Ann";
+			ResumeLayout( false );
 		}
 
 		void InitMenuComponents()
@@ -265,10 +287,14 @@ namespace Sgry.Ann
             _MI_File.MenuItems.Add( _MI_File_Exit );
 
 			_MI_Edit.MenuItems.Add( _MI_Edit_Cut );
-            _MI_Edit.MenuItems.Add( _MI_Edit_Copy );
-            _MI_Edit.MenuItems.Add( _MI_Edit_Paste );
-            _MI_Edit.MenuItems.Add( _MI_Edit_Sep1 );
-            _MI_Edit.MenuItems.Add( _MI_Edit_SelectAll );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Copy );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Paste );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Sep1 );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Find );
+			_MI_Edit.MenuItems.Add( _MI_Edit_FindNext );
+			_MI_Edit.MenuItems.Add( _MI_Edit_FindPrev );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Sep2 );
+			_MI_Edit.MenuItems.Add( _MI_Edit_SelectAll );
 
 			_MI_View.MenuItems.Add( _MI_View_ShowSpecialChar );
 			_MI_View.MenuItems.Add( _MI_View_WrapLines );
@@ -300,6 +326,10 @@ namespace Sgry.Ann
 			_MI_Edit_Copy.Text = "&Copy";
 			_MI_Edit_Paste.Text = "&Paste";
 			_MI_Edit_Sep1.Text = "-";
+			_MI_Edit_Find.Text = "&Find...";
+			_MI_Edit_FindNext.Text = "Find &next";
+			_MI_Edit_FindPrev.Text = "Find &previous";
+			_MI_Edit_Sep2.Text = "-";
 			_MI_Edit_SelectAll.Text = "Select A&ll";
 			_MI_View.Text = "&View";
 			_MI_View_ShowSpecialChar.Text = "Show &Special Chars...";
@@ -391,6 +421,10 @@ namespace Sgry.Ann
 		MenuItem _MI_Edit_Copy		= new MenuItem();
 		MenuItem _MI_Edit_Paste		= new MenuItem();
 		MenuItem _MI_Edit_Sep1		= new MenuItem();
+		MenuItem _MI_Edit_Find		= new MenuItem();
+		MenuItem _MI_Edit_FindNext	= new MenuItem();
+		MenuItem _MI_Edit_FindPrev	= new MenuItem();
+		MenuItem _MI_Edit_Sep2		= new MenuItem();
 		MenuItem _MI_Edit_SelectAll	= new MenuItem();
 		MenuItem _MI_View					= new MenuItem();
 		MenuItem _MI_View_ShowSpecialChar	= new MenuItem();
@@ -409,6 +443,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Help			= new MenuItem();
 		MenuItem _MI_Help_About		= new MenuItem();
 		AzukiControl _Azuki;
+		Finder _Finder = new Finder();
 		#endregion
 
 		#region Utilities

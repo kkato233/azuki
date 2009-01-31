@@ -67,6 +67,9 @@
     </Compile>
     <Compile Include="EncodingAnalyzer.cs" />
     <Compile Include="FileType.cs" />
+    <Compile Include="Finder.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Ini.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>

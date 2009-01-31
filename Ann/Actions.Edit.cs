@@ -1,4 +1,4 @@
-// 2008-10-26
+// 2009-01-31
 using System;
 using System.Windows.Forms;
 
@@ -31,6 +31,33 @@ namespace Sgry.Ann
 			= delegate( AppLogic app )
 		{
 			app.MainForm.Azuki.Paste();
+		};
+
+		/// <summary>
+		/// Shows find dialog.
+		/// </summary>
+		public static AnnAction Find
+			= delegate( AppLogic app )
+		{
+			app.MainForm.ActivateFinder();
+		};
+
+		/// <summary>
+		/// Finds next matching pattern.
+		/// </summary>
+		public static AnnAction FindNext
+			= delegate( AppLogic app )
+		{
+			app.FindNext();
+		};
+
+		/// <summary>
+		/// Finds previous matching pattern.
+		/// </summary>
+		public static AnnAction FindPrev
+			= delegate( AppLogic app )
+		{
+			app.FindPrev();
 		};
 
 		/// <summary>

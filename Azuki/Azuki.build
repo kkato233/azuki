@@ -70,6 +70,7 @@ Azuki text editor engine for .NET Framework.
 		nostdlib="true"
 		define="${define}"
 		warninglevel="4"
+		keyfile="Azuki.snk"
 	>
 		<references>
 			<include name="mscorlib.dll"/>
@@ -98,15 +99,15 @@ Azuki text editor engine for .NET Framework.
 	
 	<!-- compile to assembly -->
 	<csc target="library"
-			output="${assembly_name_cf}"
-			doc="${document_name_cf}"
-			unsafe="true"
-			optimize="true"
-			noconfig="true"
-			nostdlib="true"
-			define="PocketPC;${define}"
-			warninglevel="4"
-		>
+		output="${assembly_name_cf}"
+		doc="${document_name_cf}"
+		unsafe="true"
+		optimize="true"
+		noconfig="true"
+		nostdlib="true"
+		define="PocketPC;${define}"
+		warninglevel="4"
+	>
 		<references>
 			<include name="mscorlib.dll"/>
 			<include name="System.dll"/>

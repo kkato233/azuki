@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-01-31
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -130,11 +130,12 @@ namespace Sgry.Azuki
 		/// Find a text pattern.
 		/// </summary>
 		/// <param name="value">The String to find.</param>
-		/// <param name="begin">The search starting position.</param>
-		/// <param name="end">The search terminating position.</param>
+		/// <param name="begin">The begin index of the search range.</param>
+		/// <param name="end">The end index of the search range.</param>
+		/// <param name="forward">Whether to look forward or backward.</param>
 		/// <param name="comparisonType">Options for string comparison.</param>
 		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
-		public int Find( string value, int begin, int end, StringComparison comparisonType )
+		public int Find( string value, int begin, int end, bool forward, StringComparison comparisonType )
 		{
 			// [example]
 			// Document.Find( "abc", 1, 10, ? );
@@ -170,7 +171,14 @@ namespace Sgry.Azuki
 			}
 
 			// find
-			foundIndex = new String(_Data).IndexOf( value, start, length, comparisonType );
+			if( forward )
+			{
+				foundIndex = new String(_Data).IndexOf( value, start, length, comparisonType );
+			}
+			else
+			{
+				foundIndex = new String(_Data).LastIndexOf( value, end, end, comparisonType );
+			}
 			if( foundIndex == -1 )
 			{
 				return -1;

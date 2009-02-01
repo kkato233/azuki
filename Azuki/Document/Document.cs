@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-01-31
+// update: 2009-02-01
 //=========================================================
 using System;
 using System.Collections;
@@ -732,7 +732,7 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
 		public int FindNext( string value, int startIndex )
 		{
-			return FindNext( value, startIndex, Length, StringComparison.InvariantCulture );
+			return FindNext( value, startIndex, Length, true );
 		}
 
 		/// <summary>
@@ -741,12 +741,12 @@ namespace Sgry.Azuki
 		/// <param name="value">The String to find.</param>
 		/// <param name="begin">The search starting position.</param>
 		/// <param name="end">The search terminating position.</param>
-		/// <param name="comparisonType">Options for string comparison.</param>
+		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
 		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
 		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
-		public int FindNext( string value, int begin, int end, StringComparison comparisonType )
+		public int FindNext( string value, int begin, int end, bool matchCase )
 		{
 			if( end < begin )
 				throw new ArgumentException( "parameter end must be greater than parameter begin." );
@@ -755,7 +755,7 @@ namespace Sgry.Azuki
 			if( _Buffer.Count < end )
 				throw new ArgumentOutOfRangeException( "end must not be greater than character count. (end:"+end+", Count:"+_Buffer.Count+")" );
 
-			return _Buffer.Find( value, begin, end, true, comparisonType );
+			return _Buffer.FindNext( value, begin, end, matchCase );
 		}
 
 		/// <summary>
@@ -769,7 +769,7 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
 		public int FindPrev( string value, int startIndex )
 		{
-			return FindPrev( value, 0, startIndex, StringComparison.InvariantCulture );
+			return FindPrev( value, 0, startIndex, true );
 		}
 
 		/// <summary>
@@ -778,12 +778,12 @@ namespace Sgry.Azuki
 		/// <param name="value">The String to find.</param>
 		/// <param name="begin">The begin index of the search range.</param>
 		/// <param name="end">The end index of the search range.</param>
-		/// <param name="comparisonType">Options for string comparison.</param>
+		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
 		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
 		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
-		public int FindPrev( string value, int begin, int end, StringComparison comparisonType )
+		public int FindPrev( string value, int begin, int end, bool matchCase )
 		{
 			if( end < begin )
 				throw new ArgumentException( "parameter end must be greater than parameter begin." );
@@ -792,7 +792,7 @@ namespace Sgry.Azuki
 			if( _Buffer.Count < end )
 				throw new ArgumentOutOfRangeException( "end must not be greater than character count. (end:"+end+", Count:"+_Buffer.Count+")" );
 
-			return _Buffer.Find( value, begin, end, false, comparisonType );
+			return _Buffer.FindPrev( value, begin, end, matchCase );
 		}
 
 		/// <summary>

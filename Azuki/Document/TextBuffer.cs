@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-01-31
+// update: 2009-02-01
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -127,68 +127,88 @@ namespace Sgry.Azuki
 
 		#region Text Search
 		/// <summary>
-		/// Find a text pattern.
+		/// Finds a text pattern.
 		/// </summary>
 		/// <param name="value">The String to find.</param>
-		/// <param name="begin">The begin index of the search range.</param>
-		/// <param name="end">The end index of the search range.</param>
-		/// <param name="forward">Whether to look forward or backward.</param>
-		/// <param name="comparisonType">Options for string comparison.</param>
+		/// <param name="begin">Begin index of the search range.</param>
+		/// <param name="end">End index of the search range.</param>
+		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
-		public int Find( string value, int begin, int end, bool forward, StringComparison comparisonType )
+		public int FindNext( string value, int begin, int end, bool matchCase )
 		{
-			// [example]
-			// Document.Find( "abc", 1, 10, ? );
-			// # |  buffer | value | begin | end |(*)g.m.b.| start
-			//---+---------+-------+-------+-----+---------+-------
-			// 1 |aab...abc|  ab   |   0   |  3  |aab...abc|   0
-			// 2 |aab...abc|  ab   |   0   |  6  |aababc...|   0
-			// 3 |aab...abc|  abc  |   2   |  6  |aa...babc|   5
-			// 4 |aab...abc|  abc  |   3   |  6  |aab...abc|   6
-			// (* g.m.b = gap moved buffer)
+			// If the gap exists after the search starting position,
+			// it must be moved to before the starting position.
 			int start, length;
 			int foundIndex;
+			StringComparison compType;
 			
 			DebugUtl.Assert( value != null );
 			DebugUtl.Assert( begin <= end );
 			DebugUtl.Assert( end <= _Count );
 
-			// in any cases, search length is "end - begin".
+			// convert begin/end indexes to start/length indexes
+			start = begin + _GapLen;
 			length = end - begin;
 
-			// determine where the gap should be moved to
-			if( end <= _GapPos )
+			// move the gap if necessary
+			if( begin <= _GapPos )
 			{
-				// search must stop before reaching the gap so there is no need to move gap
-				start = begin;
-			}
-			else
-			{
-				// search may not stop before reaching to the gap
-				// so move gap to ensure there is no gap in the search range
-				start = begin + _GapLen;
 				MoveGapTo( begin );
 			}
 
 			// find
-			if( forward )
-			{
-				foundIndex = new String(_Data).IndexOf( value, start, length, comparisonType );
-			}
-			else
-			{
-				foundIndex = new String(_Data).LastIndexOf( value, end, end, comparisonType );
-			}
+			compType = (matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+			foundIndex = new String(_Data).IndexOf( value, start, length, compType );
 			if( foundIndex == -1 )
 			{
 				return -1;
 			}
 
 			// return found index
-			if( start == begin )
-				return foundIndex;
-			else
-				return foundIndex - _GapLen;
+			return foundIndex - _GapLen;
+		}
+
+		/// <summary>
+		/// Finds previous occurrence of a text pattern.
+		/// </summary>
+		/// <param name="value">The String to find.</param>
+		/// <param name="begin">The begin index of the search range.</param>
+		/// <param name="end">The end index of the search range.</param>
+		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
+		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
+		public int FindPrev( string value, int begin, int end, bool matchCase )
+		{
+			// If the gap exists before the search starting position,
+			// it must be moved to after the starting position.
+			int start, length;
+			int foundIndex;
+			StringComparison compType;
+			
+			DebugUtl.Assert( value != null );
+			DebugUtl.Assert( begin <= end );
+			DebugUtl.Assert( end <= _Count );
+
+			// convert begin/end indexes to start/length indexes
+			start = end - 1;
+			length = end - begin - 1;
+
+			// move the gap if necessary
+			if( _GapPos < end )
+			{
+				start = end - 1;
+				MoveGapTo( end );
+			}
+
+			// find
+			compType = (matchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase);
+			foundIndex = new String(_Data).LastIndexOf( value, start, length, compType );
+			if( foundIndex == -1 )
+			{
+				return -1;
+			}
+
+			// return found index
+			return foundIndex;
 		}
 
 		/// <summary>

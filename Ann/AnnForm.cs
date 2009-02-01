@@ -1,4 +1,4 @@
-// 2009-01-31
+// 2009-02-01
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -36,14 +36,11 @@ namespace Sgry.Ann
 #			if !PocketPC
 			_Azuki.UseCtrlTabToMoveFocus = false;
 			Font = SystemInformation.MenuFont;
-			_Finder.Font = SystemInformation.MenuFont;
+			_SearchPanel.Font = SystemInformation.MenuFont;
 			AllowDrop = true;
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
 #			endif
-
-			// set shortcut-key hook
-			_Azuki.KeyDown += HandleKeyAction;
 		}
 		#endregion
 
@@ -54,6 +51,22 @@ namespace Sgry.Ann
 		public AzukiControl Azuki
 		{
 			get{ return _Azuki; }
+		}
+
+		/// <summary>
+		/// Gets text search panel.
+		/// </summary>
+		public SearchPanel SearchPanel
+		{
+			get{ return _SearchPanel; }
+		}
+
+		/// <summary>
+		/// Activates and set focus to text search panel.
+		/// </summary>
+		public void ActivateSearchPanel()
+		{
+			_SearchPanel.Activate( _Azuki.CaretIndex );
 		}
 
 		/// <summary>
@@ -215,16 +228,6 @@ namespace Sgry.Ann
 #		endif
 		#endregion
 
-		public Finder Finder
-		{
-			get{ return _Finder; }
-		}
-
-		public void ActivateFinder()
-		{
-			_Finder.Activate();
-		}
-
 		#region UI Component Initialization
 		void InitUIComponent()
 		{
@@ -237,18 +240,22 @@ namespace Sgry.Ann
 			_Azuki.Location = new Point( 0, 0 );
 			_Azuki.TabWidth = 8;
 			_Azuki.ViewWidth = 235;
+			_Azuki.KeyDown += HandleKeyAction;
+			_Azuki.GotFocus += delegate {
+				_SearchPanel.Deactivate();
+			};
 			//
-			// _Finder
+			// _SearchPanel
 			//
-			_Finder.Dock = DockStyle.Bottom;
-			_Finder.Enabled = false;
-			_Finder.Visible = false;
+			_SearchPanel.Dock = DockStyle.Bottom;
+			_SearchPanel.Enabled = false;
+			_SearchPanel.Visible = false;
 			//
 			// AnnForm
 			// 
 			ClientSize = new Size( 360, 400 );
 			Controls.Add( _Azuki );
-			Controls.Add( _Finder );
+			Controls.Add( _SearchPanel );
 			Text = "Ann";
 			ResumeLayout( false );
 		}
@@ -443,7 +450,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Help			= new MenuItem();
 		MenuItem _MI_Help_About		= new MenuItem();
 		AzukiControl _Azuki;
-		Finder _Finder = new Finder();
+		SearchPanel _SearchPanel = new SearchPanel();
 		#endregion
 
 		#region Utilities

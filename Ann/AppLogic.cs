@@ -1,4 +1,4 @@
-// 2009-01-31
+// 2009-02-01
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,8 +39,7 @@ namespace Sgry.Ann
 		Document _DAD_ActiveDocument = null; // Dont Access Directly
 		int _UntitledFileCount = 1;
 		string _InitOpenFilePath = null;
-		FindContext _FindContext;
-		int _FindStartIndex = 0;
+		SearchContext _SearchContext = new SearchContext();
 		#endregion
 
 		#region Init / Dispose
@@ -63,16 +62,15 @@ namespace Sgry.Ann
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Azuki.Resize += Azuki_Resize;
-				_MainForm.Finder.PatternUpdated += Finder_PatternUpdated;
-				_MainForm.Finder.PatternFixed += Finder_PatternFixed;
+				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 
 				// handle initially set document
 				Document doc = new Document( value.Azuki.Document );
 				AddDocument( doc );
 				ActiveDocument = doc;
 
-				// reference find context object of Finder
-				_FindContext = _MainForm.Finder.Context;
+				// give find panel reference to find context object 
+				_MainForm.SearchPanel.SetContextRef( _SearchContext );
 
 				// apply config
 				MainForm.Azuki.Font = AppConfig.Font;
@@ -127,16 +125,7 @@ namespace Sgry.Ann
 				_UntitledFileCount++;
 			}
 			doc.AzukiDoc.DirtyStateChanged += Doc_DirtyStateChanged;
-			doc.AzukiDoc.SelectionChanged += Doc_SelectionChanged;
 			_DAD_Documents.Add( doc );
-		}
-
-		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
-		{
-			Debug.Assert( sender is AzukiDocument );
-
-			if( _FindContext.PatternFixed )
-				_FindStartIndex = ((AzukiDocument)sender).CaretIndex;
 		}
 
 		void Doc_DirtyStateChanged( object sender, EventArgs e )
@@ -162,6 +151,7 @@ namespace Sgry.Ann
 				else
 					_DAD_ActiveDocument = null;
 			}
+			doc.AzukiDoc.DirtyStateChanged -= Doc_DirtyStateChanged;
 		}
 
 		/// <summary>
@@ -558,7 +548,7 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Text Search
-		void Finder_PatternUpdated( bool forward )
+		void SearchPanel_PatternUpdated( bool forward )
 		{
 			if( forward )
 				FindNext();
@@ -566,24 +556,26 @@ namespace Sgry.Ann
 				FindPrev();
 		}
 
-		void Finder_PatternFixed( object sender, EventArgs e )
-		{
-			_FindContext.PatternFixed = true;
-			_FindStartIndex = ActiveDocument.AzukiDoc.CaretIndex;
-		}
-
 		public void FindNext()
 		{
-			AzukiDocument doc = MainForm.Azuki.Document;
+			AzukiDocument doc = ActiveDocument.AzukiDoc;
+			int startIndex;
 			int foundIndex;
 			int selEnd;
 
-			if( _FindContext.Regex == null )
+			// determine where to start text search
+			if( 0 <= _SearchContext.AnchorIndex )
+				startIndex = _SearchContext.AnchorIndex;
+			else
+				startIndex = Math.Max( doc.CaretIndex, doc.AnchorIndex );
+
+			// find
+			if( _SearchContext.Regex == null )
 			{
-				foundIndex = doc.FindNext( _FindContext.TextPattern, _FindStartIndex, doc.Length, _FindContext.ComparisonType );
+				foundIndex = doc.FindNext( _SearchContext.TextPattern, startIndex, doc.Length, _SearchContext.MatchCase );
 				if( foundIndex != -1 )
 				{
-					selEnd = foundIndex + _FindContext.TextPattern.Length;
+					selEnd = foundIndex + _SearchContext.TextPattern.Length;
 					MainForm.Azuki.Document.SetSelection( foundIndex, selEnd );
 					MainForm.Azuki.ScrollToCaret();
 				}
@@ -596,16 +588,24 @@ return;
 
 		public void FindPrev()
 		{
-			AzukiDocument doc = MainForm.Azuki.Document;
+			AzukiDocument doc = ActiveDocument.AzukiDoc;
+			int startIndex;
 			int foundIndex;
 			int selBegin;
 
-			if( _FindContext.Regex == null )
+			// determine where to start text search
+			if( 0 <= _SearchContext.AnchorIndex )
+				startIndex = _SearchContext.AnchorIndex;
+			else
+				startIndex = Math.Min( doc.CaretIndex, doc.AnchorIndex );
+
+			// find
+			if( _SearchContext.Regex == null )
 			{
-				foundIndex = doc.FindPrev( _FindContext.TextPattern, 0, _FindStartIndex, _FindContext.ComparisonType );
+				foundIndex = doc.FindPrev( _SearchContext.TextPattern, 0, startIndex, _SearchContext.MatchCase );
 				if( foundIndex != -1 )
 				{
-					selBegin = foundIndex + _FindContext.TextPattern.Length;
+					selBegin = foundIndex + _SearchContext.TextPattern.Length;
 					MainForm.Azuki.Document.SetSelection( selBegin, foundIndex );
 					MainForm.Azuki.ScrollToCaret();
 				}

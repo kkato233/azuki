@@ -649,16 +649,16 @@ namespace Sgry.Azuki.Test
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
 				try{ doc.FindNext("a", -1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.FindNext("a", 0, doc.Length+1, StringComparison.Ordinal); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", 0, doc.Length+1, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.FindNext("a", 1, 0, StringComparison.Ordinal); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
 
 				// find in empty range
-				TestUtl.AssertEquals( -1, doc.FindNext("a", 0, 0, StringComparison.Ordinal) );
+				TestUtl.AssertEquals( -1, doc.FindNext("a", 0, 0, true) );
 
 				// find in valid range
-				TestUtl.AssertEquals(  0, doc.FindNext("a", 0, 1, StringComparison.Ordinal) );
+				TestUtl.AssertEquals(  0, doc.FindNext("a", 0, 1, true) );
 				TestUtl.AssertEquals(  1, doc.FindNext("ab", 0) );
 				TestUtl.AssertEquals(  3, doc.FindNext("abc", 0) );
 				TestUtl.AssertEquals(  6, doc.FindNext("abcd", 0) );
@@ -668,8 +668,8 @@ namespace Sgry.Azuki.Test
 				TestUtl.AssertEquals( 1, doc.FindNext("", 1) );
 
 				// comp. options
-				TestUtl.AssertEquals( -1, doc.FindNext("aBcD", 0, doc.Length, StringComparison.InvariantCulture) );
-				TestUtl.AssertEquals(  6, doc.FindNext("aBcD", 0, doc.Length, StringComparison.InvariantCultureIgnoreCase) );
+				TestUtl.AssertEquals( -1, doc.FindNext("aBcD", 0, doc.Length, true) );
+				TestUtl.AssertEquals(  6, doc.FindNext("aBcD", 0, doc.Length, false) );
 			}
 
 			// white box test (test of the gap condition. test only result.)
@@ -677,17 +677,17 @@ namespace Sgry.Azuki.Test
 				// aaba......bcabcd
 				//  ^
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 1, doc.FindNext("ab", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals( 1, doc.FindNext("ab", 0, doc.Length, true) );
 
 				// aaba......bcabcd
 				//    ^
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 3, doc.FindNext("abc", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals( 3, doc.FindNext("abc", 0, doc.Length, true) );
 
 				// aaba......bcabcd
 				//             ^
 				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 6, doc.FindNext("abcd", 0, doc.Length, StringComparison.InvariantCulture) );
+				TestUtl.AssertEquals( 6, doc.FindNext("abcd", 0, doc.Length, true) );
 			}
 		}
 

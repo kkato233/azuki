@@ -1,4 +1,4 @@
-// 2009-01-31
+// 2009-02-01
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -8,40 +8,50 @@ using Sgry.Azuki.Windows;
 
 namespace Sgry.Ann
 {
-	class FindContext
+	class SearchContext
 	{
+		public int AnchorIndex = -1;
 		public bool PatternFixed = true;
 		public string TextPattern = String.Empty;
-		public StringComparison ComparisonType = StringComparison.OrdinalIgnoreCase;
+		public bool MatchCase = false;
 		public Regex Regex = null;
 	}
 
-	class Finder : Panel
+	class SearchPanel : Panel
 	{
-		FindContext _Context = new FindContext();
+		SearchContext _ContextRef = null;
 		RegexOptions _RegexOptions = RegexOptions.IgnoreCase;
 
 		#region Init / Dispose
-		public Finder()
+		public SearchPanel()
 		{
 			InitializeComponents();
 		}
 		#endregion
 
 		#region Operations
-		public void Activate()
+		public void Activate( int anchorIndex )
 		{
 			Enabled = true;
-			_Azuki_Find.SelectAll();
+			_Azuki_Pattern.SelectAll();
+			_ContextRef.AnchorIndex = anchorIndex;
 			Show();
 			Focus();
+		}
+
+		public void Deactivate()
+		{
+			this.Hide();
+			this.Enabled = false;
+			_ContextRef.PatternFixed = true;
+			_ContextRef.AnchorIndex = -1;
 		}
 		#endregion
 
 		#region Properties
-		public FindContext Context
+		public void SetContextRef( SearchContext context )
 		{
-			get{ return _Context; }
+			_ContextRef = context;
 		}
 		#endregion
 
@@ -52,8 +62,8 @@ namespace Sgry.Ann
 			set
 			{
 				base.Font
-					= _Label_Find.Font
-					= _Azuki_Find.Font
+					= _Label_Pattern.Font
+					= _Azuki_Pattern.Font
 					= _Button_Next.Font = value;
 				LayoutComponents();
 			}
@@ -61,58 +71,56 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Event Handlers
-		void FixFindParameters( IUserInterface ui )
+		void FixParameters( IUserInterface ui )
 		{
-			this.Hide();
-			this.Enabled = false;
-			_Context.PatternFixed = true;
+			Deactivate();
 			InvokePatternFixed();
 		}
 
 		void _Check_MatchCase_Clicked( object sender, EventArgs e )
 		{
-			if( _Check_MatchCase.Checked )
-			{
-				_Context.ComparisonType = StringComparison.Ordinal;
-			}
-			else
-			{
-				_Context.ComparisonType = StringComparison.OrdinalIgnoreCase;
-			}
+			_ContextRef.MatchCase = _Check_MatchCase.Checked;
 		}
 
 		void _Check_Regex_Clicked( object sender, EventArgs e )
-		{
-			// set option flags
-			_RegexOptions = RegexOptions.IgnoreCase;
-			if( _Check_MatchCase.Checked )
-				_RegexOptions ^= RegexOptions.IgnoreCase;
-			if( _Check_Back.Checked )
-				_RegexOptions |= RegexOptions.RightToLeft;
-		}
-
-		void _Azuki_Find_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			if( _Check_Regex.Checked )
 			{
 				try
 				{
-					_Context.Regex = new Regex( _Azuki_Find.Text, _RegexOptions );
+					_ContextRef.Regex = new Regex( _Azuki_Pattern.Text, _RegexOptions );
 				}
 				catch( ArgumentException )
 				{}
 			}
 			else
 			{
-				_Context.TextPattern = _Azuki_Find.Text;
-				_Context.Regex = null;
+				_ContextRef.Regex = null;
+			}
+		}
+
+		void _Azuki_Pattern_ContentChanged( object sender, ContentChangedEventArgs e )
+		{
+			if( _Check_Regex.Checked )
+			{
+				try
+				{
+					_ContextRef.Regex = new Regex( _Azuki_Pattern.Text, _RegexOptions );
+				}
+				catch( ArgumentException )
+				{}
+			}
+			else
+			{
+				_ContextRef.TextPattern = _Azuki_Pattern.Text;
+				_ContextRef.Regex = null;
 			}
 			InvokePatternUpdated( true );
 		}
 
 		void FocusBackToPatternBox( object sender, EventArgs e )
 		{
-			_Azuki_Find.Focus();
+			_Azuki_Pattern.Focus();
 		}
 		#endregion
 
@@ -128,6 +136,8 @@ namespace Sgry.Ann
 		public event EventHandler PatternFixed;
 		void InvokePatternFixed()
 		{
+			_ContextRef.PatternFixed = true;
+			_ContextRef.AnchorIndex = -1;
 			if( PatternFixed != null )
 				PatternFixed( this, EventArgs.Empty );
 		}
@@ -138,48 +148,53 @@ namespace Sgry.Ann
 		{
 			// setup panel
 			Dock = DockStyle.Bottom;
-			Controls.Add( _Label_Find );
-			Controls.Add( _Azuki_Find );
+			Controls.Add( _Label_Pattern );
+			Controls.Add( _Azuki_Pattern );
 			Controls.Add( _Button_Next );
-			Controls.Add( _Check_Back );
+			Controls.Add( _Button_Prev );
 			Controls.Add( _Check_MatchCase );
 			Controls.Add( _Check_Regex );
 			GotFocus += delegate {
-				_Azuki_Find.Focus();
+				_Azuki_Pattern.Focus();
 			};
 
 			// setup label
-			_Label_Find.Text = "Find:";
+			_Label_Pattern.Text = "Find:";
 
 			// setup text field
-			_Azuki_Find.HighlightsCurrentLine = false;
-			_Azuki_Find.ShowsHScrollBar = false;
-			_Azuki_Find.ShowsLineNumber = false;
-			_Azuki_Find.AcceptsTab = false;
-			_Azuki_Find.AcceptsReturn = false;
-			_Azuki_Find.SetKeyBind( Keys.Enter, FixFindParameters );
-			_Azuki_Find.SetKeyBind( Keys.Escape, FixFindParameters );
-			_Azuki_Find.SetKeyBind( Keys.C | Keys.Control, delegate{
+			_Azuki_Pattern.HighlightsCurrentLine = false;
+			_Azuki_Pattern.ShowsHScrollBar = false;
+			_Azuki_Pattern.ShowsLineNumber = false;
+			_Azuki_Pattern.AcceptsTab = false;
+			_Azuki_Pattern.AcceptsReturn = false;
+			_Azuki_Pattern.SetKeyBind( Keys.Enter, FixParameters );
+			_Azuki_Pattern.SetKeyBind( Keys.Escape, FixParameters );
+			_Azuki_Pattern.SetKeyBind( Keys.C | Keys.Control, delegate{
 				_Check_MatchCase_Clicked(this, EventArgs.Empty);
 			});
-			_Azuki_Find.SetKeyBind( Keys.R | Keys.Control,
+			_Azuki_Pattern.SetKeyBind( Keys.R | Keys.Control,
 				delegate( IUserInterface ui ) {
 					_Check_Regex.Checked = !( _Check_Regex.Checked );
 				}
 			);
-			_Azuki_Find.Document.ContentChanged += _Azuki_Find_ContentChanged;
+			_Azuki_Pattern.Document.ContentChanged += _Azuki_Pattern_ContentChanged;
 
-			// setup button "Go"
-			_Button_Next.Text = "&Go";
+			// setup button "next"
+			_Button_Next.Text = "&Next";
 			_Button_Next.GotFocus += FocusBackToPatternBox;
 			_Button_Next.Click += delegate {
 				InvokePatternFixed();
-				InvokePatternUpdated( !_Check_Back.Checked );
+				InvokePatternUpdated( true );
+			};
+
+			// setup button "prev"
+			_Button_Prev.Text = "&Prev";
+			_Button_Prev.Click += delegate {
+				InvokePatternFixed();
+				InvokePatternUpdated( true );
 			};
 
 			// setup check boxes
-			_Check_Back.Text = "&Back";
-			_Check_Back.GotFocus += FocusBackToPatternBox;
 			_Check_MatchCase.Text = "m/&c";
 			_Check_MatchCase.GotFocus += FocusBackToPatternBox;
 			_Check_MatchCase.Click += _Check_MatchCase_Clicked;
@@ -194,21 +209,21 @@ namespace Sgry.Ann
 		void LayoutComponents()
 		{
 			IGraphics gra = Plat.Inst.GetGraphics( Handle );
-			Size labelSize = gra.MeasureText( _Label_Find.Text );
+			Size labelSize = gra.MeasureText( _Label_Pattern.Text );
 
 			this.Height = labelSize.Height + 2;
-			_Label_Find.Size = labelSize;
-			_Azuki_Find.Size = new Size( labelSize.Width*3, labelSize.Height );
-			_Azuki_Find.Location = new Point( labelSize.Width, 1 );
+			_Label_Pattern.Size = labelSize;
+			_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height );
+			_Azuki_Pattern.Location = new Point( labelSize.Width, 1 );
 			_Button_Next.Size = new Size( labelSize.Width*2, labelSize.Height );
-			_Button_Next.Location = new Point( _Azuki_Find.Right+2, 1 );
-			_Check_Back.Size = new Size( labelSize.Width*2, labelSize.Height );
-			_Check_Back.Location = new Point( _Button_Next.Right+2, 1 );
+			_Button_Next.Location = new Point( _Azuki_Pattern.Right+2, 1 );
+			_Button_Prev.Size = new Size( labelSize.Width*2, labelSize.Height );
+			_Button_Prev.Location = new Point( _Button_Next.Right+2, 1 );
 			_Check_MatchCase.Size = new Size(
 				gra.MeasureText(_Check_MatchCase.Text).Width + labelSize.Height,
 				labelSize.Height
 			);
-			_Check_MatchCase.Location = new Point( _Check_Back.Right+2, 1 );
+			_Check_MatchCase.Location = new Point( _Button_Prev.Right+2, 1 );
 			_Check_Regex.Size = new Size(
 				gra.MeasureText(_Check_Regex.Text).Width + labelSize.Height,
 				labelSize.Height
@@ -218,10 +233,10 @@ namespace Sgry.Ann
 		#endregion
 
 		#region UI Components
-		Label _Label_Find = new Label();
-		AzukiControl _Azuki_Find = new AzukiControl();
+		Label _Label_Pattern = new Label();
+		AzukiControl _Azuki_Pattern = new AzukiControl();
 		Button _Button_Next = new Button();
-		CheckBox _Check_Back = new CheckBox();
+		Button _Button_Prev = new Button();
 		CheckBox _Check_MatchCase = new CheckBox();
 		CheckBox _Check_Regex = new CheckBox();
 		#endregion

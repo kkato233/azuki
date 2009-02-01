@@ -1,4 +1,4 @@
-// 2009-01-31
+// 2009-02-01
 using System;
 using System.Windows.Forms;
 
@@ -39,7 +39,7 @@ namespace Sgry.Ann
 		public static AnnAction Find
 			= delegate( AppLogic app )
 		{
-			app.MainForm.ActivateFinder();
+			app.MainForm.ActivateSearchPanel();
 		};
 
 		/// <summary>

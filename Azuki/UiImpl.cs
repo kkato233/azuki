@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-02-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -365,7 +365,12 @@ namespace Sgry.Azuki
 					continue;
 				}
 
+				// if no highlighter was set to current active document, do nothing.
 				doc = _UI.Document;
+				if( doc.Highlighter == null )
+				{
+					continue;
+				}
 
 				// determine where to start highlighting
 				dirtyBegin = Math.Max( 0, _DirtyRangeBegin );

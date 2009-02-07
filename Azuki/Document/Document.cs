@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-02-01
+// update: 2009-02-07
 //=========================================================
 using System;
 using System.Collections;
@@ -30,7 +30,7 @@ namespace Sgry.Azuki
 		string _EolCode = "\r\n";
 		bool _IsReadOnly = false;
 		bool _IsDirty = false;
-		IHighlighter _Highlighter;
+		IHighlighter _Highlighter = null;
 		#endregion
 
 		#region Init / Dispose
@@ -42,8 +42,6 @@ namespace Sgry.Azuki
 			// initialize LHI
 			_LHI.Clear();
 			_LHI.Add( 0 );
-			
-			_Highlighter = new DummyHighlighter();
 		}
 		#endregion
 
@@ -846,15 +844,15 @@ namespace Sgry.Azuki
 			get{ return _Highlighter; }
 			set
 			{
-				if( value == null )
-					value = new DummyHighlighter();
-
 				// clear all highlight information
 				_Buffer.ClearCharClasses();
 
 				// associate with new highlighter object and highlight whole content
 				_Highlighter = value;
-				_Highlighter.Highlight( this );
+				if( _Highlighter != null )
+				{
+					_Highlighter.Highlight( this );
+				}
 			}
 		}
 		#endregion

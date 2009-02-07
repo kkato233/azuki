@@ -77,7 +77,6 @@
     <Compile Include="Document\SplitArray.cs" />
     <Compile Include="Highlighter\IHighlighter.cs" />
     <Compile Include="Highlighter\Highlighters.cs" />
-    <Compile Include="Highlighter\DummyHighlighter.cs" />
     <Compile Include="Highlighter\KeywordHighlighter.cs" />
     <Compile Include="Highlighter\CppHighlighter.cs" />
     <Compile Include="Highlighter\XmlHighlighter.cs" />

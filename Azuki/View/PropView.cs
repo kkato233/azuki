@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (propotional).
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-02-07
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -245,10 +245,10 @@ namespace Sgry.Azuki
 				// if the change occured in a line?
 				if( _PrevCaretLine == caretLine )
 				{
-					if( e.OldCaret < caret )
-    					Doc_SelectionChanged_OnExpandSelInLine( e.OldCaret, caret, _PrevCaretLine );
-					else
-    					Doc_SelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
+					int begin, end;
+					begin = Utl.Min( caret, e.OldCaret, anchor, e.OldAnchor );
+					end = Utl.Max( caret, e.OldCaret, anchor, e.OldAnchor );
+					Doc_SelectionChanged_OnExpandSelInLine( begin, end, caretLine );
 				}
 				else
 				{

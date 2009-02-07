@@ -479,6 +479,22 @@ namespace Sgry.Azuki
 
 				return false;
 			}
+
+			/// <summary>
+			/// Gets minimum value in four integers.
+			/// </summary>
+			public static int Min( int a, int b, int c, int d )
+			{
+				return Math.Min( a, Math.Min(b, Math.Min(c,d) ) );
+			}
+
+			/// <summary>
+			/// Gets maximum value in four integers.
+			/// </summary>
+			public static int Max( int a, int b, int c, int d )
+			{
+				return Math.Max( a, Math.Max(b, Math.Max(c,d) ) );
+			}
 		}
 		#endregion
 	}

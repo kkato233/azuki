@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-02-01
+// update: 2009-02-08
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -190,7 +190,11 @@ namespace Sgry.Azuki
 
 			// convert begin/end indexes to start/length indexes
 			start = end - 1;
-			length = end - begin - 1;
+			length = end - begin;
+			if( start < 0 )
+			{
+				return -1;
+			}
 
 			// move the gap if necessary
 			if( _GapPos < end )

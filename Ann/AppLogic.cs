@@ -1,4 +1,4 @@
-// 2009-02-01
+// 2009-02-08
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -639,6 +639,7 @@ return;
 		void MainForm_Closing( object sender, CancelEventArgs e )
 		{
 			DialogResult result;
+			Document activeDoc = ActiveDocument;
 
 			// confirm all document's discard
 			foreach( Document doc in Documents )
@@ -646,6 +647,10 @@ return;
 				// if it's modified, ask to save the document
 				if( doc.AzukiDoc.IsDirty )
 				{
+					// before showing dialog, activate the document
+					this.ActiveDocument = doc;
+
+					// then, show dialog
 					result = AlertDiscardModification( doc );
 					if( result == DialogResult.Yes )
 					{
@@ -654,12 +659,14 @@ return;
 						{
 							// canceled or failed. cancel closing
 							e.Cancel = true;
+							ActiveDocument = activeDoc;
 							return;
 						}
 					}
 					else if( result == DialogResult.Cancel )
 					{
 						e.Cancel = true;
+						ActiveDocument = activeDoc;
 						return;
 					}
 				}

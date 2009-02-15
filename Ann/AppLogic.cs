@@ -1,8 +1,9 @@
-// 2009-02-08
+// 2009-02-15
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Sgry.Azuki;
 using Sgry.Azuki.Windows;
@@ -560,8 +561,7 @@ namespace Sgry.Ann
 		{
 			AzukiDocument doc = ActiveDocument.AzukiDoc;
 			int startIndex;
-			int foundIndex;
-			int selEnd;
+			SearchResult result;
 
 			// determine where to start text search
 			if( 0 <= _SearchContext.AnchorIndex )
@@ -570,19 +570,23 @@ namespace Sgry.Ann
 				startIndex = Math.Max( doc.CaretIndex, doc.AnchorIndex );
 
 			// find
-			if( _SearchContext.Regex == null )
+			if( _SearchContext.Regex != null )
 			{
-				foundIndex = doc.FindNext( _SearchContext.TextPattern, startIndex, doc.Length, _SearchContext.MatchCase );
-				if( foundIndex != -1 )
-				{
-					selEnd = foundIndex + _SearchContext.TextPattern.Length;
-					MainForm.Azuki.Document.SetSelection( foundIndex, selEnd );
-					MainForm.Azuki.ScrollToCaret();
-				}
+                if( (_SearchContext.Regex.Options & RegexOptions.RightToLeft) != 0 )
+                {
+                    Regex r = _SearchContext.Regex;
+                    _SearchContext.Regex = new Regex( r.ToString(), r.Options & (~RegexOptions.RightToLeft) );
+                }
+				result = doc.FindNext( _SearchContext.Regex, startIndex, doc.Length );
 			}
 			else
 			{
-return;
+				result = doc.FindNext( _SearchContext.TextPattern, startIndex, doc.Length, _SearchContext.MatchCase );
+			}
+			if( result != null )
+			{
+				MainForm.Azuki.Document.SetSelection( result.Begin, result.End );
+				MainForm.Azuki.ScrollToCaret();
 			}
 		}
 
@@ -590,8 +594,7 @@ return;
 		{
 			AzukiDocument doc = ActiveDocument.AzukiDoc;
 			int startIndex;
-			int foundIndex;
-			int selBegin;
+			SearchResult result;
 
 			// determine where to start text search
 			if( 0 <= _SearchContext.AnchorIndex )
@@ -600,19 +603,23 @@ return;
 				startIndex = Math.Min( doc.CaretIndex, doc.AnchorIndex );
 
 			// find
-			if( _SearchContext.Regex == null )
+			if( _SearchContext.Regex != null )
 			{
-				foundIndex = doc.FindPrev( _SearchContext.TextPattern, 0, startIndex, _SearchContext.MatchCase );
-				if( foundIndex != -1 )
-				{
-					selBegin = foundIndex + _SearchContext.TextPattern.Length;
-					MainForm.Azuki.Document.SetSelection( selBegin, foundIndex );
-					MainForm.Azuki.ScrollToCaret();
-				}
+                if( (_SearchContext.Regex.Options & RegexOptions.RightToLeft) == 0 )
+                {
+                    Regex r = _SearchContext.Regex;
+                    _SearchContext.Regex = new Regex( r.ToString(), r.Options | RegexOptions.RightToLeft );
+                }
+				result = doc.FindPrev( _SearchContext.Regex, startIndex, doc.Length );
 			}
 			else
 			{
-return;
+				result = doc.FindPrev( _SearchContext.TextPattern, 0, startIndex, _SearchContext.MatchCase );
+			}
+			if( result != null )
+			{
+				MainForm.Azuki.Document.SetSelection( result.Begin, result.End );
+				MainForm.Azuki.ScrollToCaret();
 			}
 		}
 		#endregion

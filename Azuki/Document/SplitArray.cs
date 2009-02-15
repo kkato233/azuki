@@ -502,8 +502,8 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region DebugUtl Utilities (only works when T is System.Char)
-		//const char INSANITY = '\xfffd';
-		const char INSANITY = '?';
+		const char INSANITY = '\x65e0'; // 'wu'; a Kanji meaning "nothing" 
+		//const char INSANITY = '?';
 		
 		[Conditional("DEBUG")]
 		void __check_sanity__()

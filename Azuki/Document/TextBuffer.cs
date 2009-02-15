@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-02-08
+// update: 2009-02-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -133,8 +133,8 @@ namespace Sgry.Azuki
 		/// <param name="begin">Begin index of the search range.</param>
 		/// <param name="end">End index of the search range.</param>
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
-		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
-		public int FindNext( string value, int begin, int end, bool matchCase )
+		/// <returns>Search result object if found, otherwise null if not found.</returns>
+		public SearchResult FindNext( string value, int begin, int end, bool matchCase )
 		{
 			// If the gap exists after the search starting position,
 			// it must be moved to before the starting position.
@@ -143,29 +143,49 @@ namespace Sgry.Azuki
 			StringComparison compType;
 			
 			DebugUtl.Assert( value != null );
+			DebugUtl.Assert( 0 <= begin );
 			DebugUtl.Assert( begin <= end );
 			DebugUtl.Assert( end <= _Count );
 
 			// convert begin/end indexes to start/length indexes
-			start = begin + _GapLen;
+			start = begin;
 			length = end - begin;
+			if( length <= 0 )
+			{
+				return null;
+			}
 
 			// move the gap if necessary
-			if( begin <= _GapPos )
+			if( _GapPos <= begin )
 			{
-				MoveGapTo( begin );
+				// the gap exists before search range so the gap is not needed to be moved
+				//DO_NOT//MoveGapTo( somewhere );
+				start += _GapLen;
 			}
+			else if( _GapPos < end )
+			{
+				// the gap exists IN the search range so the gap must be moved
+				MoveGapTo( begin );
+				start += _GapLen;
+			}
+			//NO_NEED//else if( end <= _GapPos ) {} // nothing to do in this case
 
 			// find
 			compType = (matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 			foundIndex = new String(_Data).IndexOf( value, start, length, compType );
 			if( foundIndex == -1 )
 			{
-				return -1;
+				return null;
+			}
+
+			// calculate found index not in gapped buffer but in content
+			if( _GapPos < end )
+			{
+				foundIndex -= _GapLen;
 			}
 
 			// return found index
-			return foundIndex - _GapLen;
+			return new SearchResult( foundIndex, foundIndex + value.Length );
 		}
 
 		/// <summary>
@@ -175,8 +195,8 @@ namespace Sgry.Azuki
 		/// <param name="begin">The begin index of the search range.</param>
 		/// <param name="end">The end index of the search range.</param>
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
-		/// <returns>Index of the first occurrence of the pattern if found, or -1 if not found.</returns>
-		public int FindPrev( string value, int begin, int end, bool matchCase )
+		/// <returns>Search result object if found, otherwise null if not found.</returns>
+		public SearchResult FindPrev( string value, int begin, int end, bool matchCase )
 		{
 			// If the gap exists before the search starting position,
 			// it must be moved to after the starting position.
@@ -191,28 +211,34 @@ namespace Sgry.Azuki
 			// convert begin/end indexes to start/length indexes
 			start = end - 1;
 			length = end - begin;
-			if( start < 0 )
+			if( start < 0 || length <= 0 )
 			{
-				return -1;
+				return null;
 			}
 
-			// move the gap if necessary
-			if( _GapPos < end )
+			// calculate start index in the gapped buffer
+			if( _GapPos < begin )
 			{
-				start = end - 1;
+				// the gap exists before search range so the gap is not needed to be moved
+				start += _GapLen;
+			}
+			else if( _GapPos < end )
+			{
+				// the gap exists in the search range so the gap must be moved
 				MoveGapTo( end );
 			}
+			//NO_NEED//else if( end <= _GapPos ) {} // nothing to do in this case
 
 			// find
 			compType = (matchCase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase);
 			foundIndex = new String(_Data).LastIndexOf( value, start, length, compType );
 			if( foundIndex == -1 )
 			{
-				return -1;
+				return null;
 			}
 
 			// return found index
-			return foundIndex;
+			return new SearchResult( foundIndex, foundIndex + value.Length );
 		}
 
 		/// <summary>
@@ -221,7 +247,7 @@ namespace Sgry.Azuki
 		/// <param name="regex">A Regex object expressing the text pattern.</param>
 		/// <param name="begin">The search starting position.</param>
 		/// <param name="end">Index of where the search must be terminated</param>
-		/// <returns>Index of where the pattern was found or -1 if not found</returns>
+		/// <returns></returns>
 		/// <remarks>
 		/// This method find a text pattern
 		/// expressed by a regular expression in the current content.
@@ -229,11 +255,10 @@ namespace Sgry.Azuki
 		/// specified with the <paramref name="end"/> parameter
 		/// and does not stop at line ends nor null-characters.
 		/// </remarks>
-		public int Find( Regex regex, int begin, int end )
+		public SearchResult FindRegex( Regex regex, int begin, int end )
 		{
 			int start, length;
 			Match match;
-			int foundIndex = -1;
 
 			if( regex == null )
 				throw new ArgumentNullException( "regex" );
@@ -263,15 +288,57 @@ namespace Sgry.Azuki
 			match = regex.Match( new String(_Data), start, length );
 			if( match.Success == false )
 			{
-				return -1;
+				return null;
 			}
-			foundIndex = match.Index;
 
 			// return found index
 			if( start == begin )
-				return foundIndex;
+				return new SearchResult( match.Index, match.Index + match.Length );
 			else
-				return foundIndex - _GapLen;
+				return new SearchResult( match.Index - _GapLen, match.Index - _GapLen + match.Length );
+		}
+
+		public SearchResult FindPrev( Regex regex, int begin, int end )
+		{
+			int start, length;
+			Match match;
+
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+			if( end < begin )
+				throw new ArgumentException( "parameter end must be greater than parameter begin." );
+			if( _Count < end )
+				throw new ArgumentOutOfRangeException( "end must not greater than character count. (end:"+end+", Count:"+_Count+")" );
+			if( (regex.Options & RegexOptions.RightToLeft) == 0 )
+				throw new ArgumentException( "RegexOptions.RightToLeft option must be set to the object 'regex'." );
+
+			// convert begin/end indexes to start/length
+			length = end - begin;
+			if( end <= _GapPos )
+			{
+				// search must stop before reaching the gap so there is no need to move gap
+				start = begin;
+			}
+			else
+			{
+				// search may not stop before reaching to the gap
+				// so move gap to ensure there is no gap in the search range
+				start = begin + _GapLen;
+				MoveGapTo( begin );
+			}
+
+			// find
+			match = regex.Match( new String(_Data), start, length );
+			if( match.Success == false )
+			{
+				return null;
+			}
+
+			// return found index
+			if( start == begin )
+				return new SearchResult( match.Index, match.Index + match.Length );
+			else
+				return new SearchResult( match.Index - _GapLen, match.Index - _GapLen + match.Length );
 		}
 		#endregion
 

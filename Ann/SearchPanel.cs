@@ -189,9 +189,10 @@ namespace Sgry.Ann
 
 			// setup button "prev"
 			_Button_Prev.Text = "&Prev";
+			_Button_Prev.GotFocus += FocusBackToPatternBox;
 			_Button_Prev.Click += delegate {
 				InvokePatternFixed();
-				InvokePatternUpdated( true );
+				InvokePatternUpdated( false );
 			};
 
 			// setup check boxes

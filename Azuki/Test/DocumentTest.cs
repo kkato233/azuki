@@ -1,4 +1,4 @@
-// 2009-01-31
+// 2009-02-15
 #if DEBUG
 using System;
 using System.Collections;
@@ -49,12 +49,12 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - SetSelection", testNum++);
 			TestUtl.Do( Test_Selection );
 
-			// Find
-			Console.WriteLine("test {0} - Find", testNum++);
-			TestUtl.Do( Test_Find );
+			// FindNext
+			Console.WriteLine("test {0} - FindNext", testNum++);
+			TestUtl.Do( Test_FindNext );
 
-			// Find
-			Console.WriteLine("test {0} - Find (regex)", testNum++);
+			// Find (Regex)
+			Console.WriteLine("test {0} - FindNext (regex)", testNum++);
 			TestUtl.Do( Test_Find_Regex );
 
 			Console.WriteLine("done.");
@@ -635,84 +635,159 @@ namespace Sgry.Azuki.Test
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
-		static void Test_Find()
+		static void Test_FindNext()
 		{
 			Document doc = new Document();
 			doc.Replace( "aababcabcd" );
 
 			// black box test (interface test)
 			{
-				// invalid arguments
+				// null target
 				try{ doc.FindNext((string)null, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
-				try{ doc.FindRegex((Regex)null, 0, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
+
+				// negative index
 				try{ doc.FindNext("a", -1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// end index at out of range
 				try{ doc.FindNext("a", 0, doc.Length+1, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// inverted range
 				try{ doc.FindNext("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
 
-				// find in empty range
-				TestUtl.AssertEquals( -1, doc.FindNext("a", 0, 0, true) );
+				// empty range
+				TestUtl.AssertEquals( null, doc.FindNext("a", 0, 0, true) );
 
 				// find in valid range
-				TestUtl.AssertEquals(  0, doc.FindNext("a", 0, 1, true) );
-				TestUtl.AssertEquals(  1, doc.FindNext("ab", 0) );
-				TestUtl.AssertEquals(  3, doc.FindNext("abc", 0) );
-				TestUtl.AssertEquals(  6, doc.FindNext("abcd", 0) );
-				TestUtl.AssertEquals( -1, doc.FindNext("abcde", 0) );
+				TestUtl.AssertEquals( 0, doc.FindNext("a", 0, 1, true).Begin );
+				TestUtl.AssertEquals( 1, doc.FindNext("ab", 0).Begin );
+				TestUtl.AssertEquals( 3, doc.FindNext("abc", 0).Begin );
+				TestUtl.AssertEquals( 6, doc.FindNext("abcd", 0).Begin );
+				TestUtl.AssertEquals( null, doc.FindNext("abcde", 0) );
 
 				// find empty string (returns begin index)
-				TestUtl.AssertEquals( 1, doc.FindNext("", 1) );
+				TestUtl.AssertEquals( 1, doc.FindNext("", 1).Begin );
 
 				// comp. options
-				TestUtl.AssertEquals( -1, doc.FindNext("aBcD", 0, doc.Length, true) );
-				TestUtl.AssertEquals(  6, doc.FindNext("aBcD", 0, doc.Length, false) );
+				TestUtl.AssertEquals( null, doc.FindNext("aBcD", 0, doc.Length, true) );
+				TestUtl.AssertEquals(  6, doc.FindNext("aBcD", 0, doc.Length, false).Begin );
 			}
 
 			// white box test (test of the gap condition. test only result.)
 			{
-				// aaba......bcabcd
-				//  ^
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 1, doc.FindNext("ab", 0, doc.Length, true) );
+				// (buf: aaba......bcabcd)
 
-				// aaba......bcabcd
-				//    ^
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 3, doc.FindNext("abc", 0, doc.Length, true) );
+				// gap < begin
+				MoveGap( doc, 4 );
+				TestUtl.AssertEquals( 6, doc.FindNext("ab", 5, doc.Length, true).Begin );
 
-				// aaba......bcabcd
-				//             ^
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 6, doc.FindNext("abcd", 0, doc.Length, true) );
+				// gap == begin
+				MoveGap( doc, 4 );
+				TestUtl.AssertEquals( 6, doc.FindNext("ab", 4, doc.Length, true).Begin );
+
+				// begin < gap < end
+				{
+					// word before the gap
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 2, doc.FindNext("ba", 2, doc.Length, true).Begin );
+
+					// word crossing the gap
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 3, doc.FindNext("ab", 2, doc.Length, true).Begin );
+
+					// word after the gap
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 5, doc.FindNext("cab", 2, doc.Length, true).Begin );
+				}
+
+				// gap == end
+				{
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 1, doc.FindNext("ab", 0, 4, true).Begin );
+
+					// word at the end
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 2, doc.FindNext("ba", 0, 4, true).Begin );
+
+					// partially matched word but overruning boundary
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( null, doc.FindNext("abc", 0, 4, true) );
+				}
+
+				// end <= gap
+				MoveGap( doc, 4 );
+				TestUtl.AssertEquals( 1, doc.FindNext("ab", 0, 4, true).Begin );
 			}
 		}
 
 		static void Test_Find_Regex()
 		{
 			Document doc = new Document();
+			SearchResult result;
 			doc.Replace( "aababcabcd" );
 
-			// doc = "aaba......bcabcd"
+			// black box test
 			{
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( -1, doc.FindRegex(new Regex("a.d"), 0, doc.Length) );
+				// negative index
+				try{ doc.FindNext(new Regex("a[^b]+"), -1, 2); Debug.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
-				// search in pre-gap part
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 1, doc.FindRegex(new Regex("a.a"), 0, 4) );
+				// inverted range
+				try{ doc.FindNext(new Regex("a[^b]+"), 2, 1); Debug.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
 
-				// search pattern that strids the gap
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 3, doc.FindRegex(new Regex("ab[^a]"), 0, doc.Length) );
+				// empty range
+				result = doc.FindNext( new Regex("a[^b]+"), 0, 0 );
+				TestUtl.AssertEquals( null, result );
 
-				// search in post-gap part
-				doc.InternalBuffer.Insert( 4, "".ToCharArray() ); // move gap position
-				TestUtl.AssertEquals( 7, doc.FindRegex(new Regex("[bc]+d"), 0, doc.Length) );
+				// pattern ord at begin
+				result = doc.FindNext( new Regex("a[^b]+"), 0, 2 );
+				TestUtl.AssertEquals( 0, result.Begin );
+				TestUtl.AssertEquals( 2, result.End );
+
+				// pattern in the range
+				result = doc.FindNext( new Regex("a[^a]+"), 0, 3 );
+				TestUtl.AssertEquals( 1, result.Begin );
+				TestUtl.AssertEquals( 3, result.End );
+
+				// pattern which ends at end
+				result = doc.FindNext( new Regex("[ab]+"), 0, 5 );
+				TestUtl.AssertEquals( 0, result.Begin );
+				TestUtl.AssertEquals( 5, result.End );
+
+				// pattern... well, pretty hard to describe in English for me...
+				result = doc.FindNext( new Regex("[abc]+"), 0, 5 );
+				TestUtl.AssertEquals( 0, result.Begin );
+				TestUtl.AssertEquals( 5, result.End );
+				result = doc.FindNext( new Regex("[abc]+"), 0, 10 );
+				TestUtl.AssertEquals( 0, result.Begin );
+				TestUtl.AssertEquals( 9, result.End );
+
+				// empty pattern
+				result = doc.FindNext( new Regex(""), 0, 10 );
+				TestUtl.AssertEquals( 0, result.Begin );
+				TestUtl.AssertEquals( 0, result.End );
+
+				// comp. options
+				result = doc.FindNext( new Regex("aBcD"), 0, doc.Length );
+				TestUtl.AssertEquals( null, result );
+				result = doc.FindNext( new Regex("aBcD", RegexOptions.IgnoreCase), 0, doc.Length );
+				TestUtl.AssertEquals(  6, result.Begin );
+				TestUtl.AssertEquals( 10, result.End);
 			}
+
+			// white box test (test of the gap condition. test only result.)
+			{
+int テストの実装を続けるべし;
+			}
+		}
+
+		static void MoveGap( Document doc, int index )
+		{
+			doc.InternalBuffer.Insert( index, String.Empty.ToCharArray() );
 		}
 	}
 }

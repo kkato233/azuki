@@ -1,4 +1,4 @@
-// 2009-02-15
+// 2009-02-22
 #if DEBUG
 using System;
 using System.Collections;
@@ -53,9 +53,17 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - FindNext", testNum++);
 			TestUtl.Do( Test_FindNext );
 
-			// Find (Regex)
+			// FindPrev
+			Console.WriteLine("test {0} - FindPrev", testNum++);
+			TestUtl.Do( Test_FindPrev );
+
+			// FindNext (Regex)
 			Console.WriteLine("test {0} - FindNext (regex)", testNum++);
-			TestUtl.Do( Test_Find_Regex );
+			TestUtl.Do( Test_FindNextR );
+
+			// FindPrev (Regex)
+			Console.WriteLine("test {0} - FindPrev (regex)", testNum++);
+			TestUtl.Do( Test_FindPrevR );
 
 			Console.WriteLine("done.");
 			Console.WriteLine();
@@ -668,7 +676,7 @@ namespace Sgry.Azuki.Test
 				TestUtl.AssertEquals( 6, doc.FindNext("abcd", 0).Begin );
 				TestUtl.AssertEquals( null, doc.FindNext("abcde", 0) );
 
-				// find empty string (returns begin index)
+				// empty pattern (returns begin index)
 				TestUtl.AssertEquals( 1, doc.FindNext("", 1).Begin );
 
 				// comp. options
@@ -723,7 +731,95 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		static void Test_Find_Regex()
+		static void Test_FindPrev()
+		{
+			Document doc = new Document();
+			doc.Replace( "abcdabcaba" );
+
+			// black box test (interface test)
+			{
+				// null target
+				try{ doc.FindPrev((string)null, 0, 10, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
+
+				// negative index
+				try{ doc.FindPrev("a", -1, 10, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// end index at out of range
+				try{ doc.FindPrev("a", 0, doc.Length+1, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// inverted range
+				try{ doc.FindPrev("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+
+				// empty range
+				TestUtl.AssertEquals( null, doc.FindPrev("a", 0, 0, true) );
+
+				// find in valid range
+				TestUtl.AssertEquals( 9, doc.FindPrev(   "a", 0, 10, true).Begin );
+				TestUtl.AssertEquals( 7, doc.FindPrev(  "ab", 0, 10, true).Begin );
+				TestUtl.AssertEquals( 4, doc.FindPrev( "abc", 0, 10, true).Begin );
+				TestUtl.AssertEquals( 0, doc.FindPrev("abcd", 0, 10, true).Begin );
+				TestUtl.AssertEquals( null, doc.FindPrev("abcde", 0, 10, true) );
+
+				// empty pattern (returns end index)
+				TestUtl.AssertEquals( 10, doc.FindPrev("", 0, 10, true).Begin );
+
+				// comp. options
+				TestUtl.AssertEquals( null, doc.FindPrev("aBcD", 0, 10, true) );
+				TestUtl.AssertEquals(  0, doc.FindPrev("aBcD", 0, 10, false).Begin );
+			}
+
+			// white box test (test of the gap condition. test only result.)
+			{
+				// (buf: abcda......bcaba)
+
+				// gap < begin
+				MoveGap( doc, 5 );
+				TestUtl.AssertEquals( 7, doc.FindPrev("ab", 7, 10, true).Begin );
+
+				// gap == begin
+				{
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 7, doc.FindPrev("ab", 5, 10, true).Begin );
+
+					// word at the begin
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 5, doc.FindPrev("bc", 5, 10, true).Begin );
+
+					// partially matched word but overruning boundary
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( null, doc.FindPrev("abca", 5, 10, true) );
+				}
+
+				// begin < gap < end
+				{
+					// word before the gap
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 3, doc.FindPrev("da", 0, 10, true).Begin );
+
+					// word crossing the gap
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 4, doc.FindPrev("abc", 0, 10, true).Begin );
+
+					// word after the gap
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 5, doc.FindPrev("bca", 0, 10, true).Begin );
+				}
+
+				// gap == end
+				MoveGap( doc, 5 );
+				TestUtl.AssertEquals( 0, doc.FindPrev("ab", 0, 5, true).Begin );
+
+				// end <= gap
+				MoveGap( doc, 5 );
+				TestUtl.AssertEquals( 0, doc.FindPrev("ab", 0, 4, true).Begin );
+			}
+		}
+
+		static void Test_FindNextR()
 		{
 			Document doc = new Document();
 			SearchResult result;
@@ -731,6 +827,10 @@ namespace Sgry.Azuki.Test
 
 			// black box test
 			{
+				// null argument
+				try{ doc.FindNext((Regex)null, 1, 2); Debug.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
+
 				// negative index
 				try{ doc.FindNext(new Regex("a[^b]+"), -1, 2); Debug.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
@@ -742,6 +842,14 @@ namespace Sgry.Azuki.Test
 				// empty range
 				result = doc.FindNext( new Regex("a[^b]+"), 0, 0 );
 				TestUtl.AssertEquals( null, result );
+
+				// range exceeding text length
+				try{ doc.FindNext(new Regex("a[^b]+"), 1, 9999); Debug.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// invalid Regex option
+				try{ doc.FindNext(new Regex("a[^b]+", RegexOptions.RightToLeft), 1, 4); Debug.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
 
 				// pattern ord at begin
 				result = doc.FindNext( new Regex("a[^b]+"), 0, 2 );
@@ -781,7 +889,140 @@ namespace Sgry.Azuki.Test
 
 			// white box test (test of the gap condition. test only result.)
 			{
-int テストの実装を続けるべし;
+				// (buf: aaba......bcabcd)
+
+				// gap < begin
+				MoveGap( doc, 4 );
+				TestUtl.AssertEquals( 6, doc.FindNext(new Regex("ab"), 5, doc.Length).Begin );
+
+				// gap == begin
+				MoveGap( doc, 4 );
+				TestUtl.AssertEquals( 6, doc.FindNext(new Regex("ab"), 4, doc.Length).Begin );
+
+				// begin < gap < end
+				{
+					// word before the gap
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 2, doc.FindNext(new Regex("ba"), 2, doc.Length).Begin );
+
+					// word crossing the gap
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 3, doc.FindNext(new Regex("ab"), 2, doc.Length).Begin );
+
+					// word after the gap
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 5, doc.FindNext(new Regex("cab"), 2, doc.Length).Begin );
+				}
+
+				// gap == end
+				{
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 1, doc.FindNext(new Regex("ab"), 0, 4).Begin );
+
+					// word at the end
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( 2, doc.FindNext(new Regex("ba"), 0, 4).Begin );
+
+					// partially matched word but overruning boundary
+					MoveGap( doc, 4 );
+					TestUtl.AssertEquals( null, doc.FindNext(new Regex("abc"), 0, 4) );
+				}
+
+				// end <= gap
+				MoveGap( doc, 4 );
+				TestUtl.AssertEquals( 1, doc.FindNext(new Regex("ab"), 0, 4).Begin );
+			}
+		}
+
+		static void Test_FindPrevR()
+		{
+			Document doc = new Document();
+			doc.Replace( "abcdabcaba" );
+
+			// black box test (interface test)
+			{
+				// null target
+				try{ doc.FindPrev((Regex)null, 0, 10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
+
+				// negative index
+				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), -1, 10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// invalid regex option
+				try{ doc.FindPrev(new Regex("a", RegexOptions.None), 0, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+
+				// end index at out of range
+				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 0, doc.Length+1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
+
+				// inverted range
+				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+
+				// empty range
+				TestUtl.AssertEquals( (Regex)null, doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 0, 0) );
+
+				// find in valid range
+				TestUtl.AssertEquals( 9, doc.FindPrev(new Regex(   "a", RegexOptions.RightToLeft), 0, 10).Begin );
+				TestUtl.AssertEquals( 7, doc.FindPrev(new Regex(  "ab", RegexOptions.RightToLeft), 0, 10).Begin );
+				TestUtl.AssertEquals( 4, doc.FindPrev(new Regex( "abc", RegexOptions.RightToLeft), 0, 10).Begin );
+				TestUtl.AssertEquals( 0, doc.FindPrev(new Regex("abcd", RegexOptions.RightToLeft), 0, 10).Begin );
+				TestUtl.AssertEquals( null, doc.FindPrev(new Regex("abcde", RegexOptions.RightToLeft), 0, 10) );
+
+				// empty pattern (returns end index)
+				TestUtl.AssertEquals( 10, doc.FindPrev(new Regex("", RegexOptions.RightToLeft), 0, 10).Begin );
+
+				// comp. options
+				TestUtl.AssertEquals( null, doc.FindPrev(new Regex("aBcD", RegexOptions.RightToLeft), 0, 10) );
+				TestUtl.AssertEquals(  0, doc.FindPrev(new Regex("aBcD", RegexOptions.RightToLeft|RegexOptions.IgnoreCase), 0, 10).Begin );
+			}
+
+			// white box test (test of the gap condition. test only result.)
+			{
+				// (buf: abcda......bcaba)
+
+				// gap < begin
+				MoveGap( doc, 5 );
+				TestUtl.AssertEquals( 7, doc.FindPrev(new Regex("ab", RegexOptions.RightToLeft), 7, 10).Begin );
+
+				// gap == begin
+				{
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 7, doc.FindPrev(new Regex("ab", RegexOptions.RightToLeft), 5, 10).Begin );
+
+					// word at the begin
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 5, doc.FindPrev(new Regex("bc", RegexOptions.RightToLeft), 5, 10).Begin );
+
+					// partially matched word but overruning boundary
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( null, doc.FindPrev(new Regex("abca", RegexOptions.RightToLeft), 5, 10) );
+				}
+
+				// begin < gap < end
+				{
+					// word before the gap
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 3, doc.FindPrev(new Regex("da", RegexOptions.RightToLeft), 0, 10).Begin );
+
+					// word crossing the gap
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 4, doc.FindPrev(new Regex("abc", RegexOptions.RightToLeft), 0, 10).Begin );
+
+					// word after the gap
+					MoveGap( doc, 5 );
+					TestUtl.AssertEquals( 5, doc.FindPrev(new Regex("bca", RegexOptions.RightToLeft), 0, 10).Begin );
+				}
+
+				// gap == end
+				MoveGap( doc, 5 );
+				TestUtl.AssertEquals( 0, doc.FindPrev(new Regex("ab", RegexOptions.RightToLeft), 0, 5).Begin );
+
+				// end <= gap
+				MoveGap( doc, 5 );
+				TestUtl.AssertEquals( 0, doc.FindPrev(new Regex("ab", RegexOptions.RightToLeft), 0, 4).Begin );
 			}
 		}
 

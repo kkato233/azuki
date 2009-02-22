@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-02-15
+// update: 2009-02-22
 //=========================================================
 using System;
 using System.Collections;
@@ -730,25 +730,58 @@ namespace Sgry.Azuki
 		/// <param name="value">The String to find.</param>
 		/// <param name="startIndex">The search starting position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
-		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
-		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method finds the first occurrence of the pattern for the range of
+		/// [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
+		/// </para>
+		/// <para>
+		/// If an empty string was used as a pattern,
+		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		/// The text matching process continues for the document end
+		/// and does not stop at line ends nor null-characters.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter <paramref name="value"/> is null.
+		/// </exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		/// Parameter <paramref name="startIndex"/> is greater than character count in this document.
+		/// </exception>
 		public SearchResult FindNext( string value, int startIndex )
 		{
-			return FindNext( value, startIndex, Length, true );
+			return FindNext( value, startIndex, _Buffer.Count, true );
 		}
 
 		/// <summary>
 		/// Finds a text pattern.
 		/// </summary>
-		/// <param name="value">The String to find.</param>
+		/// <param name="value">The string to find.</param>
 		/// <param name="begin">The search starting position.</param>
 		/// <param name="end">The search terminating position.</param>
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
-		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
-		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">one or more given index is out of range.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method finds the first occurrence of the pattern in the range of
+		/// [<paramref name="begin"/>, <paramref name="end"/>).
+		/// </para>
+		/// <para>
+		/// If an empty string was used as a pattern,
+		/// search result will be the range of [<paramref name="begin"/>, <paramref name="begin"/>).
+		/// The text matching process continues for the index specified by <paramref name="end"/> parameter
+		/// and does not stop at line ends nor null-characters.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentException">
+		/// Parameter <paramref name="end"/> is less than parameter begin.
+		/// </exception>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter <paramref name="value"/> is null.
+		/// </exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		/// One or more indexes given by parameters are out of range.
+		/// </exception>
 		public SearchResult FindNext( string value, int begin, int end, bool matchCase )
 		{
 			if( begin < 0 )
@@ -764,40 +797,37 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Finds a text pattern backward.
+		/// Finds a text pattern by regular expression.
 		/// </summary>
-		/// <param name="value">The String to find.</param>
+		/// <param name="regex">A Regex object expressing the text pattern.</param>
 		/// <param name="startIndex">The search starting position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
-		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
-		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
-		public SearchResult FindPrev( string value, int startIndex )
+		/// <remarks>
+		/// <para>
+		/// This method finds a text pattern
+		/// expressed by a regular expression in the range of
+		/// [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
+		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
+		/// RegexOptions.RightToLeft</see> option MUST NOT be set to
+		/// the Regex object given as parameter <paramref name="regex"/>
+		/// otherwise an ArgumentException will be thrown.
+		/// </para>
+		/// <para>
+		/// If an empty string was used for a regular expression pattern,
+		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		/// The text matching process continues for the end of document
+		/// and does not stop at line ends nor null-characters.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentException">
+		/// Parameter <paramref name="regex"/> is a Regex object with RegexOptions.RightToLeft option.
+		/// </exception>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter <paramref name="regex"/> is null.
+		/// </exception>
+		public SearchResult FindNext( Regex regex, int startIndex )
 		{
-			return FindPrev( value, 0, startIndex, true );
-		}
-
-		/// <summary>
-		/// Finds a text pattern backward.
-		/// </summary>
-		/// <param name="value">The String to find.</param>
-		/// <param name="begin">The begin index of the search range.</param>
-		/// <param name="end">The end index of the search range.</param>
-		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
-		/// <returns>Search result object if found, otherwise null if not found.</returns>
-		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
-		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
-		public SearchResult FindPrev( string value, int begin, int end, bool matchCase )
-		{
-			if( end < begin )
-				throw new ArgumentException( "parameter end must be greater than parameter begin." );
-			if( value == null )
-				throw new ArgumentNullException( "value" );
-			if( _Buffer.Count < end )
-				throw new ArgumentOutOfRangeException( "end must not be greater than character count. (end:"+end+", Count:"+_Buffer.Count+")" );
-
-			return _Buffer.FindPrev( value, begin, end, matchCase );
+			return FindNext( regex, startIndex, _Buffer.Count );
 		}
 
 		/// <summary>
@@ -809,12 +839,19 @@ namespace Sgry.Azuki
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method find a text pattern
-		/// expressed by a regular expression in the current content.
+		/// This method finds the first ocurrence of a pattern
+		/// expressed by a regular expression in the range of
+		/// [<paramref name="begin"/>, <paramref name="end"/>).
+		/// </para>
+		/// <para>
 		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
 		/// RegexOptions.RightToLeft</see> option MUST NOT be set to
 		/// the Regex object given as parameter <paramref name="regex"/>
 		/// otherwise an ArgumentException will be thrown.
+		/// </para>
+		/// <para>
+		/// If an empty string was used for a regular expression pattern,
+		/// search result will be the range of [<paramref name="begin"/>, <paramref name="begin"/>).
 		/// </para>
 		/// <para>
 		/// The text matching process continues for the index
@@ -823,13 +860,19 @@ namespace Sgry.Azuki
 		/// </para>
 		/// </remarks>
 		/// <exception cref="ArgumentException">
-		/// Parameter end is equal or less than parameter begin
-		/// or parameter regex is a Regex object with RegexOptions.RightToLeft option.
+		/// Parameter <paramref name="end"/> is less than parameter <paramref name="begin"/>
+		/// or parameter <paramref name="regex"/> is a Regex object with RegexOptions.RightToLeft option.
 		/// </exception>
-		/// <exception cref="ArgumentNullException">parameter regex is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter <paramref name="regex"/> is null.
+		/// </exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		/// One or more indexes are out of range.
+		/// </exception>
 		public SearchResult FindNext( Regex regex, int begin, int end )
 		{
+			if( begin < 0 )
+				throw new ArgumentOutOfRangeException( "parameter begin must be a positive integer." );
 			if( end < begin )
 				throw new ArgumentException( "parameter end must be greater than parameter begin." );
 			if( regex == null )
@@ -839,7 +882,77 @@ namespace Sgry.Azuki
 			if( (regex.Options & RegexOptions.RightToLeft) != 0 )
 				throw new ArgumentException( "RegexOptions.RightToLeft option must not be set to the object 'regex'." );
 
-			return _Buffer.FindRegex( regex, begin, end );
+			return _Buffer.FindNext( regex, begin, end );
+		}
+
+		/// <summary>
+		/// Finds a text pattern backward.
+		/// </summary>
+		/// <param name="value">The string to find.</param>
+		/// <param name="startIndex">The search starting position.</param>
+		/// <returns>Search result object if found, otherwise null if not found.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method finds the last occurrence of the pattern in the range
+		/// of [0, <paramref name="startIndex"/>).
+		/// </para>
+		/// <para>
+		/// If an empty string was used as a pattern,
+		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		/// </para>
+		/// <para>
+		/// The text matching process continues for the document head
+		/// and does not stop at line ends nor null-characters.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter <paramref name="value"/> is null.
+		/// </exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		/// Parameter <paramref name="startIndex"/> is out of range.
+		/// </exception>
+		public SearchResult FindPrev( string value, int startIndex )
+		{
+			return FindPrev( value, 0, startIndex, true );
+		}
+
+		/// <summary>
+		/// Finds a text pattern backward.
+		/// </summary>
+		/// <param name="value">The string to find.</param>
+		/// <param name="begin">The begin index of the search range.</param>
+		/// <param name="end">The end index of the search range.</param>
+		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
+		/// <returns>Search result object if found, otherwise null if not found.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method finds the last occurrence of the pattern in the range of
+		/// [<paramref name="begin"/>, <paramref name="end"/>).
+		/// </para>
+		/// <para>
+		/// If an empty string was used as a pattern,
+		/// search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
+		/// </para>
+		/// <para>
+		/// The text matching process continues for the index specified by <paramref name="begin"/> parameter
+		/// and does not stop at line ends nor null-characters.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentException">parameter end is equal or less than parameter begin.</exception>
+		/// <exception cref="ArgumentNullException">parameter value is null.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">One or more indexes give by parameters are out of range.</exception>
+		public SearchResult FindPrev( string value, int begin, int end, bool matchCase )
+		{
+			if( begin < 0 )
+				throw new ArgumentOutOfRangeException( "parameter begin must be a positive integer." );
+			if( end < begin )
+				throw new ArgumentException( "parameter end must be greater than parameter begin." );
+			if( value == null )
+				throw new ArgumentNullException( "value" );
+			if( _Buffer.Count < end )
+				throw new ArgumentOutOfRangeException( "end must not be greater than character count. (end:"+end+", Count:"+_Buffer.Count+")" );
+
+			return _Buffer.FindPrev( value, begin, end, matchCase );
 		}
 
 		/// <summary>
@@ -851,8 +964,11 @@ namespace Sgry.Azuki
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method find a text pattern
-		/// expressed by a regular expression in the current content.
+		/// This method finds the last occurrence of a pattern
+		/// expressed by a regular expression in the range of
+		/// [<paramref name="begin"/>, <paramref name="end"/>).
+		/// </para>
+		/// <para>
 		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
 		/// RegexOptions.RightToLeft</see> option MUST be set to
 		/// the Regex object given as parameter <paramref name="regex"/>
@@ -860,18 +976,28 @@ namespace Sgry.Azuki
 		/// </para>
 		/// <para>
 		/// The text matching process continues for the index
-		/// specified with the <paramref name="end"/> parameter
+		/// specified with the <paramref name="begin"/> parameter
 		/// and does not stop at line ends nor null-characters.
+		/// </para>
+		/// <para>
+		/// If an empty string was used for a regular expression pattern,
+		/// search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
 		/// </para>
 		/// </remarks>
 		/// <exception cref="ArgumentException">
-		/// Parameter end is equal or less than parameter begin
-		/// or parameter regex is a Regex object without RegexOptions.RightToLeft option.
+		/// Parameter <paramref name="end"/> is less than parameter <paramref name="begin"/>
+		/// or parameter <paramref name="regex"/> is a Regex object without RegexOptions.RightToLeft option.
 		/// </exception>
-		/// <exception cref="ArgumentNullException">parameter regex is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">parameter end is greater than character count in this document.</exception>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter <paramref name="regex"/> is null.
+		/// </exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		/// One or more indexes give by parameters are out of range.
+		/// </exception>
 		public SearchResult FindPrev( Regex regex, int begin, int end )
 		{
+			if( begin < 0 )
+				throw new ArgumentOutOfRangeException( "parameter begin must be a positive integer." );
 			if( end < begin )
 				throw new ArgumentException( "parameter end must be greater than parameter begin." );
 			if( regex == null )

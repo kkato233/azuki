@@ -1,7 +1,7 @@
 // file: SearchResult.cs
 // brief: Result of a text search.
 // author: YAMAMOTO Suguru
-// update: 2009-02-15
+// update: 2009-02-22
 //=========================================================
 using System;
 
@@ -25,7 +25,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Begin index of the first occurence of the search pattern.
+		/// Begin index of the search pattern found.
 		/// </summary>
 		public int Begin
 		{
@@ -33,12 +33,11 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// End index of the first occurence of the search pattern.
+		/// End index of the search pattern found.
 		/// </summary>
 		public int End
 		{
 			get{ return _End; }
-			set{ _End = value; }
 		}
 	}
 }

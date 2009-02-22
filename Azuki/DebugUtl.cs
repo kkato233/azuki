@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-01-12
+// update: 2009-02-22
 //=========================================================
 using System;
 using System.IO;
@@ -291,6 +291,8 @@ namespace Sgry
 			}
 			catch( Exception ex )
 			{
+				string stackTrace;
+
 				ConsoleColor orgColor = Console.ForegroundColor;
 				Console.ForegroundColor = ConsoleColor.Red;
 				WriteLineWithChar( Console.Error, '=' );
@@ -299,10 +301,15 @@ namespace Sgry
 				Console.Error.WriteLine( ex.Message );
 
 				// trim last line of the stack trace because it always be this method.
-				string stackTrace = ex.StackTrace;
-				int firstLineEnd = Utl.NextLineHead( stackTrace, 0 );
-				int lastLineHead = Utl.PrevLineHead( stackTrace, stackTrace.Length );
-				stackTrace = stackTrace.Substring( firstLineEnd, lastLineHead-firstLineEnd-1 );
+				stackTrace = ex.StackTrace;
+				try
+				{
+					int firstLineEnd = Utl.NextLineHead( stackTrace, 0 );
+					int lastLineHead = Utl.PrevLineHead( stackTrace, stackTrace.Length );
+					stackTrace = stackTrace.Substring( firstLineEnd, lastLineHead-firstLineEnd-1 );
+				}
+				catch
+				{}
 
 				// print stack trace
 				WriteLineWithChar( Console.Error, '-' );

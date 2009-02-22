@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-02-15
+// update: 2009-02-22
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -208,6 +208,12 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( begin <= end );
 			DebugUtl.Assert( end <= _Count );
 
+			// if empty string is the value to search, just return search start index
+			if( value.Length == 0 )
+			{
+				return new SearchResult( end, end );
+			}
+
 			// convert begin/end indexes to start/length indexes
 			start = end - 1;
 			length = end - begin;
@@ -237,6 +243,12 @@ namespace Sgry.Azuki
 				return null;
 			}
 
+			// calculate found index not in gapped buffer but in content
+			if( _GapPos < end )
+			{
+				foundIndex -= _GapLen;
+			}
+
 			// return found index
 			return new SearchResult( foundIndex, foundIndex + value.Length );
 		}
@@ -255,17 +267,14 @@ namespace Sgry.Azuki
 		/// specified with the <paramref name="end"/> parameter
 		/// and does not stop at line ends nor null-characters.
 		/// </remarks>
-		public SearchResult FindRegex( Regex regex, int begin, int end )
+		public SearchResult FindNext( Regex regex, int begin, int end )
 		{
 			int start, length;
 			Match match;
 
-			if( regex == null )
-				throw new ArgumentNullException( "regex" );
-			if( end < begin )
-				throw new ArgumentException( "parameter end must be greater than parameter begin." );
-			if( _Count < end )
-				throw new ArgumentOutOfRangeException( "end must not greater than character count. (end:"+end+", Count:"+_Count+")" );
+			DebugUtl.Assert( regex != null );
+			DebugUtl.Assert( begin <= end );
+			DebugUtl.Assert( end <= _Count );
 
 			// in any cases, search length is "end - begin".
 			length = end - begin;
@@ -303,14 +312,10 @@ namespace Sgry.Azuki
 			int start, length;
 			Match match;
 
-			if( regex == null )
-				throw new ArgumentNullException( "regex" );
-			if( end < begin )
-				throw new ArgumentException( "parameter end must be greater than parameter begin." );
-			if( _Count < end )
-				throw new ArgumentOutOfRangeException( "end must not greater than character count. (end:"+end+", Count:"+_Count+")" );
-			if( (regex.Options & RegexOptions.RightToLeft) == 0 )
-				throw new ArgumentException( "RegexOptions.RightToLeft option must be set to the object 'regex'." );
+			DebugUtl.Assert( regex != null );
+			DebugUtl.Assert( begin <= end );
+			DebugUtl.Assert( end <= _Count );
+			DebugUtl.Assert( (regex.Options & RegexOptions.RightToLeft) != 0 );
 
 			// convert begin/end indexes to start/length
 			length = end - begin;

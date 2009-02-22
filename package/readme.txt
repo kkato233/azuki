@@ -1,7 +1,9 @@
-About contents of this package
-                                                                     2008-10-26
+readme.txt
+                                                                     2009-01-31
                                                                 YAMAMOTO Suguru
                                           http://sourceforge.jp/projects/azuki/
+
+== Package contents ==
 
 - Azuki.dll
 	.NET Framework version of Azuki.
@@ -35,3 +37,8 @@ About contents of this package
 	using Azuki with IDE like Visual Studio,
 	please copy this file with AzukiCompact.dll to same directory.
 
+== about assembly sign of Azuki.dll ==
+This package contains Azuki.dll which are digitally signed.
+The reason why they are signed is,
+they can be referenced by other signed assembly if they are signed.
+Ensuring that the assemblies are not altered is NOT the reason.

@@ -32,7 +32,7 @@
     <Preliminary>False</Preliminary>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <RootNamespaceTitle />
-    <HelpTitle>Azuki 1.2 API Reference</HelpTitle>
+    <HelpTitle>Azuki 1.3 API Reference</HelpTitle>
     <HtmlHelpName>Documentation</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref>http://azuki.sourceforge.jp/</CopyrightHref>
@@ -46,7 +46,7 @@
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <PresentationStyle>Prototype</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
-    <SyntaxFilters>CSharp</SyntaxFilters>
+    <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
     <ShowFeedbackControl>False</ShowFeedbackControl>
     <BinaryTOC>False</BinaryTOC>
     <IncludeFavorites>False</IncludeFavorites>

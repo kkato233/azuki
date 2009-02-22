@@ -1,7 +1,9 @@
-同梱物の説明
-                                                                     2008-10-26
+readme.ja.txt
+                                                                     2009-01-31
                                                                 YAMAMOTO Suguru
                                                    http://azuki.sourceforge.jp/
+
+== 同梱物の説明 ==
 
 - Azuki.dll
 	.NET Framework 版の Azuki です。
@@ -34,4 +36,9 @@
 	.NET Framework 版の Azuki です。
 	デスクトップアプリケーションで Azuki を使う場合は
 	この DLL を参照します。
+
+== Azuki.dll のアセンブリ署名について ==
+パッケージに付属している Azuki.dll には「アセンブリ署名」を行っています。
+この目的は、アセンブリ署名を行っている別プロジェクトから参照可能にすることであり、
+アセンブリの不正な変更を防止することではありません。
 

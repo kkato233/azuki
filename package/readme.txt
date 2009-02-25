@@ -1,5 +1,5 @@
 readme.txt
-                                                                     2009-01-31
+                                                                     2009-02-25
                                                                 YAMAMOTO Suguru
                                           http://sourceforge.jp/projects/azuki/
 
@@ -39,6 +39,10 @@ readme.txt
 
 == about assembly sign of Azuki.dll ==
 This package contains Azuki.dll which are digitally signed.
-The reason why they are signed is,
-they can be referenced by other signed assembly if they are signed.
+The reason why it is signed is,
+they can be referenced by other signed assembly if it is signed.
 Ensuring that the assemblies are not altered is NOT the reason.
+If you will be needed to prove that
+the Azuki.dll you are using is not altered,
+you SHOULD build another Azuki.dll from source code package
+with your own key file.

@@ -1,4 +1,4 @@
-// 2009-02-15
+// 2009-02-27
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +10,6 @@ using Sgry.Azuki.Windows;
 using Debug = System.Diagnostics.Debug;
 using AzukiDocument = Sgry.Azuki.Document;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
-#if PocketPC
-using System.Text.RegularExpressions;
-#endif
 
 namespace Sgry.Ann
 {
@@ -583,9 +580,12 @@ namespace Sgry.Ann
 			{
 				result = doc.FindNext( _SearchContext.TextPattern, startIndex, doc.Length, _SearchContext.MatchCase );
 			}
+
+			// select the result
 			if( result != null )
 			{
 				MainForm.Azuki.Document.SetSelection( result.Begin, result.End );
+				MainForm.Azuki.View.SetDesiredColumn();
 				MainForm.Azuki.ScrollToCaret();
 			}
 		}
@@ -616,9 +616,12 @@ namespace Sgry.Ann
 			{
 				result = doc.FindPrev( _SearchContext.TextPattern, 0, startIndex, _SearchContext.MatchCase );
 			}
+
+			// select the result
 			if( result != null )
 			{
 				MainForm.Azuki.Document.SetSelection( result.Begin, result.End );
+				MainForm.Azuki.View.SetDesiredColumn();
 				MainForm.Azuki.ScrollToCaret();
 			}
 		}

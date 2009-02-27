@@ -1,4 +1,4 @@
-// 2009-02-01
+// 2009-02-27
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -117,11 +117,6 @@ namespace Sgry.Ann
 			}
 			InvokePatternUpdated( true );
 		}
-
-		void FocusBackToPatternBox( object sender, EventArgs e )
-		{
-			_Azuki_Pattern.Focus();
-		}
 		#endregion
 
 		#region Event
@@ -181,7 +176,6 @@ namespace Sgry.Ann
 
 			// setup button "next"
 			_Button_Next.Text = "&Next";
-			_Button_Next.GotFocus += FocusBackToPatternBox;
 			_Button_Next.Click += delegate {
 				InvokePatternFixed();
 				InvokePatternUpdated( true );
@@ -189,7 +183,6 @@ namespace Sgry.Ann
 
 			// setup button "prev"
 			_Button_Prev.Text = "&Prev";
-			_Button_Prev.GotFocus += FocusBackToPatternBox;
 			_Button_Prev.Click += delegate {
 				InvokePatternFixed();
 				InvokePatternUpdated( false );
@@ -197,10 +190,8 @@ namespace Sgry.Ann
 
 			// setup check boxes
 			_Check_MatchCase.Text = "m/&c";
-			_Check_MatchCase.GotFocus += FocusBackToPatternBox;
 			_Check_MatchCase.Click += _Check_MatchCase_Clicked;
 			_Check_Regex.Text = "&Regex";
-			_Check_Regex.GotFocus += FocusBackToPatternBox;
 			_Check_Regex.Click += _Check_Regex_Clicked;
 
 			// re-caulculate layout

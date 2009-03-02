@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (propotional).
 // author: YAMAMOTO Suguru
-// update: 2009-02-07
+// update: 2009-03-02
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -189,6 +189,11 @@ namespace Sgry.Azuki
 		/// <param name="endIndex">End text index of the area to be invalidated.</param>
 		public override void Invalidate( int beginIndex, int endIndex )
 		{
+			DebugUtl.Assert( 0 <= beginIndex, "cond: 0 <= beginIndex("+beginIndex+")" );
+			DebugUtl.Assert( beginIndex <= endIndex, "cond: beginIndex("+beginIndex+") <= endIndex("+endIndex+")" );
+			if( beginIndex == endIndex )
+				return;
+			
 			int beginLineHead, endLineHead;
 			int beginL, endL, dummy;
 
@@ -196,11 +201,19 @@ namespace Sgry.Azuki
 			GetLineColumnIndexFromCharIndex( beginIndex, out beginL, out dummy );
 			GetLineColumnIndexFromCharIndex( endIndex, out endL, out dummy );
 			beginLineHead = GetLineHeadIndex( beginL );
-			endLineHead = GetLineHeadIndex( endL );
-			
-			Invalidate( beginIndex, endIndex, beginL, endL, beginLineHead, endLineHead );
-		}
 
+			// switch invalidation logic by whether the invalidated area is multiline or not
+			if( beginL != endL )
+			{
+				endLineHead = GetLineHeadIndex( endL ); // this is needed for invalidating multiline selection
+				Invalidate_MultiLines( beginIndex, endIndex, beginL, endL, beginLineHead, endLineHead );
+			}
+			else
+			{
+				Invalidate_InLine( beginIndex, endIndex, beginL, beginLineHead );
+			}
+		}
+		
 		protected override void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
 			Document doc = Document;
@@ -209,14 +222,23 @@ namespace Sgry.Azuki
 			int anchorLine, anchorColumn;
 			int caretLine, caretColumn;
 
+			// if the anchor moved, firstly invalidate old selection area
+			// because invalidation logic below does not expect the anchor's move.
+			if( e.OldAnchor != anchor )
+			{
+				if( e.OldAnchor < e.OldCaret )
+					Invalidate( e.OldAnchor, e.OldCaret );
+				else
+					Invalidate( e.OldCaret, e.OldAnchor );
+			}
+
 			// calculate line/column index of current anchor/caret
 			GetLineColumnIndexFromCharIndex( anchor, out anchorLine, out anchorColumn );
 			GetLineColumnIndexFromCharIndex( caret, out caretLine, out caretColumn );
 
 			// if there was no selection and is no selection too,
 			// update current line highlight if enabled.
-			if( e.OldAnchor == e.OldCaret
-				&& anchor == caret )
+			if( e.OldAnchor == e.OldCaret && anchor == caret )
 			{
 				if( HighlightsCurrentLine
 					&& _PrevCaretLine != caretLine )
@@ -225,8 +247,7 @@ namespace Sgry.Azuki
 				}
 			}
 			// or, does the change release selection?
-			else if( e.OldAnchor != e.OldCaret
-				&& anchor == caret )
+			else if( e.OldAnchor != e.OldCaret && anchor == caret )
 			{
 				Doc_SelectionChanged_OnReleaseSel( e );
 			}
@@ -245,10 +266,10 @@ namespace Sgry.Azuki
 				// if the change occured in a line?
 				if( _PrevCaretLine == caretLine )
 				{
-					int begin, end;
-					begin = Utl.Min( caret, e.OldCaret, anchor, e.OldAnchor );
-					end = Utl.Max( caret, e.OldCaret, anchor, e.OldAnchor );
-					Doc_SelectionChanged_OnExpandSelInLine( begin, end, caretLine );
+					if( e.OldCaret < caret )
+						Doc_SelectionChanged_OnExpandSelInLine( e.OldCaret, caret, _PrevCaretLine );
+					else
+						Doc_SelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
 				}
 				else
 				{
@@ -329,7 +350,7 @@ namespace Sgry.Azuki
 			endLineHead = GetLineHeadIndex( endL ); // if old caret is the end pos and if the pos exceeds current text length, this will fail.
 
 			// invalidate
-			Invalidate( begin, end, beginL, endL, beginLineHead, endLineHead );
+			Invalidate_MultiLines( begin, end, beginL, endL, beginLineHead, endLineHead );
 		}
 
 		void Doc_SelectionChanged_OnReleaseSel( SelectionChangedEventArgs e )
@@ -376,7 +397,7 @@ namespace Sgry.Azuki
 			}
 			else
 			{
-				Invalidate( begin, end, beginL, endL, beginLineHead, endLineHead );
+				Invalidate_MultiLines( begin, end, beginL, endL, beginLineHead, endLineHead );
 				return;
 			}
 		}
@@ -417,8 +438,50 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void Invalidate( int begin, int end, int beginLine, int endLine, int beginLineHead, int endLineHead )
+		void Invalidate_InLine( int begin, int end, int beginL, int beginLineHead )
 		{
+			DebugUtl.Assert( 0 <= begin, "cond: 0 <= begin("+begin+")" );
+			DebugUtl.Assert( begin <= end, "cond: begin("+begin+") <= end("+end+")" );
+			DebugUtl.Assert( end <= Document.Length, "cond: end("+end+") <= Document.Length("+Document.Length+")" );
+			DebugUtl.Assert( 0 <= beginL, "cond: 0 <= beginL("+beginL+")" );
+			DebugUtl.Assert( beginL <= Document.LineCount, "cond: beginL("+beginL+") <= Document.LineCount("+Document.LineCount+")" );
+			DebugUtl.Assert( beginLineHead <= begin, "cond: beginLineHead("+beginLineHead+") <= begin("+begin+")" );
+			if( begin == end )
+				return;
+
+			Rectangle rect = new Rectangle();
+			string textBeforeSelBegin;
+			string textSelected;
+
+			// calculate position of the invalid rect
+			textBeforeSelBegin = Document.GetTextInRange( beginLineHead, begin );
+			rect.X = MeasureTokenEndX( textBeforeSelBegin, 0 );
+			rect.Y = LineSpacing * beginL - (FirstVisibleLine * LineSpacing);
+
+			// calculate width and height of the invalid rect
+			textSelected = Document.GetTextInRange( begin, end );
+			rect.Width = MeasureTokenEndX( textSelected, 0 );
+			rect.Height = LineSpacing;
+
+			// invalidate
+			rect.X -= (ScrollPosX - TextAreaX);
+			Invalidate( rect );
+		}
+
+		void Invalidate_MultiLines( int begin, int end, int beginLine, int endLine, int beginLineHead, int endLineHead )
+		{
+			DebugUtl.Assert( 0 <= begin, "cond: 0 <= begin("+begin+")" );
+			DebugUtl.Assert( begin <= end, "cond: begin("+begin+") <= end("+end+")" );
+			DebugUtl.Assert( end <= Document.Length, "cond: end("+end+") <= Document.Length("+Document.Length+")" );
+			DebugUtl.Assert( 0 <= beginLine, "cond: 0 <= beginLine("+beginLine+")" );
+			DebugUtl.Assert( beginLine < endLine, "cond: beginLine("+beginLine+") < endLine("+endLine+")" );
+			DebugUtl.Assert( endLine <= Document.LineCount, "cond: endLine("+endLine+") <= Document.LineCount("+Document.LineCount+")" );
+			DebugUtl.Assert( beginLineHead <= begin, "cond: beginLineHead("+beginLineHead+") <= begin("+begin+")" );
+			DebugUtl.Assert( beginLineHead < endLineHead, "cond: beginLineHead("+beginLineHead+" < endLineHead("+endLineHead+")" );
+			DebugUtl.Assert( endLineHead <= end, "cond: endLineHead("+endLineHead+") <= end("+end+")" );
+			if( begin == end )
+				return;
+
 			Rectangle upper, lower, middle;
 			Document doc = Document;
 

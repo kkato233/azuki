@@ -1,5 +1,19 @@
+[1.3.0] 2009-02-03
+- add: added text search feature
+- add: now Azuki.dll in binary distrubution is digitally signed
+- mod: changed zoom ratio (for Ctrl+Wheel feature) from 0.8 to 0.9
+- mod: removed DummyHighlighter class
+- fix: fixed minor problem that Azuki with no highlighter object
+       redraws entire graphics area when content changed
+- fix: pressing Ctrl+Left or Ctrl+Home while selecting some text now actually moves cursor
+- add: [Ann] implemented incremental search feature
+- add: [Ann] now the document which was modified and not was saved
+       will be temporarily activated on asking whether to discard the modification or not
+
 [1.2.4] 2008-12-28
-- fix: registering multiple pairs that one pair's start/end pattern contains another pair's start/end parttern to built-in highlighters may cause invalid highlighting result
+- fix: registering multiple pairs
+       that one pair's start/end pattern contains another pair's start/end parttern
+       to built-in highlighters may cause invalid highlighting result
 - fix: using same type of built-in highlighter for multiple document may cause invalid highlighting result
 - fix: [Ann] using same type of built-in highlighter for multiple document may cause invalid highlighting result
 
@@ -16,7 +30,8 @@
 - fix: [Ann] (Compact Framework version) "Save" top level menu item now works properly
 
 [1.2.2] 2008-11-24
-- fix: if a token which is used to begin enclosing comment exists in line comment, Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
+- fix: if a token which is used to begin enclosing comment exists in line comment,
+       Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
 - add: [Ann] added New command in File menu
 - add: [Ann] now Ann opens drag & dropped files
 - fix: [Ann] set auto-indent mode according to selected file mode
@@ -27,7 +42,8 @@
 - add: many improvements for Ann 
 - add: exposed AzukiControl.DrawingOption property 
 - fix: 1px-width graphical noise line appears in line-wrapped view at right most edge 
-- fix: threading issue that content modification during highlighting could breaks highlighting logic's assumptions and causes exception. 
+- fix: fixed a threading issue that content modification during highlighting
+       could breaks highlighting logic's assumptions and causes exception. 
 - fix: loading files whose size match specific condition will cause exception 
 - fix: C# highlighter now parses /// as doc comment line. 
 - fix: hide language specialized highlighter classes. 

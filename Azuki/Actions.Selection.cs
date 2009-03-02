@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine (actions to change selection).
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-01-10
+// update: 2009-03-02
 //=========================================================
 using System;
 using System.Drawing;
@@ -119,11 +119,9 @@ namespace Sgry.Azuki
 			{
 				doc.SetSelection( doc.CaretIndex, doc.CaretIndex );
 			}
-			// otherwise, move caret
-			else
-			{
-				CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_PrevWord, ui.View );
-			}
+
+			// then, move caret
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_PrevWord, ui.View );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -160,10 +158,10 @@ namespace Sgry.Azuki
 			int selBegin, selEnd;
 
 			// if there are something selected, release selection
-			ui.View.Document.GetSelection( out selBegin, out selEnd );
+			doc.GetSelection( out selBegin, out selEnd );
 			if( selEnd != selBegin )
 			{
-				ui.View.Document.SetSelection( doc.CaretIndex, doc.CaretIndex );
+				doc.SetSelection( doc.CaretIndex, doc.CaretIndex );
 			}
 
 			// then, move caret
@@ -268,11 +266,9 @@ namespace Sgry.Azuki
 			{
 				doc.SetSelection( doc.CaretIndex, doc.CaretIndex );
 			}
-			// otherwise, move caret
-			else
-			{
-				CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_FileHead, ui.View );
-			}
+
+			// then, move caret
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_FileHead, ui.View );
 
 			// update desired column
 			ui.View.SetDesiredColumn();

@@ -1,4 +1,4 @@
-// 2009-02-27
+// 2009-03-02
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -567,13 +567,14 @@ namespace Sgry.Ann
 				startIndex = Math.Max( doc.CaretIndex, doc.AnchorIndex );
 
 			// find
-			if( _SearchContext.Regex != null )
+			if( _SearchContext.UseRegex )
 			{
-                if( (_SearchContext.Regex.Options & RegexOptions.RightToLeft) != 0 )
-                {
-                    Regex r = _SearchContext.Regex;
-                    _SearchContext.Regex = new Regex( r.ToString(), r.Options & (~RegexOptions.RightToLeft) );
-                }
+				RegexOptions opt = _SearchContext.Regex.Options;
+				if( (opt & RegexOptions.RightToLeft) != 0 )
+				{
+					opt &= ~( RegexOptions.RightToLeft );
+					_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
+				}
 				result = doc.FindNext( _SearchContext.Regex, startIndex, doc.Length );
 			}
 			else
@@ -603,14 +604,15 @@ namespace Sgry.Ann
 				startIndex = Math.Min( doc.CaretIndex, doc.AnchorIndex );
 
 			// find
-			if( _SearchContext.Regex != null )
+			if( _SearchContext.UseRegex )
 			{
-                if( (_SearchContext.Regex.Options & RegexOptions.RightToLeft) == 0 )
-                {
-                    Regex r = _SearchContext.Regex;
-                    _SearchContext.Regex = new Regex( r.ToString(), r.Options | RegexOptions.RightToLeft );
-                }
-				result = doc.FindPrev( _SearchContext.Regex, startIndex, doc.Length );
+				RegexOptions opt = _SearchContext.Regex.Options;
+				if( (opt & RegexOptions.RightToLeft) == 0 )
+				{
+					opt |= RegexOptions.RightToLeft;
+					_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
+				}
+				result = doc.FindPrev( _SearchContext.Regex, 0, startIndex );
 			}
 			else
 			{
@@ -620,7 +622,7 @@ namespace Sgry.Ann
 			// select the result
 			if( result != null )
 			{
-				MainForm.Azuki.Document.SetSelection( result.Begin, result.End );
+				MainForm.Azuki.Document.SetSelection( result.End, result.Begin );
 				MainForm.Azuki.View.SetDesiredColumn();
 				MainForm.Azuki.ScrollToCaret();
 			}

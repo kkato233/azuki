@@ -1,4 +1,4 @@
-// 2009-02-27
+// 2009-03-02
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -8,24 +8,101 @@ using Sgry.Azuki.Windows;
 
 namespace Sgry.Ann
 {
+	#region Search context object
 	class SearchContext
 	{
-		public int AnchorIndex = -1;
-		public bool PatternFixed = true;
-		public string TextPattern = String.Empty;
-		public bool MatchCase = false;
-		public Regex Regex = null;
-	}
+		bool _UseRegex = false;
+		Regex _Regex;
+		RegexOptions _RegexOptions = RegexOptions.IgnoreCase;
 
+		/// <summary>
+		/// Gets or sets search anchor.
+		/// </summary>
+		public int AnchorIndex = -1;
+
+		/// <summary>
+		/// Gets or sets whether the search condition was fixed in SearchPanel or not.
+		/// </summary>
+		public bool PatternFixed = true;
+
+		/// <summary>
+		/// Gets or sets the text pattern to be found.
+		/// This will not be used on regular expression search.
+		/// </summary>
+		public string TextPattern = String.Empty;
+
+		/// <summary>
+		/// Gets or sets whether to search text pattern by regular expression or not.
+		/// </summary>
+		public bool UseRegex
+		{
+			get{ return _UseRegex; }
+			set{ _UseRegex = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets regular expression object used for text search.
+		/// </summary>
+		/// <remarks>
+		/// If this is null, normal pattern matching will be performed.
+		/// If this is not null, regular expression search will be performed.
+		/// </remarks>
+		public Regex Regex
+		{
+			set
+			{
+				_Regex = value;
+				_RegexOptions = value.Options;
+				TextPattern = _Regex.ToString();
+			}
+			get
+			{
+				// if regex object was not created or outdated, re-create it.
+				if( _Regex == null
+					|| _Regex.ToString() != TextPattern
+					|| _Regex.Options != _RegexOptions )
+				{
+					_Regex = new Regex( TextPattern, _RegexOptions );
+				}
+				return _Regex;
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets whether to search case sensitively or not.
+		/// </summary>
+		public bool MatchCase
+		{
+			get{ return (_RegexOptions & RegexOptions.IgnoreCase) == 0; }
+			set
+			{
+				if( value == true )
+					_RegexOptions &= ~( RegexOptions.IgnoreCase );
+				else
+					_RegexOptions |= RegexOptions.IgnoreCase;
+			}
+		}
+	}
+	#endregion
+
+	#region Text search user interface
 	class SearchPanel : Panel
 	{
 		SearchContext _ContextRef = null;
-		RegexOptions _RegexOptions = RegexOptions.IgnoreCase;
 
 		#region Init / Dispose
 		public SearchPanel()
 		{
 			InitializeComponents();
+/*Timer t = new Timer();
+t.Interval = 1000;
+t.Tick+=delegate{
+if( _ContextRef != null )
+	Console.WriteLine( "a:{0}, m/c:{1}, p:{2}", _ContextRef.AnchorIndex, _ContextRef.MatchCase, _ContextRef.TextPattern );
+if( _ContextRef != null && _ContextRef.Regex != null )
+	Console.WriteLine( "    r:{0}, o:{1}", _ContextRef.Regex.ToString(), _ContextRef.Regex.Options );
+};
+t.Start();*/
 		}
 		#endregion
 
@@ -77,6 +154,18 @@ namespace Sgry.Ann
 			InvokePatternFixed();
 		}
 
+		void _Button_Next_Click( object sender, EventArgs e )
+		{
+			InvokePatternFixed();
+			InvokePatternUpdated( true );
+		}
+
+		void _Button_Prev_Click( object sender, EventArgs e )
+		{
+			InvokePatternFixed();
+			InvokePatternUpdated( false );
+		}
+
 		void _Check_MatchCase_Clicked( object sender, EventArgs e )
 		{
 			_ContextRef.MatchCase = _Check_MatchCase.Checked;
@@ -84,37 +173,12 @@ namespace Sgry.Ann
 
 		void _Check_Regex_Clicked( object sender, EventArgs e )
 		{
-			if( _Check_Regex.Checked )
-			{
-				try
-				{
-					_ContextRef.Regex = new Regex( _Azuki_Pattern.Text, _RegexOptions );
-				}
-				catch( ArgumentException )
-				{}
-			}
-			else
-			{
-				_ContextRef.Regex = null;
-			}
+			_ContextRef.UseRegex = _Check_Regex.Checked;
 		}
 
 		void _Azuki_Pattern_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
-			if( _Check_Regex.Checked )
-			{
-				try
-				{
-					_ContextRef.Regex = new Regex( _Azuki_Pattern.Text, _RegexOptions );
-				}
-				catch( ArgumentException )
-				{}
-			}
-			else
-			{
-				_ContextRef.TextPattern = _Azuki_Pattern.Text;
-				_ContextRef.Regex = null;
-			}
+			_ContextRef.TextPattern = _Azuki_Pattern.Text;
 			InvokePatternUpdated( true );
 		}
 		#endregion
@@ -162,37 +226,53 @@ namespace Sgry.Ann
 			_Azuki_Pattern.ShowsLineNumber = false;
 			_Azuki_Pattern.AcceptsTab = false;
 			_Azuki_Pattern.AcceptsReturn = false;
+			_Azuki_Pattern.Document.ContentChanged += _Azuki_Pattern_ContentChanged;
 			_Azuki_Pattern.SetKeyBind( Keys.Enter, FixParameters );
 			_Azuki_Pattern.SetKeyBind( Keys.Escape, FixParameters );
-			_Azuki_Pattern.SetKeyBind( Keys.C | Keys.Control, delegate{
-				_Check_MatchCase_Clicked(this, EventArgs.Empty);
-			});
-			_Azuki_Pattern.SetKeyBind( Keys.R | Keys.Control,
-				delegate( IUserInterface ui ) {
-					_Check_Regex.Checked = !( _Check_Regex.Checked );
+			_Azuki_Pattern.SetKeyBind( Keys.N | Keys.Control,
+				delegate {
+					_Button_Next_Click( this, EventArgs.Empty );
 				}
 			);
-			_Azuki_Pattern.Document.ContentChanged += _Azuki_Pattern_ContentChanged;
+			_Azuki_Pattern.SetKeyBind( Keys.P | Keys.Control,
+				delegate {
+					_Button_Prev_Click( this, EventArgs.Empty );
+				}
+			);
+			_Azuki_Pattern.SetKeyBind( Keys.C | Keys.Control,
+				delegate {
+					_Check_MatchCase.Checked = !( _Check_MatchCase.Checked );
+					_Check_MatchCase_Clicked( this, EventArgs.Empty );
+				}
+			);
+			_Azuki_Pattern.SetKeyBind( Keys.R | Keys.Control,
+				delegate {
+					_Check_Regex.Checked = !( _Check_Regex.Checked );
+					_Check_Regex_Clicked( this, EventArgs.Empty );
+				}
+			);
 
 			// setup button "next"
 			_Button_Next.Text = "&Next";
-			_Button_Next.Click += delegate {
-				InvokePatternFixed();
-				InvokePatternUpdated( true );
-			};
+			_Button_Next.Click += _Button_Next_Click;
 
 			// setup button "prev"
 			_Button_Prev.Text = "&Prev";
-			_Button_Prev.Click += delegate {
-				InvokePatternFixed();
-				InvokePatternUpdated( false );
-			};
+			_Button_Prev.Click += _Button_Prev_Click;
 
 			// setup check boxes
 			_Check_MatchCase.Text = "m/&c";
 			_Check_MatchCase.Click += _Check_MatchCase_Clicked;
+			_Check_MatchCase.KeyDown += delegate( object sender, KeyEventArgs e ) {
+				if( e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape )
+					FixParameters( _Azuki_Pattern );
+			};
 			_Check_Regex.Text = "&Regex";
 			_Check_Regex.Click += _Check_Regex_Clicked;
+			_Check_Regex.KeyDown += delegate( object sender, KeyEventArgs e ) {
+				if( e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape )
+					FixParameters( _Azuki_Pattern );
+			};
 
 			// re-caulculate layout
 			LayoutComponents();
@@ -233,4 +313,5 @@ namespace Sgry.Ann
 		CheckBox _Check_Regex = new CheckBox();
 		#endregion
 	}
+	#endregion
 }

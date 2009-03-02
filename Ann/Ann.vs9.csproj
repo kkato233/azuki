@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions.File.cs" />
+    <Compile Include="Actions.Help.cs" />
     <Compile Include="AnnForm.cs">
       <SubType>Form</SubType>
     </Compile>

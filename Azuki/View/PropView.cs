@@ -182,38 +182,6 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Appearance Invalidating and Updating
-		/// <summary>
-		/// Requests to invalidate area covered by given text range.
-		/// </summary>
-		/// <param name="beginIndex">Begin text index of the area to be invalidated.</param>
-		/// <param name="endIndex">End text index of the area to be invalidated.</param>
-		public override void Invalidate( int beginIndex, int endIndex )
-		{
-			DebugUtl.Assert( 0 <= beginIndex, "cond: 0 <= beginIndex("+beginIndex+")" );
-			DebugUtl.Assert( beginIndex <= endIndex, "cond: beginIndex("+beginIndex+") <= endIndex("+endIndex+")" );
-			if( beginIndex == endIndex )
-				return;
-			
-			int beginLineHead, endLineHead;
-			int beginL, endL, dummy;
-
-			// get needed coordinates
-			GetLineColumnIndexFromCharIndex( beginIndex, out beginL, out dummy );
-			GetLineColumnIndexFromCharIndex( endIndex, out endL, out dummy );
-			beginLineHead = GetLineHeadIndex( beginL );
-
-			// switch invalidation logic by whether the invalidated area is multiline or not
-			if( beginL != endL )
-			{
-				endLineHead = GetLineHeadIndex( endL ); // this is needed for invalidating multiline selection
-				Invalidate_MultiLines( beginIndex, endIndex, beginL, endL, beginLineHead, endLineHead );
-			}
-			else
-			{
-				Invalidate_InLine( beginIndex, endIndex, beginL, beginLineHead );
-			}
-		}
-		
 		protected override void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
 			Document doc = Document;
@@ -398,7 +366,6 @@ namespace Sgry.Azuki
 			else
 			{
 				Invalidate_MultiLines( begin, end, beginL, endL, beginLineHead, endLineHead );
-				return;
 			}
 		}
 
@@ -438,6 +405,38 @@ namespace Sgry.Azuki
 			}
 		}
 
+		/// <summary>
+		/// Requests to invalidate area covered by given text range.
+		/// </summary>
+		/// <param name="beginIndex">Begin text index of the area to be invalidated.</param>
+		/// <param name="endIndex">End text index of the area to be invalidated.</param>
+		public override void Invalidate( int beginIndex, int endIndex )
+		{
+			DebugUtl.Assert( 0 <= beginIndex, "cond: 0 <= beginIndex("+beginIndex+")" );
+			DebugUtl.Assert( beginIndex <= endIndex, "cond: beginIndex("+beginIndex+") <= endIndex("+endIndex+")" );
+			if( beginIndex == endIndex )
+				return;
+			
+			int beginLineHead, endLineHead;
+			int beginL, endL, dummy;
+
+			// get needed coordinates
+			GetLineColumnIndexFromCharIndex( beginIndex, out beginL, out dummy );
+			GetLineColumnIndexFromCharIndex( endIndex, out endL, out dummy );
+			beginLineHead = GetLineHeadIndex( beginL );
+
+			// switch invalidation logic by whether the invalidated area is multiline or not
+			if( beginL != endL )
+			{
+				endLineHead = GetLineHeadIndex( endL ); // this is needed for invalidating multiline selection
+				Invalidate_MultiLines( beginIndex, endIndex, beginL, endL, beginLineHead, endLineHead );
+			}
+			else
+			{
+				Invalidate_InLine( beginIndex, endIndex, beginL, beginLineHead );
+			}
+		}
+		
 		void Invalidate_InLine( int begin, int end, int beginL, int beginLineHead )
 		{
 			DebugUtl.Assert( 0 <= begin, "cond: 0 <= begin("+begin+")" );

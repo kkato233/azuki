@@ -1,4 +1,4 @@
-﻿// 2008-11-03
+﻿// 2009-03-02
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -29,7 +29,7 @@ namespace Sgry.Ann
 		{
 			InitializeComponent();
 #			if !PocketPC
-			this._Azuki_Preview.Text = "#include <stdio.h>\n\nint main( int argc, char* argv[] ) {\n\tprintf( \"こんにちは　世界！\\n\" );\n\treturn 0;\n}\n";
+			this._Azuki_Preview.Text = "#include <stdio.h>\n\nint main( int argc, char* argv[] ) {\n\tprintf( \"en: Hello, World!\\n\" );\n\tprintf( \"ja: \x3053\x3093\x306b\x3061\x306f\x3000\x4e16\x754c\xff01\\n\" );\n\treturn 0;\n}\n/*CR+LF*/\r\n/*LF*/\r";
 			this._Azuki_Preview.ClearHistory();
 			this._Azuki_Preview.Highlighter = Highlighters.Cpp;
 			this.AutoScaleMode = AutoScaleMode.Font;

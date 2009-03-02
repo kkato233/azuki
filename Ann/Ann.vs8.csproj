@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions.Help.cs" />
     <Compile Include="Actions.Edit.cs" />
     <Compile Include="Actions.File.cs" />
     <Compile Include="Actions.Tool.cs" />
@@ -58,6 +59,7 @@
     </Compile>
     <Compile Include="AppConfig.cs" />
     <Compile Include="AppLogic.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="DocumentListForm.cs">
       <SubType>Form</SubType>

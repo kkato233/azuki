@@ -1,4 +1,4 @@
-// 2009-02-01
+// 2009-03-02
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -150,6 +150,8 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Window_Next ]		= Actions.ActivateNextDocument;
 			_MenuMap[ _MI_Window_Prev ]		= Actions.ActivatePrevDocument;
 			_MenuMap[ _MI_Window_List ]		= Actions.ShowDocumentList;
+
+			_MenuMap[ _MI_Help_About ]		= Actions.ShowAboutDialog;
 		}
 
 		void InitKeyMap()
@@ -277,11 +279,11 @@ namespace Sgry.Ann
 			_MI_Menu.MenuItems.Add( _MI_Help );
 #			else
 			_MainMenu.MenuItems.Add( _MI_File );
-            _MainMenu.MenuItems.Add( _MI_Edit );
-            _MainMenu.MenuItems.Add( _MI_View );
+			_MainMenu.MenuItems.Add( _MI_Edit );
+			_MainMenu.MenuItems.Add( _MI_View );
 			_MainMenu.MenuItems.Add( _MI_Mode );
 			_MainMenu.MenuItems.Add( _MI_Window );
-            _MainMenu.MenuItems.Add( _MI_Help );
+			_MainMenu.MenuItems.Add( _MI_Help );
 #			endif
 
 			// construct descendant menu structure
@@ -289,9 +291,9 @@ namespace Sgry.Ann
 			_MI_File.MenuItems.Add( _MI_File_Open );
 			_MI_File.MenuItems.Add( _MI_File_Save );
 			_MI_File.MenuItems.Add( _MI_File_SaveAs );
-            _MI_File.MenuItems.Add( _MI_File_Close );
-            _MI_File.MenuItems.Add( _MI_File_Sep1 );
-            _MI_File.MenuItems.Add( _MI_File_Exit );
+			_MI_File.MenuItems.Add( _MI_File_Close );
+			_MI_File.MenuItems.Add( _MI_File_Sep1 );
+			_MI_File.MenuItems.Add( _MI_File_Exit );
 
 			_MI_Edit.MenuItems.Add( _MI_Edit_Cut );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Copy );

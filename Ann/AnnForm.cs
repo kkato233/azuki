@@ -163,9 +163,9 @@ namespace Sgry.Ann
 			_KeyMap[ Keys.W|Keys.Control ]				= Actions.CloseDocument;
 			_KeyMap[ Keys.Q|Keys.Control ]				= Actions.Exit;
 
-			_KeyMap[ Keys.C|Keys.Control ]				= Actions.Cut;
-			_KeyMap[ Keys.V|Keys.Control ]				= Actions.Copy;
-			_KeyMap[ Keys.P|Keys.Control ]				= Actions.Paste;
+			_KeyMap[ Keys.X|Keys.Control ]				= Actions.Cut;
+			_KeyMap[ Keys.C|Keys.Control ]				= Actions.Copy;
+			_KeyMap[ Keys.V|Keys.Control ]				= Actions.Paste;
 			_KeyMap[ Keys.F|Keys.Control ]				= Actions.Find;
 			_KeyMap[ Keys.G|Keys.Control ]				= Actions.FindNext;
 			_KeyMap[ Keys.G|Keys.Control|Keys.Shift ]	= Actions.FindPrev;

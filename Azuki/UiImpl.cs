@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-02-07
+// update: 2009-04-12
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -50,6 +50,7 @@ namespace Sgry.Azuki
 			_View = new PropView( ui );
 
 			_HighlighterThread = new Thread( HighlighterThreadProc );
+			_HighlighterThread.Priority = ThreadPriority.BelowNormal;
 			_HighlighterThread.Start();
 		}
 
@@ -349,14 +350,14 @@ namespace Sgry.Azuki
 
 			while( true )
 			{
-				// wait until the flag was set down
+				// wait while the flag is down
 				while( _ShouldBeHighlighted == false )
 				{
 					Thread.Sleep( HighlightInterval );
 				}
 				_ShouldBeHighlighted = false;
 
-				// wait a moment and check if 
+				// wait a moment and check if the flag is still up
 				Thread.Sleep( HighlightInterval );
 				if( _ShouldBeHighlighted != false || _UI.Document == null )
 				{

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-04-12
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1418,8 +1418,10 @@ namespace Sgry.Azuki.Windows
 					// 0x00000000FE980000
 					// so we should get extract 3rd and 4th byte and make it 16-bit int
 
+					const int threashold = 120;
 					int linesPerWheel;
 					Int16 wheelDelta;
+					int scrollCount;
 
 					// get line count to scroll on each wheel event
 #					if !PocketPC
@@ -1433,15 +1435,11 @@ namespace Sgry.Azuki.Windows
 					_WheelPos += wheelDelta;
 
 					// do scroll when the scroll position exceeds threashould
-					if( 120 <= _WheelPos )
+					scrollCount = _WheelPos / threashold;
+					_WheelPos = _WheelPos % threashold;
+					if( 0 != scrollCount )
 					{
-						_WheelPos -= 120;
-						HandleWheelEvent( -linesPerWheel );
-					}
-					else if( _WheelPos <= -120 )
-					{
-						_WheelPos += 120;
-						HandleWheelEvent( linesPerWheel );
+						HandleWheelEvent( -(linesPerWheel * scrollCount) );
 					}
 				}
 				else if( message == WinApi.WM_IME_STARTCOMPOSITION )

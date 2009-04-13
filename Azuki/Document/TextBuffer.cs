@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-02-22
+// update: 2009-04-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -60,6 +60,18 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Content Access
+		/// <summary>
+		/// Sets the size of the internal buffer.
+		/// </summary>
+		public override int Capacity
+		{
+			set
+			{
+				base.Capacity = value;
+				_Classes.Capacity = value;
+			}
+		}
+
 		/// <summary>
 		/// Inserts an element at specified index.
 		/// </summary>

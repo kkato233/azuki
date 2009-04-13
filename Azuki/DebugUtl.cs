@@ -30,7 +30,7 @@ namespace Sgry
 		#region Fields and Constants
 #		if !PocketPC
 		public const string kernel32_dll = "kernel32";
-		public const string LogDateHeader = "MM-dd hh:mm.ss ";
+		public const string LogDateHeader = "yyyy-MM-dd hh:mm:ss ";
 #		else
 		public const string kernel32_dll = "coredll";
 		public const string LogDateHeader = "mm.ss ";

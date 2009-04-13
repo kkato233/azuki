@@ -1,4 +1,4 @@
-// 2009-03-02
+// 2009-04-13
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -264,7 +264,7 @@ namespace Sgry.Ann
 		{
 			Document doc;
 			StreamReader file = null;
-			char[] buf = new char[ 4096 ];
+			char[] buf = null;
 			int readCount = 0;
 
 			// if specified file was already opened, just return the document
@@ -289,6 +289,17 @@ namespace Sgry.Ann
 			// load file content
 			using( file = new StreamReader(filePath, encoding) )
 			{
+				// prepare load buffer
+				doc.AzukiDoc.Capacity = (int)file.BaseStream.Length;
+				if( file.BaseStream.Length < 1024*1024 )
+				{
+					buf = new char[ file.BaseStream.Length ];
+				}
+				else
+				{
+					buf = new char[ (file.BaseStream.Length+10) / 10 ];
+				}
+
 				while( !file.EndOfStream )
 				{
 					readCount = file.Read( buf, 0, buf.Length-1 );
@@ -696,7 +707,7 @@ namespace Sgry.Ann
 		{
 			public static void AnalyzeEncoding( string filePath, out Encoding encoding, out bool withBom )
 			{
-				const int OneMega = 1024 * 1024;
+				const int MaxSize = 50 * 1024;
 				Stream file = null;
 				byte[] data;
 				int dataSize;
@@ -706,13 +717,13 @@ namespace Sgry.Ann
 					using( file = File.OpenRead(filePath) )
 					{
 						// prepare buffer
-						if( OneMega < file.Length )
-							dataSize = OneMega;
+						if( MaxSize < file.Length )
+							dataSize = MaxSize;
 						else
 							dataSize = (int)file.Length;
 						data = new byte[ dataSize ];
 
-						// read data at maximum 1MB
+						// read data at maximum 50KB
 						file.Read( data, 0, dataSize );
 						encoding = EncodingAnalyzer.Analyze( data, out withBom );
 						if( encoding == null )

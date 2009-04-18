@@ -1,6 +1,6 @@
 ﻿<project schemaVersion="1.6.0.7">
     <assemblies>
-        <assembly assemblyPath=".\package\Azuki.dll" xmlCommentsPath=".\package\Azuki.xml" commentsOnly="False" />
+        <assembly assemblyPath="..\package\Azuki.dll" xmlCommentsPath="..\package\Azuki.xml" commentsOnly="False" />
     </assemblies>
     <namespaceSummaries>
         <namespaceSummaryItem name="" isDocumented="False" />
@@ -9,6 +9,11 @@
         <namespaceSummaryItem name="Sgry.Azuki.Highlighter" isDocumented="True">This namespace contains classes for syntax highlighter.</namespaceSummaryItem>
         <namespaceSummaryItem name="Sgry.Azuki.Windows" isDocumented="True">This namespace contains Windows specific classes.</namespaceSummaryItem>
     </namespaceSummaries>
+    <conceptualContent snippetFile="">
+        <topics>
+            <topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" file=".\api_devnotes.xml" title="Developper's Notes" tocTitle="Developper's Notes" revision="1" visible="True" />
+        </topics>
+    </conceptualContent>
     <apiFilter>
         <filter entryType="Namespace" fullName="Sgry.Azuki" isExposed="True">
             <filter entryType="Class" fullName="Sgry.Azuki.View.Utl" filterName="View.Utl" isExposed="False" />
@@ -19,21 +24,21 @@
     <VisibleItems>Protected, SealedProtected</VisibleItems>
     <HtmlHelp1xCompilerPath path="" />
     <HtmlHelp2xCompilerPath path="" />
-    <OutputPath>.\api\</OutputPath>
+    <OutputPath>Release\</OutputPath>
     <SandcastlePath path="" />
     <WorkingPath path="" />
     <CleanIntermediates>True</CleanIntermediates>
     <KeepLogFile>False</KeepLogFile>
     <BuildLogFile path="" />
-    <HelpFileFormat>Website</HelpFileFormat>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
     <CppCommentsFixup>False</CppCommentsFixup>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
     <IndentHtml>False</IndentHtml>
     <Preliminary>False</Preliminary>
-    <RootNamespaceContainer>False</RootNamespaceContainer>
-    <RootNamespaceTitle />
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <RootNamespaceTitle>API Reference</RootNamespaceTitle>
     <HelpTitle>Azuki 1.3 API Reference</HelpTitle>
-    <HtmlHelpName>Documentation</HtmlHelpName>
+    <HtmlHelpName>azuki-1.3-api</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref>http://azuki.sourceforge.jp/</CopyrightHref>
     <CopyrightText />
@@ -48,7 +53,7 @@
     <NamingMethod>MemberName</NamingMethod>
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
     <ShowFeedbackControl>False</ShowFeedbackControl>
-    <BinaryTOC>False</BinaryTOC>
+    <BinaryTOC>True</BinaryTOC>
     <IncludeFavorites>False</IncludeFavorites>
     <CollectionTocStyle>Hierarchical</CollectionTocStyle>
     <IncludeStopWordList>False</IncludeStopWordList>

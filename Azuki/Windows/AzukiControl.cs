@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-04-12
+// update: 2009-04-18
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1368,10 +1368,10 @@ namespace Sgry.Azuki.Windows
 					bool shift, ctrl, alt, win;
 					int buttonIndex;
 
-					// get mouse click pos
-					pos.X = (lParam.ToInt32() & 0xffff);
-					pos.Y = ((lParam.ToInt32() >> 16)& 0xffff);
-					
+					// get mouse cursor pos
+					pos.X = (short)( (lParam.ToInt32()      ) & 0xffff );
+					pos.Y = (short)( (lParam.ToInt32() >> 16) & 0xffff );
+
 					// get modifier information
 					modFlag = wParam.ToInt32();
 					shift = (modFlag & MK_SHIFT) != 0;

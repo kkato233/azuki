@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-04-12
+// update: 2009-04-18
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -427,6 +427,13 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
+			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
+			if( pos.X < 0 || pos.Y < 0 )
+			{
+				return;
+			}
+
+			// remember mouse down screen position and convert it to virtual view's coordinate
 			_MouseDownPos = pos;
 			View.ScreenToVirtual( ref pos );
 
@@ -446,7 +453,7 @@ namespace Sgry.Azuki
 				View.ScrollToCaret();
 			}
 		}
-		
+
 		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
 			_MouseDownPos.X = -1;
@@ -458,6 +465,9 @@ namespace Sgry.Azuki
 			int index;
 			int begin, end;
 
+			// convert screen coordinate to virtual view coordinate
+			pos.X = Math.Max( 0, pos.X );
+			pos.Y = Math.Max( 0, pos.Y );
 			View.ScreenToVirtual( ref pos );
 
 			// get range of a word at clicked location
@@ -467,7 +477,7 @@ namespace Sgry.Azuki
 			{
 				return;
 			}
-			
+
 			// select the word.
 			// (because Azuki's invalidation logic only supports
 			// selection change by keyboard commands,
@@ -481,6 +491,10 @@ namespace Sgry.Azuki
 			// if mouse button was not down, ignore
 			if( _MouseDownPos.X < 0 )
 				return;
+
+			// make sure that these coordinates are positive value
+			pos.X = Math.Max( 0, pos.X );
+			pos.Y = Math.Max( 0, pos.Y );
 
 			// if the movement is very slightly, ignore
 			if( _MouseDragging == false )

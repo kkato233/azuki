@@ -491,7 +491,6 @@ namespace Sgry.Azuki
 
 		void ResizeArray( ref T[] array, int newSize )
 		{
-Console.WriteLine( "{1}/--> {0}", newSize, this.GetHashCode() );
 #			if !PocketPC
 			Array.Resize<T>( ref array, newSize );
 #			else

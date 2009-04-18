@@ -8,19 +8,19 @@ set sevenzip=a
 (nant 2>&1) > NUL
 if "%ERRORLEVEL%" == "9009" (
 	echo NAnt was not found in PATH.
-	goto :EOF
+	goto ERROR
 )
 (7z 2>&1) > NUL
 if not "%ERRORLEVEL%" == "9009" (
-	set sevenzip=7z.exe
+	set sevenzip=7z
 )
 (7za 2>&1) > NUL
 if not "%ERRORLEVEL%" == "9009" (
-	set sevenzip=7za.exe
+	set sevenzip=7za
 )
-if "%sevenzip%" == "" (
+if "%sevenzip%" == "a" (
 	echo 7-Zip commands were not found in PATH.
-	goto :EOF
+	goto ERROR
 )
 
 :: ask for version
@@ -33,14 +33,14 @@ echo   [1/4] run tests
 echo ========================================
 nant -nologo -q test
 if not "%ERRORLEVEL%" == "0" (
-	goto :EOF
+	goto ERROR
 )
 
 pushd package
 test.exe
 popd
 if not "%ERRORLEVEL%" == "0" (
-	goto :EOF
+	goto ERROR
 )
 
 :PHASE2
@@ -48,15 +48,18 @@ echo.
 echo ========================================
 echo   [2/4] build assembly
 echo ========================================
+echo building FF version...
 nant -nologo -q build
 if not "%ERRORLEVEL%" == "0" (
-	goto :EOF
+	goto ERROR
 )
 
+echo building CF version...
 nant -nologo -q cf
 if not "%ERRORLEVEL%" == "0" (
-	goto :EOF
+	goto ERROR
 )
+echo.
 
 :PHASE3
 echo.
@@ -64,9 +67,9 @@ echo ========================================
 echo   [3/4] generating API document
 echo ========================================
 call doc.bat
-if not "%ERRORLEVEL%" == "0" (
-	goto :EOF
-)
+::if not "%ERRORLEVEL%" == "0" (
+::	goto ERROR
+::)
 
 :PHASE4
 echo.
@@ -74,18 +77,28 @@ echo ========================================
 echo   [4/4] make archive
 echo ========================================
 pushd package
-%sevenzip% a -tzip -mx=9 Azuki-%version%.zip @dist.list
-popd
-if not "%ERRORLEVEL%" == "0" (
-	goto :EOF
-)
-%sevenzip% a -tzip -mx=9 .\package\Azuki-%version%-api.zip api
+%sevenzip% a -tzip -mx=9 .\zip\Azuki-%version%.zip @dist.list
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
+popd
 
+pushd doc
+move .\Release\*.chm .\
+%sevenzip% a -tzip -mx=9 ..\package\zip\Azuki-%version%-api-web.zip Release
+if not "%ERRORLEVEL%" == "0" (
+	goto ERROR
+)
+%sevenzip% a -tzip -mx=9 ..\package\zip\Azuki-%version%-api-chm.zip .\*.chm
+if not "%ERRORLEVEL%" == "0" (
+	goto ERROR
+)
+popd
+
+echo ========================================
 echo ok.
+echo.
 goto :EOF
 
 :ERROR
-echo error.
+echo failed to make distribution package.

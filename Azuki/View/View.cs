@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-01-31
+// update: 2009-04-19
 //=========================================================
 using System;
 using System.Drawing;
@@ -65,17 +65,29 @@ namespace Sgry.Azuki
 			this._Gra = _UI.GetIGraphics();
 
 			// inherit other parameters
+			this._ColorScheme = other._ColorScheme;
+			this._DesiredColumn = other._DesiredColumn;
+			//DO_NOT//this._Document = other._Document;
 			this._DrawingOption = other._DrawingOption;
 			this._FirstVisibleLine = other._FirstVisibleLine;
+			//DO_NOT//this._Gra = other._Gra;
+			//DO_NOT//this._LCharWidth = other._LCharWidth;
+			//DO_NOT//this._LineHeight = other._LineHeight;
+			//DO_NOT//this._LineNumWidth = other._LineNumWidth;
 			this._ScrollPosX = other._ScrollPosX;
+			//DO_NOT//this._SpaceWidth = other._SpaceWidth;
 			this._TabWidth = other._TabWidth;
+			//DO_NOT//this._TabWidthInPx = other._TabWidthInPx;
+			//DO_NOT//this._TextAreaWidth = other._TextAreaWidth;
+			//DO_NOT//this._UI = other._UI;
 			this._VisibleSize = other._VisibleSize;
 
+			// inherit parameters that needs to be set through property
 			if( other.Document != null )
-				Document = other.Document;
+				this.Document = other.Document;
 			if( other._Font != null )
-				Font = other.Font;
-			TextAreaWidth = other._TextAreaWidth;
+				this.Font = other.Font;
+			this.TextAreaWidth = other._TextAreaWidth;
 		}
 
 #		if DEBUG

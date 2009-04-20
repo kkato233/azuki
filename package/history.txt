@@ -1,10 +1,12 @@
-[1.3.1] 2009-04-18
- * add: added Document.Capacity property
+[1.3.1] 2009-04-20
+ * mod: added Document.Capacity property
         to allow users to expand internal buffer size from outside
  * fix: fixed a problem that XmlHighlighter goes into busy loop under specific conditions
  * fix: fixed a problem that XmlHighlighter may improperly highlight document
  * fix: fixed a problem that dragging mouse pointer to outside (left or top) of AzukiControl
         makes text caret jump to right or bottom end
+ * add: [Ann] updated to version 1.2.0
+ * add: [Ann] now each document's scroll state will be restored when switching documents
  * add: [Ann] improved the performance of opening a large document
 
 [1.3.0] 2009-02-03

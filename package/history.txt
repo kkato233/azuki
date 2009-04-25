@@ -1,34 +1,31 @@
-[1.3.1] 2009-04-20
- * mod: added Document.Capacity property
-        to allow users to expand internal buffer size from outside
+== 1.3.2 (2009-  -  ) ==
+ * fix: fixed a problem that document will be corrupted if user UNDOes just after inputting a surrogate pair by IME
+
+== 1.3.1 (2009-04-20) ==
+ * mod: added Document.Capacity property to allow users to expand internal buffer size from outside
  * fix: fixed a problem that XmlHighlighter goes into busy loop under specific conditions
  * fix: fixed a problem that XmlHighlighter may improperly highlight document
- * fix: fixed a problem that dragging mouse pointer to outside (left or top) of AzukiControl
-        makes text caret jump to right or bottom end
+ * fix: fixed a problem that dragging mouse pointer to outside (left or top) of AzukiControl makes text caret jump to right or bottom end
  * add: [Ann] updated to version 1.2.0
  * add: [Ann] now each document's scroll state will be restored when switching documents
  * add: [Ann] improved the performance of opening a large document
 
-[1.3.0] 2009-02-03
+== 1.3.0 (2009-02-03) ==
  * add: added text search feature
  * add: now Azuki.dll in binary distrubution is digitally signed
  * mod: changed zoom ratio (for Ctrl+Wheel feature) from 0.8 to 0.9
  * mod: removed DummyHighlighter class
- * fix: fixed minor problem that Azuki with no highlighter object
-        redraws entire graphics area when content changed
+ * fix: fixed minor problem that Azuki with no highlighter object redraws entire graphics area when content changed
  * fix: pressing Ctrl+Left or Ctrl+Home while selecting some text now actually moves cursor
  * add: [Ann] implemented incremental search feature
- * add: [Ann] now the document which was modified and not was saved
-        will be temporarily activated on asking whether to discard the modification or not
+ * add: [Ann] now the document which was modified and not was saved will be temporarily activated on asking whether to discard the modification or not
 
-[1.2.4] 2008-12-28
- * fix: registering multiple pairs
-        that one pair's start/end pattern contains another pair's start/end parttern
-        to built-in highlighters may cause invalid highlighting result
+== 1.2.4 (2008-12-28) ==
+ * fix: registering multiple pairs that one pair's start/end pattern contains another pair's start/end parttern to built-in highlighters may cause invalid highlighting result
  * fix: using same type of built-in highlighter for multiple document may cause invalid highlighting result
  * fix: [Ann] using same type of built-in highlighter for multiple document may cause invalid highlighting result
 
-[1.2.3] 2008-12-07
+== 1.2.3 (2008-12-07) ==
  * fix: now size of the scrollbar thumbs are properly set
  * fix: scrolling with high-resolution mouse wheel could be difficult
  * fix: now Azuki can handle broken wheel event properly which is sent by 64 bit Windows sometimes
@@ -40,63 +37,55 @@
  * fix: [Ann] (Compact Framework version) fixed problem that "Save as" action always throws an exception
  * fix: [Ann] (Compact Framework version) "Save" top level menu item now works properly
 
-[1.2.2] 2008-11-24
- * fix: if a token which is used to begin enclosing comment exists in line comment,
-        Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
+== 1.2.2 (2008-11-24) ==
+ * fix: if a token which is used to begin enclosing comment exists in line comment, Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
  * add: [Ann] added New command in File menu
  * add: [Ann] now Ann opens drag & dropped files
  * fix: [Ann] set auto-indent mode according to selected file mode
  * fix: [Ann] now opening a file which is already opened will not open it but activate the document object of the file
  * fix: [Ann] fixed problems caused on opening files that was opened by other processes in non-share mode
 
-[1.2.1] 2008-11-03
- * add: many improvements for Ann 
- * add: exposed AzukiControl.DrawingOption property 
- * fix: 1px-width graphical noise line appears in line-wrapped view at right most edge 
- * fix: fixed a threading issue that content modification during highlighting
-        could breaks highlighting logic's assumptions and causes exception. 
- * fix: loading files whose size match specific condition will cause exception 
- * fix: C# highlighter now parses /// as doc comment line. 
- * fix: hide language specialized highlighter classes. 
+== 1.2.1 (2008-11-03) ==
+ * add: many improvements for Ann
+ * add: exposed AzukiControl.DrawingOption property
+ * fix: 1px-width graphical noise line appears in line-wrapped view at right most edge
+ * fix: fixed a threading issue that content modification during highlighting could breaks highlighting logic's assumptions and causes exception.
+ * fix: loading files whose size match specific condition will cause exception
+ * fix: C# highlighter now parses /// as doc comment line.
+ * fix: hide language specialized highlighter classes.
 
-[1.2.0] 2008-11-01
- * add: changed sample application to "Ann" 
- * add: SmartHome action 
- * add: built-in highlighter for C/C++ 
- * add: built-in highlighter for C# 
- * add: built-in highlighter for Java 
- * add: built-in highlighter for Ruby 
- * add: built-in highlighter for XML 
- * add: added method to get already associated action from key-code 
- * add: improved caret movement 
- * add: added GetWordAt method 
- * add: added IsDirty and DirtyStateChanged 
- * add: now literals begins with "0x" is treated as one word on caret movement 
- * fix: changing AzukiControl.Highlighter had not do clearing highlight information nor invalidating view 
- * fix: DesiredColumn had not been updated after Undo nor Redo 
+== 1.2.0 (2008-11-01) ==
+ * add: changed sample application to "Ann"
+ * add: SmartHome action
+ * add: built-in highlighter for C/C++
+ * add: built-in highlighter for C#
+ * add: built-in highlighter for Java
+ * add: built-in highlighter for Ruby
+ * add: built-in highlighter for XML
+ * add: added method to get already associated action from key-code
+ * add: improved caret movement
+ * add: added GetWordAt method
+ * add: added IsDirty and DirtyStateChanged
+ * add: now literals begins with "0x" is treated as one word on caret movement
+ * fix: changing AzukiControl.Highlighter had not do clearing highlight information nor invalidating view
+ * fix: DesiredColumn had not been updated after Undo nor Redo
  * fix: if insertion or deletion divides/creates a CR+LF, inner data structure will be broken
 
-[1.1.0] 2008-08-15
- * add: feature to convert input tab character to
-        corresponding number of spaces automatically
- * add: feature to convert a full-width space character
-        to a half-width space character
+== 1.1.0 (2008-08-15) ==
+ * add: feature to convert input tab character to corresponding number of spaces automatically
+ * add: feature to convert a full-width space character to a half-width space character
  * mod: disabled double-buffering feature on Windows Mobile for performance
- * fix: changing the document of a window in line-wrapping mode
-        did not re-calculate wrapped line positions
- * fix: when a document was opened in multiple windows,
-        shows caret graphic only on focused window
+ * fix: changing the document of a window in line-wrapping mode did not re-calculate wrapped line positions
+ * fix: when a document was opened in multiple windows, shows caret graphic only on focused window
 
-[1.0.2] 2008-07-24
+== 1.0.2 (2008-07-24) ==
  * fix: now setting tab-width updates graphics properly
 
-[1.0.1] 2008-07-21
- * fix: in line-wrapping mode under some condition,
-        wrapped line position was mis-calculated and text layout was broken
- * fix: when used by Visual Studio's visual designer,
-        ColorScheme object that any member color is black was set to the Azuki
+== 1.0.1 (2008-07-21) ==
+ * fix: in line-wrapping mode under some condition, wrapped line position was mis-calculated and text layout was broken
+ * fix: when used by Visual Studio's visual designer, ColorScheme object that any member color is black was set to the Azuki
 
-[1.0.0] 2008-07-20
+== 1.0.0 (2008-07-20) ==
  * add: syntax highlighter support
  * add: multiple-document support
  * add: number of lines scrolled by mouse wheel is now determined by OS setting
@@ -104,12 +93,11 @@
  * fix: in overwrite mode and caret is on a tab, caret width is always tab width
  * fix: now setting AzukiControl.Text property automatically calls ScrollToCaret
 
-[0.9.3] 2008-06-14
- * fix: AzukiControl.ShowHScrollBar property always be set true
-        after modifying/scrolling in Windows Mobile
+== 0.9.3 (2008-06-14) ==
+ * fix: AzukiControl.ShowHScrollBar property always be set true after modifying/scrolling in Windows Mobile
  * fix: current line highlight does not disappear when selection begins if vertically scrolled
 
-[0.9.2] 2008-06-08
+== 0.9.2 (2008-06-08) ==
  * add: color of the EOL graphics can be specified sperately
  * add: added overload method of Azuki.SetKeyBind for ease of use
  * add: added feature to show/hide horizontal scroll bar
@@ -123,23 +111,23 @@
  * fix: auto-indentation does not work if caret is not at the end of a line
  * fix: exception occured when double clicking EOF position
 
-[0.9.1] 2008-06-04
+== 0.9.1 (2008-06-04) ==
  * fix: fixed that scroll bar range may not be updated when AzukiControl.Text property was changed
  * fix: graphical noize appeard when chars were added/removed from final line (only in wrapping mode)
  * mod: changed method name from AzukiControl.ClearUndo to ClearHistory
 
-[0.9.0] 2008-06-01
+== 0.9.0 (2008-06-01) ==
  * add: lines can be wrapped with specified width
  * add: added auto-indent feature (standard auto-indent and C-style auto-indent)
  * add: added overwrite mode
  * add: added read-only mode
  * add: added block-indent feature
 
-[0.8.2]
+== 0.8.2 (2008-05-08) ==
  * fix: doing 64 or more action breaks UNDO stack and program aborted
 
-[0.8.1]
+== 0.8.1 (2008-05-06) ==
  * fix: removed debug code left
 
-[0.8.0]
+== 0.8.0 (2008-05-06) ==
  * first release

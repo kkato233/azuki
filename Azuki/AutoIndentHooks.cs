@@ -9,7 +9,7 @@ using System.Text;
 namespace Sgry.Azuki
 {
 	/// <summary>
-	/// Hook delegate called when a EOL code was inserted.
+	/// Hook delegate called every time a character was inserted.
 	/// </summary>
 	/// <param name="doc">Document object.</param>
 	/// <param name="ch">Character about to be inserted.</param>

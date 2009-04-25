@@ -1454,7 +1454,7 @@ namespace Sgry.Azuki.Windows
 				// exceptions thrown in this method can not be handled well.
 				// so we catch them here.
 				Console.Error.WriteLine( ex );
-				MessageBox.Show( ex.ToString(), "azuki bug" );
+				//MessageBox.Show( ex.ToString(), "azuki bug" );
 			}
 
 			return WinApi.CallWindowProc( _OriginalWndProcObj, window, message, wParam, lParam );

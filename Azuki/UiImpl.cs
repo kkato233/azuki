@@ -214,11 +214,13 @@ namespace Sgry.Azuki
 		#region Key Handling
 		public ActionProc GetKeyBind( uint keyCode )
 		{
-			try
+			ActionProc proc;
+
+			if( _KeyMap.TryGetValue(keyCode, out proc) == true )
 			{
-				return _KeyMap[ keyCode ];
+				return proc;
 			}
-			catch( KeyNotFoundException )
+			else
 			{
 				return null;
 			}

@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (propotional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-01-29
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -18,7 +18,7 @@ namespace Sgry.Azuki
 	class PropWrapView : PropView
 	{
 		int _MinimalWidth;
-		SplitArray<int> _PLHI = new SplitArray<int>( 64, 32 );
+		SplitArray<int> _PLHI = new SplitArray<int>( 128, 128 );
 
 		#region Init / Dispose
 		/// <summary>
@@ -44,7 +44,7 @@ namespace Sgry.Azuki
 			_PLHI.Add( 0 );
 			if( Document != null )
 			{
-				UpdatePLHI( 0, String.Empty, Document.Text );
+				//UpdatePLHI( 0, String.Empty, Document.Text );
 			}
 		}
 		#endregion
@@ -64,6 +64,7 @@ namespace Sgry.Azuki
 				// (document was changed so line-wrapping state must be refreshed.
 				// Note that this property may be set by View.ctor.
 				// In that case, do not calculate because _PLHI was not prepared yet so calculation must fail.)
+				_PLHI.Capacity = Document.LineCount;
 				if( 0 < _PLHI.Count )
 				{
 					Doc_ContentChanged( value, new ContentChangedEventArgs(0, String.Empty, value.Text) );
@@ -105,13 +106,16 @@ namespace Sgry.Azuki
 				}
 
 				// update property
-				base.TextAreaWidth = value;
+				if( base.TextAreaWidth != value )
+				{
+					base.TextAreaWidth = value;
 
-				// update physical line head indexes
-				string text = Document.Text;
-				_PLHI.Clear();
-				_PLHI.Add( 0 );
-				UpdatePLHI( 0, "", text );
+					// update physical line head indexes
+					string text = Document.Text;
+					_PLHI.Clear();
+					_PLHI.Add( 0 );
+					UpdatePLHI( 0, "", text );
+				}
 			}
 		}
 		#endregion

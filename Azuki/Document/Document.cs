@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-04-13
+// update: 2009-05-09
 //=========================================================
 using System;
 using System.Collections;
@@ -22,11 +22,7 @@ namespace Sgry.Azuki
 	public class Document : IEnumerable
 	{
 		#region Fields
-#		if DEBUG
-		TextBuffer _Buffer = new TextBuffer( 4, 4 );
-#		else
 		TextBuffer _Buffer = new TextBuffer( 1024, 256 );
-#		endif
 		SplitArray<int> _LHI = new SplitArray<int>( 64 ); // line head indexes
 		EditHistory _History = new EditHistory();
 		int _CaretIndex = 0;
@@ -110,15 +106,12 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Sets the size of the internal buffer.
+		/// Gets or sets the size of the internal buffer.
 		/// </summary>
 		public int Capacity
 		{
-			set
-			{
-				_Buffer.Capacity = value;
-				_LHI.Capacity = value;
-			}
+			get{ return _Buffer.Capacity; }
+			set{ _Buffer.Capacity = value; }
 		}
 		#endregion
 

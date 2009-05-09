@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-05-02
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -192,15 +192,15 @@ namespace Sgry.Azuki
 			
 			// fill line number area
 			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, pos.Y, _LineNumWidth+2, LineSpacing );
+			_Gra.FillRectangle( 0, pos.Y, _LineNumAreaWidth+2, LineSpacing );
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( _LineNumWidth+2, pos.Y, 2, LineSpacing );
+			_Gra.FillRectangle( _LineNumAreaWidth+2, pos.Y, 2, LineSpacing );
 			
 			// draw line number text
 			if( 0 < lineNumber )
 			{
 				string lineNumText = lineNumber.ToString();
-				pos.X = _LineNumWidth - _Gra.MeasureText( lineNumText ).Width;
+				pos.X = _LineNumAreaWidth - _Gra.MeasureText( lineNumText ).Width;
 				_Gra.ForeColor = ColorScheme.LineNumberFore;
 				_Gra.DrawText( lineNumText, ref pos, ColorScheme.LineNumberFore );
 			}

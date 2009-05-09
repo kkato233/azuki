@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (propotional).
 // author: YAMAMOTO Suguru
-// update: 2009-03-02
+// update: 2009-05-02
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -403,6 +403,8 @@ namespace Sgry.Azuki
 			{
 				Invalidate( invalidRect2 );
 			}
+
+			base.Doc_ContentChanged( sender, e );
 		}
 
 		/// <summary>

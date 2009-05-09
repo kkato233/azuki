@@ -1,5 +1,6 @@
 == 1.4.0 (2009-  -  ) ==
  * add: XmlHighlighter now highlights HTML entities
+ * add: now large line number than 9999 can be shown
 
 == 1.3.2 (2009-05-01) ==
  * fix: fixed a problem that document will be corrupted if user UNDOes just after inputting a surrogate pair by IME

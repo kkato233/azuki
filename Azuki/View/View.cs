@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-04-19
+// update: 2009-05-02
 //=========================================================
 using System;
 using System.Drawing;
@@ -28,7 +28,9 @@ namespace Sgry.Azuki
 		ColorScheme _ColorScheme = ColorScheme.Default;
 		Size _VisibleSize = new Size( 300, 300 );
 		protected IGraphics _Gra = null;
-		protected int _LineNumWidth = 0;	// Width of the line number area in pixel
+		const int MinLineNumber = 1000;
+		protected int _MaxLineNumber = 9999;
+		protected int _LineNumAreaWidth = 0;// Width of the line number area in pixel
 		protected int _SpaceWidth;			// Width of a space char (U+0020) in pixel
 		protected int _FullSpaceWidth = 0;	// Width of a full-width space char (U+3000) in pixel
 		int _LineHeight;
@@ -123,7 +125,22 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// This method will be called when the content was changed.
 		/// </summary>
-		protected abstract void Doc_ContentChanged( object sender, ContentChangedEventArgs e );
+		protected virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		{
+			// expand width of line number area if needed
+			if( _MaxLineNumber < LineCount )
+			{
+				_MaxLineNumber = (_MaxLineNumber + 1) * 9 + _MaxLineNumber;
+				UpdateMetrics();
+				Invalidate();
+			}
+			else if( MinLineNumber <= LineCount && LineCount <= _MaxLineNumber/10 )
+			{
+				_MaxLineNumber = _MaxLineNumber / 10;
+				UpdateMetrics();
+				Invalidate();
+			}
+		}
 
 		#region Properties
 		/// <summary>
@@ -209,16 +226,18 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void UpdateMetrics()
+		protected void UpdateMetrics()
 		{
-			// re-calc tab width (in px)
-			StringBuilder buf = new StringBuilder();
+			// calculate tab width in pixel
+			StringBuilder buf = new StringBuilder( 16 );
 			for( int i=0; i<_TabWidth; i++ )
+			{
 				buf.Append( ' ' );
+			}
 			_TabWidthInPx = _Gra.MeasureText( buf.ToString() ).Width;
 
-			// update font metrics
-			_LineNumWidth = _Gra.MeasureText( "0000" ).Width;
+			// update other metrics
+			_LineNumAreaWidth = _Gra.MeasureText( _MaxLineNumber.ToString() ).Width + 1;
 			_SpaceWidth = _Gra.MeasureText( " " ).Width;
 			_LCharWidth = _Gra.MeasureText( "l" ).Width;
 			_FullSpaceWidth = _Gra.MeasureText( "\x3000" ).Width;
@@ -725,7 +744,7 @@ namespace Sgry.Azuki
 			get
 			{
 				if( ShowLineNumber )
-					return _LineNumWidth + 4;
+					return _LineNumAreaWidth + 4;
 				else
 					return 0;
 			}

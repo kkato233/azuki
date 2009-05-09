@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (propotional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-01-29
+// update: 2009-05-02
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -360,6 +360,8 @@ namespace Sgry.Azuki
 			{
 				Invalidate( invalidRect2 );
 			}
+
+			base.Doc_ContentChanged( sender, e );
 		}
 		#endregion
 

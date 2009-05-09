@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (propotional).
 // author: YAMAMOTO Suguru
-// update: 2009-05-02
+// update: 2009-05-09
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -445,7 +445,7 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( begin <= end, "cond: begin("+begin+") <= end("+end+")" );
 			DebugUtl.Assert( end <= Document.Length, "cond: end("+end+") <= Document.Length("+Document.Length+")" );
 			DebugUtl.Assert( 0 <= beginL, "cond: 0 <= beginL("+beginL+")" );
-			DebugUtl.Assert( beginL <= Document.LineCount, "cond: beginL("+beginL+") <= Document.LineCount("+Document.LineCount+")" );
+			DebugUtl.Assert( beginL <= this.LineCount, "cond: beginL("+beginL+") <= IView.LineCount("+this.LineCount+")" );
 			DebugUtl.Assert( beginLineHead <= begin, "cond: beginLineHead("+beginLineHead+") <= begin("+begin+")" );
 			if( begin == end )
 				return;
@@ -476,7 +476,7 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( end <= Document.Length, "cond: end("+end+") <= Document.Length("+Document.Length+")" );
 			DebugUtl.Assert( 0 <= beginLine, "cond: 0 <= beginLine("+beginLine+")" );
 			DebugUtl.Assert( beginLine < endLine, "cond: beginLine("+beginLine+") < endLine("+endLine+")" );
-			DebugUtl.Assert( endLine <= Document.LineCount, "cond: endLine("+endLine+") <= Document.LineCount("+Document.LineCount+")" );
+			DebugUtl.Assert( endLine <= this.LineCount, "cond: endLine("+endLine+") <= IView.LineCount("+this.LineCount+")" );
 			DebugUtl.Assert( beginLineHead <= begin, "cond: beginLineHead("+beginLineHead+") <= begin("+begin+")" );
 			DebugUtl.Assert( beginLineHead < endLineHead, "cond: beginLineHead("+beginLineHead+" < endLineHead("+endLineHead+")" );
 			DebugUtl.Assert( endLineHead <= end, "cond: endLineHead("+endLineHead+") <= end("+end+")" );

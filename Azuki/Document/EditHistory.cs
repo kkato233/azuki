@@ -90,7 +90,7 @@ namespace Sgry.Azuki
 			_NextIndex = 0;
 
 			// (all references must be nullified to allow GC collecting them)
-			for( int i=0; i<1; i++ )
+			for( int i=0; i<_Capacity; i++ )
 			{
 				_Stack[i] = null;
 			}

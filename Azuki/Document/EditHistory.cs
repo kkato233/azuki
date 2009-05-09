@@ -2,12 +2,15 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-05-31
+// update: 2009-05-09
 //=========================================================
 using System;
 
 namespace Sgry.Azuki
 {
+	/// <summary>
+	/// Stack object to hold editing actions.
+	/// </summary>
 	class EditHistory
 	{
 		#region Fields
@@ -28,6 +31,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Operations
 		/// <summary>
 		/// Pushes new action to the stack.
 		/// </summary>
@@ -84,9 +88,16 @@ namespace Sgry.Azuki
 		public void Clear()
 		{
 			_NextIndex = 0;
-			_Stack[0] = null;
-		}
 
+			// (all references must be nullified to allow GC collecting them)
+			for( int i=0; i<1; i++ )
+			{
+				_Stack[i] = null;
+			}
+		}
+		#endregion
+
+		#region Properties
 		/// <summary>
 		/// Whether an available UNDO action exists or not.
 		/// </summary>
@@ -106,6 +117,7 @@ namespace Sgry.Azuki
 					&& _Stack[_NextIndex] != null);
 			}
 		}
+		#endregion
 
 		#region Utilities
 		static class Utl

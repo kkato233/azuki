@@ -1,7 +1,7 @@
 // file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2009-04-12
+// update: 2009-05-02
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -163,6 +163,24 @@ namespace Sgry.Azuki.Highlighter
 						index++;
 					}
 				}
+				else if( doc[index] == '&' )
+				{
+					int seekEndIndex;
+					bool wasEntity;
+					CharClass klass;
+
+					// find end position of this token
+					FindEntityEnd( doc, index, out seekEndIndex, out wasEntity );
+					DebugUtl.Assert( 0 <= seekEndIndex && seekEndIndex <= doc.Length );
+
+					// highlight this token
+					klass = wasEntity ? CharClass.Entity : CharClass.Normal;
+					for( int i=index; i<seekEndIndex; i++ )
+					{
+						doc.SetCharClass( i, klass );
+					}
+					index = seekEndIndex;
+				}
 				else
 				{
 					// normal character.
@@ -170,6 +188,41 @@ namespace Sgry.Azuki.Highlighter
 					index++;
 				}
 			}
+		}
+
+		static void FindEntityEnd( Document doc, int startIndex, out int endIndex, out bool wasEntity )
+		{
+			DebugUtl.Assert( startIndex < doc.Length );
+			DebugUtl.Assert( doc[startIndex] == '&' );
+
+			endIndex = startIndex + 1;
+			while( endIndex < doc.Length )
+			{
+				char ch = doc[endIndex];
+
+				if( (ch < 'A' || 'Z' < ch)
+					&& (ch < 'a' || 'z' < ch)
+					&& (ch < '0' || '9' < ch)
+					&& (ch != '#') )
+				{
+					if( ch == ';' )
+					{
+						endIndex++;
+						wasEntity = true;
+						return;
+					}
+					else
+					{
+						wasEntity = false;
+						return;
+					}
+				}
+
+				endIndex++;
+			}
+
+			wasEntity = false;
+			return;
 		}
 
 		/// <summary>

@@ -1,7 +1,7 @@
 ﻿// file: CharClass.cs
 // brief: Indicator for class of characters.
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-05-02
 //=========================================================
 
 namespace Sgry.Azuki
@@ -64,6 +64,9 @@ namespace Sgry.Azuki
 
 		/// <summary>Element name (XML).</summary>
 		ElementName,
+
+		/// <summary>Entity (XML).</summary>
+		Entity,
 
 		/// <summary>Attribute (XML).</summary>
 		Attribute,

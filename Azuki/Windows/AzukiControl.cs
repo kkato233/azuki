@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-04-18
+// update: 2009-05-09
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1182,6 +1182,168 @@ namespace Sgry.Azuki.Windows
 		}
 		#endregion
 
+		#region IME Reconversion
+		unsafe int HandleImeReconversion( WinApi.RECONVERTSTRING* reconv )
+		{
+			/*
+			 * There are three 'string's on executing IME reconversion.
+			 * First is target string.
+			 * This string will be reconverted.
+			 * Second is composition string.
+			 * This contains target string and MAY be the target string.
+			 * Third is, string body.
+			 * This contains composition string and MAY be the composition string.
+			 * Typical usage is set each range as next:
+			 * 
+			 * - target string: selected text or adjusted by IME
+			 * - composition string: selected text or adjusted by IME
+			 * - string body: selected text or current line or entire text buffer it self.
+			 * 
+			 * IME reconversion takes two steps to be executed.
+			 * On first step, IME sends WM_IME_REQUEST with IMR_RECONVERTSTRING parameter to a window
+			 * to query size of string body (plus RECONVERTSTRING structure).
+			 * This time, Azuki returns selected text length or length of current line if nothing selected.
+			 * On second step, IME allocates memory block to store
+			 * RECONVERTSTRING structure and string body for the application.
+			 * This time, Azuki copies string body to the buffer and
+			 * set structure members and return non-zero value (meaning OK).
+			 * Then, IME will execute reconversion.
+			 */
+			const int MaxRangeLength = 40;
+			int		rc;
+			int		selBegin, selEnd;
+			string	stringBody;
+			int		stringBodyIndex;
+			IntPtr	ime;
+			char*	strPos;
+			int		infoBufSize;
+
+			// determine string body
+			Document.GetSelection( out selBegin, out selEnd );
+			if( selBegin != selEnd )
+			{
+				// something selected.
+				// set them as string body, composition string, and target string.
+				int end;
+
+				// shurink range if it is unreasonably big
+				end = selEnd;
+				if( MaxRangeLength < end - selBegin )
+				{
+					end = selBegin + MaxRangeLength;
+					if( end < Document.Length
+						&& Document.IsLowSurrogate(Document[end]) )
+					{
+						end--;
+					}
+				}
+
+				// get selected text
+				stringBody = Document.GetTextInRange( selBegin, end );
+				stringBodyIndex = selBegin;
+			}
+			else
+			{
+				// nothing selected.
+				// set current line as string body
+				// and let IME to determine composition string and target string.
+				int lineIndex, lineHeadIndex, lineEndIndex;
+				int begin, end;
+
+				// get current line range
+				lineIndex = Document.GetLineIndexFromCharIndex( selBegin );
+				lineHeadIndex = Document.GetLineHeadIndex( lineIndex );
+				lineEndIndex = lineHeadIndex + Document.GetLineLength( lineIndex );
+				begin = Math.Max( lineHeadIndex, selBegin - (MaxRangeLength / 2) );
+				end = Math.Min( selBegin + (MaxRangeLength / 2), lineEndIndex );
+				if( end < Document.Length && Document.IsLowSurrogate(Document[end]) )
+				{
+					end--;
+				}
+
+				// get current line content
+				stringBody = Document.GetTextInRange( begin, end );
+				stringBodyIndex = begin;
+			}
+
+			// calculate size of information buffer to communicate with IME
+			infoBufSize = sizeof(WinApi.RECONVERTSTRING)
+					+ Encoding.Unicode.GetByteCount(stringBody) + 1;
+			if( reconv == null )
+			{
+				// this is the first call for re-conversion.
+				// just inform IME the size of information buffer this time.
+				return infoBufSize;
+			}
+
+			// validate parameters
+			if( reconv->dwSize != (UInt32)infoBufSize
+				|| reconv->dwVersion != 0 )
+			{
+				return 0;
+			}
+
+			// get IME context
+			ime = WinApi.ImmGetContext( this.Handle );
+			if( ime == IntPtr.Zero )
+			{
+				return 0;
+			}
+
+			// copy string body
+			reconv->dwStrLen = (UInt32)stringBody.Length;
+			reconv->dwStrOffset = (UInt32)sizeof(WinApi.RECONVERTSTRING);
+			strPos = (char*)( (byte*)reconv + reconv->dwStrOffset );
+			for( int i=0; i<stringBody.Length; i++ )
+			{
+				strPos[i] = stringBody[i];
+			}
+			strPos[stringBody.Length] = '\0';
+
+			// calculate range of composition string and target string
+			if( selBegin != selEnd )
+			{
+				// set selected range as reconversion target
+				reconv->dwCompStrLen = (UInt32)( stringBody.Length );
+				reconv->dwCompStrOffset = 0;
+				reconv->dwTargetStrLen = reconv->dwCompStrLen;
+				reconv->dwTargetStrOffset = reconv->dwCompStrOffset;
+			}
+			else
+			{
+				// let IME adjust RECONVERTSTRING parameters
+				reconv->dwCompStrLen = 0;
+				reconv->dwCompStrOffset = (UInt32)( (selBegin - stringBodyIndex) * 2);
+				reconv->dwTargetStrLen = 0;
+				reconv->dwTargetStrOffset = reconv->dwCompStrOffset;
+				rc = WinApi.ImmSetCompositionStringW(
+						ime,
+						WinApi.SCS_QUERYRECONVERTSTRING,
+						reconv, (uint)infoBufSize, null, 0
+					);
+				if( rc == 0 )
+				{
+					return 0;
+				}
+			}
+
+			// select target string to make it being replaced by reconverted new string
+			selBegin = stringBodyIndex + (int)(reconv->dwTargetStrOffset / 2);
+			selEnd = selBegin + (int)reconv->dwTargetStrLen;
+			Document.SetSelection( selBegin, selEnd );
+
+			// adjust position of IME composition window
+			WinApi.SetImeWindowPos( this.Handle,
+					GetPositionFromIndex(selBegin)
+				);
+
+			// release context object
+			WinApi.ImmReleaseContext( this.Handle, ime );
+
+			return infoBufSize;
+		}
+		#endregion
+
 		#region Behavior as a .NET Control
 		/// <summary>
 		/// Gets or sets default text color.
@@ -1447,6 +1609,17 @@ namespace Sgry.Azuki.Windows
 					// move IMM window to caret position
 					WinApi.SetImeWindowFont( Handle, Font );
 				}
+				else if( message == WinApi.WM_IME_REQUEST
+					&& wParam.ToInt64() == (long)WinApi.IMR_RECONVERTSTRING )
+				{
+					int rc;
+
+					unsafe {
+						rc = HandleImeReconversion( (WinApi.RECONVERTSTRING*)lParam.ToPointer() );
+					}
+
+					return new IntPtr( rc );
+				}
 			}
 			catch( Exception ex )
 			{
@@ -1454,7 +1627,9 @@ namespace Sgry.Azuki.Windows
 				// exceptions thrown in this method can not be handled well.
 				// so we catch them here.
 				Console.Error.WriteLine( ex );
-				//MessageBox.Show( ex.ToString(), "azuki bug" );
+#				if DEBUG
+				MessageBox.Show( ex.ToString(), "azuki bug" );
+#				endif
 			}
 
 			return WinApi.CallWindowProc( _OriginalWndProcObj, window, message, wParam, lParam );

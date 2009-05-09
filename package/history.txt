@@ -1,4 +1,5 @@
 == 1.4.0 (2009-  -  ) ==
+ * add: now Azuki supports IME re-conversion
  * add: XmlHighlighter now highlights HTML entities
  * add: now large line number than 9999 can be shown
 

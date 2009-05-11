@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-09
+// update: 2009-05-11
 //=========================================================
 using System;
 using System.Collections;
@@ -32,6 +32,7 @@ namespace Sgry.Azuki
 		bool _IsReadOnly = false;
 		bool _IsDirty = false;
 		IHighlighter _Highlighter = null;
+		object _Tag = null;
 		#endregion
 
 		#region Init / Dispose
@@ -1082,6 +1083,15 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
+		/// <summary>
+		/// Gets or sets an object associated with this document.
+		/// </summary>
+		public object Tag
+		{
+			get{ return _Tag; }
+			set{ _Tag = value; }
+		}
+
 		/// <summary>
 		/// Gets line content enumerator.
 		/// </summary>

@@ -2,6 +2,7 @@
  * add: now Azuki supports IME re-conversion
  * add: XmlHighlighter now highlights HTML entities
  * add: now large line number than 9999 can be shown
+ * add: added Tag property to Document class (now one any object can be associate with each document)
  * fix: fixed a problem that clearing UNDO history will not release using memory area instantly
  * fix: reduced memory usage
 

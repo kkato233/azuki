@@ -297,8 +297,12 @@ namespace Sgry.Ann
 			// load file content
 			using( file = new StreamReader(filePath, encoding) )
 			{
+				// expand internal buffer size before loading file
+				// (estimating needed buffer size by a half of byte-count of file)
+				doc.AzukiDoc.Capacity = (int)( file.BaseStream.Length / 2 );
+
 				// prepare load buffer
-				doc.AzukiDoc.Capacity = (int)file.BaseStream.Length;
+				// (if the file is larger than 1MB, separate by 10 and load for each)
 				if( file.BaseStream.Length < 1024*1024 )
 				{
 					buf = new char[ file.BaseStream.Length ];
@@ -308,6 +312,7 @@ namespace Sgry.Ann
 					buf = new char[ (file.BaseStream.Length+10) / 10 ];
 				}
 
+				// read
 				while( !file.EndOfStream )
 				{
 					readCount = file.Read( buf, 0, buf.Length-1 );

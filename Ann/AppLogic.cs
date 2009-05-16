@@ -1,4 +1,4 @@
-// 2009-04-20
+// 2009-05-16
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -474,11 +474,13 @@ namespace Sgry.Ann
 				if( doc.FilePath != null )
 				{
 					// set initial directory to that containing currently active file if exists
+#					if !PocketPC
 					string dirPath = Path.GetDirectoryName( doc.FilePath );
 					if( Directory.Exists(dirPath) )
 					{
 						dialog.InitialDirectory = dirPath;
 					}
+#					endif
 
 					// set initial file name
 					dialog.FileName = Path.GetFileName( doc.FilePath );

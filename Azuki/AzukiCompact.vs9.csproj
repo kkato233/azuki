@@ -1,0 +1,117 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{17A481F2-232B-40D0-8A45-22E897AFF303}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>
+    </AppDesignerFolder>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>Sgry.Azuki</RootNamespace>
+    <AssemblyName>AzukiCompact</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Azuki.snk</AssemblyOriginatorKeyFile>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>3C41C503-53EF-4c2a-8DD4-A8217CAD115E</PlatformID>
+    <OSVersion>4.20</OSVersion>
+    <DeployDirSuffix>SmartDeviceProject1</DeployDirSuffix>
+    <NativePlatformName>Pocket PC 2003</NativePlatformName>
+    <FormFactorID>
+    </FormFactorID>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\package\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PocketPC</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\package\</OutputPath>
+    <DefineConstants>TRACE;PocketPC</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>..\package\AzukiCompact.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actions.cs" />
+    <Compile Include="Actions.Selection.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AutoIndentHooks.cs" />
+    <Compile Include="CaretMoveLogic.cs" />
+    <Compile Include="DebugUtl.cs" />
+    <Compile Include="Document\SearchResult.cs" />
+    <Compile Include="Highlighter\CSharpHighlighter.cs" />
+    <Compile Include="Highlighter\HighlighterUtl.cs" />
+    <Compile Include="Highlighter\JavaHighlighter.cs" />
+    <Compile Include="Highlighter\RubyHighlighter.cs" />
+    <Compile Include="UiImpl.cs" />
+    <Compile Include="IUserInterface.cs" />
+    <Compile Include="LineLogic.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="UserPref.cs" />
+    <Compile Include="View\DrawingOption.cs" />
+    <Compile Include="View\IView.cs" />
+    <Compile Include="WordLogic.cs" />
+    <Compile Include="Document\CharClass.cs" />
+    <Compile Include="Document\Document.cs" />
+    <Compile Include="Document\TextBuffer.cs" />
+    <Compile Include="Document\EditAction.cs" />
+    <Compile Include="Document\EditHistory.cs" />
+    <Compile Include="Document\SplitArray.cs" />
+    <Compile Include="Highlighter\IHighlighter.cs" />
+    <Compile Include="Highlighter\Highlighters.cs" />
+    <Compile Include="Highlighter\KeywordHighlighter.cs" />
+    <Compile Include="Highlighter\CppHighlighter.cs" />
+    <Compile Include="Highlighter\XmlHighlighter.cs" />
+    <Compile Include="View\ColorScheme.cs" />
+    <Compile Include="View\PropView.cs" />
+    <Compile Include="View\PropWrapView.cs" />
+    <Compile Include="View\View.cs" />
+    <Compile Include="View\View.Paint.cs" />
+    <Compile Include="View\ViewType.cs" />
+    <Compile Include="Windows\PlatWin.cs" />
+    <Compile Include="Windows\WinApi.cs" />
+    <Compile Include="Windows\AzukiControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

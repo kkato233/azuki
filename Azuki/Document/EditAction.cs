@@ -2,7 +2,7 @@
 // brief: Recorded editing action for UNDO/REDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-05-08
+// update: 2008-05-16
 //=========================================================
 using System;
 using System.Diagnostics;
@@ -82,6 +82,22 @@ namespace Sgry.Azuki
 				_Document.SetSelection( _Index, _Index+_InsertedText.Length );
 			}
 			_Document.IsRecordingHistory = true;
+		}
+
+		/// <summary>
+		/// Gets the text deleted by this action.
+		/// </summary>
+		public string DeletedText
+		{
+			get{ return _DeletedText; }
+		}
+
+		/// <summary>
+		/// Gets the text newly inserted by this action.
+		/// </summary>
+		public string InsertedText
+		{
+			get{ return _InsertedText; }
 		}
 
 #		if DEBUG

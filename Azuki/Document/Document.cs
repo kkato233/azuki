@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-11
+// update: 2009-05-16
 //=========================================================
 using System;
 using System.Collections;
@@ -22,7 +22,7 @@ namespace Sgry.Azuki
 	public class Document : IEnumerable
 	{
 		#region Fields
-		TextBuffer _Buffer = new TextBuffer( 1024, 256 );
+		TextBuffer _Buffer = new TextBuffer( 512, 256 );
 		SplitArray<int> _LHI = new SplitArray<int>( 64 ); // line head indexes
 		EditHistory _History = new EditHistory();
 		int _CaretIndex = 0;
@@ -1098,6 +1098,21 @@ namespace Sgry.Azuki
 		public IEnumerator GetEnumerator()
 		{
 			return _Buffer.GetEnumerator();
+		}
+
+		/// <summary>
+		/// Gets estimated memory size used by this document.
+		/// </summary>
+		public int MemoryUsage
+		{
+			get
+			{
+				int usage = 0;
+				usage += _Buffer.Capacity * ( sizeof(char) + sizeof(CharClass) );
+				usage += _LHI.Capacity * sizeof(int);
+				usage += _History.MemoryUsage;
+				return usage;
+			}
 		}
 
 		/// <summary>

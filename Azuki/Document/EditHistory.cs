@@ -2,7 +2,7 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-05-09
+// update: 2009-05-16
 //=========================================================
 using System;
 
@@ -115,6 +115,28 @@ namespace Sgry.Azuki
 			{
 				return (_NextIndex < _Stack.Length
 					&& _Stack[_NextIndex] != null);
+			}
+		}
+
+		/// <summary>
+		/// Gets estimated memory size used by this object.
+		/// </summary>
+		public int MemoryUsage
+		{
+			get
+			{
+				int usage = 0;
+
+				foreach( EditAction action in _Stack )
+				{
+					if( action != null )
+					{
+						usage += action.InsertedText.Length * sizeof(char);
+						usage += action.DeletedText.Length * sizeof(char);
+					}
+				}
+
+				return usage;
 			}
 		}
 		#endregion

@@ -1,4 +1,4 @@
-// 2009-04-25
+// 2009-05-16
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -150,7 +150,8 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Window_Prev ]		= Actions.ActivatePrevDocument;
 			_MenuMap[ _MI_Window_List ]		= Actions.ShowDocumentList;
 
-			_MenuMap[ _MI_Help_About ]		= Actions.ShowAboutDialog;
+			_MenuMap[ _MI_Help_MemoryUsage ]	= Actions.ShowMemoryUsage;
+			_MenuMap[ _MI_Help_About ]			= Actions.ShowAboutDialog;
 		}
 
 		void InitKeyMap()
@@ -318,6 +319,7 @@ namespace Sgry.Ann
 			_MI_Window.MenuItems.Add( _MI_Window_Prev );
 			_MI_Window.MenuItems.Add( _MI_Window_List );
 
+			_MI_Help.MenuItems.Add( _MI_Help_MemoryUsage );
 			_MI_Help.MenuItems.Add( _MI_Help_About );
 
 			// menu labels
@@ -354,7 +356,8 @@ namespace Sgry.Ann
 			_MI_Window_Prev.Text = "&Previous window";
 			_MI_Window_List.Text = "Show &window list...";
 			_MI_Help.Text = "&Help";
-			_MI_Help_About.Text = "&About";
+			_MI_Help_MemoryUsage.Text = "Show &memory usage...";
+			_MI_Help_About.Text = "&About...";
 
 			// bind menu actions
 			EventHandler menuActionHandler = this.HandleMenuAction;
@@ -448,8 +451,9 @@ namespace Sgry.Ann
 		MenuItem _MI_Window_Next	= new MenuItem();
 		MenuItem _MI_Window_Prev	= new MenuItem();
 		MenuItem _MI_Window_List	= new MenuItem();
-		MenuItem _MI_Help			= new MenuItem();
-		MenuItem _MI_Help_About		= new MenuItem();
+		MenuItem _MI_Help				= new MenuItem();
+		MenuItem _MI_Help_MemoryUsage	= new MenuItem();
+		MenuItem _MI_Help_About			= new MenuItem();
 		AzukiControl _Azuki;
 		SearchPanel _SearchPanel = new SearchPanel();
 		#endregion

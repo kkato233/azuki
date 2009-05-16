@@ -11,7 +11,8 @@
     </namespaceSummaries>
     <conceptualContent snippetFile="">
         <topics>
-            <topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" file=".\api_devnotes.xml" title="Developper's Notes" tocTitle="Developper's Notes" revision="1" visible="True" />
+            <topic id="f23d44f5-55e0-4cee-a443-11aeb276403f" file=".\api_cover.html" title="Cover" revision="1" visible="True" />
+            <topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" file=".\api_devnotes.xml" title="Developper's Notes" revision="1" visible="True" />
         </topics>
     </conceptualContent>
     <apiFilter>
@@ -33,7 +34,7 @@
     <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
     <CppCommentsFixup>False</CppCommentsFixup>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
-    <IndentHtml>False</IndentHtml>
+    <IndentHtml>True</IndentHtml>
     <Preliminary>False</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>API Reference</RootNamespaceTitle>

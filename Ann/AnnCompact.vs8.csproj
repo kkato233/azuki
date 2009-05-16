@@ -1,10 +1,10 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8302CB3D-FD9E-487A-B6AC-A5094A04ECA1}</ProjectGuid>
+    <ProjectGuid>{0B64D00E-BFA2-495E-879C-52EFB5C487A4}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Sgry.Ann</RootNamespace>
     <AssemblyName>AnnCompact</AssemblyName>

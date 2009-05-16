@@ -8,30 +8,9 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>
     </AppDesignerFolder>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <RootNamespace>Sgry.Azuki</RootNamespace>
     <AssemblyName>Azuki</AssemblyName>
-    <StartupObject>
-    </StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Azuki.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -40,27 +19,27 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants></DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
     <DocumentationFile>..\package\Azuki.xml</DocumentationFile>
-    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -69,42 +48,42 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Actions.cs" />
     <Compile Include="Actions.Selection.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AutoIndentHooks.cs" />
     <Compile Include="CaretMoveLogic.cs" />
-    <Compile Include="DebugUtl.cs" />
-    <Compile Include="Document\SearchResult.cs" />
-    <Compile Include="Highlighter\CSharpHighlighter.cs" />
-    <Compile Include="Highlighter\HighlighterUtl.cs" />
-    <Compile Include="Highlighter\JavaHighlighter.cs" />
-    <Compile Include="Highlighter\RubyHighlighter.cs" />
-    <Compile Include="UiImpl.cs" />
     <Compile Include="IUserInterface.cs" />
+    <Compile Include="UiImpl.cs" />
     <Compile Include="LineLogic.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="UserPref.cs" />
+    <Compile Include="WordLogic.cs" />
+    <Compile Include="DebugUtl.cs" />
     <Compile Include="View\DrawingOption.cs" />
     <Compile Include="View\IView.cs" />
-    <Compile Include="WordLogic.cs" />
     <Compile Include="Document\CharClass.cs" />
     <Compile Include="Document\Document.cs" />
     <Compile Include="Document\TextBuffer.cs" />
+    <Compile Include="Document\SearchResult.cs" />
     <Compile Include="Document\EditAction.cs" />
     <Compile Include="Document\EditHistory.cs" />
     <Compile Include="Document\SplitArray.cs" />
     <Compile Include="Highlighter\IHighlighter.cs" />
     <Compile Include="Highlighter\Highlighters.cs" />
+    <Compile Include="Highlighter\HighlighterUtl.cs" />
     <Compile Include="Highlighter\KeywordHighlighter.cs" />
     <Compile Include="Highlighter\CppHighlighter.cs" />
+    <Compile Include="Highlighter\CSharpHighlighter.cs" />
+    <Compile Include="Highlighter\JavaHighlighter.cs" />
     <Compile Include="Highlighter\XmlHighlighter.cs" />
+    <Compile Include="Highlighter\RubyHighlighter.cs" />
+    <Compile Include="Test\DocumentTest.cs" />
     <Compile Include="Test\EditHistoryTest.cs" />
     <Compile Include="Test\LineLogicTest.cs" />
     <Compile Include="Test\SplitArrayTest.cs" />
     <Compile Include="Test\TestDriver.cs" />
     <Compile Include="Test\KeywordHighlighterTest.cs" />
-    <Compile Include="Test\DocumentTest.cs" />
     <Compile Include="View\ColorScheme.cs" />
     <Compile Include="View\PropView.cs" />
     <Compile Include="View\PropWrapView.cs" />
@@ -117,6 +96,17 @@
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Azuki.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
@@ -134,15 +124,4 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Azuki.snk" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

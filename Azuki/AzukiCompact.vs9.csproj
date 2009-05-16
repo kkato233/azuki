@@ -17,7 +17,7 @@
     <PlatformFamilyName>PocketPC</PlatformFamilyName>
     <PlatformID>3C41C503-53EF-4c2a-8DD4-A8217CAD115E</PlatformID>
     <OSVersion>4.20</OSVersion>
-    <DeployDirSuffix>SmartDeviceProject1</DeployDirSuffix>
+    <DeployDirSuffix>AzukiCompact</DeployDirSuffix>
     <NativePlatformName>Pocket PC 2003</NativePlatformName>
     <FormFactorID>
     </FormFactorID>
@@ -27,23 +27,23 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PocketPC</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
+    <DefineConstants>DEBUG;PocketPC</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants>TRACE;PocketPC</DefineConstants>
+    <DefineConstants>PocketPC</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
-    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -52,41 +52,40 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Actions.cs" />
     <Compile Include="Actions.Selection.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AutoIndentHooks.cs" />
     <Compile Include="CaretMoveLogic.cs" />
-    <Compile Include="DebugUtl.cs" />
-    <Compile Include="Document\SearchResult.cs" />
-    <Compile Include="Highlighter\CSharpHighlighter.cs" />
-    <Compile Include="Highlighter\HighlighterUtl.cs" />
-    <Compile Include="Highlighter\JavaHighlighter.cs" />
-    <Compile Include="Highlighter\RubyHighlighter.cs" />
-    <Compile Include="UiImpl.cs" />
     <Compile Include="IUserInterface.cs" />
+    <Compile Include="UiImpl.cs" />
     <Compile Include="LineLogic.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="UserPref.cs" />
+    <Compile Include="WordLogic.cs" />
+    <Compile Include="DebugUtl.cs" />
     <Compile Include="View\DrawingOption.cs" />
     <Compile Include="View\IView.cs" />
-    <Compile Include="WordLogic.cs" />
     <Compile Include="Document\CharClass.cs" />
     <Compile Include="Document\Document.cs" />
     <Compile Include="Document\TextBuffer.cs" />
+    <Compile Include="Document\SearchResult.cs" />
     <Compile Include="Document\EditAction.cs" />
     <Compile Include="Document\EditHistory.cs" />
     <Compile Include="Document\SplitArray.cs" />
     <Compile Include="Highlighter\IHighlighter.cs" />
     <Compile Include="Highlighter\Highlighters.cs" />
+    <Compile Include="Highlighter\HighlighterUtl.cs" />
     <Compile Include="Highlighter\KeywordHighlighter.cs" />
     <Compile Include="Highlighter\CppHighlighter.cs" />
+    <Compile Include="Highlighter\CSharpHighlighter.cs" />
+    <Compile Include="Highlighter\JavaHighlighter.cs" />
     <Compile Include="Highlighter\XmlHighlighter.cs" />
+    <Compile Include="Highlighter\RubyHighlighter.cs" />
     <Compile Include="View\ColorScheme.cs" />
     <Compile Include="View\PropView.cs" />
     <Compile Include="View\PropWrapView.cs" />
@@ -99,14 +98,10 @@
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Azuki.snk" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
-        <HostingProcess disable="1" />
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -114,4 +109,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

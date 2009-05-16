@@ -1,20 +1,17 @@
 @echo off
 setlocal
 
-set _OPT=-nologo -v:m -t:Build
-set _OPT=%_OPT% /clp:ForceNoAlign
-::set _OPT=%_OPT%;ShowCommandLine
+set _OPT=-nologo -v:m -t:Build -validate
+set _OPT=%_OPT% -p:Configuration=Release -clp:ForceNoAlign
+set _OPT=%_OPT%;ShowCommandLine
+set _SOLUTION_FILE=%~1
 
-:: determine build configuration
-if "%1"=="debug" (
-	set _CONF=Debug
-	echo # debug build
-) else (
-	set _CONF=Release
+if "%~1"=="" (
+	echo # no solution file was specified; using All.vs8.sln.
+	set _SOLUTION_FILE=All.vs8.sln
 )
-set _OPT=%_OPT% -p:Configuration=%_CONF%
 
 :: build
 echo ===== begin msbuild =====
-msbuild.exe All.vs9.sln %_OPT%
+msbuild.exe "%_SOLUTION_FILE%" %_OPT%
 echo ===== end msbuild =====

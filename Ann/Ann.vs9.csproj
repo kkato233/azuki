@@ -5,57 +5,36 @@
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0A4BB220-4224-4879-8146-3230357CC320}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>
-    </AppDesignerFolder>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Sgry.Ann</RootNamespace>
     <AssemblyName>Ann</AssemblyName>
-    <StartupObject>Sgry.Ann.Program</StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>DEBUG;$(PlatformFamilyName)</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants></DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <DocumentationFile>..\package\Ann.xml</DocumentationFile>
-    <NoStdLib>true</NoStdLib>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Azuki">
@@ -67,6 +46,40 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Actions.File.cs" />
+    <Compile Include="Actions.Edit.cs" />
+    <Compile Include="Actions.View.cs" />
+    <Compile Include="Actions.Tool.cs" />
+    <Compile Include="Actions.Window.cs" />
+    <Compile Include="Actions.Help.cs" />
+    <Compile Include="AppConfig.cs" />
+    <Compile Include="AppLogic.cs" />
+    <Compile Include="Document.cs" />
+    <Compile Include="AnnForm.cs" />
+    <Compile Include="DocumentListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DrawingOptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EncodingAnalyzer.cs" />
+    <Compile Include="FileType.cs" />
+    <Compile Include="Ini.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
@@ -84,40 +97,4 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Actions.File.cs" />
-    <Compile Include="Actions.Help.cs" />
-    <Compile Include="AnnForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AppConfig.cs" />
-    <Compile Include="AppLogic.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Document.cs" />
-    <Compile Include="DocumentListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EncodingAnalyzer.cs" />
-    <Compile Include="FileType.cs" />
-    <Compile Include="SearchPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Ini.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Actions.Edit.cs" />
-    <Compile Include="Actions.Window.cs" />
-    <Compile Include="Actions.Tool.cs" />
-    <Compile Include="Actions.View.cs" />
-    <Compile Include="DrawingOptionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

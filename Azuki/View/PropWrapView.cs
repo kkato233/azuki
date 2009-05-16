@@ -1,5 +1,5 @@
 // file: PropWrapView.cs
-// brief: Platform independent view (propotional, line-wrap).
+// brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
 // update: 2009-05-02
 //=========================================================
@@ -13,7 +13,7 @@ using StringBuilder = System.Text.StringBuilder;
 namespace Sgry.Azuki
 {
 	/// <summary>
-	/// Platform independent view implementation to display wrapped text with propotional font.
+	/// Platform independent view implementation to display wrapped text with proportional font.
 	/// </summary>
 	class PropWrapView : PropView
 	{

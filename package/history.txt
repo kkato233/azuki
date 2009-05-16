@@ -5,6 +5,7 @@
  * add: added Tag property to Document class (now one any object can be associate with each document)
  * fix: fixed a problem that clearing UNDO history will not release using memory area instantly
  * fix: reduced memory usage
+ * fix: corrected mis-spelling of ViewType members (no more "propotional")
 
 == 1.3.2 (2009-05-01) ==
  * fix: fixed a problem that document will be corrupted if user UNDOes just after inputting a surrogate pair by IME

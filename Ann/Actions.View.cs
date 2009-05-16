@@ -39,14 +39,14 @@ namespace Sgry.Ann
 			= delegate( AppLogic app )
 		{
 			AzukiControl azuki = app.MainForm.Azuki;
-			if( azuki.ViewType == ViewType.Propotional )
+			if( azuki.ViewType == ViewType.Proportional )
 			{
-				azuki.ViewType = ViewType.WrappedPropotional;
+				azuki.ViewType = ViewType.WrappedProportional;
 				azuki.ViewWidth = azuki.ClientSize.Width;
 			}
 			else
 			{
-				azuki.ViewType = ViewType.Propotional;
+				azuki.ViewType = ViewType.Proportional;
 			}
 		};
 	}

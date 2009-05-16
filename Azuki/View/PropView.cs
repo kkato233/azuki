@@ -1,5 +1,5 @@
 ﻿// file: PropView.cs
-// brief: Platform independent view (propotional).
+// brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
 // update: 2009-05-09
 //=========================================================
@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace Sgry.Azuki
 {
 	/// <summary>
-	/// Platform independent view implementation to display text with propotional font.
+	/// Platform independent view implementation to display text with proportional font.
 	/// </summary>
 	class PropView : View
 	{

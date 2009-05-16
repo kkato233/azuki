@@ -97,7 +97,7 @@ namespace Sgry.Azuki.Windows
 
 			// setup document event handler
 			Document = new Document();
-			ViewType = ViewType.Propotional; // (setting ViewType installs document event handlers)
+			ViewType = ViewType.Proportional; // (setting ViewType installs document event handlers)
 
 			// setup default keybind
 			ResetKeyBind();
@@ -150,8 +150,8 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 #		if !PocketPC
 		[Category("Drawing")]
-		[DefaultValue(ViewType.Propotional)]
-		[Description("Specify how to draw text content. Wrapped propotional view shows text wrapped within the width specified as ViewWidth property. Propotional view do not wrap text but draws faster.")]
+		[DefaultValue(ViewType.Proportional)]
+		[Description("Specify how to draw text content. Wrapped proportional view shows text wrapped within the width specified as ViewWidth property. Proportional view do not wrap text but draws faster.")]
 #		endif
 		public ViewType ViewType
 		{
@@ -492,7 +492,7 @@ namespace Sgry.Azuki.Windows
 #		if !PocketPC
 		[Browsable(true)]
 		[Category("Drawing")]
-		[Description("Width of the text content area. In proportional view, highlight line will be drawn in this width and this will be automatically expanded to enough width to show the input text. In wrapped-propotional view, text will be wrapped in this width.")]
+		[Description("Width of the text content area. In proportional view, highlight line will be drawn in this width and this will be automatically expanded to enough width to show the input text. In wrapped-proportional view, text will be wrapped in this width.")]
 #		endif
 		public int ViewWidth
 		{

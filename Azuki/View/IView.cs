@@ -293,14 +293,14 @@ namespace Sgry.Azuki
 		/// width of it affectes how text lines were drawn.
 		/// If <see cref="Sgry.Azuki.IUserInterface.ViewType">
 		/// IUserInterface.ViewType</see> was set to
-		/// <see cref="Sgry.Azuki.ViewType.Propotional">
-		/// ViewType.Propotional</see>,
+		/// <see cref="Sgry.Azuki.ViewType.Proportional">
+		/// ViewType.Proportional</see>,
 		/// the width will be expanded as needed
 		/// to continue drawing a long logical line.
 		/// If <see cref="Sgry.Azuki.IUserInterface.ViewType">
 		/// IUserInterface.ViewType</see> was set to
-		/// <see cref="Sgry.Azuki.ViewType.WrappedPropotional">
-		/// ViewType.WrappedPropotional</see>,
+		/// <see cref="Sgry.Azuki.ViewType.WrappedProportional">
+		/// ViewType.WrappedProportional</see>,
 		/// each logical text lines will be wrapped at right end of the text area.
 		/// </para>
 		/// <para>

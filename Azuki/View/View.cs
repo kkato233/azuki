@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-02
+// update: 2009-05-23
 //=========================================================
 using System;
 using System.Drawing;
@@ -127,6 +127,11 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
+			UpdateLineNumberWidth();
+		}
+
+		void UpdateLineNumberWidth()
+		{
 			// expand width of line number area if needed
 			if( _MaxLineNumber < LineCount )
 			{
@@ -167,6 +172,9 @@ namespace Sgry.Azuki
 				// install event handlers to the new document
 				value.SelectionChanged += Doc_SelectionChanged;
 				value.ContentChanged += Doc_ContentChanged;
+
+				// adjust for new document
+				UpdateLineNumberWidth();
 			}
 		}
 

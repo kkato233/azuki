@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-04-25
+// update: 2009-05-24
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace Sgry.Azuki
 #		endif
 		IUserInterface _UI;
 		View _View = null;
+		Document _Document = null;
 		ViewType _ViewType = ViewType.Proportional;
 
 		IDictionary< uint, ActionProc > _KeyMap = new Dictionary< uint, ActionProc >( 32 );
@@ -80,26 +81,30 @@ namespace Sgry.Azuki
 		#region View and Document
 		public Document Document
 		{
-			get{ return View.Document; }
+			get{ return _Document; }
 			set
 			{
 				if( value == null )
 					throw new ArgumentNullException();
 
+				Document prevDoc = _Document;
+
 				// uninstall event handlers
-				if( View.Document != null
-					&& View.Document != value )
+				if( Document != null )
 				{
-					View.Document.SelectionChanged -= Doc_SelectionChanged;
-					View.Document.ContentChanged -= Doc_ContentChanged;
+					Document.SelectionChanged -= Doc_SelectionChanged;
+					Document.ContentChanged -= Doc_ContentChanged;
 				}
 
 				// replace document
-				View.Document = value;
+				_Document = value;
 
 				// install event handlers
-				View.Document.SelectionChanged += Doc_SelectionChanged;
-				View.Document.ContentChanged += Doc_ContentChanged;
+				value.SelectionChanged += Doc_SelectionChanged;
+				value.ContentChanged += Doc_ContentChanged;
+
+				// delegate to View
+				View.HandleDocumentChanged( prevDoc );
 
 				// redraw graphic
 				_UI.Invalidate();
@@ -114,12 +119,11 @@ namespace Sgry.Azuki
 		public View View
 		{
 			get{ return _View; }
-			set{ _View = value; }
 		}
 		
 		/// <summary>
 		/// Gets or sets type of the view.
-		/// View type determine how to render text content.
+		/// View type determines how to render text content.
 		/// </summary>
 		public ViewType ViewType
 		{
@@ -132,11 +136,11 @@ namespace Sgry.Azuki
 				switch( value )
 				{
 					case ViewType.WrappedProportional:
-						View = new PropWrapView( View );
+						_View = new PropWrapView( View );
 						break;
 					//case ViewType.Proportional:
 					default:
-						View = new PropView( View );
+						_View = new PropView( View );
 						break;
 				}
 				_ViewType = value;
@@ -153,6 +157,9 @@ namespace Sgry.Azuki
 					Document.SelectionChanged -= Doc_SelectionChanged;
 					Document.SelectionChanged += Doc_SelectionChanged;
 				}
+
+				// tell new view object that the document object was changed
+				View.HandleDocumentChanged( Document );
 
 				// refresh GUI
 				_UI.Invalidate();

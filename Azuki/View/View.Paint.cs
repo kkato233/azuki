@@ -359,7 +359,7 @@ namespace Sgry.Azuki
 		protected bool IsInSelection( int index )
 		{
 			int begin, end;
-			_Document.GetSelection( out begin, out end );
+			Document.GetSelection( out begin, out end );
 			return (begin <= index && index < end);
 		}
 

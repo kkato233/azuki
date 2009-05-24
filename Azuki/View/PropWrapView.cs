@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-05-02
+// update: 2009-05-24
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -44,34 +44,27 @@ namespace Sgry.Azuki
 			_PLHI.Add( 0 );
 			if( Document != null )
 			{
-				//UpdatePLHI( 0, String.Empty, Document.Text );
+				UpdatePLHI( 0, String.Empty, Document.Text );
 			}
 		}
 		#endregion
 
-		#region Properties
-		/// <summary>
-		/// Gets or sets the document displayed in this view.
-		/// </summary>
-		public override Document Document
+		internal override void HandleDocumentChanged( Document prevDocument )
 		{
-			//get{ return base.Document; }
-			set
-			{
-				base.Document = value;
+			base.HandleDocumentChanged( prevDocument );
 
-				// update PLHI
-				// (document was changed so line-wrapping state must be refreshed.
-				// Note that this property may be set by View.ctor.
-				// In that case, do not calculate because _PLHI was not prepared yet so calculation must fail.)
-				_PLHI.Capacity = Document.LineCount;
-				if( 0 < _PLHI.Count )
-				{
-					Doc_ContentChanged( value, new ContentChangedEventArgs(0, String.Empty, value.Text) );
-				}
+			// update PLHI
+			// (document was changed so line-wrapping state must be refreshed.
+			// Note that this property may be set by View.ctor.
+			// In that case, do not calculate because _PLHI was not prepared yet so calculation must fail.)
+			_PLHI.Capacity = Document.LineCount;
+			if( 0 < _PLHI.Count )
+			{
+				Doc_ContentChanged( Document, new ContentChangedEventArgs(0, String.Empty, Document.Text) );
 			}
 		}
 
+		#region Properties
 		/// <summary>
 		/// Font to be used for displaying text.
 		/// </summary>
@@ -239,7 +232,9 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetLineHeadIndex( int lineIndex )
 		{
-			Debug.Assert( 0 <= lineIndex && lineIndex < _PLHI.Count );
+			if( lineIndex < 0 || _PLHI.Count <= lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid index was given (lineIndex:"+lineIndex+", LineCount:"+LineCount+")." );
+
 			return _PLHI[ lineIndex ];
 		}
 

@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-05-24
 //=========================================================
 using System;
 using System.Drawing;
@@ -19,7 +19,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		Document Document
 		{
-			get; set;
+			get;
 		}
 
 		/// <summary>

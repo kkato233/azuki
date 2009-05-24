@@ -17,7 +17,6 @@ namespace Sgry.Azuki
 	{
 		#region Fields and Types
 		protected IUserInterface _UI;
-		Document _Document = null;
 		Font _Font;
 		int _FirstVisibleLine = 0;
 		int _ScrollPosX;
@@ -85,8 +84,6 @@ namespace Sgry.Azuki
 			this._VisibleSize = other._VisibleSize;
 
 			// inherit parameters that needs to be set through property
-			if( other.Document != null )
-				this.Document = other.Document;
 			if( other._Font != null )
 				this.Font = other.Font;
 			this.TextAreaWidth = other._TextAreaWidth;
@@ -108,44 +105,14 @@ namespace Sgry.Azuki
 			_Gra.Dispose();
 			_Gra = null;
 
-			// uninstall event handlers from document
-			if( _Document != null )
+			// uninstall event handlers
+			if( Document != null )
 			{
-				_Document.SelectionChanged -= Doc_SelectionChanged;
-				_Document.ContentChanged -= Doc_ContentChanged;
+				Document.SelectionChanged -= Doc_SelectionChanged;
+				Document.ContentChanged -= Doc_ContentChanged;
 			}
 		}
 		#endregion
-
-		/// <summary>
-		/// This method will be called when the selection was changed.
-		/// </summary>
-		protected abstract void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e );
-
-		/// <summary>
-		/// This method will be called when the content was changed.
-		/// </summary>
-		protected virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
-		{
-			UpdateLineNumberWidth();
-		}
-
-		void UpdateLineNumberWidth()
-		{
-			// expand width of line number area if needed
-			if( _MaxLineNumber < LineCount )
-			{
-				_MaxLineNumber = (_MaxLineNumber + 1) * 9 + _MaxLineNumber;
-				UpdateMetrics();
-				Invalidate();
-			}
-			else if( MinLineNumber <= LineCount && LineCount <= _MaxLineNumber/10 )
-			{
-				_MaxLineNumber = _MaxLineNumber / 10;
-				UpdateMetrics();
-				Invalidate();
-			}
-		}
 
 		#region Properties
 		/// <summary>
@@ -153,29 +120,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public virtual Document Document
 		{
-			get{ return _Document; }
-			set
-			{
-				if( value == null )
-					throw new ArgumentNullException();
-
-				// uninstall event handlers from old document
-				if( _Document != null )
-				{
-					_Document.SelectionChanged -= Doc_SelectionChanged;
-					_Document.ContentChanged -= Doc_ContentChanged;
-				}
-
-				// replace document
-				_Document = value;
-				
-				// install event handlers to the new document
-				value.SelectionChanged += Doc_SelectionChanged;
-				value.ContentChanged += Doc_ContentChanged;
-
-				// adjust for new document
-				UpdateLineNumberWidth();
-			}
+			get{ return _UI.Document; }
 		}
 
 		/// <summary>
@@ -465,7 +410,7 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public void SetDesiredColumn()
 		{
-			_DesiredColumn = GetVirPosFromIndex( _Document.CaretIndex ).X;
+			_DesiredColumn = GetVirPosFromIndex( Document.CaretIndex ).X;
 		}
 
 		/// <summary>
@@ -737,12 +682,65 @@ namespace Sgry.Azuki
 
 		#region Communication between UI Module
 		/// <summary>
-		/// UI module must call this to synchronize
-		/// visible size between UI module and view.
+		/// UI module must call this method
+		/// to synchronize visible size between UI module and view.
 		/// </summary>
 		internal void HandleSizeChanged( Size newSize )
 		{
 			_VisibleSize = newSize;
+		}
+
+		/// <summary>
+		/// Internal use only.
+		/// UI module must call this method
+		/// when the document object was changed to another object.
+		/// </summary>
+		internal virtual void HandleDocumentChanged( Document prevDocument )
+		{
+			// reinstall event handlers
+			if( prevDocument != null )
+			{
+				prevDocument.SelectionChanged -= Doc_SelectionChanged;
+				prevDocument.ContentChanged -= Doc_ContentChanged;
+			}
+			Document.SelectionChanged += Doc_SelectionChanged;
+			Document.ContentChanged += Doc_ContentChanged;
+
+			// adjust for new document
+			UpdateLineNumberWidth();
+		}
+
+		/// <summary>
+		/// This method will be called when the selection was changed.
+		/// </summary>
+		protected abstract void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e );
+
+		/// <summary>
+		/// This method will be called when the content was changed.
+		/// </summary>
+		protected virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		{
+			UpdateLineNumberWidth();
+		}
+
+		/// <summary>
+		/// Updates width of the line number area.
+		/// </summary>
+		void UpdateLineNumberWidth()
+		{
+			// expand width of line number area if needed
+			if( _MaxLineNumber < LineCount )
+			{
+				_MaxLineNumber = (_MaxLineNumber + 1) * 9 + _MaxLineNumber;
+				UpdateMetrics();
+				Invalidate();
+			}
+			else if( MinLineNumber <= LineCount && LineCount <= _MaxLineNumber/10 )
+			{
+				_MaxLineNumber = _MaxLineNumber / 10;
+				UpdateMetrics();
+				Invalidate();
+			}
 		}
 		#endregion
 

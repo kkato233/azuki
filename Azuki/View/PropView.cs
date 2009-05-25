@@ -15,8 +15,6 @@ namespace Sgry.Azuki
 	/// </summary>
 	class PropView : View
 	{
-		int _PrevCaretLine, _PrevAnchorLine;
-
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
@@ -209,9 +207,9 @@ namespace Sgry.Azuki
 			if( e.OldAnchor == e.OldCaret && anchor == caret )
 			{
 				if( HighlightsCurrentLine
-					&& _PrevCaretLine != caretLine )
+					&& PrevCaretLine != caretLine )
 				{
-					Doc_SelectionChanged_UpdateCaretHighlight( _PrevCaretLine, caretLine );
+					Doc_SelectionChanged_UpdateCaretHighlight( PrevCaretLine, caretLine );
 				}
 			}
 			// or, does the change release selection?
@@ -232,10 +230,10 @@ namespace Sgry.Azuki
 				}
 
 				// if the change occured in a line?
-				if( _PrevCaretLine == caretLine )
+				if( PrevCaretLine == caretLine )
 				{
 					if( e.OldCaret < caret )
-						Doc_SelectionChanged_OnExpandSelInLine( e.OldCaret, caret, _PrevCaretLine );
+						Doc_SelectionChanged_OnExpandSelInLine( e.OldCaret, caret, PrevCaretLine );
 					else
 						Doc_SelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
 				}
@@ -246,16 +244,16 @@ namespace Sgry.Azuki
 			}
 
 			// remember last selection for next invalidation
-			_PrevCaretLine = caretLine;
-			_PrevAnchorLine = anchorLine;
+			PrevCaretLine = caretLine;
+			PrevAnchorLine = anchorLine;
 		}
 
 		void Doc_SelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
 		{
 			// invalidate old underline
-			if( _PrevCaretLine == _PrevAnchorLine )
+			if( PrevCaretLine == PrevAnchorLine )
 			{
-				int y = LineSpacing * (_PrevCaretLine - FirstVisibleLine);
+				int y = LineSpacing * (PrevCaretLine - FirstVisibleLine);
 				Invalidate(
 						new Rectangle(TextAreaX, y+LineHeight, VisibleSize.Width-TextAreaX, 1)
 					);
@@ -268,10 +266,10 @@ namespace Sgry.Azuki
 
 		void Doc_SelectionChanged_OnExpandSelInLine( int begin, int end, int beginL )
 		{
+			DebugUtl.Assert( beginL < LineCount );
 			Rectangle rect = new Rectangle();
 			int beginLineHead;
 			string token = String.Empty;
-			DebugUtl.Assert( beginL < LineCount );
 
             // get chars at left of invalid rect
 			beginLineHead = GetLineHeadIndex( beginL );
@@ -303,7 +301,7 @@ namespace Sgry.Azuki
 			if( e.OldCaret < doc.CaretIndex )
 			{
 				begin = e.OldCaret;
-				beginL = _PrevCaretLine;
+				beginL = PrevCaretLine;
 				end = doc.CaretIndex;
 				endL = caretLine;
 			}
@@ -312,7 +310,7 @@ namespace Sgry.Azuki
 				begin = doc.CaretIndex;
 				beginL = caretLine;
 				end = e.OldCaret;
-				endL = _PrevCaretLine;
+				endL = PrevCaretLine;
 			}
 			beginLineHead = GetLineHeadIndex( beginL );
 			endLineHead = GetLineHeadIndex( endL ); // if old caret is the end pos and if the pos exceeds current text length, this will fail.
@@ -334,22 +332,22 @@ namespace Sgry.Azuki
 			if( e.OldAnchor < e.OldCaret )
 			{
 				begin = e.OldAnchor;
-				beginL = _PrevAnchorLine;
+				beginL = PrevAnchorLine;
 				end = e.OldCaret;
-				endL = _PrevCaretLine;
+				endL = PrevCaretLine;
 			}
 			else
 			{
 				begin = e.OldCaret;
-				beginL = _PrevCaretLine;
+				beginL = PrevCaretLine;
 				end = e.OldAnchor;
-				endL = _PrevAnchorLine;
+				endL = PrevAnchorLine;
 			}
 			beginLineHead = GetLineHeadIndexFromCharIndex( begin );
 			endLineHead = GetLineHeadIndexFromCharIndex( end );
 
 			// if old selection was in one line?
-			if( _PrevCaretLine == _PrevAnchorLine )
+			if( PrevCaretLine == PrevAnchorLine )
 			{
 				Rectangle rect = new Rectangle();
 				string textBeforeSel = doc.GetTextInRange( beginLineHead, begin );
@@ -524,8 +522,8 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
 		public override void Paint( Rectangle clipRect )
 		{
-			Debug.Assert( Font != null, "invalid state; Font is null" );
-			Debug.Assert( Document != null, "invalid state; Document is null" );
+			DebugUtl.Assert( Font != null, "invalid state; Font is null" );
+			DebugUtl.Assert( Document != null, "invalid state; Document is null" );
 
 			int selBegin, selEnd;
 			Point pos = new Point();
@@ -598,7 +596,7 @@ namespace Sgry.Azuki
 			{
 				// get this token
 				token = Document.GetTextInRange( begin, end );
-				Debug.Assert( 0 < token.Length );
+				DebugUtl.Assert( 0 < token.Length );
 
 				// calc next drawing pos before drawing text
 				{
@@ -694,6 +692,20 @@ namespace Sgry.Azuki
 			{
 				DrawLineNumber( pos.Y, lineIndex+1 );
 			}
+		}
+		#endregion
+
+		#region Utilities
+		int PrevAnchorLine
+		{
+			get{ return Document.ViewParam.PrevAnchorLine; }
+			set{ Document.ViewParam.PrevAnchorLine = value; }
+		}
+
+		int PrevCaretLine
+		{
+			get{ return Document.ViewParam.PrevCaretLine; }
+			set{ Document.ViewParam.PrevCaretLine = value; }
 		}
 		#endregion
 	}

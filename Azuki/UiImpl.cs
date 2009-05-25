@@ -14,7 +14,7 @@ namespace Sgry.Azuki
 	using IHighlighter = Highlighter.IHighlighter;
 
 	/// <summary>
-	/// User inteface logic that independent from platform.
+	/// User interface logic that independent from platform.
 	/// </summary>
 	class UiImpl : IDisposable
 	{
@@ -145,7 +145,7 @@ namespace Sgry.Azuki
 				}
 				_ViewType = value;
 
-				// dispose using view object
+				// dispose old view object
 				oldView.Dispose();
 
 				// re-install event handlers

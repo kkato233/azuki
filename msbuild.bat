@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set _OPT=-nologo -v:m -t:Build -validate
+set _OPT=-nologo -v:m -t:Build
 set _OPT=%_OPT% -p:Configuration=Release -clp:ForceNoAlign
 set _OPT=%_OPT%;ShowCommandLine
 set _SOLUTION_FILE=%~1

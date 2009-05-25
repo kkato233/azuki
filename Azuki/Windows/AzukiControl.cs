@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-05-09
+// update: 2009-05-24
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -500,8 +500,9 @@ namespace Sgry.Azuki.Windows
 			set
 			{
 				_Impl.View.TextAreaWidth = value - _Impl.View.TextAreaX;
-				Refresh();
 				UpdateCaretGraphic();
+				UpdateScrollBarRange(); // (needed for PropWrapView)
+				Refresh();
 			}
 		}
 

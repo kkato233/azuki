@@ -18,7 +18,6 @@ namespace Sgry.Azuki
 	class PropWrapView : PropView
 	{
 		int _MinimalWidth;
-		SplitArray<int> _PLHI = new SplitArray<int>( 128, 128 );
 
 		#region Init / Dispose
 		/// <summary>
@@ -28,9 +27,6 @@ namespace Sgry.Azuki
 		internal PropWrapView( IUserInterface ui )
 			: base( ui )
 		{
-			// initialize Physical-Line-Head-Indexes
-			_PLHI.Clear();
-			_PLHI.Add( 0 );
 		}
 
 		/// <summary>
@@ -39,29 +35,20 @@ namespace Sgry.Azuki
 		internal PropWrapView( View other )
 			: base( other )
 		{
-			// initialize Physical-Line-Head-Indexes
-			_PLHI.Clear();
-			_PLHI.Add( 0 );
-			if( Document != null )
-			{
-				UpdatePLHI( 0, String.Empty, Document.Text );
-			}
 		}
 		#endregion
 
 		internal override void HandleDocumentChanged( Document prevDocument )
 		{
-			base.HandleDocumentChanged( prevDocument );
-
-			// update PLHI
-			// (document was changed so line-wrapping state must be refreshed.
-			// Note that this property may be set by View.ctor.
-			// In that case, do not calculate because _PLHI was not prepared yet so calculation must fail.)
-			_PLHI.Capacity = Document.LineCount;
-			if( 0 < _PLHI.Count )
+			// update physical line head indexes
+			// unless the new document holds PLHI calculated for same view width
+			if( TextAreaWidth != Document.ViewParam.LastTextAreaWidth )
 			{
-				Doc_ContentChanged( Document, new ContentChangedEventArgs(0, String.Empty, Document.Text) );
+				DebugUtl.Assert( 0 < PLHI.Count );
+				UpdatePLHI( 0, "", Document.Text );
 			}
+
+			base.HandleDocumentChanged( prevDocument );
 		}
 
 		#region Properties
@@ -82,7 +69,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public override int LineCount
 		{
-			get{ return _PLHI.Count; }
+			get{ return PLHI.Count; }
 		}
 
 		/// <summary>
@@ -92,21 +79,29 @@ namespace Sgry.Azuki
 		{
 			set
 			{
-				// if given width is too small, keep width to avoid infinite loop.
+				// ignore if negative integer given.
+				// (this case may occur when minimizing window)
+				if( value < 0 )
+				{
+					return;
+				}
+
+				// if given value is too small, make it the lowest acceptable value
+				// (to avoid infinite loop in painting logic)
 				if( value <= _MinimalWidth )
 				{
 					value = _MinimalWidth;
 				}
 
-				// update property
 				if( base.TextAreaWidth != value )
 				{
+					// update property
 					base.TextAreaWidth = value;
 
 					// update physical line head indexes
 					string text = Document.Text;
-					_PLHI.Clear();
-					_PLHI.Add( 0 );
+					PLHI.Clear();
+					PLHI.Add( 0 );
 					UpdatePLHI( 0, "", text );
 				}
 			}
@@ -124,7 +119,7 @@ namespace Sgry.Azuki
 
 			LineLogic.GetLineColumnIndexFromCharIndex(
 					Document.InternalBuffer,
-					_PLHI,
+					PLHI,
 					index,
 					out line,
 					out column
@@ -149,7 +144,7 @@ namespace Sgry.Azuki
 			{
 				// get partial content of the line which exists before the caret
 				int lineBegin, lineEnd;
-				LineLogic.GetLineRangeWithEol( Document.InternalBuffer, _PLHI, lineIndex, out lineBegin, out lineEnd );
+				LineLogic.GetLineRangeWithEol( Document.InternalBuffer, PLHI, lineIndex, out lineBegin, out lineEnd );
 				string leftPart = Document.GetTextInRange( lineBegin, lineBegin+columnIndex );
 
 				// measure the characters
@@ -174,12 +169,12 @@ namespace Sgry.Azuki
 			{
 				return -1;
 			}
-			else if( _PLHI.Count <= lineIndex
+			else if( PLHI.Count <= lineIndex
 				&& Document.LineCount != 0 )
 			{
 				// the point indicates beyond the final line.
 				// treat as if the final line was specified
-				lineIndex = _PLHI.Count - 1;
+				lineIndex = PLHI.Count - 1;
 			}
 
 			// calc column index
@@ -191,7 +186,7 @@ namespace Sgry.Azuki
 				bool isWrapLine = false;
 				
 				// get content of the line
-				LineLogic.GetLineRange( Document.InternalBuffer, _PLHI, lineIndex, out begin, out end );
+				LineLogic.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, out begin, out end );
 				line = Document.GetTextInRange( begin, end );
 				if( end+1 < Document.Length
 					&& !LineLogic.IsEolChar(Document.GetTextInRange(end, end+1)[0]) )
@@ -223,7 +218,7 @@ namespace Sgry.Azuki
 				}
 			}
 
-			return LineLogic.GetCharIndexFromLineColumnIndex( Document.InternalBuffer, _PLHI, lineIndex, columnIndex );
+			return LineLogic.GetCharIndexFromLineColumnIndex( Document.InternalBuffer, PLHI, lineIndex, columnIndex );
 		}
 
 		/// <summary>
@@ -232,10 +227,10 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetLineHeadIndex( int lineIndex )
 		{
-			if( lineIndex < 0 || _PLHI.Count <= lineIndex )
+			if( lineIndex < 0 || PLHI.Count <= lineIndex )
 				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid index was given (lineIndex:"+lineIndex+", LineCount:"+LineCount+")." );
 
-			return _PLHI[ lineIndex ];
+			return PLHI[ lineIndex ];
 		}
 
 		/// <summary>
@@ -249,7 +244,7 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", document.Length:"+Document.Length+")." );
 
 			return LineLogic.GetLineHeadIndexFromCharIndex(
-					Document.InternalBuffer, _PLHI, charIndex
+					Document.InternalBuffer, PLHI, charIndex
 				);
 		}
 
@@ -263,7 +258,7 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", document.Length:"+Document.Length+")." );
 
 			LineLogic.GetLineColumnIndexFromCharIndex(
-					Document.InternalBuffer, _PLHI, charIndex, out lineIndex, out columnIndex
+					Document.InternalBuffer, PLHI, charIndex, out lineIndex, out columnIndex
 				);
 		}
 
@@ -279,7 +274,7 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "columnIndex", "Invalid index was given (columnIndex:"+columnIndex+")." );
 
 			return LineLogic.GetCharIndexFromLineColumnIndex(
-					Document.InternalBuffer, _PLHI, lineIndex, columnIndex
+					Document.InternalBuffer, PLHI, lineIndex, columnIndex
 				);
 		}
 		#endregion
@@ -297,13 +292,13 @@ namespace Sgry.Azuki
 			prevLineCount = LineCount;
 			UpdatePLHI( e.Index, e.OldText, e.NewText );
 #			if PLHI_DEBUG
-			string __result_of_new_logic__ = _PLHI.ToString();
+			string __result_of_new_logic__ = PLHI.ToString();
 			DoLayout();
-			if( __result_of_new_logic__ != _PLHI.ToString() )
+			if( __result_of_new_logic__ != PLHI.ToString() )
 			{
 				System.Windows.Forms.MessageBox.Show("sync error");
 				Console.Error.WriteLine( __result_of_new_logic__ );
-				Console.Error.WriteLine( _PLHI );
+				Console.Error.WriteLine( PLHI );
 				Console.Error.WriteLine();
 			}
 #			endif
@@ -319,7 +314,7 @@ namespace Sgry.Azuki
 
 			// invalidate all lines below caret
 			// if old text or new text contains multiple lines
-			if( prevLineCount != _PLHI.Count || 1 < LineLogic.CountLine(e.NewText) )
+			if( prevLineCount != PLHI.Count || 1 < LineLogic.CountLine(e.NewText) )
 			{
 				//NO_NEED//invalidRect2.X = 0;
 				invalidRect2.Y = invalidRect1.Bottom;
@@ -365,8 +360,8 @@ namespace Sgry.Azuki
 		void DoLayout()
 		{
 			// initialize PLHI
-			_PLHI.Clear();
-			_PLHI.Add( 0 );
+			PLHI.Clear();
+			PLHI.Add( 0 );
 			
 			// if the view is very thin, text may not be able to be rendered
 			if( TextAreaWidth < (TabWidthInPx >> 2) )
@@ -380,7 +375,7 @@ namespace Sgry.Azuki
 				DoLayoutOneLine( i );
 			}
 
-			_PLHI.Delete( _PLHI.Count-1, _PLHI.Count );
+			PLHI.Delete( PLHI.Count-1, PLHI.Count );
 		}
 
 		void DoLayoutOneLine( int lineIndex )
@@ -408,7 +403,7 @@ namespace Sgry.Azuki
 				// so wrap this line
 
 				// make drawable part of this line as a physical line
-				_PLHI.Add( begin + drawableLength );
+				PLHI.Add( begin + drawableLength );
 				begin += drawableLength;
 
 				// measure following
@@ -417,7 +412,7 @@ namespace Sgry.Azuki
 			}
 
 			// add last part
-			_PLHI.Add( begin + drawableLength );
+			PLHI.Add( begin + drawableLength );
 		}
 #endif
 
@@ -426,6 +421,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		void UpdatePLHI( int index, string oldText, string newText )
 		{
+			Debug.Assert( 0 < this.TabWidth );
 			Document doc = Document;
 			int delBeginL, delEndL;
 			int reCalcBegin, reCalcEnd;
@@ -435,7 +431,7 @@ namespace Sgry.Azuki
 			int replaceEnd;
 			int preTargetEndL;
 
-			int firstDirtyLineIndex = LineLogic.GetLineIndexFromCharIndex( _PLHI, index );
+			int firstDirtyLineIndex = LineLogic.GetLineIndexFromCharIndex( PLHI, index );
 			if( firstDirtyLineIndex < 0 )
 			{
 				Debug.Fail( "unexpected error" );
@@ -448,18 +444,18 @@ namespace Sgry.Azuki
 			if( lastDirtyLogLineIndex+1 < doc.LineCount )
 			{
 				int delEnd = doc.GetLineHeadIndex( lastDirtyLogLineIndex + 1 ) - diff;
-				delEndL = LineLogic.GetLineIndexFromCharIndex( _PLHI, delEnd );
+				delEndL = LineLogic.GetLineIndexFromCharIndex( PLHI, delEnd );
 			}
 			else
 			{
-				delEndL = _PLHI.Count;
+				delEndL = PLHI.Count;
 			}
 #			if PLHI_DEBUG
 			Console.Error.WriteLine("[3] del:[{0}, {1})", delBeginL, delEndL);
 #			endif
 			
 			// [phase 2] calculate range of indexes to be re-calculated
-			reCalcBegin = _PLHI[ firstDirtyLineIndex ];
+			reCalcBegin = PLHI[ firstDirtyLineIndex ];
 			replaceEnd = index + newText.Length;
 			preTargetEndL = doc.GetLineIndexFromCharIndex( replaceEnd );
 			if( preTargetEndL+1 < doc.LineCount )
@@ -489,22 +485,22 @@ namespace Sgry.Azuki
 			else
 			{
 				// there are following lines.
-				shiftBeginL = LineLogic.GetLineIndexFromCharIndex( _PLHI, reCalcEnd - diff );
+				shiftBeginL = LineLogic.GetLineIndexFromCharIndex( PLHI, reCalcEnd - diff );
 			}
 #			if PLHI_DEBUG
-			Console.Error.WriteLine("[1] shift:[{0}, {1})", shiftBeginL, _PLHI.Count);
+			Console.Error.WriteLine("[1] shift:[{0}, {1})", shiftBeginL, PLHI.Count);
 #			endif
 
 			//--- apply ----
 			// [phase 1] shift all followings
-			for( int i=shiftBeginL; i<_PLHI.Count; i++ )
+			for( int i=shiftBeginL; i<PLHI.Count; i++ )
 			{
-				_PLHI[i] += newText.Length - oldText.Length;
+				PLHI[i] += newText.Length - oldText.Length;
 			}
 
 			// [phase 2] delete LHI of affected physical lines except first one
-			if( delBeginL < delEndL && delEndL <= _PLHI.Count )
-				_PLHI.Delete( delBeginL, delEndL );
+			if( delBeginL < delEndL && delEndL <= PLHI.Count )
+				PLHI.Delete( delBeginL, delEndL );
 
 			// [phase 3] re-calculate physical line indexes
 			// (here we should divide the text in the range into small segments
@@ -543,7 +539,7 @@ namespace Sgry.Azuki
 					|| LineLogic.IsEolChar(str, drawableLen-1) )
 				{
 					// hit right limit. end this physical line
-					_PLHI.Insert( line, begin+drawableLen );
+					PLHI.Insert( line, begin+drawableLen );
 					line++;
 					end = begin + drawableLen;
 					x = 0;
@@ -552,10 +548,13 @@ namespace Sgry.Azuki
 			while( end < reCalcEnd );
 
 			// then, remove extra last physical line index made as the result of phase 3
-			if( line != delBeginL && line < _PLHI.Count )
+			if( line != delBeginL && line < PLHI.Count )
 			{
-				_PLHI.Delete( line-1, line );
+				PLHI.Delete( line-1, line );
 			}
+
+			// remember width of text area
+			Document.ViewParam.LastTextAreaWidth = TextAreaWidth;
 		}
 		#endregion
 
@@ -608,7 +607,7 @@ namespace Sgry.Azuki
 				int caretLine, caretPosY;
 
 				// calculate position of the underline
-				caretLine = LineLogic.GetLineIndexFromCharIndex( _PLHI, Document.CaretIndex );
+				caretLine = LineLogic.GetLineIndexFromCharIndex( PLHI, Document.CaretIndex );
 				caretPosY = caretLine * LineSpacing - (FirstVisibleLine * LineSpacing);
 				
 				// draw underline to current line
@@ -618,6 +617,9 @@ namespace Sgry.Azuki
 
 		void DrawLine( int lineIndex, ref Point pos, Rectangle clipRect )
 		{
+			Debug.Assert( this.Font != null );
+			Debug.Assert( this.Document != null );
+
 			// note that given pos is NOT virtual position BUT screen position.
 			string token;
 			int lineHead, lineEnd;
@@ -628,9 +630,9 @@ namespace Sgry.Azuki
 			int physTextAreaRight = TextAreaWidth + (TextAreaX - ScrollPosX);
 
 			// calc position of head/end of this line
-			lineHead = _PLHI[ lineIndex ];
-			if( lineIndex+1 < _PLHI.Count )
-				lineEnd = _PLHI[ lineIndex + 1 ];
+			lineHead = PLHI[ lineIndex ];
+			if( lineIndex+1 < PLHI.Count )
+				lineEnd = PLHI[ lineIndex + 1 ];
 			else
 				lineEnd = Document.Length;
 
@@ -786,6 +788,17 @@ namespace Sgry.Azuki
 #			if !DRAW_SLOWLY
 			_Gra.RemoveClipRect();
 #			endif
+		}
+		#endregion
+
+		#region Utilities
+		SplitArray<int> PLHI
+		{
+			get
+			{
+				Debug.Assert( Document != null );
+				return Document.ViewParam.PLHI;
+			}
 		}
 		#endregion
 	}

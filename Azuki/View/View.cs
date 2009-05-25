@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-23
+// update: 2009-05-24
 //=========================================================
 using System;
 using System.Drawing;
@@ -16,24 +16,30 @@ namespace Sgry.Azuki
 	abstract partial class View : IView, IDisposable
 	{
 		#region Fields and Types
+		const int DefaultTabWidth = 8;
+		static readonly int[] _LineNumberSamples = new int[]{
+			9999,
+			99999,
+			999999,
+			9999999,
+			99999999,
+			999999999,
+			2000000000
+		};
 		protected IUserInterface _UI;
 		Font _Font;
-		int _FirstVisibleLine = 0;
-		int _ScrollPosX;
-		int _TextAreaWidth = 300;
-		int _DesiredColumn = 0;
+		int _TextAreaWidth = 1024;
 
 		//--- for drawing ---
 		ColorScheme _ColorScheme = ColorScheme.Default;
 		Size _VisibleSize = new Size( 300, 300 );
 		protected IGraphics _Gra = null;
-		const int MinLineNumber = 1000;
-		protected int _MaxLineNumber = 9999;
+		int _LastUsedLineNumberSample = _LineNumberSamples[0];
 		protected int _LineNumAreaWidth = 0;// Width of the line number area in pixel
 		protected int _SpaceWidth;			// Width of a space char (U+0020) in pixel
 		protected int _FullSpaceWidth = 0;	// Width of a full-width space char (U+3000) in pixel
 		int _LineHeight;
-		int _TabWidth = 8;
+		int _TabWidth = DefaultTabWidth;
 		int _TabWidthInPx;
 		int _LCharWidth;
 		DrawingOption _DrawingOption
@@ -67,26 +73,27 @@ namespace Sgry.Azuki
 
 			// inherit other parameters
 			this._ColorScheme = other._ColorScheme;
-			this._DesiredColumn = other._DesiredColumn;
 			//DO_NOT//this._Document = other._Document;
 			this._DrawingOption = other._DrawingOption;
-			this._FirstVisibleLine = other._FirstVisibleLine;
 			//DO_NOT//this._Gra = other._Gra;
 			//DO_NOT//this._LCharWidth = other._LCharWidth;
 			//DO_NOT//this._LineHeight = other._LineHeight;
-			//DO_NOT//this._LineNumWidth = other._LineNumWidth;
-			this._ScrollPosX = other._ScrollPosX;
+			//DO_NOT//this._LineNumAreaWidth = other._LineNumAreaWidth;
 			//DO_NOT//this._SpaceWidth = other._SpaceWidth;
 			this._TabWidth = other._TabWidth;
 			//DO_NOT//this._TabWidthInPx = other._TabWidthInPx;
-			//DO_NOT//this._TextAreaWidth = other._TextAreaWidth;
+			this._TextAreaWidth = other._TextAreaWidth;
 			//DO_NOT//this._UI = other._UI;
 			this._VisibleSize = other._VisibleSize;
 
-			// inherit parameters that needs to be set through property
+			// set Font through property
 			if( other._Font != null )
 				this.Font = other.Font;
-			this.TextAreaWidth = other._TextAreaWidth;
+
+			// finally, re-calculate graphic metrics
+			// (because there is a metric which needs a reference to Document to be calculated
+			// but it cannnot be set Document before setting Font by structural reason)
+			UpdateMetrics();
 		}
 
 #		if DEBUG
@@ -158,7 +165,7 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value == null )
-					throw new ArgumentException( "invalid operation; View.Font was set to null." );
+					throw new ArgumentNullException( "View.Font was set to null." );
 
 				// because UI module's Font property must be set before this,
 				// set UI module's one if it's not set yet
@@ -181,8 +188,10 @@ namespace Sgry.Azuki
 
 		protected void UpdateMetrics()
 		{
+			StringBuilder buf = new StringBuilder( 32 );
+			_LastUsedLineNumberSample = _LineNumberSamples[0];
+
 			// calculate tab width in pixel
-			StringBuilder buf = new StringBuilder( 16 );
 			for( int i=0; i<_TabWidth; i++ )
 			{
 				buf.Append( ' ' );
@@ -190,11 +199,15 @@ namespace Sgry.Azuki
 			_TabWidthInPx = _Gra.MeasureText( buf.ToString() ).Width;
 
 			// update other metrics
-			_LineNumAreaWidth = _Gra.MeasureText( _MaxLineNumber.ToString() ).Width + 1;
 			_SpaceWidth = _Gra.MeasureText( " " ).Width;
 			_LCharWidth = _Gra.MeasureText( "l" ).Width;
 			_FullSpaceWidth = _Gra.MeasureText( "\x3000" ).Width;
 			_LineHeight = _Gra.MeasureText( "Mp" ).Height;
+			if( this.Document != null )
+			{
+				_LastUsedLineNumberSample = Document.ViewParam.MaxLineNumber;
+			}
+			_LineNumAreaWidth = _Gra.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + 1;
 		}
 		#endregion
 
@@ -332,7 +345,7 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value <= 0 )
-					throw new InvalidOperationException( "View.TabWidth must be a positive integer." );
+					throw new ArgumentOutOfRangeException( "value", "TabWidth must not be a negative number (given value:"+value+".)" );
 
 				_TabWidth = value;
 				UpdateMetrics();
@@ -358,29 +371,25 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets index of the line which is displayed at top of this view.
 		/// </summary>
+		/// <remarks>
+		/// This property simply accesses Document.ViewParam.FirstVisibleLine property.
+		/// </remarks>
 		public int FirstVisibleLine
 		{
-			get{ return _FirstVisibleLine; }
-			set
-			{
-				if( value < 0 )
-					throw new ArgumentException( "invalid operation; View.FirstVisibleLine was set to "+value+"." );
-				_FirstVisibleLine = value;
-			}
+			get{ return Document.ViewParam.FirstVisibleLine; }
+			set{ Document.ViewParam.FirstVisibleLine = value; }
 		}
 
 		/// <summary>
-		/// Gets or sets x-coordinate of the view's origin currently displayed.
+		/// Gets or sets x-coordinate of the view's origin.
 		/// </summary>
+		/// <remarks>
+		/// This property simply accesses Document.ViewParam.FirstVisibleLine property.
+		/// </remarks>
 		internal int ScrollPosX
 		{
-			get{ return _ScrollPosX; }
-			set
-			{
-				if( value < 0 )
-					throw new ArgumentException( "invalid operation; View.ScrollPosX was set to "+value+"." );
-				_ScrollPosX = value;
-			}
+			get{ return Document.ViewParam.ScrollPosX; }
+			set{ Document.ViewParam.ScrollPosX = value; }
 		}
 
 		/// <summary>
@@ -407,10 +416,12 @@ namespace Sgry.Azuki
 		/// <remarks>
 		/// When the caret moves up or down,
 		/// Azuki tries to set next caret's column index to this value.
+		/// Note that "desired column" is associated with each document
+		/// so this value may change when Document property was set to another document.
 		/// </remarks>
 		public void SetDesiredColumn()
 		{
-			_DesiredColumn = GetVirPosFromIndex( Document.CaretIndex ).X;
+			Document.ViewParam.DesiredColumn = GetVirPosFromIndex( Document.CaretIndex ).X;
 		}
 
 		/// <summary>
@@ -422,7 +433,7 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public int GetDesiredColumn()
 		{
-			return _DesiredColumn;
+			return Document.ViewParam.DesiredColumn;
 		}
 		#endregion
 
@@ -450,7 +461,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void VirtualToScreen( ref Point pt )
 		{
-			pt.Offset( -(_ScrollPosX - TextAreaX), -(_FirstVisibleLine * LineSpacing) );
+			pt.Offset( -(ScrollPosX - TextAreaX), -(FirstVisibleLine * LineSpacing) );
 		}
 
 		/// <summary>
@@ -458,7 +469,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void ScreenToVirtual( ref Point pt )
 		{
-			pt.Offset( _ScrollPosX - TextAreaX, _FirstVisibleLine * LineSpacing );
+			pt.Offset( ScrollPosX - TextAreaX, FirstVisibleLine * LineSpacing );
 		}
 
 		/// <summary>
@@ -565,13 +576,13 @@ namespace Sgry.Azuki
 				return;
 
 			// calculate scroll distance
-			if( _FirstVisibleLine + lineDelta < 0 )
+			if( FirstVisibleLine + lineDelta < 0 )
 			{
 				delta = -FirstVisibleLine;
 			}
-			else if( LineCount-1 < _FirstVisibleLine + lineDelta )
+			else if( LineCount-1 < FirstVisibleLine + lineDelta )
 			{
-				delta = LineCount - 1 - _FirstVisibleLine;
+				delta = LineCount - 1 - FirstVisibleLine;
 			}
 			else
 			{
@@ -582,7 +593,7 @@ namespace Sgry.Azuki
 			clipRect = new Rectangle( 0, 0, _VisibleSize.Width, _VisibleSize.Height );
 
 			// do scroll
-			_FirstVisibleLine += delta;
+			FirstVisibleLine += delta;
 			_UI.Scroll( clipRect, 0, -(delta * LineSpacing) );
 		}
 
@@ -622,7 +633,7 @@ namespace Sgry.Azuki
 			clipRect.Height = _VisibleSize.Height;
 
 			// do scroll
-			_ScrollPosX += deltaInPx;
+			ScrollPosX += deltaInPx;
 			_UI.Scroll( clipRect, -deltaInPx, 0 );
 		}
 
@@ -728,18 +739,21 @@ namespace Sgry.Azuki
 		/// </summary>
 		void UpdateLineNumberWidth()
 		{
-			// expand width of line number area if needed
-			if( _MaxLineNumber < LineCount )
+			DebugUtl.Assert( this.Document != null );
+
+			// find minimum value from samples for calculating width of line number area
+			for( int i=0; i<_LineNumberSamples.Length; i++ )
 			{
-				_MaxLineNumber = (_MaxLineNumber + 1) * 9 + _MaxLineNumber;
-				UpdateMetrics();
-				Invalidate();
-			}
-			else if( MinLineNumber <= LineCount && LineCount <= _MaxLineNumber/10 )
-			{
-				_MaxLineNumber = _MaxLineNumber / 10;
-				UpdateMetrics();
-				Invalidate();
+				if( Document.LineCount <= _LineNumberSamples[i] )
+				{
+					Document.ViewParam.MaxLineNumber = _LineNumberSamples[i];
+					if( _LastUsedLineNumberSample != _LineNumberSamples[i] )
+					{
+						UpdateMetrics();
+						Invalidate();
+					}
+					return;
+				}
 			}
 		}
 		#endregion

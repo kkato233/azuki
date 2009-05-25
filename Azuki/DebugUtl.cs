@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-05-16
+// update: 2009-05-23
 //=========================================================
 using System;
 using System.IO;
@@ -30,7 +30,7 @@ namespace Sgry
 		#region Fields and Constants
 #		if !PocketPC
 		public const string kernel32_dll = "kernel32";
-		public const string LogDateHeader = "yyyy-MM-dd hh:mm:ss ";
+		public const string LogDateHeader = "[yyyy-MM-dd hh:mm:ss.fff] ";
 #		else
 		public const string kernel32_dll = "coredll";
 		public const string LogDateHeader = "mm.ss ";
@@ -38,6 +38,7 @@ namespace Sgry
 		static Object LockKey = new Object();
 		static string _LogFilePath = null;
 		static AutoLogger _AutoLogger = null;
+		static StringBuilder _IndentStr = new StringBuilder( 8 );
 		#endregion
 
 		#region Logging
@@ -70,6 +71,7 @@ namespace Sgry
 					using( StreamWriter file = new StreamWriter(LogFilePath, true) )
 					{
 						file.Write( now.ToString(LogDateHeader) );
+						file.Write( _IndentStr.ToString() );
 						file.WriteLine( String.Format(format, p) );
 					}
 				}
@@ -97,7 +99,7 @@ namespace Sgry
 					{
 						file.Write(
 								now.ToString(LogDateHeader)
-								+ String.Format("[{0},{1}] ", pid.ToString("X4"), tid.ToString("X2"))
+								+ String.Format("[{0},{1}] {2}", pid.ToString("X4"), tid.ToString("X2"), _IndentStr.ToString())
 							);
 						file.WriteLine( String.Format(format, p) );
 					}
@@ -119,6 +121,36 @@ namespace Sgry
 					{
 						file.WriteLine( String.Format(format, p) );
 					}
+				}
+			}
+			catch{}
+		}
+
+		/// <summary>
+		/// Indent log message.
+		/// </summary>
+		public static void LogIndent()
+		{
+			try
+			{
+				lock( LockKey )
+				{
+					_IndentStr.Append( "  " );
+				}
+			}
+			catch{}
+		}
+
+		/// <summary>
+		/// Unindent log message.
+		/// </summary>
+		public static void LogUnindent()
+		{
+			try
+			{
+				lock( LockKey )
+				{
+					_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
 				}
 			}
 			catch{}

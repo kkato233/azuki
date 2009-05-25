@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-05-02
+// update: 2009-05-24
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -91,7 +91,7 @@ namespace Sgry.Azuki
 				Point p = tokenPos;
 				ScreenToVirtual( ref p );
 				bgRight = Utl.CalcNextTabStop( p.X, TabWidthInPx );
-				bgRight -= _ScrollPosX - TextAreaX;
+				bgRight -= ScrollPosX - TextAreaX;
 				
 				// calc desired foreground graphic position
 				fgLeft = tokenPos.X + 2;
@@ -354,7 +354,7 @@ namespace Sgry.Azuki
 
 		#region Utilities
 		/// <summary>
-		/// Distinguishs whether specified index is in selection or not.
+		/// Distinguishes whether specified index is in selection or not.
 		/// </summary>
 		protected bool IsInSelection( int index )
 		{
@@ -368,7 +368,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected int NextPaintToken( TextBuffer buf, int index, int nextLineHead, out CharClass out_klass )
 		{
-			DebugUtl.Assert( nextLineHead <= buf.Count );
+			DebugUtl.Assert( nextLineHead <= buf.Count, "param 'nextLineHead'("+nextLineHead+") must not be greater than 'buf.Count'("+buf.Count+")." );
 
 			char firstCh, ch;
 			CharClass firstKlass, klass;
@@ -460,6 +460,7 @@ namespace Sgry.Azuki
 			/// <param name="tabWidthInPx">tab width (in pixel)</param>
 			public static int CalcNextTabStop( int x, int tabWidthInPx )
 			{
+				DebugUtl.Assert( 0 < tabWidthInPx );
 				return ((x / tabWidthInPx) + 1) * tabWidthInPx;
 			}
 

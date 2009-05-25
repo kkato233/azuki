@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-16
+// update: 2009-05-23
 //=========================================================
 using System;
 using System.Collections;
@@ -32,6 +32,7 @@ namespace Sgry.Azuki
 		bool _IsReadOnly = false;
 		bool _IsDirty = false;
 		IHighlighter _Highlighter = null;
+		ViewParam _ViewParam = new ViewParam();
 		object _Tag = null;
 		#endregion
 
@@ -113,6 +114,14 @@ namespace Sgry.Azuki
 		{
 			get{ return _Buffer.Capacity; }
 			set{ _Buffer.Capacity = value; }
+		}
+
+		/// <summary>
+		/// Gets view specific parameters associated with this document.
+		/// </summary>
+		public ViewParam ViewParam
+		{
+			get{ return _ViewParam; }
 		}
 		#endregion
 

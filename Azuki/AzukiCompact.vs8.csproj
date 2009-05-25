@@ -77,6 +77,7 @@
     <Compile Include="Document\EditAction.cs" />
     <Compile Include="Document\EditHistory.cs" />
     <Compile Include="Document\SplitArray.cs" />
+    <Compile Include="Document\ViewParam.cs" />
     <Compile Include="Highlighter\IHighlighter.cs" />
     <Compile Include="Highlighter\Highlighters.cs" />
     <Compile Include="Highlighter\HighlighterUtl.cs" />

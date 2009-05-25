@@ -1,4 +1,4 @@
-// 2009-05-16
+// 2009-05-23
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,17 +99,10 @@ namespace Sgry.Ann
 				if( _DAD_ActiveDocument == value )
 					return;
 
-				// save state of the document being deactivated
-				if( _DAD_ActiveDocument != null )
-				{
-					_DAD_ActiveDocument.FirstVisibleLineIndex = MainForm.Azuki.View.FirstVisibleLine;
-				}
-
 				// activate document
 				_DAD_ActiveDocument = value;
 				MainForm.Azuki.Document = ActiveDocument.AzukiDoc;
 				MainForm.Azuki.ScrollToCaret();
-				MainForm.Azuki.View.FirstVisibleLine = _DAD_ActiveDocument.FirstVisibleLineIndex;
 				MainForm.Azuki.UpdateCaretGraphic();
 
 				// update UI

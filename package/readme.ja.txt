@@ -1,5 +1,5 @@
-readme.ja.txt
-                                                                     2009-02-25
+﻿readme.ja.txt
+                                                                     2009-05-26
                                                                 YAMAMOTO Suguru
                                                    http://azuki.sourceforge.jp/
 
@@ -28,14 +28,14 @@ readme.ja.txt
 	（現在 SHARP 製 Advanced W-ZERO3 [es] でのみ動作確認）。
 
 - Azuki.xml
-	Azuki.dll の XML ドキュメントが入っています。
-	Visual Studio など統合開発環境で Azuki を使う場合は
+	Azuki.dll の XML ドキュメントファイルです。
+	Visual Studio などの統合開発環境で使う場合は
 	Azuki.dll と同じディレクトリにセットでコピーします。
 
 - AzukiCompact.xml
-	.NET Framework 版の Azuki です。
-	デスクトップアプリケーションで Azuki を使う場合は
-	この DLL を参照します。
+	AzukiCompact.dll の XML ドキュメントファイルです。
+	Visual Studio などの統合開発環境で使う場合は
+	AzukiCompact.dll と同じディレクトリにセットでコピーします。
 
 == Azuki.dll のアセンブリ署名について ==
 パッケージに付属している Azuki.dll には「アセンブリ署名」を行っています。

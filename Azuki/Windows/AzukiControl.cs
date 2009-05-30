@@ -1550,10 +1550,12 @@ namespace Sgry.Azuki.Windows
 						_Impl.HandlePaint( rect );
 
 						WinApi.EndPaint( window, &ps );
-						// (note that calling BeginPaint here effects something
-						// to original paint logic of Control class;
-						// "background will not drawn" and something.)
 					}
+
+					// return zero here to prevent executing original painting logic of Control class.
+					// (if the original logic runs,
+					// we will get invalid(?) update region from BeginPaint API in Windows XP or former.)
+					return IntPtr.Zero;
 				}
 #				if !PocketPC
 				else if( DesignMode )

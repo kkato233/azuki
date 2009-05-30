@@ -27,7 +27,8 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\package\</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -58,7 +59,9 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="AppLogic.cs" />
     <Compile Include="Document.cs" />
-    <Compile Include="AnnForm.cs" />
+    <Compile Include="AnnForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DocumentListForm.cs">
       <SubType>Form</SubType>
     </Compile>

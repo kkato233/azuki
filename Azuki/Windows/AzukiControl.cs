@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-05-30
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -166,6 +166,9 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public void ResetKeyBind()
 		{
+			const int VK_OEM4 = 219; // key code of '['
+			const int VK_OEM6 = 221; // key code of ']'
+
 			_Impl.ClearKeyBind();
 
 			SetKeyBind( Keys.Right, Actions.MoveRight );
@@ -205,6 +208,9 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.Z|Keys.Control, Actions.Undo );
 			SetKeyBind( Keys.Z|Keys.Control|Keys.Shift, Actions.Redo );
 			SetKeyBind( Keys.Y|Keys.Control, Actions.Redo );
+
+			SetKeyBind( (Keys)VK_OEM4|Keys.Control, Actions.GoToMatchedBracket );
+			SetKeyBind( (Keys)VK_OEM6|Keys.Control, Actions.GoToMatchedBracket );
 
 			SetKeyBind( Keys.Insert, Actions.ToggleOverwriteMode );
 			SetKeyBind( Keys.F5, Actions.Refresh );

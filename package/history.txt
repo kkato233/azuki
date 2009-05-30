@@ -1,5 +1,6 @@
 == 1.4.0 (2009-  -  ) ==
  * add: now Azuki supports IME re-conversion
+ * add: added "Go to matched bracket" feature
  * add: XmlHighlighter now highlights HTML entities
  * add: now large line number than 9999 can be shown
  * add: added Tag property to Document class (now one any object can be associate with each document)

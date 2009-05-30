@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-23
+// update: 2009-05-30
 //=========================================================
 using System;
 using System.Collections;
@@ -1023,6 +1023,109 @@ namespace Sgry.Azuki
 				throw new ArgumentException( "RegexOptions.RightToLeft option must be set to the object 'regex'." );
 
 			return _Buffer.FindPrev( regex, begin, end );
+		}
+
+		/// <summary>
+		/// Finds matched bracket from specified index.
+		/// </summary>
+		/// <param name="index">The index to start searching matched bracket.</param>
+		/// <returns>Index of the matched bracket if found. Otherwise -1.</returns>
+		/// <remarks>
+		/// This method searches the matched bracket from specified index.
+		/// If the character at specified index was not a sort of bracket,
+		/// this method returns -1.
+		/// </remarks>
+		public int FindMatchedBracket( int index )
+		{
+			if( index < 0 || Length < index )
+				throw new ArgumentOutOfRangeException( "index" );
+
+			char bracket, pairBracket;
+			bool isOpenBracket;
+			int depth;
+
+			// if given index is the end position,
+			// there is no char at the index so search must be fail
+			if( Length == index )
+			{
+				return -1;
+			}
+
+			// get bracket character at the specified index
+			bracket = this[index];
+			switch( bracket )
+			{
+				case '(':
+					pairBracket = ')';
+					isOpenBracket = true;
+					break;
+				case ')':
+					pairBracket = '(';
+					isOpenBracket = false;
+					break;
+				case '{':
+					pairBracket = '}';
+					isOpenBracket = true;
+					break;
+				case '}':
+					pairBracket = '{';
+					isOpenBracket = false;
+					break;
+				case '[':
+					pairBracket = ']';
+					isOpenBracket = true;
+					break;
+				case ']':
+					pairBracket = '[';
+					isOpenBracket = false;
+					break;
+				default:
+					// not a bracket
+					return -1;
+			}
+
+			// search matched one
+			depth = 0;
+			if( isOpenBracket )
+			{
+				for( int i=index; i<this.Length; i++ )
+				{
+					if( this[i] == bracket )
+					{
+						depth++;
+					}
+					else if( this[i] == pairBracket )
+					{
+						depth--;
+						if( depth == 0 )
+						{
+							return i;
+						}
+					}
+				}
+			}
+			else
+			{
+				// search matched one
+				for( int i=index; 0<=i; i-- )
+				{
+					if( this[i] == bracket )
+					{
+						depth++;
+					}
+					else if( this[i] == pairBracket )
+					{
+						depth--;
+						if( depth == 0 )
+						{
+							return i;
+						}
+					}
+				}
+			}
+
+			// not found
+			return -1;
 		}
 		#endregion
 

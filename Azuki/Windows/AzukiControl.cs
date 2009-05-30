@@ -129,7 +129,29 @@ namespace Sgry.Azuki.Windows
 		public Document Document
 		{
 			get{ return _Impl.Document; }
-			set{ _Impl.Document = value; }
+			set
+			{
+				if( value == null )
+					throw new ArgumentNullException();
+
+				// uninstall event handler
+				if( _Impl.Document != null )
+				{
+					_Impl.Document.ContentChanged -= Document_ContentChanged;
+				}
+
+				// switch to the new document
+				_Impl.Document = value;
+
+				// install event handler
+				_Impl.Document.ContentChanged += Document_ContentChanged;
+			}
+		}
+
+		void Document_ContentChanged( object sender, ContentChangedEventArgs e )
+		{
+			// just invoke TextChanged event of this Control.
+			base.OnTextChanged( e );
 		}
 
 		/// <summary>

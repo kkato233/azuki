@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2009-05-09
+// update: 2009-05-30
 //=========================================================
 using System;
 using System.Text;
@@ -252,13 +252,10 @@ namespace Sgry.Azuki.Windows
 			}
 		}
 
-		public static void SetCaretPos( int x, int y )
+		public static bool SetCaretPos( int x, int y )
 		{
 			Int32 rc = SetCaretPos_( x, y );
-			if( rc == 0 )
-			{
-				throw new Exception( "failed to set caret location" );
-			}
+			return (rc != 0);
 		}
 
 		[DllImport(user32_dll)]

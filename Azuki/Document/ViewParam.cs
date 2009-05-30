@@ -1,7 +1,7 @@
 ﻿// file: ViewParam.cs
 // brief: View parameters associated with each document.
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-05-30
 //=========================================================
 using System;
 
@@ -10,7 +10,12 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// View parameters associated with each document.
 	/// </summary>
-	public class ViewParam
+	/// <remarks>
+	/// This class is a set of parameters that are dependent on each document
+	/// but are not parameters about document content
+	/// (mainly used for drawing text or user interaction.)
+	/// </remarks>
+	public sealed class ViewParam
 	{
 		#region Fields
 		// common
@@ -32,7 +37,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
-		public ViewParam()
+		internal ViewParam()
 		{
 			_PLHI.Add( 0 );
 		}
@@ -49,7 +54,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets index of the line which is displayed at top of this view.
+		/// Gets or sets index of the line which is displayed at top of the view.
 		/// </summary>
 		public int FirstVisibleLine
 		{

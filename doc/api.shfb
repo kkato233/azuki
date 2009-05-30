@@ -10,7 +10,7 @@
         <namespaceSummaryItem name="Sgry.Azuki.Windows" isDocumented="True">This namespace contains Windows specific classes.</namespaceSummaryItem>
     </namespaceSummaries>
     <conceptualContent snippetFile="">
-        <topics>
+        <topics defaultTopic="f23d44f5-55e0-4cee-a443-11aeb276403f">
             <topic id="f23d44f5-55e0-4cee-a443-11aeb276403f" file=".\api_cover.html" title="Cover" revision="1" visible="True" />
             <topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" file=".\api_devnotes.xml" title="Developper's Notes" revision="1" visible="True" />
         </topics>

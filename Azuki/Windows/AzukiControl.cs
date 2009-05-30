@@ -350,6 +350,28 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets or sets the index of the first visible (graphically top most) line
+		/// of currently active document.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets the index of the first visible (graphically top most) line
+		/// of currently active document.
+		/// </para>
+		/// <para>
+		/// This property is just a synonym of Document.ViewParam.FirstVisibleLine
+		/// so changing Document property will also changes this property value.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.ViewParam">Document.ViewParam</seealso>
+		/// <seealso cref="Sgry.Azuki.ViewParam.FirstVisibleLine">ViewParam.FirstVisibleLine</seealso>
+		public int FirstVisibleLine
+		{
+			get{ return Document.ViewParam.FirstVisibleLine; }
+			set{ Document.ViewParam.FirstVisibleLine = value; }
+		}
+
+		/// <summary>
 		/// Color set used for displaying text.
 		/// </summary>
 #		if !PocketPC

@@ -119,6 +119,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets view specific parameters associated with this document.
 		/// </summary>
+		/// <remarks>
+		/// There are some parameters that are dependent on each document
+		/// but are not parameters about document content.
+		/// </remarks>
 		public ViewParam ViewParam
 		{
 			get{ return _ViewParam; }

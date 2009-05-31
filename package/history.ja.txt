@@ -4,7 +4,8 @@
  * add: XmlHighlighter がエンティティをハイライト可能に
  * add: 9999を超える行番号を表示できるように
  * add: Document オブジェクトに Tag プロパティを追加（任意のオブジェクトを関連づけ可能に）
- * add: AzukiControl の TextChanged イベントを、アクティブなドキュメントが変更されたときに発行するように
+ * add: AzukiControl の TextChanged イベントを、アクティブなドキュメントの内容が変更されたときに発行するように
+ * add: AzukiControl に BorderStyle プロパティを追加
  * add: AzukiControl に FirstVisibleLine プロパティを追加
  * fix: UNDO 記録用のメモリー領域をクリアしてもすぐに解放されない問題を修正
  * fix: メモリー使用量を削減

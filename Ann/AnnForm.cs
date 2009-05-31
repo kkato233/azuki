@@ -40,7 +40,7 @@ namespace Sgry.Ann
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
 #			endif
-			_SearchPanel.Font = this.Font;
+			_SearchPanel.SetFont( this.Font );
 		}
 		#endregion
 

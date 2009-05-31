@@ -1,7 +1,7 @@
 ﻿// file: HighlighterUtl.cs
 // brief: common utility for built-in highlighters.
 // author: YAMAMOTO Suguru
-// update: 2008-11-01
+// update: 2008-05-31
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -212,7 +212,7 @@ namespace Sgry.Azuki.Highlighter
 			{
 				// treat escape
 				index = Find( doc, pair.closer, startIndex, endIndex );
-				while( 1 <= index && doc[index-1] == pair.escape )
+				while( Utl.IsEscapedCloser(doc, pair, index) )
 				{
 					index++;
 					index = Find( doc, pair.closer, index, endIndex );
@@ -267,6 +267,31 @@ namespace Sgry.Azuki.Highlighter
 
 		static class Utl
 		{
+			public static bool IsEscapedCloser( Document doc, Enclosure pair, int foundCloserTokenIndex )
+			{
+				int index = foundCloserTokenIndex;
+
+				// previous char is an escape char?
+				if( 1 <= index && doc[index-1] == pair.escape )
+				{
+					// previous char of the previous char is an escape char?
+					if( 2 <= index && doc[index-2] == pair.escape )
+					{
+						// the escape char just before the closer token is escaped;
+						// so the closer token is not escaped
+						return false;
+					}
+					else
+					{
+						// found closer char is a closer
+						return true;
+					}
+				}
+
+				// it is a closer because it is not escaped
+				return false;
+			}
+
 			public static bool IsAlnum( char ch )
 			{
 				if( IsAlphabet(ch) )

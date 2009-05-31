@@ -350,6 +350,78 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets or sets graphical style of border of this control.
+		/// </summary>
+#		if !PocketPC
+		[Category("Appearance")]
+		[DefaultValue(BorderStyle.Fixed3D)]
+#		endif
+		public BorderStyle BorderStyle
+		{
+			get
+			{
+				long style, exStyle;
+
+				// examine WS_BORDER window style
+				style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
+				if( (style & WinApi.WS_BORDER) != 0 )
+				{
+					return BorderStyle.FixedSingle;
+				}
+
+				// examine WS_EX_CLIENTEDGE window style
+				exStyle = WinApi.GetWindowLong( Handle, WinApi.GWL_EXSTYLE ).ToInt64();
+				if( (exStyle & WinApi.WS_EX_CLIENTEDGE) != 0 )
+				{
+					return BorderStyle.Fixed3D;
+				}
+
+				return BorderStyle.None;
+			}
+			set
+			{
+				long style, exStyle;
+
+				if( value == BorderStyle.FixedSingle )
+				{
+					// enable WS_BORDER window style
+					style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
+					style |= WinApi.WS_BORDER;
+					WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
+
+					// disable WS_EX_CLIENTEDGE window style
+					exStyle = WinApi.GetWindowLong( Handle, WinApi.GWL_EXSTYLE ).ToInt64();
+					exStyle &= ~(WinApi.WS_EX_CLIENTEDGE);
+					WinApi.SetWindowLong( Handle, WinApi.GWL_EXSTYLE, new IntPtr(exStyle) );
+				}
+				else if( value == BorderStyle.Fixed3D )
+				{
+					// disable WS_BORDER window style
+					style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
+					style &= ~(WinApi.WS_BORDER);
+					WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
+
+					// enable WS_EX_CLIENTEDGE window style
+					exStyle = WinApi.GetWindowLong( Handle, WinApi.GWL_EXSTYLE ).ToInt64();
+					exStyle |= WinApi.WS_EX_CLIENTEDGE;
+					WinApi.SetWindowLong( Handle, WinApi.GWL_EXSTYLE, new IntPtr(exStyle) );
+				}
+				else// if( value == BorderStyle.None )
+				{
+					// disable WS_BORDER window style
+					style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
+					style &= ~(WinApi.WS_BORDER);
+					WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
+
+					// disable WS_EX_CLIENTEDGE window style
+					exStyle = WinApi.GetWindowLong( Handle, WinApi.GWL_EXSTYLE ).ToInt64();
+					exStyle &= ~(WinApi.WS_EX_CLIENTEDGE);
+					WinApi.SetWindowLong( Handle, WinApi.GWL_EXSTYLE, new IntPtr(exStyle) );
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the index of the first visible (graphically top most) line
 		/// of currently active document.
 		/// </summary>

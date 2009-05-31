@@ -1,4 +1,4 @@
-// 2009-03-02
+// 2009-05-31
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -89,11 +89,13 @@ namespace Sgry.Ann
 	class SearchPanel : Panel
 	{
 		SearchContext _ContextRef = null;
+		int _LastLayoutWidth = 0;
 
 		#region Init / Dispose
 		public SearchPanel()
 		{
 			InitializeComponents();
+			LayoutComponents();
 /*Timer t = new Timer();
 t.Interval = 1000;
 t.Tick+=delegate{
@@ -138,10 +140,40 @@ t.Start();*/
 			get{ return base.Font; }
 			set
 			{
+				IGraphics gra;
+				Size labelSize = new Size();
+
+				// apply fonts
 				base.Font
 					= _Label_Pattern.Font
-					= _Azuki_Pattern.Font
 					= _Button_Next.Font = value;
+				_Azuki_Pattern.Font = new Font( value.Name, value.Size-1, value.Style );
+
+				// calculate size of child controls
+				gra = Plat.Inst.GetGraphics( _Label_Pattern.Handle );
+				gra.Font = this.Font;
+				labelSize.Width = gra.MeasureText( _Label_Pattern.Text ).Width + 2;
+				labelSize.Height = gra.MeasureText( "Mp" ).Height;
+				_Label_Pattern.Size = labelSize;
+				_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height );
+				_Button_Next.Size = new Size( gra.MeasureText(_Button_Next.Text).Width+2, labelSize.Height );
+				_Button_Prev.Size = new Size( gra.MeasureText(_Button_Prev.Text).Width+2, labelSize.Height );
+				_Check_MatchCase.Size = new Size(
+					gra.MeasureText(_Check_MatchCase.Text).Width + labelSize.Height,
+					labelSize.Height
+				);
+				_Check_Regex.Size = new Size(
+					gra.MeasureText(_Check_Regex.Text).Width + labelSize.Height,
+					labelSize.Height
+				);
+				_Panel_TextBox.Height
+					= _Panel_Options.Height
+					= _Panel_Actions.Height = _Label_Pattern.Height + 2;
+				_Panel_TextBox.Width = _Label_Pattern.Width + _Azuki_Pattern.Width + 2;
+				_Panel_Actions.Width = _Button_Next.Width + _Button_Prev.Width + 4;
+				_Panel_Options.Width = _Check_MatchCase.Width + _Check_Regex.Width + 2;
+
+				// layout child controls
 				LayoutComponents();
 			}
 		}
@@ -152,6 +184,15 @@ t.Start();*/
 		{
 			Deactivate();
 			InvokePatternFixed();
+		}
+
+		void Panel_Resize( object sender, EventArgs e )
+		{
+			if( Width != _LastLayoutWidth )
+			{
+				_LastLayoutWidth = Width;
+				LayoutComponents();
+			}
 		}
 
 		void _Button_Next_Click( object sender, EventArgs e )
@@ -205,17 +246,28 @@ t.Start();*/
 		#region UI Component Initialization
 		void InitializeComponents()
 		{
-			// setup panel
+			this.SuspendLayout();
+
+			// setup this panel
 			Dock = DockStyle.Bottom;
-			Controls.Add( _Label_Pattern );
-			Controls.Add( _Azuki_Pattern );
-			Controls.Add( _Button_Next );
-			Controls.Add( _Button_Prev );
-			Controls.Add( _Check_MatchCase );
-			Controls.Add( _Check_Regex );
 			GotFocus += delegate {
 				_Azuki_Pattern.Focus();
 			};
+			Resize += Panel_Resize;
+
+			// setup child controls
+			_Panel_TextBox.Controls.Add( _Label_Pattern );
+			_Panel_TextBox.Controls.Add( _Azuki_Pattern );
+
+			_Panel_Options.Controls.Add( _Check_MatchCase );
+			_Panel_Options.Controls.Add( _Check_Regex );
+
+			_Panel_Actions.Controls.Add( _Button_Next );
+			_Panel_Actions.Controls.Add( _Button_Prev );
+
+			Controls.Add( _Panel_Options );
+			Controls.Add( _Panel_Actions );
+			Controls.Add( _Panel_TextBox );
 
 			// setup label
 			_Label_Pattern.Text = "Find:";
@@ -226,6 +278,7 @@ t.Start();*/
 			_Azuki_Pattern.ShowsLineNumber = false;
 			_Azuki_Pattern.AcceptsTab = false;
 			_Azuki_Pattern.AcceptsReturn = false;
+			_Azuki_Pattern.BorderStyle = BorderStyle.Fixed3D;
 			_Azuki_Pattern.Document.ContentChanged += _Azuki_Pattern_ContentChanged;
 			_Azuki_Pattern.SetKeyBind( Keys.Enter, FixParameters );
 			_Azuki_Pattern.SetKeyBind( Keys.Escape, FixParameters );
@@ -274,41 +327,52 @@ t.Start();*/
 					FixParameters( _Azuki_Pattern );
 			};
 
-			// re-caulculate layout
-			LayoutComponents();
+			ResumeLayout();
 		}
 
 		void LayoutComponents()
 		{
-			IGraphics gra = Plat.Inst.GetGraphics( Handle );
-			Size labelSize = gra.MeasureText( _Label_Pattern.Text );
+			SuspendLayout();
 
-			this.Height = labelSize.Height + 2;
-			_Label_Pattern.Size = labelSize;
-			_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height );
-			_Azuki_Pattern.Location = new Point( labelSize.Width, 1 );
-			_Button_Next.Size = new Size( labelSize.Width*2, labelSize.Height );
-			_Button_Next.Location = new Point( _Azuki_Pattern.Right+2, 1 );
-			_Button_Prev.Size = new Size( labelSize.Width*2, labelSize.Height );
+			// setup panels
+			_Panel_TextBox.Location = new Point( 0, 0 );
+			_Panel_Actions.Location = new Point( _Panel_TextBox.Right, 0 );
+			if( _Panel_Actions.Right + _Panel_Options.Width < Width )
+			{
+				_Panel_Options.Location = new Point( _Panel_Actions.Right, 0 );
+			}
+			else
+			{
+				_Panel_Options.Location = new Point( 0, _Panel_TextBox.Bottom );
+			}
+			this.Height = _Panel_Options.Bottom - _Panel_TextBox.Top;
+
+			// text box and label
+			_Label_Pattern.Top = 3;
+			_Azuki_Pattern.Location = new Point( _Label_Pattern.Width, 1 );
+
+			// action buttons
+			_Button_Next.Location = new Point( 0, 1 );
 			_Button_Prev.Location = new Point( _Button_Next.Right+2, 1 );
-			_Check_MatchCase.Size = new Size(
-				gra.MeasureText(_Check_MatchCase.Text).Width + labelSize.Height,
-				labelSize.Height
-			);
-			_Check_MatchCase.Location = new Point( _Button_Prev.Right+2, 1 );
-			_Check_Regex.Size = new Size(
-				gra.MeasureText(_Check_Regex.Text).Width + labelSize.Height,
-				labelSize.Height
-			);
-			_Check_Regex.Location = new Point( _Check_MatchCase.Right, 1 );
+
+			// options
+			_Check_MatchCase.Location = new Point( 0, 1 );
+			_Check_Regex.Location = new Point( _Check_MatchCase.Right, _Check_MatchCase.Top );
+
+			ResumeLayout();
 		}
 		#endregion
 
 		#region UI Components
+		Panel _Panel_TextBox = new Panel();
 		Label _Label_Pattern = new Label();
 		AzukiControl _Azuki_Pattern = new AzukiControl();
+
+		Panel _Panel_Actions = new Panel();
 		Button _Button_Next = new Button();
 		Button _Button_Prev = new Button();
+
+		Panel _Panel_Options = new Panel();
 		CheckBox _Check_MatchCase = new CheckBox();
 		CheckBox _Check_Regex = new CheckBox();
 		#endregion

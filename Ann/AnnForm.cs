@@ -1,4 +1,4 @@
-// 2009-05-16
+// 2009-05-31
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -36,11 +36,11 @@ namespace Sgry.Ann
 #			if !PocketPC
 			_Azuki.UseCtrlTabToMoveFocus = false;
 			Font = SystemInformation.MenuFont;
-			_SearchPanel.Font = SystemInformation.MenuFont;
 			AllowDrop = true;
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
 #			endif
+			_SearchPanel.Font = this.Font;
 		}
 		#endregion
 

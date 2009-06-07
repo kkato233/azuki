@@ -890,19 +890,17 @@ namespace Sgry.Azuki.Windows
 		{
 			get
 			{
-				// under unknown condition, Text property was called when a Form was disposed.
-				// take care of that case.
-				if( View == null || View.Document == null )
+				if( Document == null )
 					return null;
 
-				return View.Document.Text;
+				return Document.Text;
 			}
 			set
 			{
-				//if( View == null || View.Document == null )
-				//	return;
+				if( Document == null )
+					return;
 
-				View.Document.Text = value;
+				Document.Text = value;
 				View.SetDesiredColumn();
 				ScrollToCaret();
 			}

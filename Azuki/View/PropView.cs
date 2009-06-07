@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-05-09
+// update: 2009-06-07
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -180,7 +180,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Appearance Invalidating and Updating
-		protected override void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
+		internal override void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
 			Document doc = Document;
 			int anchor = doc.AnchorIndex;
@@ -367,7 +367,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		protected override void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		internal override void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Point oldCaretPos;
 			Rectangle invalidRect1 = new Rectangle();

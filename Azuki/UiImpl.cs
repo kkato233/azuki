@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-06-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -566,8 +566,11 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Event Handlers
-		void Doc_SelectionChanged( object sender, EventArgs e )
+		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
+			// delegate to view object
+			View.Doc_SelectionChanged( sender, e );
+
 			// update caret graphic
 			_UI.UpdateCaretGraphic();
 
@@ -577,6 +580,9 @@ namespace Sgry.Azuki
 
 		public void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
+			// delegate to view object
+			View.Doc_ContentChanged( sender, e );
+
 			// redraw caret graphic
 			_UI.UpdateCaretGraphic();
 			

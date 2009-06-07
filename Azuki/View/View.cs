@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-06-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -111,13 +111,6 @@ namespace Sgry.Azuki
 			// dispose graphic resources
 			_Gra.Dispose();
 			_Gra = null;
-
-			// uninstall event handlers
-			if( Document != null )
-			{
-				Document.SelectionChanged -= Doc_SelectionChanged;
-				Document.ContentChanged -= Doc_ContentChanged;
-			}
 		}
 		#endregion
 
@@ -708,15 +701,6 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal virtual void HandleDocumentChanged( Document prevDocument )
 		{
-			// reinstall event handlers
-			if( prevDocument != null )
-			{
-				prevDocument.SelectionChanged -= Doc_SelectionChanged;
-				prevDocument.ContentChanged -= Doc_ContentChanged;
-			}
-			Document.SelectionChanged += Doc_SelectionChanged;
-			Document.ContentChanged += Doc_ContentChanged;
-
 			// adjust for new document
 			UpdateLineNumberWidth();
 		}
@@ -724,12 +708,12 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// This method will be called when the selection was changed.
 		/// </summary>
-		protected abstract void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e );
+		internal abstract void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e );
 
 		/// <summary>
 		/// This method will be called when the content was changed.
 		/// </summary>
-		protected virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		internal virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			UpdateLineNumberWidth();
 		}

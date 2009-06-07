@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-06-07
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -280,7 +280,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Appearance Invalidating and Updating (these logic are copy to PropView's one)
-		protected override void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		internal override void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Document doc = base.Document;
 			int prevLineCount;

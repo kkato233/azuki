@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-05-30
+// update: 2009-06-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ namespace Sgry.Azuki.Windows
 		bool _UseCtrlTabToMoveFocus = true;
 #		endif
 		int _WheelPos = 0;
+		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
 		
 		InvalidateProc1 _invalidateProc1 = null;
 		InvalidateProc2 _invalidateProc2 = null;
@@ -85,6 +86,7 @@ namespace Sgry.Azuki.Windows
 			this.Font = base.Font;
 			WinApi.CreateCaret( Handle, _CaretSize );
 			WinApi.SetCaretPos( 0, 0 );
+			this.BorderStyle = _BorderStyle;
 
 			// install GUI event handlers
 			HandleDestroyed += Control_Destroyed;
@@ -358,26 +360,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public BorderStyle BorderStyle
 		{
-			get
-			{
-				long style, exStyle;
-
-				// examine WS_BORDER window style
-				style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
-				if( (style & WinApi.WS_BORDER) != 0 )
-				{
-					return BorderStyle.FixedSingle;
-				}
-
-				// examine WS_EX_CLIENTEDGE window style
-				exStyle = WinApi.GetWindowLong( Handle, WinApi.GWL_EXSTYLE ).ToInt64();
-				if( (exStyle & WinApi.WS_EX_CLIENTEDGE) != 0 )
-				{
-					return BorderStyle.Fixed3D;
-				}
-
-				return BorderStyle.None;
-			}
+			get{ return _BorderStyle; }
 			set
 			{
 				long style, exStyle;
@@ -418,6 +401,11 @@ namespace Sgry.Azuki.Windows
 					exStyle &= ~(WinApi.WS_EX_CLIENTEDGE);
 					WinApi.SetWindowLong( Handle, WinApi.GWL_EXSTYLE, new IntPtr(exStyle) );
 				}
+
+				// remember the last style
+				// and force to redraw border by recalculating window dimension
+				_BorderStyle = value;
+				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
 			}
 		}
 
@@ -501,8 +489,6 @@ namespace Sgry.Azuki.Windows
 			get{ return _ShowsHScrollBar; }
 			set
 			{
-				const int SWP_FRAMECHANGED = 0x0020;
-
 				_ShowsHScrollBar = value;
 
 				// make new style bits
@@ -514,7 +500,7 @@ namespace Sgry.Azuki.Windows
 
 				// apply
 				WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
-				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, SWP_FRAMECHANGED );
+				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
 				UpdateScrollBarRange();
 			}
 		}

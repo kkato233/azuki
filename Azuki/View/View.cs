@@ -708,12 +708,12 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// This method will be called when the selection was changed.
 		/// </summary>
-		internal abstract void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e );
+		internal abstract void HandleSelectionChanged( object sender, SelectionChangedEventArgs e );
 
 		/// <summary>
 		/// This method will be called when the content was changed.
 		/// </summary>
-		internal virtual void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		internal virtual void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			UpdateLineNumberWidth();
 		}

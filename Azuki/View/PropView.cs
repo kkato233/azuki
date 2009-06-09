@@ -180,7 +180,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Appearance Invalidating and Updating
-		internal override void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
+		internal override void HandleSelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
 			Document doc = Document;
 			int anchor = doc.AnchorIndex;
@@ -209,13 +209,13 @@ namespace Sgry.Azuki
 				if( HighlightsCurrentLine
 					&& PrevCaretLine != caretLine )
 				{
-					Doc_SelectionChanged_UpdateCaretHighlight( PrevCaretLine, caretLine );
+					HandleSelectionChanged_UpdateCaretHighlight( PrevCaretLine, caretLine );
 				}
 			}
 			// or, does the change release selection?
 			else if( e.OldAnchor != e.OldCaret && anchor == caret )
 			{
-				Doc_SelectionChanged_OnReleaseSel( e );
+				HandleSelectionChanged_OnReleaseSel( e );
 			}
 			// then, the change expands selection.
 			else
@@ -233,13 +233,13 @@ namespace Sgry.Azuki
 				if( PrevCaretLine == caretLine )
 				{
 					if( e.OldCaret < caret )
-						Doc_SelectionChanged_OnExpandSelInLine( e.OldCaret, caret, PrevCaretLine );
+						HandleSelectionChanged_OnExpandSelInLine( e.OldCaret, caret, PrevCaretLine );
 					else
-						Doc_SelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
+						HandleSelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
 				}
 				else
 				{
-					Doc_SelectionChanged_OnExpandSel( e, caretLine, caretColumn );
+					HandleSelectionChanged_OnExpandSel( e, caretLine, caretColumn );
 				}
 			}
 
@@ -248,7 +248,7 @@ namespace Sgry.Azuki
 			PrevAnchorLine = anchorLine;
 		}
 
-		void Doc_SelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
+		void HandleSelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
 		{
 			// invalidate old underline
 			if( PrevCaretLine == PrevAnchorLine )
@@ -264,7 +264,7 @@ namespace Sgry.Azuki
 			DrawUnderLine( newCaretY, ColorScheme.HighlightColor );
 		}
 
-		void Doc_SelectionChanged_OnExpandSelInLine( int begin, int end, int beginL )
+		void HandleSelectionChanged_OnExpandSelInLine( int begin, int end, int beginL )
 		{
 			DebugUtl.Assert( beginL < LineCount );
 			Rectangle rect = new Rectangle();
@@ -290,7 +290,7 @@ namespace Sgry.Azuki
 			Invalidate( rect );
 		}
 
-		void Doc_SelectionChanged_OnExpandSel( SelectionChangedEventArgs e, int caretLine, int caretColumn )
+		void HandleSelectionChanged_OnExpandSel( SelectionChangedEventArgs e, int caretLine, int caretColumn )
 		{
 			Document doc = this.Document;
 			int begin, beginL;
@@ -319,7 +319,7 @@ namespace Sgry.Azuki
 			Invalidate_MultiLines( begin, end, beginL, endL, beginLineHead, endLineHead );
 		}
 
-		void Doc_SelectionChanged_OnReleaseSel( SelectionChangedEventArgs e )
+		void HandleSelectionChanged_OnReleaseSel( SelectionChangedEventArgs e )
 		{
 			// in this case, we must invalidate between
 			// old anchor pos and old caret pos.
@@ -367,7 +367,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		internal override void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Point oldCaretPos;
 			Rectangle invalidRect1 = new Rectangle();
@@ -402,7 +402,7 @@ namespace Sgry.Azuki
 				Invalidate( invalidRect2 );
 			}
 
-			base.Doc_ContentChanged( sender, e );
+			base.HandleContentChanged( sender, e );
 		}
 
 		/// <summary>

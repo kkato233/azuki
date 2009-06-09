@@ -569,7 +569,7 @@ namespace Sgry.Azuki
 		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
 			// delegate to view object
-			View.Doc_SelectionChanged( sender, e );
+			View.HandleSelectionChanged( sender, e );
 
 			// update caret graphic
 			_UI.UpdateCaretGraphic();
@@ -581,7 +581,7 @@ namespace Sgry.Azuki
 		public void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			// delegate to view object
-			View.Doc_ContentChanged( sender, e );
+			View.HandleContentChanged( sender, e );
 
 			// redraw caret graphic
 			_UI.UpdateCaretGraphic();

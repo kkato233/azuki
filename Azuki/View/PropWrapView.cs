@@ -280,7 +280,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Appearance Invalidating and Updating (these logic are copy to PropView's one)
-		internal override void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
+		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Document doc = base.Document;
 			int prevLineCount;
@@ -351,7 +351,7 @@ namespace Sgry.Azuki
 				Invalidate( invalidRect2 );
 			}
 
-			base.Doc_ContentChanged( sender, e );
+			base.HandleContentChanged( sender, e );
 		}
 		#endregion
 

@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-06-07
+// update: 2009-06-10
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -40,9 +40,10 @@ namespace Sgry.Azuki
 
 		internal override void HandleDocumentChanged( Document prevDocument )
 		{
-			// update physical line head indexes
-			// unless the new document holds PLHI calculated for same view width
-			if( TextAreaWidth != Document.ViewParam.LastTextAreaWidth )
+			// update physical line head indexes if needed
+			if( Document.ViewParam.LastModifiedTime != Document.LastModifiedTime
+				|| Document.ViewParam.LastFontHashCode != Font.GetHashCode()
+				|| Document.ViewParam.LastTextAreaWidth != TextAreaWidth )
 			{
 				DebugUtl.Assert( 0 < PLHI.Count );
 				UpdatePLHI( 0, "", Document.Text );
@@ -553,8 +554,10 @@ namespace Sgry.Azuki
 				PLHI.Delete( line-1, line );
 			}
 
-			// remember width of text area
+			// remember the condition of the calculation
 			Document.ViewParam.LastTextAreaWidth = TextAreaWidth;
+			Document.ViewParam.LastFontHashCode = Font.GetHashCode();
+			Document.ViewParam.LastModifiedTime = Document.LastModifiedTime;
 		}
 		#endregion
 

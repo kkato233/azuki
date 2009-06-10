@@ -1,7 +1,7 @@
 ﻿// file: ViewParam.cs
 // brief: View parameters associated with each document.
 // author: YAMAMOTO Suguru
-// update: 2009-05-30
+// update: 2009-06-10
 //=========================================================
 using System;
 
@@ -15,7 +15,7 @@ namespace Sgry.Azuki
 	/// but are not parameters about document content
 	/// (mainly used for drawing text or user interaction.)
 	/// </remarks>
-	public sealed class ViewParam
+	internal class ViewParam
 	{
 		#region Fields
 		// common
@@ -31,13 +31,15 @@ namespace Sgry.Azuki
 		// for PropWrapView
 		SplitArray<int> _PLHI = new SplitArray<int>( 128, 128 );
 		int _LastTextAreaWidth = 0;
+		int _LastFontHashCode = 0;
+		DateTime _LastModifiedTime = DateTime.MinValue;
 		#endregion
 
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
-		internal ViewParam()
+		public ViewParam()
 		{
 			_PLHI.Add( 0 );
 		}
@@ -82,9 +84,9 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets maximum line number (internal use only.)
+		/// Gets or sets maximum line number.
 		/// </summary>
-		internal int MaxLineNumber
+		public int MaxLineNumber
 		{
 			get{ return _MaxLineNumber; }
 			set{ _MaxLineNumber = value; }
@@ -92,13 +94,13 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region PropView specific parameters
-		internal int PrevAnchorLine
+		public int PrevAnchorLine
 		{
 			get{ return _PrevAnchorLine; }
 			set{ _PrevAnchorLine = value; }
 		}
 
-		internal int PrevCaretLine
+		public int PrevCaretLine
 		{
 			get{ return _PrevCaretLine; }
 			set{ _PrevCaretLine = value; }
@@ -106,15 +108,27 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region PropWrapView specific parameters
-		internal SplitArray<int> PLHI
+		public SplitArray<int> PLHI
 		{
 			get{ return _PLHI; }
 		}
 
-		internal int LastTextAreaWidth
+		public int LastTextAreaWidth
 		{
 			get{ return _LastTextAreaWidth; }
 			set{ _LastTextAreaWidth = value; }
+		}
+
+		public int LastFontHashCode
+		{
+			get{ return _LastFontHashCode; }
+			set{ _LastFontHashCode = value; }
+		}
+
+		public DateTime LastModifiedTime
+		{
+			get { return _LastModifiedTime; }
+			set { _LastModifiedTime = value; }
 		}
 		#endregion
 	}

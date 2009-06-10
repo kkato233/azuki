@@ -9,9 +9,6 @@ using System.Drawing;
 
 namespace Sgry.Azuki
 {
-	/// <summary>
-	/// Actions.
-	/// </summary>
 	public static partial class Actions
 	{
 		#region Caret Movement

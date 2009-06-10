@@ -377,7 +377,7 @@ namespace Sgry.Azuki
 		/// Gets or sets x-coordinate of the view's origin.
 		/// </summary>
 		/// <remarks>
-		/// This property simply accesses Document.ViewParam.FirstVisibleLine property.
+		/// This property simply accesses Document.ViewParam.ScrollPosX property.
 		/// </remarks>
 		internal int ScrollPosX
 		{

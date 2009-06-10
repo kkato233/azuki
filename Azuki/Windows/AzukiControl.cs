@@ -856,6 +856,17 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		/// <param name="anchor">the position where the selection begins</param>
 		/// <param name="caret">the position where the caret is</param>
+		/// <remarks>
+		/// <para>
+		/// This method sets the selection range and also updates
+		/// the desired column.
+		/// </para>
+		/// <para>
+		/// The desired column is the column index
+		/// that Azuki tries to set next caret position
+		/// when the caret moves up or down.
+		/// </para>
+		/// </remarks>
 		public void SetSelection( int anchor, int caret )
 		{
 			View.Document.SetSelection( anchor, caret );

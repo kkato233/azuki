@@ -33,6 +33,7 @@ namespace Sgry.Azuki
 		bool _IsDirty = false;
 		IHighlighter _Highlighter = null;
 		ViewParam _ViewParam = new ViewParam();
+		DateTime _LastModifiedTime = DateTime.Now;
 		object _Tag = null;
 		#endregion
 
@@ -117,13 +118,22 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets the time when this document was last modified.
+		/// </summary>
+		public DateTime LastModifiedTime
+		{
+			get{ return _LastModifiedTime; }
+		}
+
+		/// <summary>
 		/// Gets view specific parameters associated with this document.
 		/// </summary>
 		/// <remarks>
 		/// There are some parameters that are dependent on each document
 		/// but are not parameters about document content.
+		/// This property contains such parameters.
 		/// </remarks>
-		public ViewParam ViewParam
+		internal ViewParam ViewParam
 		{
 			get{ return _ViewParam; }
 		}
@@ -600,6 +610,7 @@ namespace Sgry.Azuki
 				undo = new EditAction( this, begin, oldText, text );
 				_History.Add( undo );
 			}
+			_LastModifiedTime = DateTime.Now;
 
 			Debug.Assert( begin <= Length );
 

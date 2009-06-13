@@ -1,4 +1,4 @@
-// 2008-11-03
+// 2009-06-13
 using System;
 using System.Windows.Forms;
 using Sgry.Azuki;
@@ -48,6 +48,7 @@ namespace Sgry.Ann
 			{
 				azuki.ViewType = ViewType.Proportional;
 			}
+			azuki.ScrollToCaret();
 		};
 	}
 }

@@ -12,6 +12,11 @@
  * fix: reduced memory usage
  * fix: corrected mis-spelling of ViewType members (no more "propotional")
 
+== 1.3.3 (2009-06-13) ==
+ * fix: fixed a problem that pressing backspace key at the char just after a surrogate pair breaks the surrogate pair
+ * fix: fixed a degrade problem made in 1.3.2 (line management data will be corrupted)
+ * fix: fixed a problem that selection range cannot be shurinked to left of a surrogate pair if we select the surrogate pair from left to right
+
 == 1.3.2 (2009-05-01) ==
  * fix: fixed a problem that document will be corrupted if user UNDOes just after inputting a surrogate pair by IME
  * fix: fixed a problem that caret stops on 'x' of "exec" when moving caret from right to left (Ctrl+Left)

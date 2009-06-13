@@ -1,7 +1,7 @@
 // file: CaretMoveLogic.cs
 // brief: Implementation of caret movement.
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-06-13
 //=========================================================
 using System;
 using System.Drawing;
@@ -71,10 +71,10 @@ namespace Sgry.Azuki
 			int offset = 1;
 			int caret = doc.CaretIndex;
 
-			// if a CR-LF or a surrogate pair is the next, move 2 chars forward
+			// avoid placing caret at middle of a CR-LF or a surrogate pair
 			if( caret+2 <= doc.Length )
 			{
-				string nextTwoChars = doc.GetTextInRange( caret, caret+2 );
+				string nextTwoChars = "" + doc[caret] + doc[caret+1];
 				if( nextTwoChars == "\r\n"
 					|| Document.IsHighSurrogate(nextTwoChars[0]) )
 				{
@@ -96,15 +96,19 @@ namespace Sgry.Azuki
 			{
 				return 0;
 			}
-			
+
 			int offset = 1;
 			int caret = doc.CaretIndex;
 
-			// only when the CRLF is at previous pos, move 2 chars backward
-			if( 0 <= caret-2
-				&& doc.GetTextInRange(caret-2, caret) == "\r\n" )
+			// avoid placing caret at middle of a CR-LF or a surrogate pair
+			if( 0 <= caret-2 )
 			{
-				offset = 2;
+				string prevTwoChars = "" + doc[caret-2] + doc[caret-1];
+				if( prevTwoChars == "\r\n"
+					|| Document.IsLowSurrogate(prevTwoChars[1]) )
+				{
+					offset = 2;
+				}
 			}
 
 			return doc.CaretIndex - offset;

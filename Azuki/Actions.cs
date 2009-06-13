@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-05-30
+// update: 2009-06-13
 //=========================================================
 using System;
 
@@ -40,13 +40,12 @@ namespace Sgry.Azuki
 				int delLen = 1;
 				int caret = doc.CaretIndex;
 
-				// calculate how many chars should be deleted
-				// if a CR-LF or a surrogate pair is the before, move 2 chars backward
+				// avoid dividing a CR-LF or a surrogate pair
 				if( 0 <= caret-2 )
 				{
-					string prevTwoChars = doc.GetTextInRange( caret-2, caret );
+					string prevTwoChars = "" + doc[caret-2] + doc[caret-1];
 					if( prevTwoChars == "\r\n"
-						|| Document.IsHighSurrogate(prevTwoChars[0]) )
+						|| Document.IsLowSurrogate(prevTwoChars[1]) )
 					{
 						delLen = 2;
 					}
@@ -128,11 +127,10 @@ namespace Sgry.Azuki
 				int delLen = 1;
 				int caret = doc.CaretIndex;
 
-				// calculate how many chars should be deleted
-				// if a CR-LF or a surrogate pair is the next, move 2 chars forward
+				// avoid dividing a CR-LF or a surrogate pair
 				if( caret+2 <= doc.Length )
 				{
-					string nextTwoChars = doc.GetTextInRange( caret, caret+2 );
+					string nextTwoChars = "" + doc[caret] + doc[caret+1];
 					if( nextTwoChars == "\r\n"
 						|| Document.IsHighSurrogate(nextTwoChars[0]) )
 					{

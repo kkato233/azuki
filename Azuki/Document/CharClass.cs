@@ -1,7 +1,7 @@
 ﻿// file: CharClass.cs
 // brief: Indicator for class of characters.
 // author: YAMAMOTO Suguru
-// update: 2009-05-02
+// update: 2009-06-17
 //=========================================================
 
 namespace Sgry.Azuki
@@ -77,8 +77,8 @@ namespace Sgry.Azuki
 		/// <summary>Embedded script block (XML).</summary>
 		EmbededScript,
 
-		/// <summary>Delimitter.</summary>
-		Delimitter,
+		/// <summary>Delimiter.</summary>
+		Delimiter,
 
 		/// <summary>CDATA section (XML).</summary>
 		CDataSection,

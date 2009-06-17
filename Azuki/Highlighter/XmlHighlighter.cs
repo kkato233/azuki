@@ -1,7 +1,7 @@
 // file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2009-05-02
+// update: 2009-06-17
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -100,7 +100,7 @@ namespace Sgry.Azuki.Highlighter
 				if( doc[index] == '<' )
 				{
 					// set class for '<'
-					doc.SetCharClass( index, CharClass.Delimitter );
+					doc.SetCharClass( index, CharClass.Delimiter );
 					index++;
 					if( doc.Length <= index )
 					{
@@ -111,7 +111,7 @@ namespace Sgry.Azuki.Highlighter
 					nextCh = doc[ index ];
 					if( nextCh == '?' || nextCh == '/' || nextCh == '!' )
 					{
-						doc.SetCharClass( index, CharClass.Delimitter );
+						doc.SetCharClass( index, CharClass.Delimiter );
 						index++;
 						if( doc.Length <= index )
 							return; // reached to the end
@@ -157,9 +157,9 @@ namespace Sgry.Azuki.Highlighter
 					// highlight '>'
 					if( index < doc.Length )
 					{
-						doc.SetCharClass( index, CharClass.Delimitter );
+						doc.SetCharClass( index, CharClass.Delimiter );
 						if( 1 <= index && doc[index-1] == '/' )
-							doc.SetCharClass( index-1, CharClass.Delimitter );
+							doc.SetCharClass( index-1, CharClass.Delimiter );
 						index++;
 					}
 				}

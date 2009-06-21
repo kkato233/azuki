@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-05-30
+// update: 2009-06-21
 //=========================================================
 using System;
 using System.Collections;
@@ -35,6 +35,23 @@ namespace Sgry.Azuki
 		ViewParam _ViewParam = new ViewParam();
 		DateTime _LastModifiedTime = DateTime.Now;
 		object _Tag = null;
+		static readonly char[] _PairBracketTable = new char[]{
+			'(', ')', '{', '}', '[', ']', '<', '>',
+			'\xff08', '\xff09', // full-width parenthesis
+			'\xff5b', '\xff5d', // full-width curly bracket
+			'\xff3b', '\xff3d', // full-width square bracket
+			'\xff1c', '\xff1e', // full-width less/greater than sign
+			'\x3008', '\x3009', // CJK angle bracket
+			'\x300a', '\x300b', // CJK double angle bracket
+			'\x300c', '\x300d', // CJK corner bracket
+			'\x300e', '\x300f', // CJK white corner bracket
+			'\x3010', '\x3011', // CJK black lenticular bracket
+			'\x3016', '\x3017', // CJK white lenticular bracket
+			'\x3014', '\x3015', // CJK tortoise shell bracket
+			'\x3018', '\x3019', // CJK white tortoise shell bracket
+			'\x301a', '\x301b', // CJK white square bracket
+			'\xff62', '\xff63' // half-width CJK corner bracket
+		};
 		#endregion
 
 		#region Init / Dispose
@@ -1056,7 +1073,7 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "index" );
 
 			char bracket, pairBracket;
-			bool isOpenBracket;
+			bool isOpenBracket = false;
 			int depth;
 
 			// if given index is the end position,
@@ -1066,37 +1083,31 @@ namespace Sgry.Azuki
 				return -1;
 			}
 
-			// get bracket character at the specified index
+			// get the bracket and its pair
 			bracket = this[index];
-			switch( bracket )
+			pairBracket = '\0';
+			for( int i=0; i<_PairBracketTable.Length; i++ )
 			{
-				case '(':
-					pairBracket = ')';
-					isOpenBracket = true;
+				if( bracket == _PairBracketTable[i] )
+				{
+					if( (i % 2) == 0 )
+					{
+						// found bracket is an opener. get paired closer
+						pairBracket = _PairBracketTable[i+1];
+						isOpenBracket = true;
+					}
+					else
+					{
+						// found bracket is an closer. get paired opener
+						pairBracket = _PairBracketTable[i-1];
+						isOpenBracket = false;
+					}
 					break;
-				case ')':
-					pairBracket = '(';
-					isOpenBracket = false;
-					break;
-				case '{':
-					pairBracket = '}';
-					isOpenBracket = true;
-					break;
-				case '}':
-					pairBracket = '{';
-					isOpenBracket = false;
-					break;
-				case '[':
-					pairBracket = ']';
-					isOpenBracket = true;
-					break;
-				case ']':
-					pairBracket = '[';
-					isOpenBracket = false;
-					break;
-				default:
-					// not a bracket
-					return -1;
+				}
+			}
+			if( pairBracket == '\0' )
+			{
+				return -1; // not a bracket.
 			}
 
 			// search matched one
@@ -1105,16 +1116,22 @@ namespace Sgry.Azuki
 			{
 				for( int i=index; i<this.Length; i++ )
 				{
+					// if it is in comment or something that is not a part of "content," ignore it
+					if( Utl.ShouldBeIgnoredGrammatically(this, i) )
+						continue;
+
 					if( this[i] == bracket )
 					{
+						// found an opener again. increment depth count
 						depth++;
 					}
 					else if( this[i] == pairBracket )
 					{
+						// found an closer. decrement depth count
 						depth--;
 						if( depth == 0 )
 						{
-							return i;
+							return i; // depth count reset by this char; this is the pair
 						}
 					}
 				}
@@ -1124,16 +1141,22 @@ namespace Sgry.Azuki
 				// search matched one
 				for( int i=index; 0<=i; i-- )
 				{
+					// if it is in comment or something that is not a part of "content," ignore it
+					if( Utl.ShouldBeIgnoredGrammatically(this, i) )
+						continue;
+
 					if( this[i] == bracket )
 					{
+						// found an closer again. increment depth count
 						depth++;
 					}
 					else if( this[i] == pairBracket )
 					{
+						// found an opener. decrement depth count
 						depth--;
 						if( depth == 0 )
 						{
-							return i;
+							return i; // depth count reset by this char; this is the pair
 						}
 					}
 				}
@@ -1268,6 +1291,22 @@ namespace Sgry.Azuki
 
 		internal class Utl
 		{
+			public static bool ShouldBeIgnoredGrammatically( Document doc, int index )
+			{
+				CharClass klass = doc.GetCharClass( index );
+				if( klass == CharClass.CDataSection
+					|| klass == CharClass.Character
+					|| klass == CharClass.Comment
+					|| klass == CharClass.DocComment
+					|| klass == CharClass.Regex
+					|| klass == CharClass.String )
+				{
+					return true;
+				}
+
+				return false;
+			}
+
 			public static void ConstrainIndex( TextBuffer buf, ref int anchor, ref int caret )
 			{
 				if( anchor < caret )

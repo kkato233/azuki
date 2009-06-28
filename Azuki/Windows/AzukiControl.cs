@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-06-07
+// update: 2009-06-28
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -803,7 +803,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public bool CanRedo
 		{
-			get{ return View.Document.CanUndo; }
+			get{ return View.Document.CanRedo; }
 		}
 
 		/// <summary>

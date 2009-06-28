@@ -12,7 +12,15 @@
  * fix: reduced memory usage
  * fix: corrected mis-spelling of ViewType members (no more "propotional")
  * fix: corrected mis-spelling of CharType.Delimiter (no more "delimitter")
-  * add: [Ann] now Ann scrolls to caret automatically after changing line-wrapping mode.
+ * add: [Ann] now Ann scrolls to caret automatically after changing line-wrapping mode.
+
+== 1.3.5 (2009-06-28) ==
+ * fix: fixed a problem that AzukiControl.CanRedo property always returns invalid value
+ * fix: [Ann] tagged as version 1.2.4
+
+== 1.3.4 (2009-06-20) ==
+ * fix: fixed a problem that an exception will be thrown on changing selection range just after switching active document under certain condition
+ * fix: fixed a problem that if the final line was line-wrapped, the line will not be redrawn correctly on inputting characters
 
 == 1.3.3 (2009-06-13) ==
  * fix: fixed a problem that pressing backspace key at the char just after a surrogate pair breaks the surrogate pair

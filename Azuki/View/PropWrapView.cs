@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-06-10
+// update: 2009-06-20
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -326,23 +326,20 @@ namespace Sgry.Azuki
 			{
 				// if the replacement changed physical line count,
 				// invalidate this *logical* line
-				int logLine, logColumn;
-				doc.GetLineColumnIndexFromCharIndex( e.Index, out logLine, out logColumn );
-				if( logLine+1 < doc.LineCount )
-				{
-					int thePhysLineHead, finalPhysLineHead;
-					int logLineEnd = doc.GetLineHeadIndex( logLine+1 );
-					finalPhysLineHead = GetLineHeadIndexFromCharIndex( logLineEnd );
-					thePhysLineHead = GetLineHeadIndexFromCharIndex( e.Index );
-					if( finalPhysLineHead != thePhysLineHead )
-					{
-						Point finalPhysLineHeadPos = GetVirPosFromIndex( finalPhysLineHead );
-						//NO_NEED//invalidRect2.X = 0;
-						invalidRect2.Y = invalidRect1.Bottom;
-						invalidRect2.Width = VisibleSize.Width;
-						invalidRect2.Height = (finalPhysLineHeadPos.Y) - invalidRect2.Top;
-					}
-				}
+				int logLine;
+				int logLineEnd;
+				Point logLineEndPos;
+
+				// get position of the char at the end of the logical line
+				logLine = doc.GetLineIndexFromCharIndex( e.Index );
+				logLineEnd = doc.GetLineHeadIndex( logLine ) + doc.GetLineLength( logLine );
+				logLineEndPos = GetVirPosFromIndex( logLineEnd );
+
+				// make a rectangle that covers the logical line area
+				invalidRect2.X = 0;
+				invalidRect2.Y = invalidRect1.Bottom;
+				invalidRect2.Width = VisibleSize.Width;
+				invalidRect2.Height = logLineEndPos.Y + LineSpacing - invalidRect2.Top;
 			}
 
 			// invalidate the range

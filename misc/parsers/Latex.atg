@@ -1,0 +1,109 @@
+/* 2009-07-04 */
+COMPILER Tex
+
+/*-------------------------------------------------------
+**  Parser fields
+**-------------------------------------------------------*/
+	int sectionLevel = 0;
+	int curlyBracketDepth = 0;
+
+	void Highlight( Token t, CharClass klass )
+	{
+		CharClass k;
+		
+		k = klass;
+		if( 0 < curlyBracketDepth )
+		{
+			if( sectionLevel == 1 )
+				k = CharClass.Heading1;
+			else if( sectionLevel == 2 )
+				k = CharClass.Heading2;
+			else if( sectionLevel == 3 )
+				k = CharClass.Heading3;
+		}
+		for( int i=t.pos; i<t.pos+t.val.Length; i++ )
+		{
+			doc.SetCharClass( i, k );
+		}
+	}
+
+/*-------------------------------------------------------
+**  Scanner Spec.
+**-------------------------------------------------------*/
+
+CHARACTERS
+	letter			= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+	notLetter		= ANY - letter.
+	anyButBracket	= ANY - '{' - '}' - '[' - ']'.
+	anyButEol		= ANY - '\r' - '\n'.
+	space			= ' ' + '\t' + '\r' + '\n'.
+	otherChar		= anyButBracket - space - '\\' - '%' - '\r' - '\n' - '$'.
+
+TOKENS
+	command				= '\\' letter {letter}.
+	heading1			= "\\section".
+	heading2			= "\\subsection".
+	heading3			= "\\subsubsection".
+	equationFlag		= '$'.
+	bracket				= '[' | ']'.
+	openCurlyBracket	= '{'.
+	closeCurlyBracket	= '}'.
+	escaped				= '\\' notLetter.
+	comment				= '%' {anyButEol} ("\r\n" | '\r' | '\n').
+	other				= otherChar {otherChar}.
+	spaces				= space {space}.
+
+/* ignore whitespace, tab, cr, lf */
+/*IGNORE '\t' + '\r' + '\n'*/
+
+/*-------------------------------------------------------
+**  Parser Spec.
+**-------------------------------------------------------*/
+
+PRODUCTIONS
+
+	Tex =
+		texToken {texToken}
+		.
+	
+	texToken =
+		command
+			(.
+				Highlight( t, CharClass.LatexCommand );
+				if( curlyBracketDepth <= 0 )
+					sectionLevel = 0;
+			.)
+		| heading1
+			(.
+				Highlight( t, CharClass.LatexCommand );
+				sectionLevel = 1;
+			.)
+		| heading2
+			(.
+				Highlight( t, CharClass.LatexCommand );
+				sectionLevel = 2;
+			.)
+		| heading3
+			(.
+				Highlight( t, CharClass.LatexCommand );
+				sectionLevel = 3;
+			.)
+		| equationFlag		(.	Highlight( t, CharClass.LatexEquation );	.)
+		| bracket			(.	Highlight( t, CharClass.LatexBracket );	.)
+		| openCurlyBracket
+			(.
+				Highlight( t, CharClass.LatexCurlyBracket );
+				curlyBracketDepth++;
+			.)
+		| closeCurlyBracket
+			(.
+				curlyBracketDepth--;
+				Highlight( t, CharClass.LatexCurlyBracket );
+			.)
+		| comment		(.	Highlight( t, CharClass.Comment );	.)
+		| escaped		(.	Highlight( t, CharClass.Normal );	.)
+		| other			(.	Highlight( t, CharClass.Normal );	.)
+		| spaces		(.	Highlight( t, CharClass.Normal );	.)
+	.
+
+END Tex.

@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2009-06-17
+// update: 2009-07-04
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -81,6 +81,7 @@ namespace Sgry.Azuki
 			Color azuki = Color.FromArgb( 0x92, 0x62, 0x57 ); // azuki iro
 			Color shin_bashi = Color.FromArgb( 0x74, 0xa9, 0xd6 ); // shin-bashi iro (japanese)
 			Color hana_asagi = Color.FromArgb( 0x1b, 0x77, 0x92 ); // hana-asagi iro (japanese)
+			Color sax_blue = Color.FromArgb( 0x46, 0x48, 0xb8 );
 			
 			SetColor( CharClass.Normal, Color.Black, bgcolor );
 			SetColor( CharClass.Number, Color.Black, bgcolor );
@@ -95,7 +96,6 @@ namespace Sgry.Azuki
 			SetColor( CharClass.Type, Color.BlueViolet, bgcolor );
 			SetColor( CharClass.Regex, Color.Teal, bgcolor );
 			SetColor( CharClass.Annotation, Color.Gray, bgcolor );
-			SetColor( CharClass.Command, Color.Blue, bgcolor );
 			SetColor( CharClass.Selecter, Color.Navy, bgcolor );
 			SetColor( CharClass.Property, Color.Blue, bgcolor );
 			SetColor( CharClass.Value, Color.Red, bgcolor );
@@ -106,6 +106,16 @@ namespace Sgry.Azuki
 			SetColor( CharClass.EmbededScript, Color.Gray, bgcolor );
 			SetColor( CharClass.Delimiter, Color.Blue, bgcolor );
 			SetColor( CharClass.CDataSection, Color.Silver, bgcolor );
+			SetColor( CharClass.LatexBracket, Color.Teal, bgcolor );
+			SetColor( CharClass.LatexCommand, sax_blue, bgcolor );
+			SetColor( CharClass.LatexCurlyBracket, Color.Maroon, bgcolor );
+			SetColor( CharClass.LatexEquation, Color.Maroon, bgcolor );
+			SetColor( CharClass.Heading1, Color.Black, Color.Yellow );
+			SetColor( CharClass.Heading2, Color.Black, Color.Yellow );
+			SetColor( CharClass.Heading3, Color.Black, Color.Yellow );
+			SetColor( CharClass.Heading4, Color.Black, Color.Yellow );
+			SetColor( CharClass.Heading5, Color.Black, Color.Yellow );
+			SetColor( CharClass.Heading6, Color.Black, Color.Yellow );
 
 			this.SelectionFore = Color.White;
 			this.SelectionBack = azuki;

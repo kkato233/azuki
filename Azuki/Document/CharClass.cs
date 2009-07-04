@@ -1,7 +1,7 @@
 ﻿// file: CharClass.cs
 // brief: Indicator for class of characters.
 // author: YAMAMOTO Suguru
-// update: 2009-06-17
+// update: 2009-07-04
 //=========================================================
 
 namespace Sgry.Azuki
@@ -35,7 +35,7 @@ namespace Sgry.Azuki
 		/// <summary>Another Additional keyword set.</summary>
 		Keyword3,
 
-		/// <summary>Macro (C/C++, C#, TeX, ...).</summary>
+		/// <summary>Macro (C/C++, C#, ...).</summary>
 		Macro,
 
 		/// <summary>Character (C/C++, Java, ...).</summary>
@@ -49,9 +49,6 @@ namespace Sgry.Azuki
 
 		/// <summary>Annotation (Java).</summary>
 		Annotation,
-
-		/// <summary>Command (TeX).</summary>
-		Command,
 
 		/// <summary>Selector (CSS).</summary>
 		Selecter,
@@ -80,8 +77,38 @@ namespace Sgry.Azuki
 		/// <summary>Delimiter.</summary>
 		Delimiter,
 
-		/// <summary>CDATA section (XML).</summary>
+		/// <summary>CDATA section. (XML)</summary>
 		CDataSection,
+
+		/// <summary>LaTeX command. (LaTeX)</summary>
+		LatexCommand,
+
+		/// <summary>Brackets used in LaTeX. (LaTeX)</summary>
+		LatexBracket,
+
+		/// <summary>Curly brackets used in LaTeX. (LaTeX)</summary>
+		LatexCurlyBracket,
+
+		/// <summary>Equation. (LaTeX)</summary>
+		LatexEquation,
+
+		/// <summary>Heading 1 (LaTeX, Wiki, HTML).</summary>
+		Heading1,
+
+		/// <summary>Heading 2 (LaTeX, Wiki, HTML).</summary>
+		Heading2,
+
+		/// <summary>Heading 3 (LaTeX, Wiki, HTML).</summary>
+		Heading3,
+
+		/// <summary>Heading 4 (LaTeX, Wiki, HTML).</summary>
+		Heading4,
+
+		/// <summary>Heading 5 (LaTeX, Wiki, HTML).</summary>
+		Heading5,
+
+		/// <summary>Heading 6 (LaTeX, Wiki, HTML).</summary>
+		Heading6,
 
 		/// <summary>!! DO NOT USE !!  Selected text.</summary>
 		Selection	= 255

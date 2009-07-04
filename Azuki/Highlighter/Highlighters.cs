@@ -1,7 +1,7 @@
 ﻿// file: Highlighters.cs
 // brief: highlighter object factory.
 // author: YAMAMOTO Suguru
-// update: 2008-12-28
+// update: 2009-07-04
 //=========================================================
 using System;
 
@@ -13,6 +13,14 @@ namespace Sgry.Azuki.Highlighter
 	public static class Highlighters
 	{
 		#region Built-in Highlighters
+		/// <summary>
+		/// Gets a new highlighter for LaTeX.
+		/// </summary>
+		public static IHighlighter Latex
+		{
+			get{ return new LatexHighlighter(); }
+		}
+
 		/// <summary>
 		/// Gets a new highlighter for C/C++.
 		/// </summary>

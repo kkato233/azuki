@@ -73,7 +73,6 @@ namespace Sgry.Azuki
 
 			// inherit other parameters
 			this._ColorScheme = other._ColorScheme;
-			//DO_NOT//this._Document = other._Document;
 			this._DrawingOption = other._DrawingOption;
 			//DO_NOT//this._Gra = other._Gra;
 			//DO_NOT//this._LCharWidth = other._LCharWidth;

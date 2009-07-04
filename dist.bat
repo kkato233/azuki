@@ -77,7 +77,7 @@ echo ========================================
 echo   [4/4] make archive
 echo ========================================
 pushd package
-%sevenzip% a -tzip -mx=9 .\zip\Azuki-%version%.zip @dist.list
+%sevenzip% a -tzip -mx=9 .\zip\Azuki-%version%-bin.zip @dist.list
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )

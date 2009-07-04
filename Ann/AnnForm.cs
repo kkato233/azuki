@@ -1,4 +1,4 @@
-// 2009-05-31
+// 2009-07-04
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -140,6 +140,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_View_WrapLines ]			= Actions.ToggleWrapLines;
 
 			_MenuMap[ _MI_Mode_Text ]		= Actions.SetToTextMode;
+			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
 			_MenuMap[ _MI_Mode_Cpp ]		= Actions.SetToCppMode;
 			_MenuMap[ _MI_Mode_CSharp ]		= Actions.SetToCSharpMode;
 			_MenuMap[ _MI_Mode_Java ]		= Actions.SetToJavaMode;
@@ -309,6 +310,7 @@ namespace Sgry.Ann
 			_MI_View.MenuItems.Add( _MI_View_WrapLines );
 
 			_MI_Mode.MenuItems.Add( _MI_Mode_Text );
+			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Java );	
@@ -346,6 +348,7 @@ namespace Sgry.Ann
 			_MI_View_WrapLines.Text = "&Wrap lines";
 			_MI_Mode.Text = "&Mode";
 			_MI_Mode_Text.Text = "&Text";
+			_MI_Mode_Latex.Text = "&LaTeX";
 			_MI_Mode_Cpp.Text = "&C/C++";
 			_MI_Mode_CSharp.Text = "C&#";
 			_MI_Mode_Java.Text = "&Java";
@@ -442,6 +445,7 @@ namespace Sgry.Ann
 		MenuItem _MI_View_WrapLines			= new MenuItem();
 		MenuItem _MI_Mode			= new MenuItem();
 		MenuItem _MI_Mode_Text		= new MenuItem();
+		MenuItem _MI_Mode_Latex		= new MenuItem();
 		MenuItem _MI_Mode_Cpp		= new MenuItem();
 		MenuItem _MI_Mode_CSharp	= new MenuItem();
 		MenuItem _MI_Mode_Java		= new MenuItem();

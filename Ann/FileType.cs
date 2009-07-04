@@ -1,4 +1,4 @@
-// 2009-01-12
+// 2009-07-04
 using System;
 using Sgry.Azuki;
 using IHighlighter = Sgry.Azuki.Highlighter.IHighlighter;
@@ -28,6 +28,21 @@ namespace Sgry.Ann
 				FileType fileType = new FileType();
 				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = "Text";
+				return fileType;
+			}
+		}
+
+		/// <summary>
+		/// Gets a new LaTeX file type.
+		/// </summary>
+		public static FileType LatexFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Latex;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
+				fileType._Name = "LaTeX";
 				return fileType;
 			}
 		}

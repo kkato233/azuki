@@ -1,4 +1,4 @@
-// 2008-10-26
+// 2009-07-04
 using System;
 using System.Windows.Forms;
 
@@ -13,6 +13,15 @@ namespace Sgry.Ann
 			= delegate( AppLogic app )
 		{
 			app.SetFileType( app.ActiveDocument, FileType.TextFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to LaTeX mode.
+		/// </summary>
+		public static AnnAction SetToLatexMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.LatexFileType );
 		};
 
 		/// <summary>

@@ -1,7 +1,7 @@
 ﻿// file: AutoIndentLogic.cs
 // brief: Logic around auto-indentation.
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-07-05
 //=========================================================
 using System;
 using System.Text;
@@ -42,7 +42,7 @@ namespace Sgry.Azuki
 				lineHead = doc.GetLineHeadIndexFromCharIndex( doc.CaretIndex );
 				for( int i=lineHead; i<doc.CaretIndex; i++ )
 				{
-					if( doc[i] == ' ' || doc[i] == '\t' )
+					if( doc[i] == ' ' || doc[i] == '\t' || doc[i] == '\x3000' )
 						str.Append( doc[i] );
 					else
 						break;
@@ -115,7 +115,7 @@ namespace Sgry.Azuki
 				// if there are following white spaces, remove them
 				for( int i=selEnd; i<lineEnd; i++ )
 				{
-					if( doc[i] == ' ' || doc[i] == '\t' )
+					if( doc[i] == ' ' || doc[i] == '\t' || doc[i] == '\x3000' )
 						selEnd++;
 					else
 						break;

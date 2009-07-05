@@ -7,6 +7,7 @@
  * add: AzukiControl の TextChanged イベントを、アクティブなドキュメントの内容が変更されたときに発行するように
  * add: AzukiControl に BorderStyle プロパティを追加
  * add: AzukiControl に FirstVisibleLine プロパティを追加
+ * add: 自動インデントが全角空白に対しても実行されるように
  * fix: KeywordHighlighter が「エスケープされたエスケープ文字」を正しく扱うように（C++ の '\\' といったトークンを正しくハイライト可能に）
  * fix: UNDO 記録用のメモリー領域をクリアしてもすぐに解放されない問題を修正
  * fix: メモリー使用量を削減

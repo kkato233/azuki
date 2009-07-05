@@ -1139,6 +1139,17 @@ namespace Sgry.Azuki.Windows
 			get{ return _Impl.Highlighter; }
 			set{ _Impl.Highlighter = value; }
 		}
+
+		/// <summary>
+		/// Gets version of Azuki.dll.
+		/// </summary>
+		public Version Version
+		{
+			get
+			{
+				return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+			}
+		}
 		#endregion
 
 		#region GUI Event Handling

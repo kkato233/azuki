@@ -135,9 +135,11 @@ class Scanner {
 	}
 
 	Token NextToken() {
+		#pragma warning disable 0162
 		while (//ch == ' ' ||
 -->scan1
 		) NextCh();
+		#pragma warning restore 0162
 -->scan2
 		t = new Token();
 		t.pos = pos; t.col = col; t.line = line; 

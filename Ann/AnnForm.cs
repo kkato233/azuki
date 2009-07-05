@@ -1,4 +1,4 @@
-// 2009-07-04
+// 2009-07-05
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -128,6 +128,8 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_File_Close ]		= Actions.CloseDocument;
 			_MenuMap[ _MI_File_Exit ]		= Actions.Exit;
 
+			_MenuMap[ _MI_Edit_Undo ]		= Actions.Undo;
+			_MenuMap[ _MI_Edit_Redo ]		= Actions.Redo;
 			_MenuMap[ _MI_Edit_Cut ]		= Actions.Cut;
 			_MenuMap[ _MI_Edit_Copy ]		= Actions.Copy;
 			_MenuMap[ _MI_Edit_Paste ]		= Actions.Paste;
@@ -164,6 +166,8 @@ namespace Sgry.Ann
 			_KeyMap[ Keys.W|Keys.Control ]				= Actions.CloseDocument;
 			_KeyMap[ Keys.Q|Keys.Control ]				= Actions.Exit;
 
+			_KeyMap[ Keys.Z|Keys.Control ]				= Actions.Undo;
+			_KeyMap[ Keys.Y|Keys.Control ]				= Actions.Redo;
 			_KeyMap[ Keys.X|Keys.Control ]				= Actions.Cut;
 			_KeyMap[ Keys.C|Keys.Control ]				= Actions.Copy;
 			_KeyMap[ Keys.V|Keys.Control ]				= Actions.Paste;
@@ -296,6 +300,9 @@ namespace Sgry.Ann
 			_MI_File.MenuItems.Add( _MI_File_Sep1 );
 			_MI_File.MenuItems.Add( _MI_File_Exit );
 
+			_MI_Edit.MenuItems.Add( _MI_Edit_Undo );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Redo );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Sep0 );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Cut );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Copy );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Paste );
@@ -334,6 +341,9 @@ namespace Sgry.Ann
 			_MI_File_Sep1.Text = "-";
 			_MI_File_Exit.Text = "E&xit";
 			_MI_Edit.Text = "&Edit";
+			_MI_Edit_Undo.Text = "&Undo";
+			_MI_Edit_Redo.Text = "&Redo";
+			_MI_Edit_Sep0.Text = "-";
 			_MI_Edit_Cut.Text = "Cu&t";
 			_MI_Edit_Copy.Text = "&Copy";
 			_MI_Edit_Paste.Text = "&Paste";
@@ -431,6 +441,9 @@ namespace Sgry.Ann
 		MenuItem _MI_File_Sep1		= new MenuItem();
 		MenuItem _MI_File_Exit		= new MenuItem();
 		MenuItem _MI_Edit			= new MenuItem();
+		MenuItem _MI_Edit_Undo		= new MenuItem();
+		MenuItem _MI_Edit_Redo		= new MenuItem();
+		MenuItem _MI_Edit_Sep0		= new MenuItem();
 		MenuItem _MI_Edit_Cut		= new MenuItem();
 		MenuItem _MI_Edit_Copy		= new MenuItem();
 		MenuItem _MI_Edit_Paste		= new MenuItem();

@@ -1,4 +1,4 @@
-// 2009-02-01
+// 2009-07-05
 using System;
 using System.Windows.Forms;
 
@@ -6,6 +6,24 @@ namespace Sgry.Ann
 {
 	static partial class Actions
 	{
+		/// <summary>
+		/// UNDO last operation.
+		/// </summary>
+		public static AnnAction Undo
+			= delegate( AppLogic app )
+		{
+			app.MainForm.Azuki.Undo();
+		};
+
+		/// <summary>
+		/// Execute again most recently UNDOed operation.
+		/// </summary>
+		public static AnnAction Redo
+			= delegate( AppLogic app )
+		{
+			app.MainForm.Azuki.Redo();
+		};
+
 		/// <summary>
 		/// Cuts currently selected text or current line if nothing selected.
 		/// </summary>

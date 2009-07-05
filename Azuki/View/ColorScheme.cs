@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2009-07-04
+// update: 2009-07-05
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -110,12 +110,12 @@ namespace Sgry.Azuki
 			SetColor( CharClass.LatexCommand, sax_blue, bgcolor );
 			SetColor( CharClass.LatexCurlyBracket, Color.Maroon, bgcolor );
 			SetColor( CharClass.LatexEquation, Color.Maroon, bgcolor );
-			SetColor( CharClass.Heading1, Color.Black, Color.Yellow );
-			SetColor( CharClass.Heading2, Color.Black, Color.Yellow );
-			SetColor( CharClass.Heading3, Color.Black, Color.Yellow );
-			SetColor( CharClass.Heading4, Color.Black, Color.Yellow );
-			SetColor( CharClass.Heading5, Color.Black, Color.Yellow );
-			SetColor( CharClass.Heading6, Color.Black, Color.Yellow );
+			SetColor( CharClass.Heading1, Color.Black, Color.FromArgb(0xff, 0xff, 0x00) ); // -LOG( 1/1.0 )
+			SetColor( CharClass.Heading2, Color.Black, Color.FromArgb(0xff, 0xff, 0x65) ); // -LOG( 1/2.5 )
+			SetColor( CharClass.Heading3, Color.Black, Color.FromArgb(0xff, 0xff, 0x99) ); // -LOG( 1/4.0 )
+			SetColor( CharClass.Heading4, Color.Black, Color.FromArgb(0xff, 0xff, 0xbc) ); // -LOG( 1/5.5 )
+			SetColor( CharClass.Heading5, Color.Black, Color.FromArgb(0xff, 0xff, 0xb7) ); // -LOG( 1/7.0 )
+			SetColor( CharClass.Heading6, Color.Black, Color.FromArgb(0xff, 0xff, 0xed) ); // -LOG( 1/8.5 )
 
 			this.SelectionFore = Color.White;
 			this.SelectionBack = azuki;

@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2009-06-07
+// update: 2009-07-07
 //=========================================================
 using System;
 using System.Text;
@@ -34,6 +34,13 @@ namespace Sgry.Azuki.Windows
 		public const int WM_HSCROLL = 0x0114;
 		public const int WM_VSCROLL = 0x0115;
 		
+		public const int WM_KEYFIRST = 0x0100;
+		public const int WM_KEYDOWN = 0x0100;
+		public const int WM_KEYUP = 0x0101;
+		public const int WM_KEYCHAR = 0x0102;
+		public const int WM_KEYUNICHAR = 0x0109;
+		public const int WM_KEYLAST = 0x0109;
+
 		public const int WM_MOUSEMOVE = 0x0200;
 		public const int WM_LBUTTONDOWN = 0x0201;
 		public const int WM_LBUTTONUP = 0x0202;
@@ -542,6 +549,17 @@ namespace Sgry.Azuki.Windows
 		#endregion
 
 		#region Keyboard
+		public static Keys GetCurrentModifierKeyStates()
+		{
+			Keys modifiers = Keys.None;
+
+			modifiers |= IsKeyDown(Keys.Menu) ? Keys.Alt : Keys.None;
+			modifiers |= IsKeyDown(Keys.ControlKey) ? Keys.Control : Keys.None;
+			modifiers |= IsKeyDown(Keys.ShiftKey) ? Keys.Shift : Keys.None;
+
+			return modifiers;
+		}
+
 		[DllImport(user32_dll)]
 		static extern Int16 GetKeyState( Int32 vKeyCode );
 		public static bool IsKeyDown( Keys keyCode )

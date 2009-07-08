@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-06-28
+// update: 2009-07-08
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -34,9 +34,7 @@ namespace Sgry.Azuki.Windows
 		bool _AcceptsReturn = true;
 		bool _AcceptsTab = true;
 		bool _ShowsHScrollBar = true;
-#		if !PocketPC
 		bool _UseCtrlTabToMoveFocus = true;
-#		endif
 		int _WheelPos = 0;
 		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
 		
@@ -717,6 +715,9 @@ namespace Sgry.Azuki.Windows
 		/// If this is true, treats Enter key as an input and
 		/// prevent pressing dialog default button.
 		/// </summary>
+		/// <remarks>
+		/// The default value is true.
+		/// </remarks>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(true)]
@@ -732,6 +733,9 @@ namespace Sgry.Azuki.Windows
 		/// If this is true, treats Tab key as an input and
 		/// prevent moving focus to other control in a dialog.
 		/// </summary>
+		/// <remarks>
+		/// The default value is true.
+		/// </remarks>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(true)]
@@ -1477,6 +1481,13 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets or sets default text color.
 		/// </summary>
+		/// <remarks>
+		/// This property gets or sets default foreground color.
+		/// Note that this is a synonym of
+		/// <see cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</see>.BackColor
+		/// .
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
 		public override Color ForeColor
 		{
 			get
@@ -1498,6 +1509,13 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets or sets default background color.
 		/// </summary>
+		/// <remarks>
+		/// This property gets or sets default background color.
+		/// Note that this is a synonym of
+		/// <see cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</see>.BackColor
+		/// .
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
 		public override Color BackColor
 		{
 			get
@@ -1516,6 +1534,24 @@ namespace Sgry.Azuki.Windows
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets whether this control uses Ctrl+Tab and Ctrl+Shift+Tab
+		/// for moving focus to other controls in a dialog.
+		/// </summary>
+		/// <remarks>
+		/// The default value is true.
+		/// </remarks>
+#		if !PocketPC
+		[Category("Behavior")]
+		[DefaultValue(true)]
+		[Description("Whether this control uses Ctrl+Tab and Ctrl+Shift+Tab for moving focus to other controls in a dialog.")]
+#		endif
+		public bool UseCtrlTabToMoveFocus
+		{
+			get{ return _UseCtrlTabToMoveFocus; }
+			set{ _UseCtrlTabToMoveFocus = value; }
+		}
+
 #		if !PocketPC
 		/// <summary>
 		/// This defines the characters which must be treated as input for this control.
@@ -1549,21 +1585,6 @@ namespace Sgry.Azuki.Windows
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// Gets or sets whether this control uses Ctrl+Tab and Ctrl+Shift+Tab
-		/// for moving focus to other controls in a dialog.
-		/// </summary>
-#		if !PocketPC
-		[Category("Behavior")]
-		[DefaultValue(true)]
-		[Description("Whether this control uses Ctrl+Tab and Ctrl+Shift+Tab for moving focus to other controls in a dialog.")]
-#		endif
-		public bool UseCtrlTabToMoveFocus
-		{
-			get{ return _UseCtrlTabToMoveFocus; }
-			set{ _UseCtrlTabToMoveFocus = value; }
 		}
 
 		/// <summary>
@@ -1751,6 +1772,28 @@ namespace Sgry.Azuki.Windows
 
 					return new IntPtr( rc );
 				}
+#				if PocketPC
+				else if( message == WinApi.WM_KEYDOWN )
+				{
+					// Default behavior of .NET Control class for WM_KEYDOWN
+					// moves focus and there seems to be no way to prevent moving focus on WinCE env.
+					// Thus here I hook WM_KEYDOWN message and control focus
+					Keys keyCode = (Keys)wParam.ToInt32();
+					Keys keyData = keyCode | WinApi.GetCurrentModifierKeyStates();
+					if( keyData == (Keys.Tab)
+						&& AcceptsTab )
+					{
+						base.OnKeyDown( new KeyEventArgs(keyData) );
+						return IntPtr.Zero;
+					}
+					if( keyData == (Keys.Tab | Keys.Control)
+						&& UseCtrlTabToMoveFocus == false )
+					{
+						base.OnKeyDown( new KeyEventArgs(keyData) );
+						return IntPtr.Zero;
+					}
+				}
+#			endif
 			}
 			catch( Exception ex )
 			{

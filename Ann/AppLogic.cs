@@ -1,4 +1,4 @@
-// 2009-05-23
+// 2009-07-08
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,9 +16,12 @@ namespace Sgry.Ann
 	class AppLogic
 	{
 		#region Fields
-		const string OpenFileFilter = "All files(*.*)|*.*|" + SaveFileFilter;
+		const string OpenFileFilter =
+			"All files(*.*)|*.*|"
+			+ "Supported files|*.txt;*.log;*.ini;*.inf;*.tex;*.htm;*.html;*.css;*.js;*.xml;*.c;*.cpp;*.cxx;*.h;*.hpp;*.hxx;*.cs;*.java;*.py;*.rb;*.pl;*.vbs;*.bat|"
+			+ SaveFileFilter;
 		const string SaveFileFilter =
-			"Text file(*.txt, *.log, *.ini, ...)|*.txt;*.log;*.ini;*.inf;*.tex"
+			"Text file(*.txt, *.log, *.tex, ...)|*.txt;*.log;*.ini;*.inf;*.tex"
 			+ "|HTML file(*.htm, *.html)|*.htm;*.html"
 			+ "|CSS file(*.css)|*.css"
 			+ "|Javascript file(*.js)|*.js"

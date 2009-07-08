@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-05-23
+// update: 2009-07-07
 //=========================================================
 using System;
 using System.IO;
@@ -228,11 +228,16 @@ namespace Sgry
 		#region Init / Dispose
 		~AutoLogger()
 		{
-			using( StreamWriter file = new StreamWriter(DebugUtl.LogFilePath, true) )
+			try
 			{
-				file.Write( _Buf.ToString() );
-				file.WriteLine();
+				using( StreamWriter file = new StreamWriter(DebugUtl.LogFilePath, true) )
+				{
+					file.Write( _Buf.ToString() );
+					file.WriteLine();
+				}
 			}
+			catch( IOException )
+			{}
 		}
 		#endregion
 

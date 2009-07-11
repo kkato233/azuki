@@ -268,9 +268,9 @@ t.Start();*/
 			_Panel_Actions.Controls.Add( _Button_Next );
 			_Panel_Actions.Controls.Add( _Button_Prev );
 
-			Controls.Add( _Panel_Options );
-			Controls.Add( _Panel_Actions );
 			Controls.Add( _Panel_TextBox );
+			Controls.Add( _Panel_Actions );
+			Controls.Add( _Panel_Options );
 
 			// setup label
 			_Label_Pattern.Text = "Find:";

@@ -1,4 +1,4 @@
-// 2009-07-08
+// 2009-07-11
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,7 +66,7 @@ namespace Sgry.Ann
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 
 				// handle initially set document
-				Document doc = new Document( value.Azuki.Document );
+				Document doc = new Document();
 				AddDocument( doc );
 				ActiveDocument = doc;
 
@@ -104,7 +104,7 @@ namespace Sgry.Ann
 
 				// activate document
 				_DAD_ActiveDocument = value;
-				MainForm.Azuki.Document = ActiveDocument.AzukiDoc;
+				MainForm.Azuki.Document = ActiveDocument;
 				MainForm.Azuki.ScrollToCaret();
 				MainForm.Azuki.UpdateCaretGraphic();
 
@@ -126,7 +126,7 @@ namespace Sgry.Ann
 				doc.DisplayName = "Untitled" + _UntitledFileCount;
 				_UntitledFileCount++;
 			}
-			doc.AzukiDoc.DirtyStateChanged += Doc_DirtyStateChanged;
+			doc.DirtyStateChanged += Doc_DirtyStateChanged;
 			_DAD_Documents.Add( doc );
 		}
 
@@ -153,7 +153,7 @@ namespace Sgry.Ann
 				else
 					_DAD_ActiveDocument = null;
 			}
-			doc.AzukiDoc.DirtyStateChanged -= Doc_DirtyStateChanged;
+			doc.DirtyStateChanged -= Doc_DirtyStateChanged;
 		}
 
 		/// <summary>
@@ -232,7 +232,7 @@ namespace Sgry.Ann
 		public void SetFileType( Document doc, FileType fileType )
 		{
 			doc.FileType = fileType;
-			doc.AzukiDoc.Highlighter = fileType.Highlighter;
+			doc.Highlighter = fileType.Highlighter;
 
 			if( doc == ActiveDocument )
 			{
@@ -250,7 +250,7 @@ namespace Sgry.Ann
 		public void CreateNewDocument()
 		{
 			// create a document
-			Document doc = new Document( new AzukiDocument() );
+			Document doc = new Document();
 			AddDocument( doc );
 
 			// activate it
@@ -281,7 +281,7 @@ namespace Sgry.Ann
 			}
 
 			// create new document
-			doc = new Document( new AzukiDocument() );
+			doc = new Document();
 			
 			// analyze encoding
 			if( encoding == null )
@@ -295,7 +295,7 @@ namespace Sgry.Ann
 			{
 				// expand internal buffer size before loading file
 				// (estimating needed buffer size by a half of byte-count of file)
-				doc.AzukiDoc.Capacity = (int)( file.BaseStream.Length / 2 );
+				doc.Capacity = (int)( file.BaseStream.Length / 2 );
 
 				// prepare load buffer
 				// (if the file is larger than 1MB, separate by 10 and load for each)
@@ -317,15 +317,15 @@ namespace Sgry.Ann
 					{
 						fixed( char* p = buf )
 						{
-							doc.AzukiDoc.Replace( new String(p), doc.AzukiDoc.Length, doc.AzukiDoc.Length );
+							doc.Replace( new String(p), doc.Length, doc.Length );
 						}
 					}
 				}
 			}
 
 			// set document properties
-			doc.AzukiDoc.ClearHistory();
-			doc.AzukiDoc.IsDirty = false;
+			doc.ClearHistory();
+			doc.IsDirty = false;
 			doc.FilePath = filePath;
 
 			return doc;
@@ -439,7 +439,7 @@ namespace Sgry.Ann
 				{
 					writer.Write( doc.Text );
 				}
-				doc.AzukiDoc.IsDirty = false;
+				doc.IsDirty = false;
 			}
 			catch( UnauthorizedAccessException ex )
 			{
@@ -523,7 +523,7 @@ namespace Sgry.Ann
 			DialogResult result;
 
 			// confirm to discard modification
-			if( doc.AzukiDoc.IsDirty )
+			if( doc.IsDirty )
 			{
 				result = AlertDiscardModification( doc );
 				if( result == DialogResult.Yes )
@@ -578,7 +578,7 @@ namespace Sgry.Ann
 
 		public void FindNext()
 		{
-			AzukiDocument doc = ActiveDocument.AzukiDoc;
+			AzukiDocument doc = ActiveDocument;
 			int startIndex;
 			SearchResult result;
 
@@ -591,13 +591,21 @@ namespace Sgry.Ann
 			// find
 			if( _SearchContext.UseRegex )
 			{
-				RegexOptions opt = _SearchContext.Regex.Options;
-				if( (opt & RegexOptions.RightToLeft) != 0 )
+				try
 				{
-					opt &= ~( RegexOptions.RightToLeft );
-					_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
+					RegexOptions opt = _SearchContext.Regex.Options;
+					if( (opt & RegexOptions.RightToLeft) != 0 )
+					{
+						opt &= ~( RegexOptions.RightToLeft );
+						_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
+					}
+					result = doc.FindNext( _SearchContext.Regex, startIndex, doc.Length );
 				}
-				result = doc.FindNext( _SearchContext.Regex, startIndex, doc.Length );
+				catch( ArgumentException )
+				{
+					// if input text was invalid as a regular expression, just ignore
+					result = null;
+				}
 			}
 			else
 			{
@@ -615,7 +623,7 @@ namespace Sgry.Ann
 
 		public void FindPrev()
 		{
-			AzukiDocument doc = ActiveDocument.AzukiDoc;
+			AzukiDocument doc = ActiveDocument;
 			int startIndex;
 			SearchResult result;
 
@@ -628,13 +636,21 @@ namespace Sgry.Ann
 			// find
 			if( _SearchContext.UseRegex )
 			{
-				RegexOptions opt = _SearchContext.Regex.Options;
-				if( (opt & RegexOptions.RightToLeft) == 0 )
+				try
 				{
-					opt |= RegexOptions.RightToLeft;
-					_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
+					RegexOptions opt = _SearchContext.Regex.Options;
+					if( (opt & RegexOptions.RightToLeft) == 0 )
+					{
+						opt |= RegexOptions.RightToLeft;
+						_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
+					}
+					result = doc.FindPrev( _SearchContext.Regex, 0, startIndex );
 				}
-				result = doc.FindPrev( _SearchContext.Regex, 0, startIndex );
+				catch( ArgumentException )
+				{
+					// if input text was invalid as a regular expression, just ignore
+					result = null;
+				}
 			}
 			else
 			{
@@ -679,7 +695,7 @@ namespace Sgry.Ann
 			foreach( Document doc in Documents )
 			{
 				// if it's modified, ask to save the document
-				if( doc.AzukiDoc.IsDirty )
+				if( doc.IsDirty )
 				{
 					// before showing dialog, activate the document
 					this.ActiveDocument = doc;
@@ -689,7 +705,7 @@ namespace Sgry.Ann
 					if( result == DialogResult.Yes )
 					{
 						SaveDocument( doc );
-						if( doc.AzukiDoc.IsDirty )
+						if( doc.IsDirty )
 						{
 							// canceled or failed. cancel closing
 							e.Cancel = true;

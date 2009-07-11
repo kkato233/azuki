@@ -1,4 +1,4 @@
-// 2009-07-05
+// 2009-07-11
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,7 +23,7 @@ namespace Sgry.Ann
 			message.AppendFormat( null, "----\n" );
 			foreach( Document doc in app.Documents )
 			{
-				message.AppendFormat( null, "  {0}: {1} KB\n", doc.DisplayName, doc.AzukiDoc.MemoryUsage/1024 );
+				message.AppendFormat( null, "  {0}: {1} KB\n", doc.DisplayName, doc.MemoryUsage/1024 );
 			}
 
 			// show usage

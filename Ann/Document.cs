@@ -1,4 +1,4 @@
-// 2009-04-20
+// 2009-07-11
 using System;
 using System.Text;
 using Sgry.Azuki;
@@ -7,10 +7,9 @@ using Path = System.IO.Path;
 
 namespace Sgry.Ann
 {
-	class Document
+	class Document : Azuki.Document
 	{
 		#region Fields
-		Azuki.Document _AzukiDoc;
 		string _FilePath = null;
 		Encoding _Encoding = Encoding.Default;
 		FileType _FileType;
@@ -22,22 +21,13 @@ namespace Sgry.Ann
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
-		public Document( Azuki.Document azukiDoc )
+		public Document()
 		{
-			_AzukiDoc = azukiDoc;
 			_FileType = FileType.TextFileType;
 		}
 		#endregion
 
 		#region Properties
-		/// <summary>
-		/// Gets Azuki's document object.
-		/// </summary>
-		public Azuki.Document AzukiDoc
-		{
-			get{ return _AzukiDoc; }
-		}
-
 		/// <summary>
 		/// Gets or sets name for display.
 		/// </summary>
@@ -67,7 +57,7 @@ namespace Sgry.Ann
 		{
 			get
 			{
-				if( AzukiDoc.IsDirty )
+				if( IsDirty )
 					return DisplayName + '*';
 				else
 					return DisplayName;
@@ -113,15 +103,6 @@ namespace Sgry.Ann
 		{
 			get{ return _Encoding; }
 			set{ _Encoding = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets text content.
-		/// </summary>
-		public string Text
-		{
-			get{ return _AzukiDoc.Text; }
-			set{ _AzukiDoc.Text = value; }
 		}
 		#endregion
 

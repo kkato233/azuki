@@ -581,6 +581,7 @@ namespace Sgry.Ann
 			AzukiDocument doc = ActiveDocument;
 			int startIndex;
 			SearchResult result;
+			Regex regex;
 
 			// determine where to start text search
 			if( 0 <= _SearchContext.AnchorIndex )
@@ -591,24 +592,28 @@ namespace Sgry.Ann
 			// find
 			if( _SearchContext.UseRegex )
 			{
-				try
+				// Regular expression search.
+				// get regex object from context
+				regex = _SearchContext.Regex;
+				if( regex == null )
 				{
-					RegexOptions opt = _SearchContext.Regex.Options;
-					if( (opt & RegexOptions.RightToLeft) != 0 )
-					{
-						opt &= ~( RegexOptions.RightToLeft );
-						_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
-					}
-					result = doc.FindNext( _SearchContext.Regex, startIndex, doc.Length );
+					// current text pattern was invalid as a regular expression.
+					return;
 				}
-				catch( ArgumentException )
+
+				// ensure that "RightToLeft" option of the regex object is NOT set
+				RegexOptions opt = regex.Options;
+				if( (opt & RegexOptions.RightToLeft) != 0 )
 				{
-					// if input text was invalid as a regular expression, just ignore
-					result = null;
+					opt &= ~( RegexOptions.RightToLeft );
+					regex = new Regex( regex.ToString(), opt );
+					_SearchContext.Regex = regex;
 				}
+				result = doc.FindNext( regex, startIndex, doc.Length );
 			}
 			else
 			{
+				// normal text pattern matching.
 				result = doc.FindNext( _SearchContext.TextPattern, startIndex, doc.Length, _SearchContext.MatchCase );
 			}
 
@@ -626,6 +631,7 @@ namespace Sgry.Ann
 			AzukiDocument doc = ActiveDocument;
 			int startIndex;
 			SearchResult result;
+			Regex regex;
 
 			// determine where to start text search
 			if( 0 <= _SearchContext.AnchorIndex )
@@ -636,24 +642,27 @@ namespace Sgry.Ann
 			// find
 			if( _SearchContext.UseRegex )
 			{
-				try
+				// Regular expression search.
+				// get regex object from context
+				regex = _SearchContext.Regex;
+				if( regex == null )
 				{
-					RegexOptions opt = _SearchContext.Regex.Options;
-					if( (opt & RegexOptions.RightToLeft) == 0 )
-					{
-						opt |= RegexOptions.RightToLeft;
-						_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
-					}
-					result = doc.FindPrev( _SearchContext.Regex, 0, startIndex );
+					// current text pattern was invalid as a regular expression.
+					return;
 				}
-				catch( ArgumentException )
+
+				// ensure that "RightToLeft" option of the regex object is set
+				RegexOptions opt = _SearchContext.Regex.Options;
+				if( (opt & RegexOptions.RightToLeft) == 0 )
 				{
-					// if input text was invalid as a regular expression, just ignore
-					result = null;
+					opt |= RegexOptions.RightToLeft;
+					_SearchContext.Regex = new Regex( _SearchContext.Regex.ToString(), opt );
 				}
+				result = doc.FindPrev( _SearchContext.Regex, 0, startIndex );
 			}
 			else
 			{
+				// normal text pattern matching.
 				result = doc.FindPrev( _SearchContext.TextPattern, 0, startIndex, _SearchContext.MatchCase );
 			}
 

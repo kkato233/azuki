@@ -1,4 +1,4 @@
-// 2009-05-31
+// 2009-07-11
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -58,13 +58,20 @@ namespace Sgry.Ann
 			get
 			{
 				// if regex object was not created or outdated, re-create it.
-				if( _Regex == null
-					|| _Regex.ToString() != TextPattern
-					|| _Regex.Options != _RegexOptions )
+				try
 				{
-					_Regex = new Regex( TextPattern, _RegexOptions );
+					if( _Regex == null
+						|| _Regex.ToString() != TextPattern
+						|| _Regex.Options != _RegexOptions )
+					{
+						_Regex = new Regex( TextPattern, _RegexOptions );
+					}
+					return _Regex;
 				}
-				return _Regex;
+				catch( ArgumentException )
+				{
+					return null;
+				}
 			}
 		}
 		

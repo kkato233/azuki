@@ -17,6 +17,7 @@
  * fix: ViewType 列挙子のスペルミスを修正（"propotional"としていた）
  * fix: CharType.Delimiter のスペルミスを修正（"delimitter"としていた）
  * add: [Ann] 折り返しモード切替後、自動的にキャレット位置までスクロールするように
+ * fix: [Ann] 正規表現検索中に正規表現として不正な文字列を入力するとクラッシュする問題を修正
 
 == 1.3.5 (2009-06-28) ==
  * fix: AzukiControl.CanRedo プロパティが常に不正な値を返す問題を修正

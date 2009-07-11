@@ -1,4 +1,5 @@
 ﻿== 1.4.0 (2009-  -  ) ==
+ * add: LaTeX 用 highlighter を追加
  * add: 入力済み文字列の再変換が可能に
  * add: 「対カッコへ移動」機能を追加
  * add: XmlHighlighter がエンティティをハイライト可能に

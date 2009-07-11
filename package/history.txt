@@ -1,4 +1,5 @@
 == 1.4.0 (2009-  -  ) ==
+ * add: built-in highlighter for LaTeX
  * add: now Azuki supports IME re-conversion
  * add: added "Go to matched bracket" feature
  * add: XmlHighlighter now highlights HTML entities

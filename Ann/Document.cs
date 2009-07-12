@@ -1,4 +1,4 @@
-// 2009-07-11
+// 2009-07-12
 using System;
 using System.Text;
 using Sgry.Azuki;
@@ -14,7 +14,6 @@ namespace Sgry.Ann
 		Encoding _Encoding = Encoding.Default;
 		FileType _FileType;
 		string _DisplayName = null;
-		int _FirstVisibleLineIndex;
 		#endregion
 
 		#region Init / Dispose
@@ -62,15 +61,6 @@ namespace Sgry.Ann
 				else
 					return DisplayName;
 			}
-		}
-
-		/// <summary>
-		/// Gets or sets index of the first visible line.
-		/// </summary>
-		public int FirstVisibleLineIndex
-		{
-			get{ return _FirstVisibleLineIndex; }
-			set{ _FirstVisibleLineIndex = value; }
 		}
 
 		/// <summary>

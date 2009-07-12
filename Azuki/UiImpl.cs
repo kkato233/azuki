@@ -256,6 +256,18 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Handles key down event.
+		/// </summary>
+		public void HandleKeyDown( uint keyData )
+		{
+			ActionProc action = GetKeyBind( keyData );
+			if( action != null )
+			{
+				action( _UI );
+			}
+		}
+		
+		/// <summary>
 		/// Handles translated character input event.
 		/// </summary>
 		internal void HandleKeyPress( char ch )
@@ -445,15 +457,6 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region UI Event
-		public void HandleKeyDown( uint keyData )
-		{
-			ActionProc action = GetKeyBind( keyData );
-			if( action != null )
-			{
-				action( _UI );
-			}
-		}
-
 		public void HandlePaint( Rectangle clipRect )
 		{
 			_View.Paint( clipRect );

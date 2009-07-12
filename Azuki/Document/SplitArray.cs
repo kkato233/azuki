@@ -551,22 +551,24 @@ namespace Sgry.Azuki
 			}
 		}
 
-#		if SPLIT_ARRAY_ENABLE_TRACE
 		/// <summary>
 		/// ToString for debug.
 		/// </summary>
 		public override string ToString()
 		{
+			System.Text.StringBuilder buf;
+			int count;
+			
 			if( Count == 0 )
 				return String.Empty;
 
-			System.Text.StringBuilder buf = new System.Text.StringBuilder();
+			buf = new System.Text.StringBuilder();
+			count = Math.Min( 16, Count );
 			buf.Append( this[0].ToString() );
-			for( int i=1; i<Count; i++ )
+			for( int i=1; i<count; i++ )
 				buf.Append( " " + this[i].ToString() );
 			return buf.ToString();
 		}
-#		endif
 		#endregion
 	}
 

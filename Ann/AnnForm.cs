@@ -70,22 +70,6 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
-		/// Resets form text.
-		/// </summary>
-		public
-#		if !PocketPC
-		override
-#		endif
-		void ResetText()
-		{
-			Document doc = _App.ActiveDocument;
-			base.Text = String.Format( "Ann - {0} [{1}, {2}]",
-				doc.DisplayNameWithFlags,
-				doc.Encoding.WebName,
-				doc.FileType.Name );
-		}
-
-		/// <summary>
 		/// Updates text and state of each UI component.
 		/// </summary>
 		public void UpdateUI()

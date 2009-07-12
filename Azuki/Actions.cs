@@ -193,6 +193,18 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Cuts current selection to clipboard.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action cuts currently selected text to clipboard.
+		/// If nothing selected and invokes this action,
+		/// result will be different according to
+		/// <see cref="Sgry.Azuki.UserPref.CopyLineWhenNoSelection">UserPref.CopyLineWhenNoSelection</see>
+		/// property value.
+		/// If that property is true, current line will be cut.
+		/// If that property is false, Azuki will do nothing.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.UserPref.CopyLineWhenNoSelection">UserPref.CopyLineWhenNoSelection</seealso>
 		public static void Cut( IUserInterface ui )
 		{
 			Document doc = ui.Document;
@@ -244,6 +256,18 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Copies current selection to clipboard.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action copies currently selected text to clipboard.
+		/// If nothing selected and invokes this action,
+		/// result will be different according to
+		/// <see cref="Sgry.Azuki.UserPref.CopyLineWhenNoSelection">UserPref.CopyLineWhenNoSelection</see>
+		/// property value.
+		/// If that property is true, current line will be copied.
+		/// If that property is false, Azuki will do nothing.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.UserPref.CopyLineWhenNoSelection">UserPref.CopyLineWhenNoSelection</seealso>
 		public static void Copy( IUserInterface ui )
 		{
 			Document doc = ui.Document;

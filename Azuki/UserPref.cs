@@ -12,13 +12,19 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// User preferences.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// UserPref class is a collection of fields which customizes Azuki's behavior.
+	/// All items customizable with this class affects all Azuki instances.
+	/// </para>
+	/// </remarks>
 	public static class UserPref
 	{
 		static bool _CopyLineWhenNoSelection = true;
 		static bool _AutoScrollNearWindowBorder = true;
 
 		/// <summary>
-		/// Whether cut/copy action targets the current line or not.
+		/// If true, cut/copy action targets the current line if nothing selected.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -43,9 +49,12 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Automatically scroll when the caret is near window border
-		/// to ensure that at least one more lines is visible between the caret and border.
+		/// If true, Azuki automatically scrolls when the caret goes near window border.
 		/// </summary>
+		/// <remarks>
+		/// If true, when the caret is near window border Azuki automatically scrolls
+		/// to ensure that at least one more line is visible between the caret and border.
+		/// </remarks>
 		public static bool AutoScrollNearWindowBorder
 		{
 			get { return _AutoScrollNearWindowBorder; }

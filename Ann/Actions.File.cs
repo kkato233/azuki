@@ -1,4 +1,4 @@
-// 2008-11-23
+// 2009-07-12
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -53,6 +53,19 @@ namespace Sgry.Ann
 			= delegate( AppLogic app )
 		{
 			app.CloseDocument( app.ActiveDocument );
+		};
+
+		/// <summary>
+		/// Toggles read-only mode on or off.
+		/// </summary>
+		public static AnnAction ToggleReadOnlyMode
+			= delegate( AppLogic app )
+		{
+			// toggle read-only mode
+			app.ActiveDocument.IsReadOnly = !( app.ActiveDocument.IsReadOnly );
+
+			// update menu item's check state
+			app.MainForm.UpdateUI();
 		};
 
 		/// <summary>

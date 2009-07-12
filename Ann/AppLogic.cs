@@ -1,4 +1,4 @@
-// 2009-07-11
+// 2009-07-12
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -104,12 +104,12 @@ namespace Sgry.Ann
 
 				// activate document
 				_DAD_ActiveDocument = value;
-				MainForm.Azuki.Document = ActiveDocument;
+				MainForm.Azuki.Document = value;
 				MainForm.Azuki.ScrollToCaret();
 				MainForm.Azuki.UpdateCaretGraphic();
 
 				// update UI
-				MainForm.ResetText();
+				MainForm.UpdateUI();
 			}
 		}
 		#endregion
@@ -132,7 +132,7 @@ namespace Sgry.Ann
 
 		void Doc_DirtyStateChanged( object sender, EventArgs e )
 		{
-			MainForm.ResetText();
+			MainForm.UpdateUI();
 		}
 
 		/// <summary>
@@ -237,7 +237,7 @@ namespace Sgry.Ann
 			if( doc == ActiveDocument )
 			{
 				_MainForm.Azuki.AutoIndentHook = fileType.AutoIndentHook;
-				_MainForm.ResetText();
+				_MainForm.UpdateUI();
 				_MainForm.Azuki.Invalidate();
 			}
 		}
@@ -327,6 +327,10 @@ namespace Sgry.Ann
 			doc.ClearHistory();
 			doc.IsDirty = false;
 			doc.FilePath = filePath;
+			if( (new FileInfo(filePath).Attributes & FileAttributes.ReadOnly) != 0 )
+			{
+				doc.IsReadOnly = true;
+			}
 
 			return doc;
 		}
@@ -400,6 +404,12 @@ namespace Sgry.Ann
 		{
 			StreamWriter writer = null;
 			string dirPath;
+
+			// if the document is read-only, do nothing
+			if( doc.IsReadOnly )
+			{
+				return;
+			}
 
 			// if no file path was associated, switch to SaveAs action
 			if( doc.FilePath == null )
@@ -493,7 +503,7 @@ namespace Sgry.Ann
 				fileName = dialog.FileName;
 			}
 
-			// associate the file path
+			// associate the file path and reset attributes
 #			if PocketPC
 			// In Windows Mobile's SaveFileDialog,
 			// if we select filter item "Text File|*.txt;*.log"
@@ -507,12 +517,13 @@ namespace Sgry.Ann
 			}
 #			endif
 			doc.FilePath = fileName;
+			doc.IsReadOnly = false;
 
 			// delegate to overwrite logic
 			SaveDocument( doc );
 
 			// finally, update UI because the name of the document was changed
-			MainForm.ResetText();
+			MainForm.UpdateUI();
 		}
 
 		/// <summary>

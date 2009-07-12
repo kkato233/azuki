@@ -1,4 +1,4 @@
-// 2009-07-05
+// 2009-07-12
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -84,6 +84,36 @@ namespace Sgry.Ann
 				doc.Encoding.WebName,
 				doc.FileType.Name );
 		}
+
+		/// <summary>
+		/// Updates text and state of each UI component.
+		/// </summary>
+		public void UpdateUI()
+		{
+			Document doc = _App.ActiveDocument;
+			bool readOnly = doc.IsReadOnly;
+			string attrStr = "";
+
+			// set form text
+			if( readOnly )
+			{
+				attrStr += ", R/O";
+			}
+			base.Text = String.Format( "Ann - {0} [{1}, {2}{3}]",
+					doc.DisplayNameWithFlags,
+					doc.Encoding.WebName,
+					doc.FileType.Name,
+					attrStr
+				);
+
+			// apply read-only mode
+			_MI_File_ReadOnly.Checked = readOnly;
+			_MI_File_Save.Enabled
+				= _MI_Edit_Undo.Enabled
+				= _MI_Edit_Redo.Enabled
+				= _MI_Edit_Cut.Enabled
+				= _MI_Edit_Paste.Enabled = !readOnly;
+		}
 		#endregion
 
 		#region Action Mapping
@@ -126,6 +156,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_File_Save ]		= Actions.SaveDocument;
 			_MenuMap[ _MI_File_SaveAs ]		= Actions.SaveDocumentAs;
 			_MenuMap[ _MI_File_Close ]		= Actions.CloseDocument;
+			_MenuMap[ _MI_File_ReadOnly ]	= Actions.ToggleReadOnlyMode;
 			_MenuMap[ _MI_File_Exit ]		= Actions.Exit;
 
 			_MenuMap[ _MI_Edit_Undo ]		= Actions.Undo;
@@ -298,6 +329,8 @@ namespace Sgry.Ann
 			_MI_File.MenuItems.Add( _MI_File_SaveAs );
 			_MI_File.MenuItems.Add( _MI_File_Close );
 			_MI_File.MenuItems.Add( _MI_File_Sep1 );
+			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
+			_MI_File.MenuItems.Add( _MI_File_Sep2 );
 			_MI_File.MenuItems.Add( _MI_File_Exit );
 
 			_MI_Edit.MenuItems.Add( _MI_Edit_Undo );
@@ -339,6 +372,8 @@ namespace Sgry.Ann
 			_MI_File_SaveAs.Text = "Save &as...";
 			_MI_File_Close.Text = "&Close";
 			_MI_File_Sep1.Text = "-";
+			_MI_File_ReadOnly.Text = "&Read only";
+			_MI_File_Sep2.Text = "-";
 			_MI_File_Exit.Text = "E&xit";
 			_MI_Edit.Text = "&Edit";
 			_MI_Edit_Undo.Text = "&Undo";
@@ -439,6 +474,8 @@ namespace Sgry.Ann
 		MenuItem _MI_File_SaveAs	= new MenuItem();
 		MenuItem _MI_File_Close		= new MenuItem();
 		MenuItem _MI_File_Sep1		= new MenuItem();
+		MenuItem _MI_File_ReadOnly	= new MenuItem();
+		MenuItem _MI_File_Sep2		= new MenuItem();
 		MenuItem _MI_File_Exit		= new MenuItem();
 		MenuItem _MI_Edit			= new MenuItem();
 		MenuItem _MI_Edit_Undo		= new MenuItem();

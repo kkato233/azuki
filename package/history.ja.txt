@@ -10,6 +10,7 @@
  * add: AzukiControl に FirstVisibleLine プロパティを追加
  * add: 自動インデントが全角空白に対しても実行されるように
  * add: AzukiControl.UseCtrlTabToMoveFocusを.NET Compact Framework環境でも実装
+ * fix: Document.IsReadOnly の値にかかわらずプログラム的には Document オブジェクトを編集可能に
  * fix: KeywordHighlighter が「エスケープされたエスケープ文字」を正しく扱うように（C++ の '\\' といったトークンを正しくハイライト可能に）
  * fix: UNDO 記録用のメモリー領域をクリアしてもすぐに解放されない問題を修正
  * fix: AzukiControl.AcceptsTabが.NET Compact Framework環境でも動作するように

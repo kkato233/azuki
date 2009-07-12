@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-06-13
+// update: 2009-07-12
 //=========================================================
 using System;
 
@@ -398,7 +398,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Refreshs view and force to redraw text area.
+		/// Refreshes view and force to redraw text area.
 		/// </summary>
 		public static void Refresh( IUserInterface ui )
 		{
@@ -413,6 +413,12 @@ namespace Sgry.Azuki
 			Document doc = ui.Document;
 			int begin, end;
 			int beginL, endL;
+
+			// if read-only document, do nothing
+			if( doc.IsReadOnly )
+			{
+				return;
+			}
 
 			// get range of the selected lines
 			doc.GetSelection( out begin, out end );
@@ -445,6 +451,12 @@ namespace Sgry.Azuki
 			int begin, end;
 			int beginL, endL;
 
+			// if read-only document, do nothing
+			if( doc.IsReadOnly )
+			{
+				return;
+			}
+			
 			// get range of the selected lines
 			doc.GetSelection( out begin, out end );
 			beginL = doc.GetLineIndexFromCharIndex( begin );

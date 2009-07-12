@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-06-21
+// update: 2009-07-11
 //=========================================================
 using System;
 using System.Collections;
@@ -554,9 +554,6 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "end", "Invalid index was given (end:"+begin+", this.Length:"+Length+")." );
 			if( text == null )
 				throw new ArgumentNullException( "text" );
-
-			if( _IsReadOnly )
-				return;
 
 			string oldText = String.Empty;
 			int oldAnchor, anchorDelta;

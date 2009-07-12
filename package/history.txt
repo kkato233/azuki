@@ -10,6 +10,7 @@
  * add: added AzukiControl.FirstVisibleLine property
  * add: auto-indentation will also be executed for full-width spaces
  * add: implemented AzukiControl.UseCtrlTabToMoveFocus property for .NET Compact Framework environment
+ * fix: now Document object can be modified programmatically regardless of the value of Document.IsReadOnly
  * fix: now KeywordHighlighter treats 'escaped escape char' properly (token like '\\' in C++ can be highlighted correctly)
  * fix: fixed a problem that clearing UNDO history will not release using memory area instantly
  * fix: now AzukiControl.AcceptsTab property works on .NET Compact Framework environment

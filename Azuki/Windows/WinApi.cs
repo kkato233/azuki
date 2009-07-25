@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2009-07-07
+// update: 2009-07-25
 //=========================================================
 using System;
 using System.Text;
@@ -17,6 +17,7 @@ namespace Sgry.Azuki.Windows
 	/// </summary>
 	static class WinApi
 	{
+		#region DLL Names
 #		if !PocketPC
 		const string kernel32_dll = "kernel32";
 		const string user32_dll = "user32";
@@ -28,6 +29,7 @@ namespace Sgry.Azuki.Windows
 		const string gdi32_dll = "coredll";
 		const string imm32_dll = "coredll";
 #		endif
+		#endregion
 
 		#region Constants
 		public const int WM_PAINT = 0x000F;
@@ -79,6 +81,12 @@ namespace Sgry.Azuki.Windows
 		public const int SB_BOTTOM = 7;
 		public const int SB_ENDSCROLL = 8;
 
+		public const UInt32 CF_TEXT = 1;
+		public const UInt32 CF_UNICODETEXT = 13;
+		public const UInt32 CF_PRIVATEFIRST = 0x200;
+		public const UInt32 CF_LINEOBJECT = 0x201;
+		public const UInt32 CF_PRIVATELAST = 0x2ff;
+
 		const int SIF_RANGE = 0x01;
 		const int SIF_PAGE  = 0x02;
 		const int SIF_POS   = 0x04;
@@ -91,11 +99,6 @@ namespace Sgry.Azuki.Windows
 		const uint TA_CENTER = 6;
 		const uint TA_NOUPDATECP = 0;
 		const uint TA_TOP = 0;
-		const uint CF_TEXT = 1;
-		const uint CF_UNICODETEXT = 13;
-		//const uint CF_PRIVATEFIRST = 0x200;
-		const uint CF_LINEOBJECT = 0x201;
-		//const uint CF_PRIVATELAST = 0x2ff;
 		const int PATINVERT = 0x005A0049;
 		#endregion
 
@@ -291,6 +294,38 @@ namespace Sgry.Azuki.Windows
 		#region Core
 		[DllImport(kernel32_dll)]
 		public static extern UInt32 GetLastError();
+
+		[DllImport(kernel32_dll)]
+		public static extern IntPtr GlobalLock( IntPtr handle );
+
+		[DllImport(kernel32_dll)]
+		public static extern Int32 GlobalUnlock( IntPtr handle );
+
+		[DllImport(user32_dll)]
+		public static extern int MessageBeep( Int32 type );
+		#endregion
+
+		#region Clipboard
+		[DllImport(user32_dll)]
+		public static extern UInt32 RegisterClipboardFormatW( string format );
+
+		[DllImport(user32_dll)]
+		public static extern Int32 IsClipboardFormatAvailable( UInt32 format );
+
+		[DllImport(user32_dll)]
+		public static extern Int32 OpenClipboard( IntPtr ownerWnd );
+
+		[DllImport(user32_dll)]
+		public static extern Int32 EmptyClipboard();
+
+		[DllImport(user32_dll)]
+		public static extern Int32 CloseClipboard();
+
+		[DllImport(user32_dll)]
+		public static extern IntPtr GetClipboardData( UInt32 format );
+
+		[DllImport(user32_dll)]
+		public static extern IntPtr SetClipboardData( UInt32 format, IntPtr data );
 		#endregion
 
 		#region GDI - Device Context Manipulation

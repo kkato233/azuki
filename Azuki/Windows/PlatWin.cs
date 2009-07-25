@@ -2,12 +2,12 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-06-08
+// update: 2008-07-25
 //=========================================================
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Text;
+using Marshal = System.Runtime.InteropServices.Marshal;
 using Debug = Sgry.DebugUtl;
 
 namespace Sgry.Azuki.Windows
@@ -20,7 +20,7 @@ namespace Sgry.Azuki.Windows
 		#region UI Notification
 		public void MessageBeep()
 		{
-			Utl.MessageBeep( 0 );
+			WinApi.MessageBeep( 0 );
 		}
 		#endregion
 
@@ -64,74 +64,7 @@ namespace Sgry.Azuki.Windows
 		#region API Entry Points
 		class Utl
 		{
-			const uint TA_LEFT = 0;
-			const uint TA_RIGHT = 2;
-			const uint TA_CENTER = 6;
-			const uint TA_NOUPDATECP = 0;
-			const uint TA_TOP = 0;
-			const uint CF_TEXT = 1;
-			const uint CF_UNICODETEXT = 13;
-			//const uint CF_PRIVATEFIRST = 0x200;
-			const uint CF_LINEOBJECT = 0x201;
-			//const uint CF_PRIVATELAST = 0x2ff;
-			const int PATINVERT = 0x005A0049;
-
-			#region Structs
-			[StructLayout(LayoutKind.Sequential)]
-			struct SIZE
-			{
-				public Int32 width, height;
-			}
-
-			[StructLayout(LayoutKind.Sequential)]
-			struct RECT
-			{
-				public RECT( Rectangle rect )
-				{
-					left = rect.Left;
-					top = rect.Top;
-					right = rect.Right;
-					bottom = rect.Bottom;
-				}
-				public Int32 left, top, right, bottom;
-			}
-			#endregion
-
 			#region Clipboard
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			static extern Int32 IsClipboardFormatAvailable( UInt32 format );
-
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			static extern Int32 OpenClipboard( IntPtr ownerWnd );
-
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			static extern Int32 EmptyClipboard();
-
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			static extern Int32 CloseClipboard();
-
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			static extern IntPtr GetClipboardData( UInt32 format );
 			public static string GetClipboardText( IntPtr ownerWnd, out bool isLineObj )
 			{
 				Int32 rc; // result code
@@ -142,78 +75,72 @@ namespace Sgry.Azuki.Windows
 				isLineObj = false;
 
 				// distinguish type of data in the clipboard
-				if( IsClipboardFormatAvailable(CF_LINEOBJECT) != 0 )
+				if( WinApi.IsClipboardFormatAvailable(WinApi.CF_LINEOBJECT) != 0 )
 				{
-					type = CF_LINEOBJECT;
+					type = WinApi.CF_LINEOBJECT;
 					isLineObj = true;
 				}
-				else if( IsClipboardFormatAvailable(CF_UNICODETEXT) != 0 )
+				else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_UNICODETEXT) != 0 )
 				{
-					type = CF_UNICODETEXT;
+					type = WinApi.CF_UNICODETEXT;
 				}
-				else if( IsClipboardFormatAvailable(CF_TEXT) != 0 )
+				else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_TEXT) != 0 )
 				{
-					type = CF_TEXT;
+					type = WinApi.CF_TEXT;
 				}
 				if( type == UInt32.MaxValue )
 					return null; // no text data was in clipboard
 
 				// open clipboard
-				rc = OpenClipboard( ownerWnd );
+				rc = WinApi.OpenClipboard( ownerWnd );
 				if( rc == 0 )
 				{
 					return null;
 				}
 
 				// get handle of the clipboard data
-				dataHandle = GetClipboardData( type );
+				dataHandle = WinApi.GetClipboardData( type );
 
 				// get data pointer by locking the handle
 				dataPtr = MyGlobalLock( dataHandle );
 
 				// retrieve data
-				if( type == CF_UNICODETEXT || type == CF_LINEOBJECT )
+				if( type == WinApi.CF_UNICODETEXT || type == WinApi.CF_LINEOBJECT )
 					data = Marshal.PtrToStringUni( dataPtr );
-				else if( type == CF_TEXT )
+				else if( type == WinApi.CF_TEXT )
 					data = MyPtrToStringAnsi( dataPtr );
 				else
 					Debug.Fail( "unknown error!" );
 
 				// unlock handle
 				MyGlobalUnlock( dataHandle );
-				CloseClipboard();
+				WinApi.CloseClipboard();
 
 				return data;
 			}
 
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			static extern IntPtr SetClipboardData( UInt32 format, IntPtr data );
 			public static void SetClipboardText( IntPtr ownerWnd, string text, bool isLineObj )
 			{
 				Int32 rc; // result code
-				UInt32 format = CF_UNICODETEXT;
+				UInt32 format = WinApi.CF_UNICODETEXT;
 
 				if( isLineObj )
-					format = CF_LINEOBJECT;
+					format = WinApi.CF_LINEOBJECT;
 
 				// open clipboard
-				rc = OpenClipboard( ownerWnd );
+				rc = WinApi.OpenClipboard( ownerWnd );
 				if( rc == 0 )
 				{
 					return;
 				}
-				EmptyClipboard();
+				WinApi.EmptyClipboard();
 
 				// write text
 				IntPtr dataHdl = MyStringToHGlobalUni( text );
-				SetClipboardData( format, dataHdl );
+				WinApi.SetClipboardData( format, dataHdl );
 
 				// close clipboard
-				CloseClipboard();
+				WinApi.CloseClipboard();
 
 				return;
 			}
@@ -223,7 +150,7 @@ namespace Sgry.Azuki.Windows
 			static IntPtr MyGlobalLock( IntPtr handle )
 			{
 #				if !PocketPC
-				return GlobalLock( handle );
+				return WinApi.GlobalLock( handle );
 #				else
 				return handle;
 #				endif
@@ -232,7 +159,7 @@ namespace Sgry.Azuki.Windows
 			static void MyGlobalUnlock( IntPtr handle )
 			{
 #				if !PocketPC
-				GlobalUnlock( handle );
+				WinApi.GlobalUnlock( handle );
 #				else
 				// do nothing
 #				endif
@@ -281,22 +208,6 @@ namespace Sgry.Azuki.Windows
 #				endif
 			}
 			#endregion
-
-#			if !PocketPC
-			[DllImport("kernel32")]
-			static extern IntPtr GlobalLock( IntPtr handle );
-			[DllImport("kernel32")]
-			static extern Int32 GlobalUnlock( IntPtr handle );
-#			endif
-
-#			if !PocketPC
-			[DllImport("user32")]
-#			else
-			[DllImport("coredll")]
-#			endif
-			public static extern int MessageBeep( Int32 type );
-
-			//static extern int SysBeep(30); // for Linux?
 		}
 		#endregion
 	}

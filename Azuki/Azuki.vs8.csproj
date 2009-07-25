@@ -53,6 +53,7 @@
     <Compile Include="Actions.Selection.cs" />
     <Compile Include="AutoIndentHooks.cs" />
     <Compile Include="CaretMoveLogic.cs" />
+    <Compile Include="Document\TextDataType.cs" />
     <Compile Include="Highlighter\Coco\Buffer.cs" />
     <Compile Include="Highlighter\Coco\LatexParser.cs" />
     <Compile Include="Highlighter\Coco\LatexScanner.cs" />

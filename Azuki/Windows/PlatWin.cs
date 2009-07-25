@@ -17,6 +17,21 @@ namespace Sgry.Azuki.Windows
 	/// </summary>
 	class PlatWin : IPlatform
 	{
+		#region Fields
+		const string LineSelectClipFormatName = "MSDEVLineSelect";
+		const string RectSelectClipFormatName = "MSDEVColumnSelect";
+		UInt32 _CF_LINEOBJECT = WinApi.CF_PRIVATEFIRST + 1;
+		UInt32 _CF_RECTSELECT = WinApi.CF_PRIVATEFIRST + 2;
+		#endregion
+
+		#region Init / Dispose
+		public PlatWin()
+		{
+			_CF_LINEOBJECT = WinApi.RegisterClipboardFormatW( LineSelectClipFormatName );
+			_CF_RECTSELECT = WinApi.RegisterClipboardFormatW( RectSelectClipFormatName );
+		}
+		#endregion
+
 		#region UI Notification
 		public void MessageBeep()
 		{
@@ -35,7 +50,74 @@ namespace Sgry.Azuki.Windows
 		/// </param>
 		public string GetClipboardText( out bool isLineObj )
 		{
-			return Utl.GetClipboardText( IntPtr.Zero, out isLineObj );
+			TextDataType textType;
+			string text;
+
+			text = GetClipboardText( out textType );
+			isLineObj = (textType == TextDataType.Line);
+			return text;
+		}
+
+		/// <summary>
+		/// Gets content of the system clipboard.
+		/// </summary>
+		/// <param name="dataType">The type of the text data in the clipboard</param>
+		/// <returns>Text content in the clipboard.</returns>
+		public string GetClipboardText( out TextDataType dataType )
+		{
+			Int32 rc; // result code
+			IntPtr dataHandle, dataPtr;
+			uint formatID = UInt32.MaxValue;
+			string data = null;
+
+			dataType = TextDataType.Normal;
+
+			// open clipboard
+			rc = WinApi.OpenClipboard( IntPtr.Zero );
+			if( rc == 0 )
+			{
+				return null;
+			}
+
+			// distinguish type of data in the clipboard
+			if( WinApi.IsClipboardFormatAvailable(_CF_LINEOBJECT) != 0 )
+			{
+				formatID = WinApi.CF_UNICODETEXT;
+				dataType = TextDataType.Line;
+			}
+			else if( WinApi.IsClipboardFormatAvailable(_CF_RECTSELECT) != 0 )
+			{
+				formatID = WinApi.CF_UNICODETEXT;
+				dataType = TextDataType.Rectangle;
+			}
+			else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_UNICODETEXT) != 0 )
+			{
+				formatID = WinApi.CF_UNICODETEXT;
+			}
+			else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_TEXT) != 0 )
+			{
+				formatID = WinApi.CF_TEXT;
+			}
+			if( formatID == UInt32.MaxValue )
+				return null; // no text data was in clipboard
+
+			// get handle of the clipboard data
+			dataHandle = WinApi.GetClipboardData( formatID );
+
+			// get data pointer by locking the handle
+			dataPtr = Utl.MyGlobalLock( dataHandle );
+
+			// retrieve data
+			if( formatID == WinApi.CF_TEXT )
+				data = Utl.MyPtrToStringAnsi( dataPtr );
+			else
+				data = Marshal.PtrToStringUni( dataPtr );
+
+			// unlock handle
+			Utl.MyGlobalUnlock( dataHandle );
+			WinApi.CloseClipboard();
+
+			return data;
 		}
 
 		/// <summary>
@@ -49,7 +131,47 @@ namespace Sgry.Azuki.Windows
 		/// </param>
 		public void SetClipboardText( string text, bool isLineObj )
 		{
-			Utl.SetClipboardText( IntPtr.Zero, text, isLineObj );
+			SetClipboardText( text, (isLineObj ? TextDataType.Line : TextDataType.Normal) );
+		}
+
+		/// <summary>
+		/// Sets content of the system clipboard.
+		/// </summary>
+		/// <param name="text">Text data to set.</param>
+		/// <param name="dataType">Type of the data to set.</param>
+		public void SetClipboardText( string text, TextDataType dataType )
+		{
+			Int32 rc; // result code
+			IntPtr dataHdl;
+
+			// open clipboard
+			rc = WinApi.OpenClipboard( IntPtr.Zero );
+			if( rc == 0 )
+			{
+				return;
+			}
+			WinApi.EmptyClipboard();
+
+			// set normal text data
+			dataHdl = Utl.MyStringToHGlobalUni( text );
+			WinApi.SetClipboardData( WinApi.CF_UNICODETEXT, dataHdl );
+
+			// set addional text data
+			if( dataType == TextDataType.Line )
+			{
+				// allocate dummy text (this is needed for PocketPC)
+				dataHdl = Utl.MyStringToHGlobalUni( "" );
+				WinApi.SetClipboardData( _CF_LINEOBJECT, dataHdl );
+			}
+			else if( dataType == TextDataType.Rectangle )
+			{
+				// allocate dummy text (this is needed for PocketPC)
+				dataHdl = Utl.MyStringToHGlobalUni( "" );
+				WinApi.SetClipboardData( _CF_RECTSELECT, dataHdl );
+			}
+
+			// close clipboard
+			WinApi.CloseClipboard();
 		}
 		#endregion
 
@@ -61,93 +183,11 @@ namespace Sgry.Azuki.Windows
 			return new GraWin( window );
 		}
 
-		#region API Entry Points
+		#region Utilities
 		class Utl
 		{
-			#region Clipboard
-			public static string GetClipboardText( IntPtr ownerWnd, out bool isLineObj )
-			{
-				Int32 rc; // result code
-				IntPtr dataHandle, dataPtr;
-				uint type = UInt32.MaxValue;
-				string data = null;
-
-				isLineObj = false;
-
-				// distinguish type of data in the clipboard
-				if( WinApi.IsClipboardFormatAvailable(WinApi.CF_LINEOBJECT) != 0 )
-				{
-					type = WinApi.CF_LINEOBJECT;
-					isLineObj = true;
-				}
-				else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_UNICODETEXT) != 0 )
-				{
-					type = WinApi.CF_UNICODETEXT;
-				}
-				else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_TEXT) != 0 )
-				{
-					type = WinApi.CF_TEXT;
-				}
-				if( type == UInt32.MaxValue )
-					return null; // no text data was in clipboard
-
-				// open clipboard
-				rc = WinApi.OpenClipboard( ownerWnd );
-				if( rc == 0 )
-				{
-					return null;
-				}
-
-				// get handle of the clipboard data
-				dataHandle = WinApi.GetClipboardData( type );
-
-				// get data pointer by locking the handle
-				dataPtr = MyGlobalLock( dataHandle );
-
-				// retrieve data
-				if( type == WinApi.CF_UNICODETEXT || type == WinApi.CF_LINEOBJECT )
-					data = Marshal.PtrToStringUni( dataPtr );
-				else if( type == WinApi.CF_TEXT )
-					data = MyPtrToStringAnsi( dataPtr );
-				else
-					Debug.Fail( "unknown error!" );
-
-				// unlock handle
-				MyGlobalUnlock( dataHandle );
-				WinApi.CloseClipboard();
-
-				return data;
-			}
-
-			public static void SetClipboardText( IntPtr ownerWnd, string text, bool isLineObj )
-			{
-				Int32 rc; // result code
-				UInt32 format = WinApi.CF_UNICODETEXT;
-
-				if( isLineObj )
-					format = WinApi.CF_LINEOBJECT;
-
-				// open clipboard
-				rc = WinApi.OpenClipboard( ownerWnd );
-				if( rc == 0 )
-				{
-					return;
-				}
-				WinApi.EmptyClipboard();
-
-				// write text
-				IntPtr dataHdl = MyStringToHGlobalUni( text );
-				WinApi.SetClipboardData( format, dataHdl );
-
-				// close clipboard
-				WinApi.CloseClipboard();
-
-				return;
-			}
-			#endregion
-
 			#region Handle Allocation
-			static IntPtr MyGlobalLock( IntPtr handle )
+			public static IntPtr MyGlobalLock( IntPtr handle )
 			{
 #				if !PocketPC
 				return WinApi.GlobalLock( handle );
@@ -156,7 +196,7 @@ namespace Sgry.Azuki.Windows
 #				endif
 			}
 
-			static void MyGlobalUnlock( IntPtr handle )
+			public static void MyGlobalUnlock( IntPtr handle )
 			{
 #				if !PocketPC
 				WinApi.GlobalUnlock( handle );
@@ -167,7 +207,7 @@ namespace Sgry.Azuki.Windows
 			#endregion
 
 			#region String Conversion
-			static string MyPtrToStringAnsi( IntPtr dataPtr )
+			public static string MyPtrToStringAnsi( IntPtr dataPtr )
 			{
 				unsafe {
 					byte* p = (byte*)dataPtr;
@@ -190,7 +230,7 @@ namespace Sgry.Azuki.Windows
 				}
 			}
 
-			static IntPtr MyStringToHGlobalUni( string text )
+			public static IntPtr MyStringToHGlobalUni( string text )
 			{
 #				if !PocketPC
 				return Marshal.StringToHGlobalUni( text );

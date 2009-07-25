@@ -84,7 +84,6 @@ namespace Sgry.Azuki.Windows
 		public const UInt32 CF_TEXT = 1;
 		public const UInt32 CF_UNICODETEXT = 13;
 		public const UInt32 CF_PRIVATEFIRST = 0x200;
-		public const UInt32 CF_LINEOBJECT = 0x201;
 		public const UInt32 CF_PRIVATELAST = 0x2ff;
 
 		const int SIF_RANGE = 0x01;
@@ -306,7 +305,7 @@ namespace Sgry.Azuki.Windows
 		#endregion
 
 		#region Clipboard
-		[DllImport(user32_dll)]
+		[DllImport(user32_dll, CharSet=CharSet.Unicode)]
 		public static extern UInt32 RegisterClipboardFormatW( string format );
 
 		[DllImport(user32_dll)]

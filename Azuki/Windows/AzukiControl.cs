@@ -766,7 +766,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public bool CanUndo
 		{
-			get{ return View.Document.CanUndo; }
+			get{ return Document.CanUndo; }
 		}
 
 		/// <summary>
@@ -774,7 +774,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public void ClearHistory()
 		{
-			View.Document.ClearHistory();
+			Document.ClearHistory();
 		}
 
 		/// <summary>
@@ -786,8 +786,8 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public bool IsRecordingHistory
 		{
-			get{ return View.Document.IsRecordingHistory; }
-			set{ View.Document.IsRecordingHistory = value; }
+			get{ return Document.IsRecordingHistory; }
+			set{ Document.IsRecordingHistory = value; }
 		}
 
 		/// <summary>
@@ -807,7 +807,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public bool CanRedo
 		{
-			get{ return View.Document.CanRedo; }
+			get{ return Document.CanRedo; }
 		}
 
 		/// <summary>
@@ -852,7 +852,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public int CaretIndex
 		{
-			get{ return View.Document.CaretIndex; }
+			get{ return Document.CaretIndex; }
 		}
 
 		/// <summary>
@@ -873,7 +873,7 @@ namespace Sgry.Azuki.Windows
 		/// </remarks>
 		public void SetSelection( int anchor, int caret )
 		{
-			View.Document.SetSelection( anchor, caret );
+			Document.SetSelection( anchor, caret );
 			View.SetDesiredColumn();
 		}
 
@@ -885,7 +885,7 @@ namespace Sgry.Azuki.Windows
 		/// <param name="end">index of where the selection ends (selection do not includes the char at this index).</param>
 		public void GetSelection( out int begin, out int end )
 		{
-			View.Document.GetSelection( out begin, out end );
+			Document.GetSelection( out begin, out end );
 		}
 
 		/// <summary>
@@ -931,7 +931,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public int TextLength
 		{
-			get{ return View.Document.Length; }
+			get{ return Document.Length; }
 		}
 
 		/// <summary>
@@ -949,7 +949,7 @@ namespace Sgry.Azuki.Windows
 		/// <exception cref="ArgumentOutOfRangeException">Specified range was invalid.</exception>
 		public string GetTextInRange( int begin, int end )
 		{
-			return View.Document.GetTextInRange( begin, end );
+			return Document.GetTextInRange( begin, end );
 		}
 
 		/// <summary>
@@ -961,7 +961,7 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public int LineCount
 		{
-			get{ return View.Document.LineCount; }
+			get{ return Document.LineCount; }
 		}
 		#endregion
 
@@ -1197,7 +1197,7 @@ namespace Sgry.Azuki.Windows
 			else if( scrollType == WinApi.SB_TOP )
 				newPos = 0;
 			else if( scrollType == WinApi.SB_BOTTOM )
-				newPos = View.Document.LineCount - 1;
+				newPos = Document.LineCount - 1;
 			else if( scrollType == WinApi.SB_THUMBPOSITION
 				|| scrollType == WinApi.SB_THUMBTRACK )
 				newPos = WinApi.GetScrollTrackPos( Handle, false );

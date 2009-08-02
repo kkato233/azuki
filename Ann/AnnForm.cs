@@ -97,6 +97,9 @@ namespace Sgry.Ann
 				= _MI_Edit_Redo.Enabled
 				= _MI_Edit_Cut.Enabled
 				= _MI_Edit_Paste.Enabled = !readOnly;
+
+			// apply wrap-line mode
+			_MI_View_WrapLines.Checked = (_Azuki.ViewType == ViewType.WrappedProportional ? true : false);
 		}
 		#endregion
 

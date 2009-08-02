@@ -1,4 +1,4 @@
-﻿// 2009-04-20
+﻿// 2009-08-02
 using System;
 using System.Drawing;
 using System.IO;
@@ -12,14 +12,16 @@ namespace Sgry.Ann
 		static string _IniFilePath;
 		
 		public static Font Font;
+		public static Size WindowSize;
 
 		/// <summary>
 		/// Loads application config file.
 		/// </summary>
 		public static void Load()
 		{
-			string str;
 			Ini ini = new Ini();
+			string str;
+			int width, height;
 			
 			try
 			{
@@ -28,11 +30,35 @@ namespace Sgry.Ann
 				int fontSize = ini.Get( "Default", "FontSize", 11 );
 				str = ini.Get( "Default", "Font", null );
 				AppConfig.Font = new Font( str, fontSize, FontStyle.Regular );
+				width = ini.Get( "Default", "WindowWidth", 0 );
+				height = ini.Get( "Default", "WindowHeight", 0 );
+				AppConfig.WindowSize = new Size( width, height );
 			}
 			catch
 			{
 				AppConfig.Font = new Font( "Courier New", 11, FontStyle.Regular );
+				AppConfig.WindowSize = new Size( 360, 400 );
 			}
+		}
+
+		/// <summary>
+		/// Saves application configuration.
+		/// </summary>
+		public static void Save( AppLogic app )
+		{
+			Ini ini = new Ini();
+
+			try
+			{
+				ini.Set( "Default", "FontSize", app.MainForm.Azuki.Font.Size );
+				ini.Set( "Default", "Font", app.MainForm.Azuki.Font.Name );
+				ini.Set( "Default", "WindowWidth", app.MainForm.Width );
+				ini.Set( "Default", "WindowHeight", app.MainForm.Height );
+
+				ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );
+			}
+			catch
+			{}
 		}
 
 		#region Utilities

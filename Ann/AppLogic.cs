@@ -1,4 +1,4 @@
-// 2009-07-12
+// 2009-08-02
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,6 +62,7 @@ namespace Sgry.Ann
 				_MainForm = value;
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
+				_MainForm.Closed += MainForm_Closed;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 
@@ -75,6 +76,7 @@ namespace Sgry.Ann
 
 				// apply config
 				MainForm.Azuki.Font = AppConfig.Font;
+				MainForm.Size = AppConfig.WindowSize;
 			}
 		}
 
@@ -741,6 +743,11 @@ namespace Sgry.Ann
 					}
 				}
 			}
+		}
+
+		void MainForm_Closed( object sender, EventArgs e )
+		{
+			AppConfig.Save( this );
 		}
 
 		void Azuki_Resize( object sender, EventArgs e )

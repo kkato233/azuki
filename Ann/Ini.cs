@@ -2,10 +2,10 @@
 // brief: An INI file parser.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// version: 2.0.0
+// version: 2.1.0
 // platform: .NET 2.0
 // create: 2006-09-24 YAMAMOTO Suguru
-// update: 2009-03-29 YAMAMOTO Suguru
+// update: 2009-08-02 YAMAMOTO Suguru
 // license: zlib license (see END of this file)
 //=========================================================
 using System;
@@ -247,6 +247,28 @@ namespace Sgry
 		/// </summary>
 		/// <param name="filePath">保存するファイルのパス。</param>
 		/// <param name="encoding">保存するファイルのエンコーディング。</param>
+		/// <exception cref="ArgumentNullException">引数の一つ以上が null です。</exception>
+		/// <exception cref="ArgumentException">引数 newLineCode が空文字です。</exception>
+		/// <exception cref="PathTooLongException">パス文字列が長すぎます。</exception>
+		/// <exception cref="NotSupportedException">パス文字列として指定された文字列はサポートしている書式ではありません。</exception>
+		/// <exception cref="DirectoryNotFoundException">パスで指定されたディレクトリが見つかりません。</exception>
+		/// <exception cref="FileNotFoundException">パスで指定されたファイルが見つかりません。</exception>
+		/// <exception cref="UnauthorizedAccessException">
+		///		指定したパスがディレクトリを指しているか、
+		///		指定したファイルを読み出す権限が実行ユーザにありません。
+		/// </exception>
+		/// <exception cref="IOException">ファイルを開くときに I/O エラーが発生しました。</exception>
+		/// <exception cref="OutOfMemoryException">メモリ不足で処理できませんでした。</exception>
+		public virtual void Save( string filePath, Encoding encoding )
+		{
+			Save( filePath, encoding, "\r\n" );
+		}
+
+		/// <summary>
+		/// すべてのデータを INI 形式で出力します。
+		/// </summary>
+		/// <param name="filePath">保存するファイルのパス。</param>
+		/// <param name="encoding">保存するファイルのエンコーディング。</param>
 		/// <param name="newLineCode">使用する改行コード。</param>
 		/// <exception cref="ArgumentNullException">引数の一つ以上が null です。</exception>
 		/// <exception cref="ArgumentException">引数 newLineCode が空文字です。</exception>
@@ -284,7 +306,7 @@ namespace Sgry
 
 		#region Get / Set
 		/// <summary>
-		/// Bool や Double といった基本的な値型の値を取得します。
+		/// Bool や Double、列挙子といった基本的な値型の値を取得します。
 		/// </summary>
 		/// <param name="sectionName">値を検索するセクション名。</param>
 		/// <param name="entryName">値に関連付けられた名前（エントリー名）。</param>
@@ -318,13 +340,16 @@ namespace Sgry
 			// parse it as the type T
 			try
 			{
-				return (T)Convert.ChangeType( valueStr, typeof(T), null );
+				if( defaultValue is Enum )
+					return (T)Enum.Parse( typeof(T), valueStr );
+				else
+					return (T)Convert.ChangeType( valueStr, typeof(T), null );
 			}
 			catch( FormatException )
 			{}
-			catch( ArgumentNullException )	// case of (valueStr == null) on .NET Compact Framework
+			catch( ArgumentException )	// case of valueStr is not recognizable as the enum value etc.
 			{}
-			catch( InvalidCastException )	// case of (valueStr == null) on .NET Framework
+			catch( InvalidCastException )	// case of Convert.ChangeType(null, ...) on .NET Framework
 			{}
 
 			return defaultValue;
@@ -759,6 +784,7 @@ foo
 [Section]
 foo=bar
 foo = value of foo will be overwritten by this
+day_of_week=Sunday
 
 [section]
 hoge = section name is case-sensitive
@@ -774,6 +800,7 @@ hoge=white spaces around the equal sign will be removed
 Number=9.876543
 [not a section=g
 foo=value of foo will be overwritten by this
+day_of_week=Sunday
 ";
 			Ini ini = new Ini();
 
@@ -890,6 +917,11 @@ foo=value of foo will be overwritten by this
 				try{ ini.Get("", "", 3.14); Debug.Fail("exception no thrown as expected."); }
 				catch( Exception ex ){ Debug.Assert(ex.GetType() == typeof(ArgumentException) ); }
 
+				// enum values
+				Debug.Assert( ini.Get("Section", "day_of_week", DayOfWeek.Wednesday) == DayOfWeek.Sunday );
+				Debug.Assert( ini.Get("Section", "Number", DayOfWeek.Wednesday) == DayOfWeek.Wednesday );
+				Debug.Assert( ini.Get("Section", "NNNNN", DayOfWeek.Wednesday) == DayOfWeek.Wednesday );
+
 				// anonymous section
 				Debug.Assert( ini.Get("", "Number", 3.14) == -1200.0 );
 				ini.Set( "", "Number", "HOGE" );
@@ -934,6 +966,9 @@ foo=value of foo will be overwritten by this
 
 /*********************************************************
 Version History
+
+[v2.1.0] 2009-08-02
+・Ini.Get<T> を enum に対応させた
 
 [v2.0.0] 2009-03-29
 ・ジェネリックを使ってフルスクラッチで書き換え

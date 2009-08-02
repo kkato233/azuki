@@ -73,10 +73,6 @@ namespace Sgry.Ann
 
 				// give find panel reference to find context object 
 				_MainForm.SearchPanel.SetContextRef( _SearchContext );
-
-				// apply config
-				MainForm.Azuki.Font = AppConfig.Font;
-				MainForm.Size = AppConfig.WindowSize;
 			}
 		}
 
@@ -689,6 +685,45 @@ namespace Sgry.Ann
 		}
 		#endregion
 
+		public void LoadConfig()
+		{
+			// load config file
+			AppConfig.Load();
+
+			// apply config
+			MainForm.Azuki.Font					= AppConfig.Font;
+			MainForm.ClientSize					= AppConfig.WindowSize;
+			MainForm.Azuki.DrawsEolCode			= AppConfig.DrawsEolCode;
+			MainForm.Azuki.DrawsFullWidthSpace	= AppConfig.DrawsFullWidthSpace;
+			MainForm.Azuki.DrawsSpace			= AppConfig.DrawsSpace;
+			MainForm.Azuki.DrawsTab				= AppConfig.DrawsTab;
+			MainForm.Azuki.HighlightsCurrentLine= AppConfig.HighlightsCurrentLine;
+			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
+			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
+			MainForm.Azuki.ViewType				= AppConfig.ViewType;
+
+			// update UI
+			MainForm.UpdateUI();
+		}
+
+		public void SaveConfig()
+		{
+			// update config fields
+			AppConfig.Font					= MainForm.Azuki.Font;
+			AppConfig.WindowSize			= MainForm.ClientSize;
+			AppConfig.DrawsEolCode			= MainForm.Azuki.DrawsEolCode;
+			AppConfig.DrawsFullWidthSpace	= MainForm.Azuki.DrawsFullWidthSpace;
+			AppConfig.DrawsSpace			= MainForm.Azuki.DrawsSpace;
+			AppConfig.DrawsTab				= MainForm.Azuki.DrawsTab;
+			AppConfig.HighlightsCurrentLine	= MainForm.Azuki.HighlightsCurrentLine;
+			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
+			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
+			AppConfig.ViewType				= MainForm.Azuki.ViewType;
+
+			// save to file
+			AppConfig.Save();
+		}
+
 		#region UI Event Handlers
 		void MainForm_Load( object sender, EventArgs e )
 		{
@@ -747,7 +782,7 @@ namespace Sgry.Ann
 
 		void MainForm_Closed( object sender, EventArgs e )
 		{
-			AppConfig.Save( this );
+			SaveConfig();
 		}
 
 		void Azuki_Resize( object sender, EventArgs e )

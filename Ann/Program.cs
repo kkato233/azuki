@@ -1,4 +1,4 @@
-// 2008-10-26
+// 2008-08-02
 using System;
 using System.Windows.Forms;
 
@@ -19,9 +19,9 @@ namespace Sgry.Ann
 				initOpenFilePath = args[0];
 			}
 
-			AppConfig.Load();
 			app = new AppLogic( initOpenFilePath );
 			app.MainForm = new AnnForm( app );
+			app.LoadConfig();
 
 #			if !PocketPC
 			Application.EnableVisualStyles();

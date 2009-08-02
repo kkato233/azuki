@@ -341,7 +341,7 @@ namespace Sgry
 			try
 			{
 				if( defaultValue is Enum )
-					return (T)Enum.Parse( typeof(T), valueStr );
+					return (T)Enum.Parse( typeof(T), valueStr, false );
 				else
 					return (T)Convert.ChangeType( valueStr, typeof(T), null );
 			}

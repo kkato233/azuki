@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-07-11
+// update: 2009-08-09
 //=========================================================
 using System;
 using System.Collections;
@@ -34,6 +34,7 @@ namespace Sgry.Azuki
 		IHighlighter _Highlighter = null;
 		ViewParam _ViewParam = new ViewParam();
 		DateTime _LastModifiedTime = DateTime.Now;
+		int[] _RectSelectRanges = null;
 		object _Tag = null;
 		static readonly char[] _PairBracketTable = new char[]{
 			'(', ')', '{', '}', '[', ']', '<', '>',
@@ -206,10 +207,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="anchor">new index of the selection anchor</param>
 		/// <param name="caret">new index of the caret</param>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// This method sets selection range and causes
-		/// <see cref="Document.SelectionChanged">Document.SelectionChanged</see> event
+		/// This method sets selection range and invokes
+		/// <see cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged</see> event.
 		/// Note that if given index is at middle of a surrogate pair,
 		/// selection range will be automatically expanded to avoid dividing the pair.
 		/// </remarks>
@@ -221,7 +222,20 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "'anchor' or 'caret'", "Invalid line index was given (anchor:"+anchor+", caret:"+caret+")." );
 			}
 			
+			SetSelection_Impl( anchor, caret, true );
+		}
+
+		internal void SetSelection_Impl( int anchor, int caret, bool clearRectSelect )
+		{
 			int oldAnchor, oldCaret;
+			int[] oldRectSelectRanges = null;
+
+			// clear rectangle selection if specified
+			oldRectSelectRanges = _RectSelectRanges;
+			if( clearRectSelect )
+			{
+				_RectSelectRanges = null;
+			}
 
 			// if given parameters change nothing, do nothing
 			if( _AnchorIndex == anchor && _CaretIndex == caret )
@@ -241,7 +255,14 @@ namespace Sgry.Azuki
 			_CaretIndex = caret;
 
 			// invoke event
-			InvokeSelectionChanged( oldAnchor, oldCaret );
+			if( oldRectSelectRanges != null )
+			{
+				InvokeSelectionChanged( oldAnchor, oldCaret, oldRectSelectRanges );
+			}
+			else
+			{
+				InvokeSelectionChanged( oldAnchor, oldCaret, oldRectSelectRanges );
+			}
 		}
 
 		/// <summary>
@@ -262,6 +283,28 @@ namespace Sgry.Azuki
 				begin = _CaretIndex;
 				end = _AnchorIndex;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets text ranges selected by rectangle selection.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// (This property is basically for internal use.
+		/// I do not recomment to use this from outside of Azuki.)
+		/// </para>
+		/// <para>
+		/// The value of this method is an array of text indexes
+		/// that is consisted with beginning index of first text range (row),
+		/// ending index of first text range,
+		/// beginning index of second text range,
+		/// ending index of second text range and so on.
+		/// </para>
+		/// </remarks>
+		public int[] RectSelectRanges
+		{
+			get{ return _RectSelectRanges; }
+			set{ _RectSelectRanges = value; }
 		}
 		#endregion
 
@@ -635,7 +678,7 @@ namespace Sgry.Azuki
 				InvokeDirtyStateChanged();
 			}
 			InvokeContentChanged( begin, oldText, text );
-			InvokeSelectionChanged( oldAnchor, oldCaret );
+			InvokeSelectionChanged( oldAnchor, oldCaret, null );
 		}
 		#endregion
 
@@ -1195,13 +1238,22 @@ namespace Sgry.Azuki
 		/// Occurs when the selection was changed.
 		/// </summary>
 		public event SelectionChangedEventHandler SelectionChanged;
-		void InvokeSelectionChanged( int oldAnchor, int oldCaret )
+		void InvokeSelectionChanged( int oldAnchor, int oldCaret, int[] oldRectSelectRanges )
 		{
+#			if DEBUG
+			Debug.Assert( 0 <= oldAnchor );
+			Debug.Assert( 0 <= oldCaret );
+			if( oldRectSelectRanges != null )
+			{
+				Debug.Assert( oldRectSelectRanges.Length % 2 == 0 );
+			}
+#			endif
+
 			if( SelectionChanged != null )
 			{
 				SelectionChanged(
 						this,
-						new SelectionChangedEventArgs(oldAnchor, oldCaret)
+						new SelectionChangedEventArgs(oldAnchor, oldCaret, oldRectSelectRanges)
 					);
 			}
 		}
@@ -1214,6 +1266,10 @@ namespace Sgry.Azuki
 		public event ContentChangedEventHandler ContentChanged;
 		void InvokeContentChanged( int index, string oldText, string newText )
 		{
+			Debug.Assert( 0 <= index );
+			Debug.Assert( oldText != null );
+			Debug.Assert( newText != null );
+
 			if( ContentChanged != null )
 				ContentChanged( this, new ContentChangedEventArgs(index, oldText, newText) );
 		}
@@ -1360,36 +1416,43 @@ namespace Sgry.Azuki
 	/// </summary>
 	public class SelectionChangedEventArgs : EventArgs
 	{
+		int _OldAnchor;
+		int _OldCaret;
+		int[] _OldRectSelectRanges;
+
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
-		public SelectionChangedEventArgs( int anchorIndex, int caretIndex )
+		public SelectionChangedEventArgs( int anchorIndex, int caretIndex, int[] oldRectSelectRanges )
 		{
-			OldAnchor = anchorIndex;
-			OldCaret = caretIndex;
+			_OldAnchor = anchorIndex;
+			_OldCaret = caretIndex;
+			_OldRectSelectRanges = oldRectSelectRanges;
 		}
 
 		/// <summary>
 		/// Anchor index (in current text) of the previous selection.
 		/// </summary>
-		public int OldAnchor;
-
-		/// <summary>
-		/// Offset from new anchor index to old anchor index
-		/// (anchor index in old text content can be calculated by "OldAnchorIndex - AnchorDelta").
-		/// </summary>
-		public int AnchorDelta;
+		public int OldAnchor
+		{
+			get{ return _OldAnchor; }
+		}
 
 		/// <summary>
 		/// Caret index (in current text) of the previous selection.
 		/// </summary>
-		public int OldCaret;
+		public int OldCaret
+		{
+			get{ return _OldCaret; }
+		}
 
 		/// <summary>
-		/// Offset from new caret index to old caret index
-		/// (caret index in old text content can be calculated by "OldCaretIndex - CaretDelta").
+		/// Text ranges selected by previous rectangle selection (indexes are valid in current text.)
 		/// </summary>
-		public int CaretDelta;
+		public int[] OldRectSelectRanges
+		{
+			get{ return _OldRectSelectRanges; }
+		}
 	}
 
 	/// <summary>

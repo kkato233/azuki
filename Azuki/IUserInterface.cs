@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2009-01-10
+// update: 2009-08-09
 //=========================================================
 using System;
 using System.Drawing;
@@ -151,9 +151,17 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Height of each lines in pixel.
+		/// Gets height of each lines in pixel.
 		/// </summary>
 		int LineHeight
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets distance between lines in pixel.
+		/// </summary>
+		int LineSpacing
 		{
 			get;
 		}
@@ -179,7 +187,7 @@ namespace Sgry.Azuki
 		void Invalidate( Rectangle rect );
 		#endregion
 
-		#region Editing Behavior
+		#region Behavior and Modes
 		/// <summary>
 		/// Gets or sets whether this document is read-only or not.
 		/// </summary>
@@ -212,6 +220,14 @@ namespace Sgry.Azuki
 		/// an input full-width space to a space.
 		/// </summary>
 		bool ConvertsFullWidthSpaceToSpace
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets whether Azuki is in rectangle selection mode or not.
+		/// </summary>
+		bool IsRectSelectMode
 		{
 			get; set;
 		}
@@ -333,6 +349,18 @@ namespace Sgry.Azuki
 		string GetTextInRange( int begin, int end );
 
 		/// <summary>
+		/// Gets currently selected text.
+		/// </summary>
+		/// <returns>Currently selected text.</returns>
+		/// <remarks>
+		/// This method gets currently selected text.
+		/// If current selection is rectangle selection,
+		/// return value will be a text that are consisted with selected partial lines (rows)
+		/// joined with CR-LF.
+		/// </remarks>
+		string GetSelectedText();
+
+		/// <summary>
 		/// Gets number of lines currently inputted.
 		/// </summary>
 		int LineCount
@@ -355,7 +383,6 @@ namespace Sgry.Azuki
 		{
 			get; set;
 		}
-		#endregion
 
 		/// <summary>
 		/// Gets this component is focused by user or not.
@@ -364,6 +391,7 @@ namespace Sgry.Azuki
 		{
 			get;
 		}
+		#endregion
 
 		#region Position / Index Conversion
 		/// <summary>

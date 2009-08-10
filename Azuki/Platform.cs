@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2009-01-31
+// update: 2009-08-02
 //=========================================================
 using System;
 using System.Text;
@@ -18,34 +18,39 @@ namespace Sgry.Azuki
 	{
 		#region UI Notification
 		/// <summary>
-		/// Present week notification to user.
-		/// (may be auditory or graphically.
-		/// the method depends on system setting)
+		/// Notify user by platform-dependent method
+		/// (may be auditory or graphically.)
 		/// </summary>
 		void MessageBeep();
 		#endregion
 
 		#region Clipboard
 		/// <summary>
-		/// Gets content in clipboard.
+		/// Gets content of the system clipboard.
 		/// </summary>
-		/// <param name="isLineObj">
-		/// whether the content should be treated as
-		/// not a chars compositing a line
-		/// but a line or not.
-		/// </param>
-		string GetClipboardText( out bool isLineObj );
+		/// <param name="dataType">The type of the text data in the clipboard</param>
+		/// <returns>Text content in the clipboard.</returns>
+		/// <remarks>
+		/// This method gets text from the system clipboard.
+		/// If stored text data is a special format (line or rectangle,)
+		/// its data type will be set to <paramref name="dataType"/> parameter.
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.TextDataType">TextDataType enum</seealso>
+		string GetClipboardText( out TextDataType dataType );
 
 		/// <summary>
 		/// Sets content of the system clipboard.
 		/// </summary>
-		/// <param name="text">text to store</param>
-		/// <param name="isLineObj">
-		/// whether the content should be treated as
-		/// not a chars compositing a line
-		/// but a line or not.
-		/// </param>
-		void SetClipboardText( string text, bool isLineObj );
+		/// <param name="text">Text data to set.</param>
+		/// <param name="dataType">Type of the data to set.</param>
+		/// <remarks>
+		/// This method set content of the system clipboard.
+		/// If <paramref name="dataType"/> is TextDataType.Normal,
+		/// the text data will be just a character sequence.
+		/// If <paramref name="dataType"/> is TextDataType.Line or TextDataType.Rectangle,
+		/// stored text data would be special format that is compatible with Microsoft Visual Studio.
+		/// </remarks>
+		void SetClipboardText( string text, TextDataType dataType );
 		#endregion
 
 		/// <summary>

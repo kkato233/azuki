@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-08-02
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -359,8 +359,28 @@ namespace Sgry.Azuki
 		protected bool IsInSelection( int index )
 		{
 			int begin, end;
-			Document.GetSelection( out begin, out end );
-			return (begin <= index && index < end);
+
+			if( Document.RectSelectRanges != null )
+			{
+				// is in rectangular selection mode.
+				for( int i=0; i<Document.RectSelectRanges.Length; i+=2 )
+				{
+					begin = Document.RectSelectRanges[i];
+					end = Document.RectSelectRanges[i+1];
+					if( begin <= index && index < end )
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+			else
+			{
+				// is not in rectangular selection mode.
+				Document.GetSelection( out begin, out end );
+				return (begin <= index && index < end);
+			}
 		}
 
 		/// <summary>

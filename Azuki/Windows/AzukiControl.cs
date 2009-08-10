@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-07-08
+// update: 2009-08-09
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -234,6 +234,7 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( (Keys)VK_OEM4|Keys.Control, Actions.GoToMatchedBracket );
 			SetKeyBind( (Keys)VK_OEM6|Keys.Control, Actions.GoToMatchedBracket );
 
+			SetKeyBind( Keys.B|Keys.Control, Actions.ToggleRectSelectMode );
 			SetKeyBind( Keys.Insert, Actions.ToggleOverwriteMode );
 			SetKeyBind( Keys.F5, Actions.Refresh );
 
@@ -244,6 +245,30 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.Up|Keys.Control, Actions.MovePageUp );
 			SetKeyBind( Keys.Down|Keys.Control, Actions.MovePageDown );
 #			endif
+		}
+
+		/// <summary>
+		/// Gets whether Azuki is in rectangle selection mode or not.
+		/// </summary>
+		public bool IsRectSelectMode
+		{
+			get{ return _Impl.IsRectSelectMode; }
+			set
+			{
+				_Impl.IsRectSelectMode = value;
+
+#				if !PocketPC
+				// update mouse cursor graphic
+				if( _Impl.IsRectSelectMode )
+				{
+					Cursor = Cursors.Arrow;
+				}
+				else
+				{
+					Cursor = Cursors.IBeam;
+				}
+#				endif
+			}
 		}
 
 		/// <summary>
@@ -593,6 +618,17 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets distance between lines in pixel.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+#		endif
+		public int LineSpacing
+		{
+			get{ return View.LineSpacing; }
+		}
+
+		/// <summary>
 		/// Sets width of the content area (including line number area).
 		/// </summary>
 #		if !PocketPC
@@ -635,7 +671,7 @@ namespace Sgry.Azuki.Windows
 		}
 		#endregion
 		
-		#region IUserInterface - Editing Behavior
+		#region IUserInterface - Behavior
 		/// <summary>
 		/// Gets or sets whether this document is read-only or not.
 		/// </summary>
@@ -950,6 +986,21 @@ namespace Sgry.Azuki.Windows
 		public string GetTextInRange( int begin, int end )
 		{
 			return Document.GetTextInRange( begin, end );
+		}
+
+		/// <summary>
+		/// Gets currently selected text.
+		/// </summary>
+		/// <returns>Currently selected text.</returns>
+		/// <remarks>
+		/// This method gets currently selected text.
+		/// If current selection is rectangle selection,
+		/// return value will be a text that are consisted with selected partial lines (rows)
+		/// joined with CR-LF.
+		/// </remarks>
+		public string GetSelectedText()
+		{
+			return _Impl.GetSelectedText();
 		}
 
 		/// <summary>
@@ -1718,9 +1769,18 @@ namespace Sgry.Azuki.Windows
 					{
 						this.Focus();
 						_Impl.HandleMouseDown( buttonIndex, pos, shift, ctrl, alt, win );
+#						if !PocketPC
+						if( alt )
+						{
+							this.Cursor = Cursors.Arrow;
+						}
+#						endif
 					}
 					else if( message == WinApi.WM_LBUTTONUP || message == WinApi.WM_RBUTTONUP )
 					{
+#						if !PocketPC
+						this.Cursor = Cursors.IBeam;
+#						endif
 						_Impl.HandleMouseUp( buttonIndex, pos, shift, ctrl, alt, win );
 					}
 				}

@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine (actions to change selection).
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-03-02
+// update: 2009-08-09
 //=========================================================
 using System;
 using System.Drawing;
@@ -30,7 +30,7 @@ namespace Sgry.Azuki
 			// otherwise, move caret right
 			else
 			{
-				CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Right, view );
+				CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Right, ui );
 			}
 
 			// update desired column
@@ -55,7 +55,7 @@ namespace Sgry.Azuki
 			// otherwise, move caret left
 			else
 			{
-				CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Left, view );
+				CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Left, ui );
 			}
 
 			// update desired column
@@ -68,7 +68,7 @@ namespace Sgry.Azuki
 		public static void MoveDown( IUserInterface ui )
 		{
 			// move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Down, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Down, ui );
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace Sgry.Azuki
 		public static void MoveUp( IUserInterface ui )
 		{
 			// move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Up, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_Up, ui );
 		}
 
 		/// <summary>
@@ -96,7 +96,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_NextWord, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_NextWord, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -118,7 +118,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_PrevWord, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_PrevWord, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -140,7 +140,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_LineHead, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_LineHead, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -162,7 +162,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_LineHeadSmart, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_LineHeadSmart, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -184,7 +184,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_LineEnd, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_LineEnd, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -265,7 +265,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_FileHead, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_FileHead, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -287,7 +287,7 @@ namespace Sgry.Azuki
 			}
 
 			// then, move caret
-			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_FileEnd, ui.View );
+			CaretMoveLogic.MoveCaret( CaretMoveLogic.Calc_FileEnd, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -301,7 +301,7 @@ namespace Sgry.Azuki
 		public static void SelectToRight( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Right, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Right, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -313,7 +313,7 @@ namespace Sgry.Azuki
 		public static void SelectToLeft( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Left, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Left, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -325,7 +325,7 @@ namespace Sgry.Azuki
 		public static void SelectToDown( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Down, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Down, ui );
 		}
 
 		/// <summary>
@@ -334,7 +334,7 @@ namespace Sgry.Azuki
 		public static void SelectToUp( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Up, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_Up, ui );
 		}
 
 		/// <summary>
@@ -343,7 +343,7 @@ namespace Sgry.Azuki
 		public static void SelectToNextWord( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_NextWord, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_NextWord, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -355,7 +355,7 @@ namespace Sgry.Azuki
 		public static void SelectToPrevWord( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_PrevWord, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_PrevWord, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -367,7 +367,7 @@ namespace Sgry.Azuki
 		public static void SelectToLineHead( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_LineHead, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_LineHead, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -379,7 +379,7 @@ namespace Sgry.Azuki
 		public static void SelectToLineHeadSmart( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_LineHeadSmart, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_LineHeadSmart, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -391,7 +391,7 @@ namespace Sgry.Azuki
 		public static void SelectToLineEnd( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_LineEnd, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_LineEnd, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -462,7 +462,7 @@ namespace Sgry.Azuki
 		public static void SelectToFileHead( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_FileHead, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_FileHead, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();
@@ -474,7 +474,7 @@ namespace Sgry.Azuki
 		public static void SelectToFileEnd( IUserInterface ui )
 		{
 			// change selection
-			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_FileEnd, ui.View );
+			CaretMoveLogic.SelectTo( CaretMoveLogic.Calc_FileEnd, ui );
 
 			// update desired column
 			ui.View.SetDesiredColumn();

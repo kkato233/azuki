@@ -1,9 +1,10 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-06-07
+// update: 2009-08-09
 //=========================================================
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using StringBuilder = System.Text.StringBuilder;
 using Debug = System.Diagnostics.Debug;
@@ -36,7 +37,7 @@ namespace Sgry.Azuki
 		protected IGraphics _Gra = null;
 		int _LastUsedLineNumberSample = _LineNumberSamples[0];
 		protected int _LineNumAreaWidth = 0;// Width of the line number area in pixel
-		protected int _SpaceWidth;			// Width of a space char (U+0020) in pixel
+		int _SpaceWidth; 					// Width of a space char (U+0020) in pixel
 		protected int _FullSpaceWidth = 0;	// Width of a full-width space char (U+3000) in pixel
 		int _LineHeight;
 		int _TabWidth = DefaultTabWidth;
@@ -346,11 +347,19 @@ namespace Sgry.Azuki
 		}
 		
 		/// <summary>
-		/// Gets tab width in pixel.
+		/// Gets width of tab character (U+0009) in pixel.
 		/// </summary>
 		public int TabWidthInPx
 		{
 			get{ return _TabWidthInPx; }
+		}
+
+		/// <summary>
+		/// Gets width of space character (U+0020) in pixel.
+		/// </summary>
+		public int SpaceWidthInPx
+		{
+			get{ return _SpaceWidth; }
 		}
 
 		internal int DragThresh
@@ -488,6 +497,65 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex );
+
+		/// <summary>
+		/// Calculates and returns text ranges that will be selected by specified rectangle.
+		/// </summary>
+		/// <param name="selRect">Rectangle to be used to specify selection target.</param>
+		/// <returns>Array of indexes (1st begin, 1st end, 2nd begin, 2nd end, ...)</returns>
+		/// <remarks>
+		/// <para>
+		/// (This method is basically for internal use.
+		/// I do not recomment to use this from outside of Azuki.)
+		/// </para>
+		/// <para>
+		/// This method calculates text ranges which will be selected by given rectangle.
+		/// Because mapping of character indexes and graphical position (layout) are
+		/// executed by view implementations, the result of this method will be changed
+		/// according to the interface implementation.
+		/// </para>
+		/// <para>
+		/// Return value of this method is an array of text indexes
+		/// that is consisted with beginning index of first text range (row),
+		/// ending index of first text range,
+		/// beginning index of second text range,
+		/// ending index of second text range and so on.
+		/// </para>
+		/// </remarks>
+		public int[] GetRectSelectRanges( Rectangle selRect )
+		{
+			List<int> selRanges = new List<int>();
+			Point leftPos = new Point();
+			Point rightPos = new Point();
+			int leftIndex;
+			int rightIndex;
+			int y;
+
+			// get text in the rect
+			leftPos.X = selRect.Left;
+			rightPos.X = selRect.Right;
+			y = selRect.Top - (selRect.Top % LineSpacing);
+			while( y <= selRect.Bottom )
+			{
+				// calculate sub-selection range made with this line
+				leftPos.Y = rightPos.Y = y;
+				leftIndex = this.GetIndexFromVirPos( leftPos );
+				rightIndex = this.GetIndexFromVirPos( rightPos );
+				if( 1 < selRanges.Count && selRanges[selRanges.Count-1] == rightIndex )
+				{
+					break; // reached EOF
+				}
+
+				// add this sub-selection range
+				selRanges.Add( leftIndex );
+				selRanges.Add( rightIndex );
+
+				// go to next line
+				y += LineSpacing;
+			}
+
+			return selRanges.ToArray();
+		}
 		#endregion
 
 		#region Operations

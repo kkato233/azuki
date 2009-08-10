@@ -1,4 +1,7 @@
 == 1.5.0 (2009-  -  ) ==
+ * add: rectangler selection by both mouse and keyboard
+ * add: added AzukiControl.LineSpacing
+ * add: now copied special (line, rectangle) text data can be paste in Visual Studio (and vice-versa)
  * add: [Ann] now Ann remembers last window size
  * add: [Ann] now Ann remembers drawing options
 

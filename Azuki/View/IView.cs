@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-05-24
+// update: 2009-08-09
 //=========================================================
 using System;
 using System.Drawing;
@@ -115,9 +115,17 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets tab width in pixel.
+		/// Gets width of tab character (U+0009) in pixel.
 		/// </summary>
 		int TabWidthInPx
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets width of space character (U+0020) in pixel.
+		/// </summary>
+		int SpaceWidthInPx
 		{
 			get;
 		}
@@ -196,6 +204,32 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex );
+
+		/// <summary>
+		/// Calculates and returns text ranges that will be selected by specified rectangle.
+		/// </summary>
+		/// <param name="selRect">Rectangle to be used to specify selection target.</param>
+		/// <returns>Array of indexes (1st begin, 1st end, 2nd begin, 2nd end, ...)</returns>
+		/// <remarks>
+		/// <para>
+		/// (This method is basically for internal use.
+		/// I do not recomment to use this from outside of Azuki.)
+		/// </para>
+		/// <para>
+		/// This method calculates text ranges which will be selected by given rectangle.
+		/// Because mapping of character indexes and graphical position (layout) are
+		/// executed by view implementations, the result of this method will be changed
+		/// according to the interface implementation.
+		/// </para>
+		/// <para>
+		/// Return value of this method is an array of text indexes
+		/// that is consisted with beginning index of first text range (row),
+		/// ending index of first text range,
+		/// beginning index of second text range,
+		/// ending index of second text range and so on.
+		/// </para>
+		/// </remarks>
+		int[] GetRectSelectRanges( Rectangle selRect );
 		#endregion
 
 		#region Operations

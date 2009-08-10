@@ -1,9 +1,10 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-06-07
+// update: 2009-08-09
 //=========================================================
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
@@ -38,6 +39,7 @@ namespace Sgry.Azuki
 
 		Point _MouseDownPos = new Point( -1, 0 ); // this X coordinate also be used as a flag to determine whether the mouse button is down or not
 		bool _MouseDragging = false;
+		bool _IsRectSelectMode = false;
 
 		Thread _HighlighterThread;
 		bool _ShouldBeHighlighted = false;
@@ -172,7 +174,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Behavior
+		#region Behavior and Modes
 		/// <summary>
 		/// Gets or sets whether the input character overwrites the character at where the caret is on.
 		/// </summary>
@@ -215,6 +217,15 @@ namespace Sgry.Azuki
 		{
 			get{ return _AutoIndentHook; }
 			set{ _AutoIndentHook = value; }
+		}
+
+		/// <summary>
+		/// Gets whether Azuki is in rectangle selection mode or not.
+		/// </summary>
+		public bool IsRectSelectMode
+		{
+			get{ return _IsRectSelectMode; }
+			set{ _IsRectSelectMode = value; }
 		}
 		#endregion
 
@@ -282,6 +293,12 @@ namespace Sgry.Azuki
 			{
 				Plat.Inst.MessageBeep();
 				return;
+			}
+
+			// clear rectangle selection
+			if( Document.RectSelectRanges != null )
+			{
+				UiImpl.DeleteRectSelectText( Document );
 			}
 
 			// try to use hook delegate
@@ -456,6 +473,45 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Other
+		/// <summary>
+		/// Gets currently selected text.
+		/// </summary>
+		/// <returns>Currently selected text.</returns>
+		/// <remarks>
+		/// This method gets currently selected text.
+		/// If current selection is rectangle selection,
+		/// return value will be a text that are consisted with selected partial lines (rows)
+		/// joined with CR-LF.
+		/// </remarks>
+		public string GetSelectedText()
+		{
+			if( Document.RectSelectRanges != null )
+			{
+				StringBuilder text = new StringBuilder();
+
+				// get text in the rect
+				for( int i=0; i<Document.RectSelectRanges.Length; i+=2 )
+				{
+					// get this row content
+					string row = Document.GetTextInRange(
+							Document.RectSelectRanges[i],
+							Document.RectSelectRanges[i+1]
+						);
+					text.Append( row + "\r\n" );
+				}
+
+				return text.ToString();
+			}
+			else
+			{
+				int begin, end;
+				Document.GetSelection( out begin, out end );
+				return Document.GetTextInRange( begin, end );
+			}
+		}
+		#endregion
+
 		#region UI Event
 		public void HandlePaint( Rectangle clipRect )
 		{
@@ -481,6 +537,12 @@ namespace Sgry.Azuki
 					int index = View.GetIndexFromVirPos( pos );
 					Document.SetSelection( Document.AnchorIndex, index );
 				}
+				else if( alt )
+				{
+					_IsRectSelectMode = true;
+					int index = View.GetIndexFromVirPos( pos );
+					Document.SetSelection( index, index );
+				}
 				else
 				{
 					int index = View.GetIndexFromVirPos( pos );
@@ -495,6 +557,7 @@ namespace Sgry.Azuki
 		{
 			_MouseDownPos.X = -1;
 			_MouseDragging = false;
+			_IsRectSelectMode = false;
 		}
 
 		internal void HandleDoubleClick( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
@@ -533,7 +596,7 @@ namespace Sgry.Azuki
 			pos.X = Math.Max( 0, pos.X );
 			pos.Y = Math.Max( 0, pos.Y );
 
-			// if the movement is very slightly, ignore
+			// if it was slight movement, ignore
 			if( _MouseDragging == false )
 			{
 				int xOffset = Math.Abs( pos.X - _MouseDownPos.X );
@@ -551,17 +614,37 @@ namespace Sgry.Azuki
 			// dragging with left button?
 			if( buttonIndex == 0 )
 			{
+				int curPosIndex;
+
 				View.ScreenToVirtual( ref pos );
 
 				// calc index of where the mouse pointer is on
-				int index = View.GetIndexFromVirPos( pos );
-				if( index == -1 || index == Document.CaretIndex )
+				curPosIndex = View.GetIndexFromVirPos( pos );
+				if( curPosIndex == -1 )
 				{
-					return; // failed to get index or same as previous index
+					return;
 				}
 
 				// expand selection to there
-				Document.SetSelection( Document.AnchorIndex, index );
+				if( _IsRectSelectMode )
+				{
+					//--- rectangle selection ---
+					Point anchorPos = _MouseDownPos;
+					View.ScreenToVirtual( ref anchorPos );
+					Document.RectSelectRanges = View.GetRectSelectRanges(
+							MakeRectFromTwoPoints(anchorPos, pos)
+						);
+					Document.SetSelection_Impl( Document.AnchorIndex, curPosIndex, false );
+				}
+				else
+				{
+					//--- normal selection ---
+					// expand selection to the point if it was different from previous index
+					if( curPosIndex != Document.CaretIndex )
+					{
+						Document.SetSelection( Document.AnchorIndex, curPosIndex );
+					}
+				}
 				View.SetDesiredColumn();
 				View.ScrollToCaret();
 			}
@@ -606,6 +689,110 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilitites
+		internal static void DeleteRectSelectText( Document doc )
+		{
+			int diff = 0;
+
+			for( int i=0; i<doc.RectSelectRanges.Length; i+=2 )
+			{
+				// recalculate range of this row
+				doc.RectSelectRanges[i] -= diff;
+				doc.RectSelectRanges[i+1] -= diff;
+
+				// replace this row
+				doc.Replace( String.Empty,
+						doc.RectSelectRanges[i],
+						doc.RectSelectRanges[i+1]
+					);
+
+				// go to next row
+				diff += doc.RectSelectRanges[i+1] - doc.RectSelectRanges[i];
+			}
+
+			// reset selection
+			doc.SetSelection( doc.RectSelectRanges[0], doc.RectSelectRanges[0] );
+		}
+
+		internal static string MakePaddingChars( IUserInterface ui, Point insertPos )
+		{
+			StringBuilder paddingChars;
+			int insertIndex;
+			Point calculatedInsertPos;
+			int nearestTabStopX;
+			int paddedLastTabStopX;
+			int neededTabCount;
+			int neededSpaceCount;
+
+			// calculate the position of the nearest character in line
+			insertIndex = ui.View.GetIndexFromVirPos( insertPos );
+			calculatedInsertPos = ui.View.GetVirPosFromIndex( insertIndex );
+			if( insertPos.X <= calculatedInsertPos.X + ui.View.SpaceWidthInPx )
+			{
+				return ""; // no padding is needed
+			}
+
+			// calculate how many tabs are needed
+			nearestTabStopX = calculatedInsertPos.X - (calculatedInsertPos.X % ui.View.TabWidthInPx);
+			neededTabCount = (insertPos.X - nearestTabStopX) / ui.View.TabWidthInPx;
+
+			// calculate how many spaces are needed
+			if( 0 < neededTabCount )
+			{
+				paddedLastTabStopX = nearestTabStopX + (ui.View.TabWidthInPx * neededTabCount);
+				neededSpaceCount = (insertPos.X - paddedLastTabStopX) / ui.View.SpaceWidthInPx;
+			}
+			else
+			{
+				neededSpaceCount = (insertPos.X - calculatedInsertPos.X) / ui.View.SpaceWidthInPx;
+			}
+
+			// pad tabs
+			paddingChars = new StringBuilder();
+			for( int i=0; i<neededTabCount; i++ )
+			{
+				paddingChars.Append( '\t' );
+			}
+
+			// pad spaces
+			for( int i=0; i<neededSpaceCount; i++ )
+			{
+				paddingChars.Append( ' ' );
+			}
+
+			return paddingChars.ToString();
+		}
+
+		internal static Rectangle MakeRectFromTwoPoints( Point pt1, Point pt2 )
+		{
+			Rectangle rect = new Rectangle();
+
+			// set left and width
+			if( pt1.X < pt2.X )
+			{
+				rect.X = pt1.X;
+				rect.Width = pt2.X - pt1.X;
+			}
+			else
+			{
+				rect.X = pt2.X;
+				rect.Width = pt1.X - pt2.X;
+			}
+
+			// set top and height
+			if( pt1.Y < pt2.Y )
+			{
+				rect.Y = pt1.Y;
+				rect.Height = pt2.Y - pt1.Y;
+			}
+			else
+			{
+				rect.Y = pt2.Y;
+				rect.Height = pt1.Y - pt2.Y;
+			}
+
+			return rect;
+		}
+
 		int NextTabStop( int index )
 		{
 			return ((index / _View.TabWidth) + 1) * _View.TabWidth;

@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-06-07
+// update: 2009-08-10
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -188,64 +188,89 @@ namespace Sgry.Azuki
 			int anchorLine, anchorColumn;
 			int caretLine, caretColumn;
 
-			// if the anchor moved, firstly invalidate old selection area
-			// because invalidation logic below does not expect the anchor's move.
-			if( e.OldAnchor != anchor )
-			{
-				if( e.OldAnchor < e.OldCaret )
-					Invalidate( e.OldAnchor, e.OldCaret );
-				else
-					Invalidate( e.OldCaret, e.OldAnchor );
-			}
-
 			// calculate line/column index of current anchor/caret
 			GetLineColumnIndexFromCharIndex( anchor, out anchorLine, out anchorColumn );
 			GetLineColumnIndexFromCharIndex( caret, out caretLine, out caretColumn );
 
-			// if there was no selection and is no selection too,
-			// update current line highlight if enabled.
-			if( e.OldAnchor == e.OldCaret && anchor == caret )
+			try
 			{
-				if( HighlightsCurrentLine
-					&& PrevCaretLine != caretLine )
+				// if the anchor moved, firstly invalidate old selection area
+				// because invalidation logic below does not expect the anchor's move.
+				if( e.OldAnchor != anchor )
 				{
-					HandleSelectionChanged_UpdateCaretHighlight( PrevCaretLine, caretLine );
-				}
-			}
-			// or, does the change release selection?
-			else if( e.OldAnchor != e.OldCaret && anchor == caret )
-			{
-				HandleSelectionChanged_OnReleaseSel( e );
-			}
-			// then, the change expands selection.
-			else
-			{
-				// if this is the beginning of selection, remove current line heighlight (underline)
-				if( HighlightsCurrentLine && e.OldCaret == e.OldAnchor )
-				{
-					int y = GetVirPosFromIndex( e.OldCaret ).Y - (FirstVisibleLine * LineSpacing);
-					Invalidate(
-							new Rectangle(TextAreaX, y+LineHeight, VisibleSize.Width-TextAreaX, 1)
-						);
+					if( e.OldAnchor < e.OldCaret )
+						Invalidate( e.OldAnchor, e.OldCaret );
+					else
+						Invalidate( e.OldCaret, e.OldAnchor );
 				}
 
-				// if the change occured in a line?
-				if( PrevCaretLine == caretLine )
+				// if in rectangle selection mode, execute special logic
+				if( e.OldRectSelectRanges != null )
 				{
-					if( e.OldCaret < caret )
-						HandleSelectionChanged_OnExpandSelInLine( e.OldCaret, caret, PrevCaretLine );
-					else
-						HandleSelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
+					HandleSelectionChanged_OnRectSelect( e );
+					return;
 				}
+
+				// if there was no selection and is no selection too,
+				// update current line highlight if enabled.
+				if( e.OldAnchor == e.OldCaret && anchor == caret )
+				{
+					if( HighlightsCurrentLine
+						&& PrevCaretLine != caretLine )
+					{
+						HandleSelectionChanged_UpdateCaretHighlight( PrevCaretLine, caretLine );
+					}
+				}
+				// or, does the change release selection?
+				else if( e.OldAnchor != e.OldCaret && anchor == caret )
+				{
+					HandleSelectionChanged_OnReleaseSel( e );
+				}
+				// then, the change expands selection.
 				else
 				{
-					HandleSelectionChanged_OnExpandSel( e, caretLine, caretColumn );
+					// if this is the beginning of selection, remove current line heighlight (underline)
+					if( HighlightsCurrentLine && e.OldCaret == e.OldAnchor )
+					{
+						int y = GetVirPosFromIndex( e.OldCaret ).Y - (FirstVisibleLine * LineSpacing);
+						Invalidate(
+								new Rectangle(TextAreaX, y+LineHeight, VisibleSize.Width-TextAreaX, 1)
+							);
+					}
+
+					// if the change occured in a line?
+					if( PrevCaretLine == caretLine )
+					{
+						// in a line.
+						if( e.OldCaret < caret )
+							HandleSelectionChanged_OnExpandSelInLine( e.OldCaret, caret, PrevCaretLine );
+						else
+							HandleSelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
+					}
+					else
+					{
+						// not in a line; in multiple lines.
+						HandleSelectionChanged_OnExpandSel( e, caretLine, caretColumn );
+					}
 				}
 			}
-
-			// remember last selection for next invalidation
-			PrevCaretLine = caretLine;
-			PrevAnchorLine = anchorLine;
+			catch( Exception ex )
+			{
+				// if an exception was caught here, it is not a fatal error
+				// so avoid crashing application
+				Invalidate();
+#				if DEBUG
+				throw new Exception( "INTERNAL ERROR", ex );
+#				else
+				ex.GetHashCode(); // (suppressing warning)
+#				endif
+			}
+			finally
+			{
+				// remember last selection for next invalidation
+				PrevCaretLine = caretLine;
+				PrevAnchorLine = anchorLine;
+			}
 		}
 
 		void HandleSelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
@@ -262,6 +287,26 @@ namespace Sgry.Azuki
 			// draw new underline
 			int newCaretY = LineSpacing * (newCaretLine - FirstVisibleLine);
 			DrawUnderLine( newCaretY, ColorScheme.HighlightColor );
+		}
+
+		void HandleSelectionChanged_OnRectSelect( SelectionChangedEventArgs e )
+		{
+			// make rectangle that covers
+			// 1) all lines covered by the selection rectangle and
+			// 2) extra lines for both upper and lower direction
+			int firstBegin = e.OldRectSelectRanges[0];
+			int lastEnd = e.OldRectSelectRanges[ e.OldRectSelectRanges.Length - 1 ];
+			Point firstBeginPos = this.GetVirPosFromIndex( firstBegin );
+			Point lastEndPos = this.GetVirPosFromIndex( lastEnd );
+			Rectangle invalidRect = new Rectangle(
+					0,
+					firstBeginPos.Y - LineSpacing,
+					VisibleSize.Width,
+					(lastEndPos.Y + LineSpacing<<1) - (firstBeginPos.Y - LineSpacing)
+				);
+
+			// then, invalidate that rectangle
+			Invalidate( invalidRect );
 		}
 
 		void HandleSelectionChanged_OnExpandSelInLine( int begin, int end, int beginL )

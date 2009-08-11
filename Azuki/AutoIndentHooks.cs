@@ -28,7 +28,7 @@ namespace Sgry.Azuki
 		/// Hook delegate to execute basic auto-indentation;
 		/// indent same amount of spaces as the previous line.
 		/// </summary>
-		public static AutoIndentHook GenericHook = delegate( Document doc, char ch )
+		public static readonly AutoIndentHook GenericHook = delegate( Document doc, char ch )
 		{
 			StringBuilder str = new StringBuilder();
 			int lineHead;
@@ -62,7 +62,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Hook delegate to execute auto-indentation for C styled source code.
 		/// </summary>
-		public static AutoIndentHook CHook = delegate( Document doc, char ch )
+		public static readonly AutoIndentHook CHook = delegate( Document doc, char ch )
 		{
 			StringBuilder str = new StringBuilder();
 			int lineHead, lineEnd;

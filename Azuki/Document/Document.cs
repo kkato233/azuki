@@ -111,7 +111,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets whether an available undo action exists or not.
+		/// Gets whether an available UNDO action exists or not.
 		/// </summary>
 		public bool CanUndo
 		{
@@ -161,9 +161,47 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets index of where the caret is at (in char-index).
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets the index of the 'caret;' the text insertion point.
+		/// </para>
+		/// <para>
+		/// In Azuki, selection always exists and is expressed by the range from anchor index to caret index.
+		/// If there is nothing selected, it means that both anchor index and caret index is set to same value.
+		/// </para>
+		/// <para>
+		/// To set value of anchor or caret, use
+		/// <see cref="Sgry.Azuki.Document.SetSelection">Document.SetSelection</see> method.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.AnchorIndex">Document.AnchorIndex Property</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.SetSelection">Document.SetSelection Method</seealso>
 		public int CaretIndex
 		{
 			get{ return _CaretIndex; }
+		}
+
+		/// <summary>
+		/// Gets index of the position where the selection starts (in char-index).
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets the index of the 'selection anchor;' where the selection starts.
+		/// </para>
+		/// <para>
+		/// In Azuki, selection always exists and is expressed by the range from anchor index to caret index.
+		/// If there is nothing selected, it means that both anchor index and caret index is set to same value.
+		/// </para>
+		/// <para>
+		/// To set value of anchor or caret, use
+		/// <see cref="Sgry.Azuki.Document.SetSelection">Document.SetSelection</see> method.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.CaretIndex">Document.CaretIndex Property</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.SetSelection">Document.SetSelection Method</seealso>
+		public int AnchorIndex
+		{
+			get{ return _AnchorIndex; }
 		}
 
 		/// <summary>
@@ -192,14 +230,6 @@ namespace Sgry.Azuki
 			
 			int caretIndex = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI, lineIndex, columnIndex );
 			SetSelection( caretIndex, caretIndex );
-		}
-
-		/// <summary>
-		/// Gets index of the position where the selection starts (in char-index).
-		/// </summary>
-		public int AnchorIndex
-		{
-			get{ return _AnchorIndex; }
 		}
 
 		/// <summary>
@@ -686,6 +716,12 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Executes UNDO.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method restores the result of the lastly done action if available.
+		/// If there is no UNDOable action, this method will do nothing.
+		/// </para>
+		/// </remarks>
 		public void Undo()
 		{
 			if( CanUndo )
@@ -706,6 +742,12 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Executes REDO.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method 'replays' the lastly UNDOed action if available.
+		/// If there is no REDOable action, this method will do nothing.
+		/// </para>
+		/// </remarks>
 		public void Redo()
 		{
 			if( CanRedo )

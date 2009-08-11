@@ -4,6 +4,7 @@
  * add: now copied special (line, rectangle) text data can be paste in Visual Studio (and vice-versa)
  * add: [Ann] now Ann remembers last window size
  * add: [Ann] now Ann remembers drawing options
+ * add: [Ann] now Ann opens a file in appropriate mode by file extension
 
 == 1.4.0 (2009-07-12) ==
  * add: built-in highlighter for LaTeX

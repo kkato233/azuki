@@ -384,11 +384,9 @@ namespace Sgry.Ann
 					AddDocument( doc );
 				}
 
-				// apply file type
-				SetFileType( doc, FileType.GetFileTypeByFileName(filePath) );
-
 				// activate it
 				ActiveDocument = doc;
+				SetFileType( doc, FileType.GetFileTypeByFileName(filePath) );
 				MainForm.Azuki.SetSelection( 0, 0 );
 				MainForm.Azuki.ScrollToCaret();
 			}

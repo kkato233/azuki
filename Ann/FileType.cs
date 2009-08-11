@@ -1,6 +1,7 @@
-// 2009-07-04
+// 2009-08-11
 using System;
 using Sgry.Azuki;
+using Path = System.IO.Path;
 using IHighlighter = Sgry.Azuki.Highlighter.IHighlighter;
 using Highlighters = Sgry.Azuki.Highlighter.Highlighters;
 
@@ -120,6 +121,58 @@ namespace Sgry.Ann
 				fileType._Name = "XML";
 				return fileType;
 			}
+		}
+
+		public static FileType GetFileTypeByFileName( string fileName )
+		{
+			string ext;
+			string extList;
+
+			ext = Path.GetExtension( fileName );
+
+			// LaTeX?
+			extList = AppConfig.Ini.Get( "LatexFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return LatexFileType;
+			}
+
+			// C/C++?
+			extList = AppConfig.Ini.Get( "CppFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return CppFileType;
+			}
+
+			// C#?
+			extList = AppConfig.Ini.Get( "CSharpFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return CSharpFileType;
+			}
+
+			// Java?
+			extList = AppConfig.Ini.Get( "JavaFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return JavaFileType;
+			}
+
+			// Ruby?
+			extList = AppConfig.Ini.Get( "RubyFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return RubyFileType;
+			}
+
+			// XML?
+			extList = AppConfig.Ini.Get( "XmlFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return XmlFileType;
+			}
+
+			return TextFileType;
 		}
 		#endregion
 

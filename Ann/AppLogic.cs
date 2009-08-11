@@ -1,4 +1,4 @@
-// 2009-08-02
+// 2009-08-11
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -375,14 +375,17 @@ namespace Sgry.Ann
 		{
 			Document doc;
 
-			// load the file
 			try
 			{
+				// load the file
 				doc = CreateDocumentFromFile( filePath, null, false );
 				if( Documents.Contains(doc) == false )
 				{
 					AddDocument( doc );
 				}
+
+				// apply file type
+				SetFileType( doc, FileType.GetFileTypeByFileName(filePath) );
 
 				// activate it
 				ActiveDocument = doc;
@@ -685,6 +688,7 @@ namespace Sgry.Ann
 		}
 		#endregion
 
+		#region Config
 		public void LoadConfig()
 		{
 			// load config file
@@ -723,6 +727,7 @@ namespace Sgry.Ann
 			// save to file
 			AppConfig.Save();
 		}
+		#endregion
 
 		#region UI Event Handlers
 		void MainForm_Load( object sender, EventArgs e )

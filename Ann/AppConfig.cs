@@ -1,5 +1,6 @@
-﻿// 2009-08-02
+﻿// 2009-08-11
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -22,35 +23,35 @@ namespace Sgry.Ann
 		public static bool ShowsLineNumber = true;
 		public static int TabWidth = 8;
 		public static ViewType ViewType = ViewType.Proportional;
+		public static Ini Ini = new Ini();
 
 		/// <summary>
 		/// Loads application config file.
 		/// </summary>
 		public static void Load()
 		{
-			Ini ini = new Ini();
 			string str;
 			int width, height;
 			
 			try
 			{
-				ini.Load( IniFilePath, Encoding.UTF8 );
+				Ini.Load( IniFilePath, Encoding.UTF8 );
 
-				int fontSize = ini.GetInt( "Default", "FontSize", 8, Int32.MaxValue, 11 );
-				str = ini.Get( "Default", "Font", null );
-				width = ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, 300 );
-				height = ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 480 );
+				int fontSize = Ini.GetInt( "Default", "FontSize", 8, Int32.MaxValue, 11 );
+				str = Ini.Get( "Default", "Font", null );
+				width = Ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, 300 );
+				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 480 );
 
 				AppConfig.Font					= new Font( str, fontSize, FontStyle.Regular );
 				AppConfig.WindowSize			= new Size( width, height );
-				AppConfig.DrawsEolCode			= ini.Get( "Default", "DrawsEolCode", true );
-				AppConfig.DrawsFullWidthSpace	= ini.Get( "Default", "DrawsFullWidthSpace", true );
-				AppConfig.DrawsSpace			= ini.Get( "Default", "DrawsSpace", true );
-				AppConfig.DrawsTab				= ini.Get( "Default", "DrawsTab", true );
-				AppConfig.HighlightsCurrentLine	= ini.Get( "Default", "HighlightsCurrentLine", true );
-				AppConfig.ShowsLineNumber		= ini.Get( "Default", "ShowsLineNumber", true );
-				AppConfig.TabWidth				= ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
-				AppConfig.ViewType				= ini.Get( "Default", "ViewType", ViewType.Proportional );
+				AppConfig.DrawsEolCode			= Ini.Get( "Default", "DrawsEolCode", true );
+				AppConfig.DrawsFullWidthSpace	= Ini.Get( "Default", "DrawsFullWidthSpace", true );
+				AppConfig.DrawsSpace			= Ini.Get( "Default", "DrawsSpace", true );
+				AppConfig.DrawsTab				= Ini.Get( "Default", "DrawsTab", true );
+				AppConfig.HighlightsCurrentLine	= Ini.Get( "Default", "HighlightsCurrentLine", true );
+				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
+				AppConfig.TabWidth				= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
+				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
 			}
 			catch
 			{}
@@ -61,24 +62,22 @@ namespace Sgry.Ann
 		/// </summary>
 		public static void Save()
 		{
-			Ini ini = new Ini();
-
 			try
 			{
-				ini.Set( "Default", "FontSize",				AppConfig.Font.Size );
-				ini.Set( "Default", "Font",					AppConfig.Font.Name );
-				ini.Set( "Default", "WindowWidth",			AppConfig.WindowSize.Width );
-				ini.Set( "Default", "WindowHeight",			AppConfig.WindowSize.Height );
-				ini.Set( "Default", "DrawsEolCode",			AppConfig.DrawsEolCode );
-				ini.Set( "Default", "DrawsFullWidthSpace",	AppConfig.DrawsFullWidthSpace );
-				ini.Set( "Default", "DrawsSpace",			AppConfig.DrawsSpace );
-				ini.Set( "Default", "DrawsTab",				AppConfig.DrawsTab );
-				ini.Set( "Default", "HighlightsCurrentLine",AppConfig.HighlightsCurrentLine );
-				ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
-				ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
-				ini.Set( "Default", "ViewType",				AppConfig.ViewType );
+				Ini.Set( "Default", "FontSize",				AppConfig.Font.Size );
+				Ini.Set( "Default", "Font",					AppConfig.Font.Name );
+				Ini.Set( "Default", "WindowWidth",			AppConfig.WindowSize.Width );
+				Ini.Set( "Default", "WindowHeight",			AppConfig.WindowSize.Height );
+				Ini.Set( "Default", "DrawsEolCode",			AppConfig.DrawsEolCode );
+				Ini.Set( "Default", "DrawsFullWidthSpace",	AppConfig.DrawsFullWidthSpace );
+				Ini.Set( "Default", "DrawsSpace",			AppConfig.DrawsSpace );
+				Ini.Set( "Default", "DrawsTab",				AppConfig.DrawsTab );
+				Ini.Set( "Default", "HighlightsCurrentLine",AppConfig.HighlightsCurrentLine );
+				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
+				Ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
+				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
 
-				ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );
+				Ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );
 			}
 			catch
 			{}

@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-08-10
+// update: 2009-08-12
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -187,6 +187,7 @@ namespace Sgry.Azuki
 			int caret = doc.CaretIndex;
 			int anchorLine, anchorColumn;
 			int caretLine, caretColumn;
+			int prevCaretLine = doc.ViewParam.PrevCaretLine;
 
 			// calculate line/column index of current anchor/caret
 			GetLineColumnIndexFromCharIndex( anchor, out anchorLine, out anchorColumn );
@@ -216,9 +217,9 @@ namespace Sgry.Azuki
 				if( e.OldAnchor == e.OldCaret && anchor == caret )
 				{
 					if( HighlightsCurrentLine
-						&& PrevCaretLine != caretLine )
+						&& prevCaretLine != caretLine )
 					{
-						HandleSelectionChanged_UpdateCaretHighlight( PrevCaretLine, caretLine );
+						HandleSelectionChanged_UpdateCaretHighlight( prevCaretLine, caretLine );
 					}
 				}
 				// or, does the change release selection?
@@ -239,11 +240,11 @@ namespace Sgry.Azuki
 					}
 
 					// if the change occured in a line?
-					if( PrevCaretLine == caretLine )
+					if( prevCaretLine == caretLine )
 					{
 						// in a line.
 						if( e.OldCaret < caret )
-							HandleSelectionChanged_OnExpandSelInLine( e.OldCaret, caret, PrevCaretLine );
+							HandleSelectionChanged_OnExpandSelInLine( e.OldCaret, caret, prevCaretLine );
 						else
 							HandleSelectionChanged_OnExpandSelInLine( caret, e.OldCaret, caretLine );
 					}
@@ -268,17 +269,20 @@ namespace Sgry.Azuki
 			finally
 			{
 				// remember last selection for next invalidation
-				PrevCaretLine = caretLine;
-				PrevAnchorLine = anchorLine;
+				doc.ViewParam.PrevCaretLine = caretLine;
+				doc.ViewParam.PrevAnchorLine = anchorLine;
 			}
 		}
 
 		void HandleSelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
 		{
+			int prevAnchorLine = Document.ViewParam.PrevAnchorLine;
+			int prevCaretLine = Document.ViewParam.PrevCaretLine;
+
 			// invalidate old underline
-			if( PrevCaretLine == PrevAnchorLine )
+			if( prevCaretLine == prevAnchorLine )
 			{
-				int y = LineSpacing * (PrevCaretLine - FirstVisibleLine);
+				int y = LineSpacing * (prevCaretLine - FirstVisibleLine);
 				Invalidate(
 						new Rectangle(TextAreaX, y+LineHeight, VisibleSize.Width-TextAreaX, 1)
 					);
@@ -346,7 +350,7 @@ namespace Sgry.Azuki
 			if( e.OldCaret < doc.CaretIndex )
 			{
 				begin = e.OldCaret;
-				beginL = PrevCaretLine;
+				beginL = doc.ViewParam.PrevCaretLine;
 				end = doc.CaretIndex;
 				endL = caretLine;
 			}
@@ -355,7 +359,7 @@ namespace Sgry.Azuki
 				begin = doc.CaretIndex;
 				beginL = caretLine;
 				end = e.OldCaret;
-				endL = PrevCaretLine;
+				endL = doc.ViewParam.PrevCaretLine;
 			}
 			beginLineHead = GetLineHeadIndex( beginL );
 			endLineHead = GetLineHeadIndex( endL ); // if old caret is the end pos and if the pos exceeds current text length, this will fail.
@@ -372,27 +376,29 @@ namespace Sgry.Azuki
 			int beginLineHead, endLineHead;
 			int begin, beginL;
 			int end, endL;
+			int prevAnchorLine = doc.ViewParam.PrevAnchorLine;
+			int prevCaretLine = doc.ViewParam.PrevCaretLine;
 
 			// get old selection range
 			if( e.OldAnchor < e.OldCaret )
 			{
 				begin = e.OldAnchor;
-				beginL = PrevAnchorLine;
+				beginL = prevAnchorLine;
 				end = e.OldCaret;
-				endL = PrevCaretLine;
+				endL = prevCaretLine;
 			}
 			else
 			{
 				begin = e.OldCaret;
-				beginL = PrevCaretLine;
+				beginL = prevCaretLine;
 				end = e.OldAnchor;
-				endL = PrevAnchorLine;
+				endL = prevAnchorLine;
 			}
 			beginLineHead = GetLineHeadIndexFromCharIndex( begin );
 			endLineHead = GetLineHeadIndexFromCharIndex( end );
 
 			// if old selection was in one line?
-			if( PrevCaretLine == PrevAnchorLine )
+			if( prevCaretLine == prevAnchorLine )
 			{
 				Rectangle rect = new Rectangle();
 				string textBeforeSel = doc.GetTextInRange( beginLineHead, begin );
@@ -624,6 +630,7 @@ namespace Sgry.Azuki
 			int begin, end; // range of the token in the text
 			CharClass klass;
 			Point tokenEndPos = pos;
+			bool inSelection;
 
 			// calc position of head/end of this line
 			lineHead = Document.GetLineHeadIndex( lineIndex );
@@ -634,7 +641,7 @@ namespace Sgry.Azuki
 
 			// draw line text
 			begin = lineHead;
-			end = NextPaintToken( Document.InternalBuffer, begin, lineEnd, out klass );
+			end = NextPaintToken( Document, begin, lineEnd, out klass, out inSelection );
 			while( end <= lineEnd // until end-pos reaches line-end
 				&& pos.X < clipRect.Right // or reaches right-end of the clip rect
 				&& end != -1 ) // or reaches the end of text
@@ -702,13 +709,13 @@ namespace Sgry.Azuki
 				}
 
 				// draw this token
-				DrawToken( token, klass, ref pos, ref tokenEndPos, ref clipRect );
+				DrawToken( token, klass, inSelection, ref pos, ref tokenEndPos, ref clipRect );
 
 			next_token:
 				// get next token
 				pos = tokenEndPos;
 				begin = end;
-				end = NextPaintToken( Document.InternalBuffer, begin, lineEnd, out klass );
+				end = NextPaintToken( Document, begin, lineEnd, out klass, out inSelection );
 			}
 
 			// fill right of the line text
@@ -737,20 +744,6 @@ namespace Sgry.Azuki
 			{
 				DrawLineNumber( pos.Y, lineIndex+1 );
 			}
-		}
-		#endregion
-
-		#region Utilities
-		int PrevAnchorLine
-		{
-			get{ return Document.ViewParam.PrevAnchorLine; }
-			set{ Document.ViewParam.PrevAnchorLine = value; }
-		}
-
-		int PrevCaretLine
-		{
-			get{ return Document.ViewParam.PrevCaretLine; }
-			set{ Document.ViewParam.PrevCaretLine = value; }
 		}
 		#endregion
 	}

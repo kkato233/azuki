@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-08-02
+// update: 2009-08-12
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -23,7 +23,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints a token including special characters.
 		/// </summary>
-		protected void DrawToken( string token, CharClass klass, ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect )
+		protected void DrawToken( string token, CharClass klass, bool inSelection, ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect )
 		{
 			Debug.Assert( token != null, "given token is null." );
 			Debug.Assert( 0 < token.Length, "given token is empty." );
@@ -34,7 +34,7 @@ namespace Sgry.Azuki
 			Color fore, back;
 
 			// get fore/back color for the class
-			Utl.ColorFromCharClass( ColorScheme, klass, out fore, out back );
+			Utl.ColorFromCharClass( ColorScheme, klass, inSelection, out fore, out back );
 			_Gra.BackColor = back;
 
 			//--- draw graphic ---
@@ -384,16 +384,74 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Calculates end index of the drawing token at longest case by selection state.
+		/// </summary>
+		int CalcTokenEndLimit( Document doc, int index, int nextLineHead, out bool inSelection )
+		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( index < doc.Length );
+			DebugUtl.Assert( index < nextLineHead && nextLineHead <= doc.Length );
+			int selBegin, selEnd;
+
+			// get selection range on the line
+			doc.GetSelection( out selBegin, out selEnd );
+			if( doc.RectSelectRanges != null )
+			{
+				//--- rectangle selection ---
+				// find a selection range that is on the drawing line
+				// (finding a begin-end pair whose 'end' is at middle of 'index' and 'nextLineHead')
+				int i;
+				for( i=0; i<doc.RectSelectRanges.Length; i+=2 )
+				{
+					selBegin = doc.RectSelectRanges[i];
+					selEnd = doc.RectSelectRanges[i+1];
+					if( index <= selEnd && selEnd < nextLineHead )
+					{
+						break;
+					}
+				}
+				if( doc.RectSelectRanges.Length <= i )
+				{
+					// no such pair was found so this token can extend to the line end
+					inSelection = false;
+					return nextLineHead;
+				}
+			}
+
+			if( index < selBegin )
+			{
+				// token begins before selection range.
+				// so this token is out of selection and must stops before reaching the selection
+				inSelection = false;
+				return Math.Min( selBegin, nextLineHead );
+			}
+			else if( index < selEnd )
+			{
+				// token is in selection.
+				// this token must stops in the selection range
+				inSelection = true;
+				return Math.Min( selEnd, nextLineHead );
+			}
+			else
+			{
+				inSelection = false;
+				return nextLineHead;
+			}
+		}
+
+		/// <summary>
 		/// Gets next token for painting.
 		/// </summary>
-		protected int NextPaintToken( TextBuffer buf, int index, int nextLineHead, out CharClass out_klass )
+		protected int NextPaintToken( Document doc, int index, int nextLineHead, out CharClass out_klass, out bool out_inSelection )
 		{
-			DebugUtl.Assert( nextLineHead <= buf.Count, "param 'nextLineHead'("+nextLineHead+") must not be greater than 'buf.Count'("+buf.Count+")." );
+			DebugUtl.Assert( nextLineHead <= doc.Length, "param 'nextLineHead'("+nextLineHead+") must not be greater than 'doc.Length'("+doc.Length+")." );
 
 			char firstCh, ch;
 			CharClass firstKlass, klass;
-			bool isFirstInSel, isInSel;
-			
+			int tokenEndLimit;
+
+			out_inSelection = false;
+
 			// if given index is out of range,
 			// return -1 to terminate outer loop
 			if( nextLineHead <= index )
@@ -402,17 +460,20 @@ namespace Sgry.Azuki
 				return -1;
 			}
 
+			// calculate how many chars should be drawn as one token
+			tokenEndLimit = CalcTokenEndLimit( doc, index, nextLineHead, out out_inSelection );
+
 			// get first char class and selection state
-			isFirstInSel = IsInSelection( index );
-			firstCh = buf[ index ];
-			firstKlass = buf.GetCharClassAt( index );
-			out_klass = (isFirstInSel) ? CharClass.Selection : firstKlass;
+			out_inSelection = IsInSelection( index );
+			firstCh = doc[ index ];
+			firstKlass = doc.GetCharClass( index );
+			out_klass = firstKlass;
 			if( Utl.IsSpecialChar(firstCh) )
 			{
 				// treat 1 special char as 1 token
 				if( firstCh == '\r'
-					&& index+1 < buf.Count
-					&& buf[index+1] == '\n' )
+					&& index+1 < doc.Length
+					&& doc[index+1] == '\n' )
 				{
 					return index + 2;
 				}
@@ -423,22 +484,15 @@ namespace Sgry.Azuki
 			}
 			
 			// seek until token end appears
-			while( index+1 < nextLineHead )
+			while( index+1 < tokenEndLimit )
 			{
 				// get next char
 				index++;
-				ch = buf[ index ];
-				klass = buf.GetCharClassAt( index );
+				ch = doc[ index ];
+				klass = doc.GetCharClass( index );
 
-				// if selection state of this char is different from first char's,
-				// stop seeking
-				isInSel = IsInSelection( index );
-				if( isFirstInSel ^ isInSel )
-				{
-					return index;
-				}
-				// or, if this char is a special char, stop seeking
-				else if( Utl.IsSpecialChar(ch) )
+				// if this char is a special char, stop seeking
+				if( Utl.IsSpecialChar(ch) )
 				{
 					return index;
 				}
@@ -449,8 +503,8 @@ namespace Sgry.Azuki
 				}
 			}
 
-			// reached to the end of line
-			return nextLineHead;
+			// reached to the limit
+			return tokenEndLimit;
 		}
 
 		/// <summary>
@@ -461,16 +515,17 @@ namespace Sgry.Azuki
 			/// <summary>
 			/// Gets fore/back color pair from scheme according to char class.
 			/// </summary>
-			public static void ColorFromCharClass( ColorScheme cs, CharClass klass, out Color fore, out Color back )
+			public static void ColorFromCharClass( ColorScheme cs, CharClass klass, bool inSelection, out Color fore, out Color back )
 			{
-				if( klass == CharClass.Selection )
+				if( inSelection )
 				{
 					fore = cs.SelectionFore;
 					back = cs.SelectionBack;
-					return;
 				}
-
-				cs.GetColor( klass, out fore, out back );
+				else
+				{
+					cs.GetColor( klass, out fore, out back );
+				}
 			}
 
 			/// <summary>

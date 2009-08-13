@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-08-12
+// update: 2009-08-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -115,7 +115,7 @@ namespace Sgry.Azuki
 			{
 				// before to draw background,
 				// change bgcolor to normal if it's not selected
-				if( klass != CharClass.Selection )
+				if( inSelection == false )
 					_Gra.BackColor = ColorScheme.BackColor;
 
 				// draw background

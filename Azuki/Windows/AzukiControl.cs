@@ -788,6 +788,18 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Executes UNDO.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method restores the modification lastly done for currently active document.
+		/// If there is no UNDOable action, this method will do nothing.
+		/// </para>
+		/// <para>
+		/// To get whether any UNDOable action exists or not,
+		/// use <see cref="Sgry.Azuki.Windows.AzukiControl.CanUndo">CanUndo</see> property.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.CanUndo">AzukiControl.CanUndo property</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.Undo">Document.Undo method</seealso>
 		public void Undo()
 		{
 			Actions.Undo( this );
@@ -796,6 +808,16 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets whether an available UNDO action exists or not.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets whether one or more UNDOable action exists or not.
+		/// </para>
+		/// <para>
+		/// To execute UNDO, use <see cref="Sgry.Azuki.Windows.AzukiControl.Undo">Undo</see> method.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.Undo">AzukiControl.Undo method</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.CanUndo">Document.CanUndo property</seealso>
 #		if !PocketPC
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

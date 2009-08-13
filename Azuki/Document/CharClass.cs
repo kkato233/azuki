@@ -1,14 +1,36 @@
 ﻿// file: CharClass.cs
 // brief: Indicator for class of characters.
 // author: YAMAMOTO Suguru
-// update: 2009-07-04
+// update: 2009-08-13
 //=========================================================
 
 namespace Sgry.Azuki
 {
 	/// <summary>
-	/// Class of characters mainly for syntax highlighting.
+	/// Class of characters for associating logical meaning for each tokens.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// CharClass enumeration specifies the class of characters.
+	/// </para>
+	/// <para>
+	/// The 'class of characters' here is used to classify and associate
+	/// logical meanings to each tokens in document.
+	/// If the document is source code of some programming language,
+	/// there are several types of tokens in it; string literals, comment blocks and so on.
+	/// In this case, CharClass.String should be used to mark each string literals,
+	/// CharClass.Comment should be used to mark each comment blocks/lines.
+	/// If tokens were properly marked by appropriate char-classes,
+	/// the document is programmatically accessible
+	/// so Azuki (View objects) can render each token differently.
+	/// </para>
+	/// <para>
+	/// To classify characters, use
+	/// <see cref="Sgry.Azuki.Document.SetCharClass">Document.SetCharClass</see>
+	/// method.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="Sgry.Azuki.Document.SetCharClass">Document.SetCharClass method</seealso>
 	public enum CharClass : byte
 	{
 		/// <summary>Normal character.</summary>
@@ -108,9 +130,6 @@ namespace Sgry.Azuki
 		Heading5,
 
 		/// <summary>Heading 6 (LaTeX, Wiki, HTML).</summary>
-		Heading6,
-
-		/// <summary>!! DO NOT USE !!  Selected text.</summary>
-		Selection	= 255
+		Heading6
 	}
 }

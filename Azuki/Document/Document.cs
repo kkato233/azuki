@@ -113,6 +113,15 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets whether an available UNDO action exists or not.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets whether one or more UNDOable action exists or not.
+		/// </para>
+		/// <para>
+		/// To execute UNDO, use <see cref="Sgry.Azuki.Document.Undo">Undo</see> method.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.Undo">Document.Undo method</seealso>
 		public bool CanUndo
 		{
 			get{ return _History.CanUndo; }
@@ -582,7 +591,6 @@ namespace Sgry.Azuki
 			if( Length <= index )
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", Length:"+Length+")." );
 
-			Debug.Assert( _Buffer.GetCharClassAt(index) != CharClass.Selection, "char at index "+index+" has invalid char class." );
 			return _Buffer.GetCharClassAt( index );
 		}
 
@@ -718,10 +726,15 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This method restores the result of the lastly done action if available.
+		/// This method restores the modification lastly done to this document.
 		/// If there is no UNDOable action, this method will do nothing.
 		/// </para>
+		/// <para>
+		/// To get whether any UNDOable action exists or not,
+		/// use <see cref="Sgry.Azuki.Document.CanUndo">CanUndo</see> property.
+		/// </para>
 		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.CanUndo">Document.CanUndo property</seealso>
 		public void Undo()
 		{
 			if( CanUndo )

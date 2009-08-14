@@ -11,8 +11,8 @@
     </namespaceSummaries>
     <conceptualContent snippetFile="">
         <topics defaultTopic="01234567-55e0-4cee-a443-11aeb276403f">
-            <topic id="01234567-55e0-4cee-a443-11aeb276403f" file=".\api_cover.html" title="Cover" revision="1" visible="True" />
-            <topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" file=".\api_devnotes.xml" title="Developper's Notes" revision="1" visible="True" />
+            <topic id="01234567-55e0-4cee-a443-11aeb276403f" file=".\overview.xml" title="Azuki documentation" tocTitle="Overview" revision="1" visible="True" />
+            <topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" file=".\developpers_notes.xml" title="Developper's Notes" revision="1" visible="True" />
         </topics>
     </conceptualContent>
     <apiFilter>
@@ -28,7 +28,7 @@
     <OutputPath>Release\</OutputPath>
     <SandcastlePath path="" />
     <WorkingPath path="" />
-    <CleanIntermediates>True</CleanIntermediates>
+    <CleanIntermediates>False</CleanIntermediates>
     <KeepLogFile>False</KeepLogFile>
     <BuildLogFile path="" />
     <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
@@ -38,8 +38,8 @@
     <Preliminary>False</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>API Reference</RootNamespaceTitle>
-    <HelpTitle>Azuki 1.4 API Reference</HelpTitle>
-    <HtmlHelpName>azuki-1.4-api</HtmlHelpName>
+    <HelpTitle>Azuki 1.4 Documentation</HelpTitle>
+    <HtmlHelpName>azuki-1.4-doc</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref>http://azuki.sourceforge.jp/</CopyrightHref>
     <CopyrightText />

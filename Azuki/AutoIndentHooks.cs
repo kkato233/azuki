@@ -22,12 +22,21 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Static class containing hook delegates for auto-indentation.
 	/// </summary>
+	/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
 	public static class AutoIndentHooks
 	{
 		/// <summary>
 		/// Hook delegate to execute basic auto-indentation;
 		/// indent same amount of spaces as the previous line.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This member is a hook delegate to execute auto-indentation.
+		/// This delegate just copies previous indentation characters
+		/// on making a new line.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
 		public static readonly AutoIndentHook GenericHook = delegate( Document doc, char ch )
 		{
 			StringBuilder str = new StringBuilder();
@@ -62,6 +71,13 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Hook delegate to execute auto-indentation for C styled source code.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This member is a hook delegate to execute auto-indentation for C styled source code.
+		/// Here 'C style' means that curly brackets are used to enclose each logical block.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
 		public static readonly AutoIndentHook CHook = delegate( Document doc, char ch )
 		{
 			StringBuilder str = new StringBuilder();

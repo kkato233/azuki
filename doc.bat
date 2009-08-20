@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 setlocal
 
 :: Sandcastle Help File Builder directory path
@@ -19,7 +19,7 @@ if not %ERRORLEVEL% == 1 (
 
 :: okay, SHFB exists. execute it.
 pushd doc
-SandcastleBuilderConsole.exe api.shfb
+SandcastleBuilderConsole.exe Document.shfb
 popd
 
 set PATH=%PATH_BACKUP%

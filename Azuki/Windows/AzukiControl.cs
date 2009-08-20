@@ -706,7 +706,17 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets hook delegate to execute auto-indentation.
 		/// If null, auto-indentation will not be performed.
 		/// </summary>
-		/// <seealso cref="AutoIndentHooks">AutoIndentHooks</seealso>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets a delegate object to execute auto-indentation.
+		/// There are some built-in auto-indentation hook delegates
+		/// declared as members of
+		/// <see cref="Sgry.Azuki.AutoIndentHooks">AutoIndentHooks</see> class.
+		/// Use one of the member of AutoIndentHooks or user-made hook to enable auto-indentation,
+		/// otherwise, set null to this property to disable auto-indentation.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.AutoIndentHooks">AutoIndentHooks</seealso>
 #		if !PocketPC
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

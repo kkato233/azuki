@@ -594,7 +594,7 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
-		/// Gets or sets tab width in count of space chars.
+		/// Gets or sets tab width in count of space characters.
 		/// </summary>
 #		if !PocketPC
 		[Category("Drawing")]
@@ -728,18 +728,78 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
-		/// Gets or sets whether to automatically convert
-		/// an input tab character to equivalent amount of spaces.
+		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property is replaced with
+		/// <see cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
+		/// property and is now obsoleted.
+		/// Use
+		/// <see cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
+		/// property instead.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]
-		[Description("If true, an input tab character will be automatically converted into equivalent amount of spaces.")]
+		[Description("If false, tab characters are used for indentation, instead of space characters.")]
 #		endif
+		[Obsolete("Please use UsesTabForIndent property instead.", false)]
 		public bool ConvertsTabToSpaces
 		{
-			get{ return _Impl.ConvertsTabToSpaces; }
-			set{ _Impl.ConvertsTabToSpaces = value; }
+			get{ return !UsesTabForIndent; }
+			set{ UsesTabForIndent = !(value); }
+		}
+
+		/// <summary>
+		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets whether tab characters are used for indentation,
+		/// instead of space characters.
+		/// </para>
+		/// <para>
+		/// In addition to the case of inserting a new tab character,
+		/// This property affects some other cases like next:
+		/// </para>
+		/// <list type="bullet">
+		///		<item>
+		///		When executing block-indent.
+		///		</item>
+		///		<item>
+		///		When additional indent characters are needed.
+		///		This case is about auto-indentation for specific syntax such as C/C++ language
+		///		(term <term>smart-indentation</term> is more appropriate here.)
+		///		In C/C++, if user hits the Enter key on a line
+		///		that ends with a closing curly bracket (<c> } </c>),
+		///		newly generated line will be indented one more level
+		///		by inserting additional indent characters.
+		///		</item>
+		///		<item>
+		///		When pasting rectangle selection data.
+		///		Let's suppose pasting the text data
+		///		when the caret is at end of a long line
+		///		and the lines below is shorter than the line caret is at.
+		///		In this case, whitespaces will be appended automatically
+		///		for the lines below as a padding to make pasted result a 'rectangle.'
+		///		</item>
+		/// </list>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.TabWidth">AzukiControl.TabWidth property</seealso>
+		/// <seealso cref="Sgry.Azuki.Actions.BlockIndent">Actions.BlockIndent action</seealso>
+		/// <seealso cref="Sgry.Azuki.Actions.BlockUnIndent">Actions.BlockUnIndent action</seealso>
+#		if !PocketPC
+		[Category("Behavior")]
+		[DefaultValue(true)]
+		[Description("If true, tab characters are used for indentation, instead of space characters.")]
+#		endif
+		public bool UsesTabForIndent
+		{
+			get{ return _Impl.UsesTabForIndent; }
+			set{ _Impl.UsesTabForIndent = value; }
 		}
 
 		/// <summary>

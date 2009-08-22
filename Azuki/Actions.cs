@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-08-09
+// update: 2009-08-22
 //=========================================================
 using System;
 using System.Drawing;
@@ -538,6 +538,7 @@ namespace Sgry.Azuki
 		public static void BlockIndent( IUserInterface ui )
 		{
 			Document doc = ui.Document;
+			string indentChars;
 			int begin, end;
 			int beginL, endL;
 
@@ -556,11 +557,26 @@ namespace Sgry.Azuki
 				endL++;
 			}
 
+			// prepare indent character
+			if( ui.UsesTabForIndent )
+			{
+				indentChars = "\t";
+			}
+			else
+			{
+				StringBuilder buf = new StringBuilder( 64 );
+				for( int i=0; i<ui.TabWidth; i++ )
+				{
+					buf.Append( ' ' );
+				}
+				indentChars = buf.ToString();
+			}
+
 			// indent each lines
 			for( int i=beginL; i<endL; i++ )
 			{
 				int lineHead = doc.GetLineHeadIndex( i );
-				doc.Replace( "\t", lineHead, lineHead );
+				doc.Replace( indentChars, lineHead, lineHead );
 			}
 
 			// select whole range

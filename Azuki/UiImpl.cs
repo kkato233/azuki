@@ -34,7 +34,7 @@ namespace Sgry.Azuki
 		AutoIndentHook _AutoIndentHook = null;
 		char _FirstSurrogateChar = '\0';
 		bool _IsOverwriteMode = false;
-		bool _ConvertsTabToSpaces = false;
+		bool _UsesTabForIndent = false;
 		bool _ConvertsFullWidthSpaceToSpace = false;
 
 		Point _MouseDownPos = new Point( -1, 0 ); // this X coordinate also be used as a flag to determine whether the mouse button is down or not
@@ -189,13 +189,12 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets whether to automatically convert
-		/// an input tab character to equivalent amount of spaces.
+		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
 		/// </summary>
-		public bool ConvertsTabToSpaces
+		public bool UsesTabForIndent
 		{
-			get{ return _ConvertsTabToSpaces; }
-			set{ _ConvertsTabToSpaces = value; }
+			get{ return _UsesTabForIndent; }
+			set{ _UsesTabForIndent = value; }
 		}
 
 		/// <summary>
@@ -338,7 +337,7 @@ namespace Sgry.Azuki
 			{
 				str = doc.EolCode;
 			}
-			else if( ch == '\t' && _ConvertsTabToSpaces )
+			else if( ch == '\t' && _UsesTabForIndent )
 			{
 				int spaceCount = NextTabStop( selBegin ) - selBegin;
 				str = String.Empty;
@@ -347,7 +346,7 @@ namespace Sgry.Azuki
 					str += ' ';
 				}
 			}
-			else if( ch == '\x3000' && _ConvertsFullWidthSpaceToSpace )
+			else if( ch == '\x3000' && ConvertsFullWidthSpaceToSpace )
 			{
 				str = "\x0020";
 			}

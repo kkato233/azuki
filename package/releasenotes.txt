@@ -1,0 +1,14 @@
+------------------------------------------------------------
+Released version 1.4.0.
+This release features 6 points next.
+
+ 1. added syntax highlighter for LaTeX
+ 2. now supports IME re-conversion
+ 3. now large line number than 9999 can be shown
+ 4. now Document object can be modified programmatically regardless of read-only mode
+ 5. added AzukiControl.BorderStyle
+ 6. reduced memory usage
+------------------------------------------------------------
+I released a bug-fix release 1.3.5.
+In this release, a problem was fixed that AzukiControl.CanRedo property always returns invalid value.
+------------------------------------------------------------

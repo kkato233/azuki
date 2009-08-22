@@ -151,6 +151,14 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets tab width in count of space characters.
+		/// </summary>
+		int TabWidth
+		{
+			get; set;
+		}
+
+		/// <summary>
 		/// Gets height of each lines in pixel.
 		/// </summary>
 		int LineHeight

@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-08-22
+// update: 2009-08-23
 //=========================================================
 using System;
 using System.Drawing;
@@ -438,7 +438,7 @@ namespace Sgry.Azuki
 					}
 
 					// pad tabs if needed
-					padding = UiImpl.MakePaddingChars( ui, insertPos );
+					padding = UiImpl.GetNeededPaddingChars( ui, insertPos, false );
 
 					// insert this row
 					insertIndex = ui.View.GetIndexFromVirPos( insertPos );
@@ -535,6 +535,15 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Indent selected lines.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action indents all selected lines at once.
+		/// The indent characters will be tabs (U+0009) if
+		/// <see cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">IUserInterface.UsesTabForIndent</see>
+		/// property is true, otherwise spaces (U+0020).
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">IUserInterface.UsesTabForIndent property</seealso>
 		public static void BlockIndent( IUserInterface ui )
 		{
 			Document doc = ui.Document;

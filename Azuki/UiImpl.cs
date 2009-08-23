@@ -339,7 +339,18 @@ namespace Sgry.Azuki
 			}
 			else if( ch == '\t' && _UsesTabForIndent )
 			{
-				int spaceCount = NextTabStop( selBegin ) - selBegin;
+				StringBuilder buf = new StringBuilder( 32 );
+				
+				// get x-coord of caret index
+				Point newCaretPos = View.GetVirPosFromIndex( selBegin );
+
+				// calc next tab stop
+				Point nextTabStopPos = newCaretPos;
+				nextTabStopPos.X += View.TabWidthInPx;
+				nextTabStopPos.X = nextTabStopPos.X - (nextTabStopPos.X % View.TabWidthInPx);
+
+				// make padding spaces
+				int spaceCount = (nextTabStopPos.X - newCaretPos.X) / View.SpaceWidthInPx;
 				str = String.Empty;
 				for( int i=0; i<spaceCount; i++ )
 				{
@@ -806,12 +817,6 @@ namespace Sgry.Azuki
 			}
 
 			return rect;
-		}
-
-		[Obsolete()]
-		int NextTabStop( int index )
-		{
-			return ((index / _View.TabWidth) + 1) * _View.TabWidth;
 		}
 		#endregion
 	}

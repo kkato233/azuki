@@ -1,4 +1,4 @@
-﻿// 2009-08-11
+﻿// 2009-08-23
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,6 +23,8 @@ namespace Sgry.Ann
 		public static bool ShowsLineNumber = true;
 		public static int TabWidth = 8;
 		public static ViewType ViewType = ViewType.Proportional;
+		public static bool UsesTabForIndent = true;
+		public static bool ConvertsFullWidthSpaceToSpace = true;
 		public static Ini Ini = new Ini();
 
 		/// <summary>
@@ -40,7 +42,7 @@ namespace Sgry.Ann
 				int fontSize = Ini.GetInt( "Default", "FontSize", 8, Int32.MaxValue, 11 );
 				str = Ini.Get( "Default", "Font", null );
 				width = Ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, 300 );
-				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 480 );
+				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 400 );
 
 				AppConfig.Font					= new Font( str, fontSize, FontStyle.Regular );
 				AppConfig.WindowSize			= new Size( width, height );
@@ -52,6 +54,8 @@ namespace Sgry.Ann
 				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
 				AppConfig.TabWidth				= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
 				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
+				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
+				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
 			}
 			catch
 			{}
@@ -76,6 +80,8 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
 				Ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
 				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
+				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );
+				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );
 
 				Ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );
 			}

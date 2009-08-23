@@ -1,4 +1,4 @@
-// 2009-08-11
+// 2009-08-23
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -695,6 +695,7 @@ namespace Sgry.Ann
 			// apply config
 			MainForm.Azuki.Font					= AppConfig.Font;
 			MainForm.ClientSize					= AppConfig.WindowSize;
+
 			MainForm.Azuki.DrawsEolCode			= AppConfig.DrawsEolCode;
 			MainForm.Azuki.DrawsFullWidthSpace	= AppConfig.DrawsFullWidthSpace;
 			MainForm.Azuki.DrawsSpace			= AppConfig.DrawsSpace;
@@ -703,6 +704,9 @@ namespace Sgry.Ann
 			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
 			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
 			MainForm.Azuki.ViewType				= AppConfig.ViewType;
+
+			MainForm.Azuki.UsesTabForIndent		= AppConfig.UsesTabForIndent;
+			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
 
 			// update UI
 			MainForm.UpdateUI();
@@ -713,6 +717,7 @@ namespace Sgry.Ann
 			// update config fields
 			AppConfig.Font					= MainForm.Azuki.Font;
 			AppConfig.WindowSize			= MainForm.ClientSize;
+
 			AppConfig.DrawsEolCode			= MainForm.Azuki.DrawsEolCode;
 			AppConfig.DrawsFullWidthSpace	= MainForm.Azuki.DrawsFullWidthSpace;
 			AppConfig.DrawsSpace			= MainForm.Azuki.DrawsSpace;
@@ -721,6 +726,9 @@ namespace Sgry.Ann
 			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
 			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
 			AppConfig.ViewType				= MainForm.Azuki.ViewType;
+
+			AppConfig.UsesTabForIndent		= MainForm.Azuki.UsesTabForIndent;
+			AppConfig.ConvertsFullWidthSpaceToSpace = MainForm.Azuki.ConvertsFullWidthSpaceToSpace;
 
 			// save to file
 			AppConfig.Save();

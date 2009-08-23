@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-08-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -15,11 +15,32 @@ namespace Sgry.Azuki.Highlighter
 	/// </summary>
 	public class KeywordHighlighter : IHighlighter
 	{
+		#region Public Fields
+		/// <summary>
+		/// Default word-character set.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This is the default word-character set used by KeywordHighlighter.
+		/// Alphabets, numbers and underscore ('_') are included in this set.
+		/// </para>
+		/// <para>
+		/// KeywordHighlighter treats a sequence of characters in a word character set as a word.
+		/// Especially word-characters
+		/// If there are keywords that contain characters not included in the word character set,
+		/// KeywordHighlighter may fail to highlight such keywords properly.
+		/// </para>
+		/// </remarks>
+		public static readonly string DefaultWordCharSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+		#endregion
+
 		#region Inner Types and Fields
 		class KeywordSet
 		{
 			public CharTreeNode root = new CharTreeNode();
 			public CharClass klass = CharClass.Normal;
+			public bool ignoresCase = false;
+			public string wordChars = KeywordHighlighter.DefaultWordCharSet;
 		}
 
 		class CharTreeNode
@@ -104,16 +125,75 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Sets sorted array of keywords to be highlighted.
+		/// Sets keywords to highlight.
 		/// </summary>
 		/// <param name="keywords">Sorted array of keywords.</param>
 		/// <param name="klass">Char-class to be applied to the keyword set.</param>
 		/// <remarks>
-		/// If array of keywords is not sorted alphabetically,
-		/// highlighting will not work properly.
+		/// <para>
+		/// This method sets the keywords to be highlighted.
+		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
+		/// as <paramref name="klass"/> character class.
+		/// Please ensure that keywords in <paramref name="keywords"/> parameter
+		/// must be alphabetically sorted,
+		/// otherwise keywords may not be highlighted properly.
+		/// </para>
+		/// <para>
+		/// The keywords will be matched case sensitively
+		/// and supporsed to be consisted with only alphabets, numbers and underscore ('_').
+		/// </para>
 		/// </remarks>
 		public void SetKeywords( string[] keywords, CharClass klass )
 		{
+			SetKeywords( keywords, klass, false, DefaultWordCharSet );
+		}
+
+		/// <summary>
+		/// Sets keywords to highlight.
+		/// </summary>
+		/// <param name="keywords">Sorted array of keywords.</param>
+		/// <param name="klass">Char-class to be applied to the keyword set.</param>
+		/// <param name="ignoreCase">Whether case of the keywords should be ignored or not.</param>
+		/// <param name="wordCharSet">Word-character set to use (can be null.)</param>
+		/// <remarks>
+		/// <para>
+		/// This method sets the keywords to be highlighted.
+		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
+		/// as <paramref name="klass"/> character class.
+		/// Please ensure that keywords in <paramref name="keywords"/> parameter
+		/// must be alphabetically sorted,
+		/// otherwise keywords may not be highlighted properly.
+		/// </para>
+		/// <para>
+		/// If <paramref name="ignoreCase"/> is true,
+		/// KeywordHighlighter ignores case of all given keywords on matching.
+		/// Note that if <paramref name="ignoreCase"/> is true,
+		/// all characters of keywords must be in lower case,
+		/// or all characters must be in upper case.
+		/// Otherwise keywords may not be highlighted properly.
+		/// </para>
+		/// <para>
+		/// The <paramref name="wordCharSet"/> parameter is a set of characters
+		/// that KeywordHighlighter treats a sequence of characters in that as a word.
+		/// If null was passed as <paramref name="wordCharSet"/> parameter,
+		/// <see cref="DefaultWordCharSet"/> will be used instead.
+		/// This parameter affects especially when KeywordHighlighter seeks or matches keywords.
+		/// For example, if a keyword partially matched to a token in a document,
+		/// KeywordHighlighter checks whether the character at the place where the match ended
+		/// is one of the word-character set or not.
+		/// Then if it was NOT a one of the word-character set,
+		/// KeywordHighlighter treats the token ends there,
+		/// so the token will be highlighted.
+		/// If there are keywords that contain characters not included in the word character set,
+		/// KeywordHighlighter may fail to highlight such keywords properly.
+		/// 
+		/// </para>
+		/// </remarks>
+		public void SetKeywords( string[] keywords, CharClass klass, bool ignoreCase, string wordCharSet )
+		{
+			if( keywords == null )
+				throw new ArgumentNullException("keywords");
+
 			KeywordSet set = new KeywordSet();
 
 			// sort keywords at first
@@ -132,7 +212,14 @@ namespace Sgry.Azuki.Highlighter
 					AddCharNode( keywords[i], 0, set.root, 1 );
 				}
 			}
+
+			// set other attributes
 			set.klass = klass;
+			set.ignoresCase = ignoreCase;
+			if( wordCharSet != null )
+			{
+				set.wordChars = wordCharSet;
+			}
 
 			// add to keyword list
 			_Keywords.Add( set );
@@ -270,7 +357,7 @@ dirtyEnd = doc.Length;
 				}
 				
 				// this token is normal class; reset classes and seek to next token
-				nextIndex = HighlighterUtl.FindNextToken( doc, index );
+				nextIndex = HighlighterUtl.FindNextToken( doc, index, DefaultWordCharSet );
 				for( int i=index; i<nextIndex; i++ )
 				{
 					doc.SetCharClass( i, CharClass.Normal );
@@ -397,47 +484,33 @@ dirtyEnd = doc.Length;
 			while( node != null && index < endIndex )
 			{
 				// is this node matched to the char?
-				if( node.ch == doc[index] )
+				if( Matches(node.ch, doc[index], set.ignoresCase) )
 				{
 					// matched.
-					if( Matched_Case1(doc, node, index) )
+					if( MatchedExactly(doc, node, index, set.wordChars) )
 					{
-						// next node is null; reached to the end of keyword.
+						//--- the keyword exactly matched ---
+						// (at least the keyword was partially matched,
+						// and the token in document at this place ends exactly)
 						// highlight and exit
 						Utl.Highlight( doc, index, node, set.klass );
 						nextSeekIndex = index + 1;
 						return true;
 					}
-					else if( node.child != null && node.child.ch == '\0' )
-					{
-						// next node is a null-char.
-						if(	index+1 == doc.Length
-							|| (index+1 < doc.Length && !Char.IsLetterOrDigit(doc[index+1])) )
-						{
-							// keyword terminated by null-char in tree was matched.
-							Utl.Highlight( doc, index, node, set.klass );
-							nextSeekIndex = index + 1;
-							return true;
-						}
-						else
-						{
-							// there are following chars.
-							// so we should continue matching process for next keyword
-							node = node.child.sibling;
-							index++;
-						}
-					}
 					else
 					{
-						// more chars needed to be matched.
+						//--- the keyword not matched ---
 						// continue matching process
-						node = node.child;
+						if( node.child != null && node.child.ch == '\0' )
+							node = node.child.sibling;
+						else
+							node = node.child;
 						index++;
 					}
 				}
 				else
 				{
-					// not matched.
+					//--- unmatch char is found ---
 					// try next keyword.
 					node = node.sibling;
 				}
@@ -525,24 +598,32 @@ dirtyEnd = doc.Length;
 		#endregion
 
 		#region Utilities
-		static bool Matched_Case1( Document doc, CharTreeNode node, int index )
+		static bool Matches( char ch1, char ch2, bool ignoreCase )
 		{
-			if( node.child != null )
-				return false;
-
-			if( doc.Length < index+1 )
-				return false;
-
-			if( doc.Length == index+1 )
+			if( ch1 == ch2 )
 				return true;
-			
-			if( Char.IsLetterOrDigit(node.ch)
-				&& Char.IsLetterOrDigit(doc[index+1]) )
-			{
-				return false;
-			}
+			if( ignoreCase && Char.ToLower(ch1) == Char.ToLower(ch2) )
+				return true;
+			return false;
+		}
 
-			return true;
+		static bool MatchedExactly( Document doc, CharTreeNode node, int index, string wordChars )
+		{
+			// 'exact match' cases are next two:
+			// 1) node.child is null, document token ends there
+			// 2) node.child is '\0', document token ends there
+
+			// document token ends there?
+			if( index+1 == doc.Length
+				|| (index+1 < doc.Length && HighlighterUtl.IsWordChar(wordChars, doc[index+1]) == false) )
+			{
+				// and, ndoe.child is null or '\0'?
+				if( node.child == null || node.child.ch == '\0' )
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		static class Utl

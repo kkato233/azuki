@@ -1,4 +1,4 @@
-// file: XmlHighlighter.cs
+﻿// file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
 // update: 2009-08-23
@@ -16,6 +16,7 @@ namespace Sgry.Azuki.Highlighter
 	class XmlHighlighter : IHighlighter
 	{
 		#region Fields
+		static readonly string DefaultWordCharSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 		List<Enclosure> _Enclosures = new List<Enclosure>();
 		#endregion
 
@@ -124,7 +125,7 @@ namespace Sgry.Azuki.Highlighter
 					}
 
 					// highlight element name
-					nextIndex = HighlighterUtl.FindNextToken( doc, index );
+					nextIndex = HighlighterUtl.FindNextToken( doc, index, DefaultWordCharSet );
 					for( int i=index; i<nextIndex; i++ )
 					{
 						doc.SetCharClass( i, CharClass.ElementName );
@@ -144,7 +145,7 @@ namespace Sgry.Azuki.Highlighter
 						}
 
 						// this token is normal class; reset classes and seek to next token
-						nextIndex = HighlighterUtl.FindNextToken( doc, index );
+						nextIndex = HighlighterUtl.FindNextToken( doc, index, DefaultWordCharSet );
 						for( int i=index; i<nextIndex; i++ )
 						{
 							doc.SetCharClass( i, CharClass.Attribute );

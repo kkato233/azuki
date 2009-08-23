@@ -1,7 +1,7 @@
 ﻿// file: HighlighterUtl.cs
 // brief: common utility for built-in highlighters.
 // author: YAMAMOTO Suguru
-// update: 2008-05-31
+// update: 2008-08-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -100,12 +100,15 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Find next token beginning position and return it's index.
 		/// </summary>
-		public static int FindNextToken( Document doc, int index )
+		public static int FindNextToken( Document doc, int index, string wordCharSet )
 		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( wordCharSet != null );
+
 			if( doc.Length <= index+1 )
 				return doc.Length;
 
-			if( Utl.IsAlnum(doc[index]) )
+			if( IsWordChar(wordCharSet, doc[index]) )
 			{
 				do
 				{
@@ -113,18 +116,11 @@ namespace Sgry.Azuki.Highlighter
 					if( doc.Length <= index )
 						return doc.Length;
 				}
-				while( Utl.IsAlnum(doc[index]) );
+				while( IsWordChar(wordCharSet, doc[index]) );
 			}
 			else
 			{
 				index++;
-			}
-			
-			while( Char.IsWhiteSpace(doc[index]) )
-			{
-				index++;
-				if( doc.Length <= index )
-					return doc.Length;
 			}
 			
 			return index;
@@ -263,6 +259,11 @@ namespace Sgry.Azuki.Highlighter
 					return pair;
 			}
 			return null;
+		}
+
+		public static bool IsWordChar( string wordChars, char ch )
+		{
+			return ( 0 <= wordChars.IndexOf(ch) );
 		}
 
 		static class Utl

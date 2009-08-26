@@ -1,4 +1,4 @@
-// 2009-07-12
+// 2009-08-26
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -76,19 +76,24 @@ namespace Sgry.Ann
 		{
 			Document doc = _App.ActiveDocument;
 			bool readOnly = doc.IsReadOnly;
-			string attrStr = "";
+			StringBuilder text = new StringBuilder( 64 );
 
 			// set form text
+			text.Append( "Ann - " );
+			text.Append( doc.DisplayNameWithFlags );
+			text.Append( " [" );
+			text.Append( Utl.ToString(doc.Encoding) );
+			if( doc.WithBom )
+			{
+				text.Append( "+BOM" );
+			}
+			text.Append( ", " + doc.FileType.Name );
 			if( readOnly )
 			{
-				attrStr += ", R/O";
+				text.Append( ", R/O" );
 			}
-			base.Text = String.Format( "Ann - {0} [{1}, {2}{3}]",
-					doc.DisplayNameWithFlags,
-					doc.Encoding.WebName,
-					doc.FileType.Name,
-					attrStr
-				);
+			text.Append( "]" );
+			this.Text = text.ToString();
 
 			// apply read-only mode
 			_MI_File_ReadOnly.Checked = readOnly;
@@ -521,6 +526,40 @@ namespace Sgry.Ann
 				text.Append( keyData & (~Keys.Modifiers) );
 
 				return text.ToString();
+			}
+
+			public static string ToString( Encoding encoding )
+			{
+				if( encoding == Encoding.UTF8 )
+				{
+					return "UTF-8";
+				}
+				else if( encoding == Encoding.UTF7 )
+				{
+					return "UTF-7";
+				}
+				else if( encoding == Encoding.Unicode )
+				{
+					return "UTF-16";
+				}
+				else if( encoding == Encoding.BigEndianUnicode )
+				{
+					return "UTF-16BE";
+				}
+				else if( encoding.WebName == "shift_jis" )
+				{
+					return "Shift_JIS";
+				}
+				else if( encoding.WebName == "euc-jp" )
+				{
+					return "EUC-JP";
+				}
+				else if( encoding.WebName == "iso-2022-jp" )
+				{
+					return "JIS";
+				}
+
+				return encoding.WebName;
 			}
 		}
 		#endregion

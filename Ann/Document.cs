@@ -1,4 +1,4 @@
-// 2009-07-12
+// 2009-08-26
 using System;
 using System.Text;
 using Sgry.Azuki;
@@ -12,6 +12,7 @@ namespace Sgry.Ann
 		#region Fields
 		string _FilePath = null;
 		Encoding _Encoding = Encoding.Default;
+		bool _WithBom = false;
 		FileType _FileType;
 		string _DisplayName = null;
 		#endregion
@@ -93,6 +94,15 @@ namespace Sgry.Ann
 		{
 			get{ return _Encoding; }
 			set{ _Encoding = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether a BOM should be used on saving the document.
+		/// </summary>
+		public bool WithBom
+		{
+			get{ return _WithBom; }
+			set{ _WithBom = value; }
 		}
 		#endregion
 

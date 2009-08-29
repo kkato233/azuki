@@ -43,6 +43,19 @@ namespace Sgry.Azuki
 
 		#region Drawing Options
 		/// <summary>
+		/// Gets or sets top margin of the view in pixel.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets the graphical margin at top of the text view, in pixel.
+		/// </para>
+		/// </remarks>
+		int TopMargin
+		{
+			get; set;
+		}
+
+		/// <summary>
 		/// Gets or sets view drawing options flags.
 		/// </summary>
 		DrawingOption DrawingOption
@@ -173,12 +186,12 @@ namespace Sgry.Azuki
 		int GetIndexFromVirPos( Point pt );
 
 		/// <summary>
-		/// Converts a coordinate in virtual space to a coordinate in screen.
+		/// Converts a coordinate in virtual space to a coordinate in client area.
 		/// </summary>
 		void VirtualToScreen( ref Point pt );
 
 		/// <summary>
-		/// Converts a coordinate in screen to a coordinate in virtual space.
+		/// Converts a coordinate in client area to a coordinate in virtual space.
 		/// </summary>
 		void ScreenToVirtual( ref Point pt );
 
@@ -215,7 +228,7 @@ namespace Sgry.Azuki
 		/// <remarks>
 		/// <para>
 		/// (This method is basically for internal use.
-		/// I do not recomment to use this from outside of Azuki.)
+		/// I do not recommend to use this from outside of Azuki.)
 		/// </para>
 		/// <para>
 		/// This method calculates text ranges which will be selected by given rectangle.
@@ -258,7 +271,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Requests to invalidate specified area.
 		/// </summary>
-		/// <param name="rect">rectangle area to be invalidate (in screen coordinate)</param>
+		/// <param name="rect">rectangle area to be invalidate (in client area coordinate)</param>
 		void Invalidate( Rectangle rect );
 
 		/// <summary>
@@ -317,6 +330,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets width of the virtual text area.
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
 		/// <remarks>
 		///	<para>
 		/// This property accesses the width of the *virtual* text area.

@@ -17,7 +17,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints content to a graphic device.
 		/// </summary>
-		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
+		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public abstract void Paint( Rectangle clipRect );
 
 		/// <summary>
@@ -170,6 +170,7 @@ namespace Sgry.Azuki
 		/// <param name="color">Color to be used for drawing the underline.</param>
 		protected void DrawUnderLine( int lineTopY, Color color )
 		{
+			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			int textAreaRight = _TextAreaWidth + (XofTextArea - ScrollPosX);
 
 			// calculate position to underline
@@ -188,6 +189,7 @@ namespace Sgry.Azuki
 		/// <param name="lineNumber">line number to be drawn or minus value if you want to draw only background.</param>
 		protected void DrawLineNumber( int lineTopY, int lineNumber )
 		{
+			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( 0, lineTopY );
 			
 			// fill line number area
@@ -205,10 +207,31 @@ namespace Sgry.Azuki
 				_Gra.DrawText( lineNumText, ref pos, ColorScheme.LineNumberFore );
 			}
 
-			// draw margin between the line number and content
+			// draw margin line between the line number area and text area
 			pos.X = XofTextArea - 2;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing+1 );
+		}
+
+		/// <summary>
+		/// Draws top margin.
+		/// </summary>
+		protected void DrawTopMargin()
+		{
+			// fill area above the line-number area [copied from DrawLineNumber]
+			_Gra.BackColor = ColorScheme.LineNumberBack;
+			_Gra.FillRectangle( 0, 0, _LineNumAreaWidth+2, YofTextArea );
+			_Gra.BackColor = ColorScheme.BackColor;
+			_Gra.FillRectangle( _LineNumAreaWidth+2, 0, 2, YofTextArea );
+
+			// draw margin line between the line number area and text area [copied from DrawLineNumber]
+			int x = XofTextArea - 2;
+			_Gra.ForeColor = ColorScheme.LineNumberFore;
+			_Gra.DrawLine( x, 0, x, YofTextArea );
+
+			// fill area above the text area
+			_Gra.BackColor = ColorScheme.BackColor;
+			_Gra.FillRectangle( XofTextArea, 0, VisibleSize.Width-XofTextArea, YofTextArea );
 		}
 
 		/// <summary>

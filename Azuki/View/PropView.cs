@@ -77,7 +77,11 @@ namespace Sgry.Azuki
 			if( columnIndex < 0 )
 				throw new ArgumentOutOfRangeException( "columnIndex("+columnIndex+")" );
 
-			Point pos = new Point( 0, LineSpacing*lineIndex ); // init value is for when the columnIndex is 0
+			Point pos = new Point();
+
+			// set value for when the columnIndex is 0
+			pos.X = 0;
+			pos.Y = lineIndex * LineSpacing;
 
 			// if the location is not the head of the line, calculate x-coord.
 			if( 0 < columnIndex )
@@ -232,12 +236,20 @@ namespace Sgry.Azuki
 				// then, the change expands selection.
 				else
 				{
-					// if this is the beginning of selection, remove current line heighlight (underline)
+					// if this is the beginning of selection, remove current line highlight (underline)
 					if( HighlightsCurrentLine && e.OldCaret == e.OldAnchor )
 					{
-						int y = GetVirPosFromIndex( e.OldCaret ).Y - (FirstVisibleLine * LineSpacing);
+						int oldCaretLine, oldCaretColumn, oldCaretLineY;
+
+						GetLineColumnIndexFromCharIndex( e.OldCaret, out oldCaretLine, out oldCaretColumn );
+						oldCaretLineY = YofLine( oldCaretLine );
 						Invalidate(
-								new Rectangle(XofTextArea, y+LineHeight, VisibleSize.Width-XofTextArea, 1)
+								new Rectangle(
+										XofTextArea,
+										oldCaretLineY + LineHeight,
+										VisibleSize.Width - XofTextArea,
+										1
+									)
 							);
 					}
 
@@ -281,37 +293,50 @@ namespace Sgry.Azuki
 			int prevAnchorLine = Document.ViewParam.PrevAnchorLine;
 			int prevCaretLine = Document.ViewParam.PrevCaretLine;
 
-			// invalidate old underline
-			if( prevCaretLine == prevAnchorLine )
+			// invalidate old underline if it is still visible
+			if( prevCaretLine == prevAnchorLine && FirstVisibleLine <= prevCaretLine )
 			{
-				int y = LineSpacing * (prevCaretLine - FirstVisibleLine);
+				int y = YofLine( prevCaretLine );
 				Invalidate(
 						new Rectangle(XofTextArea, y+LineHeight, VisibleSize.Width-XofTextArea, 1)
 					);
 			}
 			
-			// draw new underline
-			int newCaretY = LineSpacing * (newCaretLine - FirstVisibleLine);
-			DrawUnderLine( newCaretY, ColorScheme.HighlightColor );
+			// draw new underline if it is visible
+			if( FirstVisibleLine <= newCaretLine )
+			{
+				int newCaretY = YofLine( newCaretLine );
+				DrawUnderLine( newCaretY, ColorScheme.HighlightColor );
+			}
 		}
 
 		void HandleSelectionChanged_OnRectSelect( SelectionChangedEventArgs e )
 		{
-			// make rectangle that covers
+			int firstBegin, lastEnd;
+			Point firstBeginPos, lastEndPos;
+			Rectangle invalidRect;
+
+			//--- make rectangle that covers ---
 			// 1) all lines covered by the selection rectangle and
 			// 2) extra lines for both upper and lower direction
-			int firstBegin = e.OldRectSelectRanges[0];
-			int lastEnd = e.OldRectSelectRanges[ e.OldRectSelectRanges.Length - 1 ];
-			Point firstBeginPos = this.GetVirPosFromIndex( firstBegin );
-			Point lastEndPos = this.GetVirPosFromIndex( lastEnd );
-			Rectangle invalidRect = new Rectangle(
+			
+			// calculate rectangle in virtual space
+			firstBegin = e.OldRectSelectRanges[0];
+			lastEnd = e.OldRectSelectRanges[ e.OldRectSelectRanges.Length - 1 ];
+			firstBeginPos = this.GetVirPosFromIndex( firstBegin );
+			lastEndPos = this.GetVirPosFromIndex( lastEnd );
+
+			// convert it to physical screen coordinate
+			VirtualToScreen( ref firstBeginPos );
+			VirtualToScreen( ref lastEndPos );
+
+			// then, invalidate that rectangle
+			invalidRect = new Rectangle(
 					0,
 					firstBeginPos.Y - LineSpacing,
 					VisibleSize.Width,
-					(lastEndPos.Y + LineSpacing<<1) - (firstBeginPos.Y - LineSpacing)
+					(lastEndPos.Y - firstBeginPos.Y) + (LineSpacing * 3) // 3 ... a line above, the line, and a line below
 				);
-
-			// then, invalidate that rectangle
 			Invalidate( invalidRect );
 		}
 
@@ -331,7 +356,7 @@ namespace Sgry.Azuki
 			
 			// calculate invalid rect
 			rect.X = MeasureTokenEndX( token, 0 );
-			rect.Y = LineSpacing * beginL - (FirstVisibleLine * LineSpacing);
+			rect.Y = YofLine( beginL );
 			token = Document.GetTextInRange( beginLineHead, end );
 			rect.Width = MeasureTokenEndX( token, 0 ) - rect.X;
 			rect.Height = LineSpacing;
@@ -408,7 +433,7 @@ namespace Sgry.Azuki
 				int left = MeasureTokenEndX( textBeforeSel, 0 ) - (ScrollPosX - XofTextArea);
 				int right = MeasureTokenEndX( textSelected, 0 ) - (ScrollPosX - XofTextArea);
 				rect.X = left;
-				rect.Y = LineSpacing * beginL - (FirstVisibleLine * LineSpacing);
+				rect.Y = YofLine( beginL );
 				rect.Width = right - left;
 				rect.Height = LineSpacing;
 
@@ -429,10 +454,11 @@ namespace Sgry.Azuki
 
 			// get position of the word replacement occured
 			oldCaretPos = GetVirPosFromIndex( e.Index );
+			VirtualToScreen( ref oldCaretPos );
 
 			// invalidate the part at right of the old selection
-			invalidRect1.X = oldCaretPos.X -(ScrollPosX - XofTextArea);
-			invalidRect1.Y = oldCaretPos.Y -(FirstVisibleLine * LineSpacing);
+			invalidRect1.X = oldCaretPos.X;
+			invalidRect1.Y = oldCaretPos.Y;
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
 
@@ -508,7 +534,7 @@ namespace Sgry.Azuki
 			// calculate position of the invalid rect
 			textBeforeSelBegin = Document.GetTextInRange( beginLineHead, begin );
 			rect.X = MeasureTokenEndX( textBeforeSelBegin, 0 );
-			rect.Y = LineSpacing * beginL - (FirstVisibleLine * LineSpacing);
+			rect.Y = YofLine( beginL );
 
 			// calculate width and height of the invalid rect
 			textSelected = Document.GetTextInRange( begin, end );
@@ -540,31 +566,42 @@ namespace Sgry.Azuki
 			// calculate upper part of the invalid area
 			String firstLinePart = doc.GetTextInRange( beginLineHead, begin );
 			upper = new Rectangle();
-			upper.X = MeasureTokenEndX( firstLinePart, 0 ) - (ScrollPosX - XofTextArea);
-			upper.Y = LineSpacing * beginLine - (FirstVisibleLine * LineSpacing);
-			upper.Width = VisibleSize.Width - upper.X;
-			upper.Height = LineSpacing;
+			if( FirstVisibleLine <= beginLine ) // if not visible, no need to invalidate
+			{
+				upper.X = MeasureTokenEndX( firstLinePart, 0 ) - (ScrollPosX - XofTextArea);
+				upper.Y = YofLine( beginLine );
+				upper.Width = VisibleSize.Width - upper.X;
+				upper.Height = LineSpacing;
+			}
 
 			// calculate lower part of the invalid area
 			String finalLinePart = doc.GetTextInRange( endLineHead, end );
 			lower = new Rectangle();
-			lower.X = XofTextArea;
-			lower.Y = LineSpacing * endLine - (FirstVisibleLine * LineSpacing);
-			lower.Width = MeasureTokenEndX( finalLinePart, 0 ) - ScrollPosX;
-			lower.Height = LineSpacing;
+			if( FirstVisibleLine <= endLine ) // if not visible, no need to invalidate
+			{
+				lower.X = XofTextArea;
+				lower.Y = YofLine( endLine );
+				lower.Width = MeasureTokenEndX( finalLinePart, 0 ) - ScrollPosX;
+				lower.Height = LineSpacing;
+			}
 
 			// calculate middle part of the invalid area
 			middle = new Rectangle();
+			if( FirstVisibleLine < beginLine+1 )
+			{
+				middle.Y = YofLine( beginLine + 1 );
+			}
 			middle.X = XofTextArea;
-			middle.Y = LineSpacing * (beginLine + 1) - (FirstVisibleLine * LineSpacing);
 			middle.Width = VisibleSize.Width;
 			middle.Height = lower.Y - middle.Y;
 
 			// invalidate three rectangles
-			Invalidate( upper );
+			if( 0 < upper.Height )
+				Invalidate( upper );
 			if( 0 < middle.Height )
 				Invalidate( middle );
-			Invalidate( lower );
+			if( 0 < lower.Height )
+				Invalidate( lower );
 		}
 		#endregion
 
@@ -572,7 +609,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints content to a graphic device.
 		/// </summary>
-		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
+		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint( Rectangle clipRect )
 		{
 			DebugUtl.Assert( Font != null, "invalid state; Font is null" );
@@ -586,9 +623,13 @@ namespace Sgry.Azuki
 			_Gra.BeginPaint( clipRect );
 #			endif
 
+			// draw top margin
+			DrawTopMargin();
+
 			// draw all lines
 			_Gra.SetClipRect( clipRect );
 			pos.X = -(ScrollPosX - XofTextArea);
+			pos.Y = YofTextArea;
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
 				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineHeight )
@@ -615,12 +656,17 @@ namespace Sgry.Azuki
 			{
 				int caretLine, caretPosY;
 
-				// calculate position of the underline
+				// draw underline only when the current line is visible
 				caretLine = Document.GetLineIndexFromCharIndex( Document.CaretIndex );
-				caretPosY = caretLine * LineSpacing - (FirstVisibleLine * LineSpacing);
-				
-				// draw underline
-				DrawUnderLine( caretPosY, ColorScheme.HighlightColor );
+				if( FirstVisibleLine <= caretLine )
+				{
+					// calculate position of the underline
+					int lineDiff = caretLine - FirstVisibleLine;
+					caretPosY = (lineDiff * LineSpacing) + YofTextArea;
+					
+					// draw underline
+					DrawUnderLine( caretPosY, ColorScheme.HighlightColor );
+				}
 			}
 		}
 

@@ -316,6 +316,21 @@ namespace Sgry.Azuki.Windows
 
 		#region IUserInterface - Appearance
 		/// <summary>
+		/// Gets or sets top margin of the view in pixel.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+		public int TopMargin
+		{
+			get{ return View.TopMargin; }
+			set
+			{
+				View.TopMargin = value;
+				UpdateCaretGraphic();
+				Invalidate();
+			}
+		}
+
+		/// <summary>
 		/// Updates size and position of the caret graphic.
 		/// </summary>
 		public void UpdateCaretGraphic()
@@ -336,7 +351,7 @@ namespace Sgry.Azuki.Windows
 			// calculate caret position and show/hide caret
 			Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
 			if( newCaretPos.X < _Impl.View.XofTextArea
-				|| newCaretPos.Y < 0 )
+				|| newCaretPos.Y < _Impl.View.YofTextArea )
 			{
 				WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y );
 				WinApi.HideCaret( Handle );

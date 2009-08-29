@@ -28,11 +28,7 @@ namespace Sgry.Azuki
 			2000000000
 		};
 		protected IUserInterface _UI;
-		Font _Font;
 		int _TextAreaWidth = 1024;
-
-		//--- for drawing ---
-		ColorScheme _ColorScheme = ColorScheme.Default;
 		Size _VisibleSize = new Size( 300, 300 );
 		protected IGraphics _Gra = null;
 		int _LastUsedLineNumberSample = _LineNumberSamples[0];
@@ -43,6 +39,10 @@ namespace Sgry.Azuki
 		int _TabWidth = DefaultTabWidth;
 		int _TabWidthInPx;
 		int _LCharWidth;
+
+		ColorScheme _ColorScheme = ColorScheme.Default;
+		Font _Font;
+		int _TopMargin = 1;
 		DrawingOption _DrawingOption
 			= DrawingOption.DrawsTab
 			| DrawingOption.DrawsFullWidthSpace
@@ -134,10 +134,17 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets width of the virtual text area (line number area is not included).
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
 		public virtual int TextAreaWidth
 		{
 			get{ return _TextAreaWidth; }
-			set{ _TextAreaWidth = value; }
+			set
+			{
+				if( value < 0 )
+					throw new ArgumentOutOfRangeException( "value", "TextAreaWidth must not be a negative number (value:"+value+")" );
+
+				_TextAreaWidth = value;
+			}
 		}
 
 		/// <summary>
@@ -205,6 +212,22 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Drawing Options
+		/// <summary>
+		/// Gets or sets top margin of the view in pixel.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+		public int TopMargin
+		{
+			get{ return _TopMargin; }
+			set
+			{
+				if( value < 0 )
+					throw new ArgumentOutOfRangeException( "value", "TopMargin must not be a negative number (value:"+value+")" );
+
+				_TopMargin = value;
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets view options.
 		/// </summary>
@@ -458,19 +481,21 @@ namespace Sgry.Azuki
 		public abstract int GetIndexFromVirPos( Point pt );
 
 		/// <summary>
-		/// Converts a coordinate in virtual space to a coordinate in screen.
+		/// Converts a coordinate in virtual space to a coordinate in client area.
 		/// </summary>
 		public void VirtualToScreen( ref Point pt )
 		{
-			pt.Offset( -(ScrollPosX - XofTextArea), -(FirstVisibleLine * LineSpacing) );
+			pt.X = pt.X + (XofTextArea - ScrollPosX);
+			pt.Y = (pt.Y - FirstVisibleLine * LineSpacing) + YofTextArea;
 		}
 
 		/// <summary>
-		/// Converts a coordinate in screen to a coordinate in virtual space.
+		/// Converts a coordinate in client area to a coordinate in virtual text area.
 		/// </summary>
 		public void ScreenToVirtual( ref Point pt )
 		{
-			pt.Offset( ScrollPosX - XofTextArea, FirstVisibleLine * LineSpacing );
+			pt.X = pt.X - (XofTextArea - ScrollPosX);
+			pt.Y = (pt.Y + FirstVisibleLine * LineSpacing) - YofTextArea;
 		}
 
 		/// <summary>
@@ -506,7 +531,7 @@ namespace Sgry.Azuki
 		/// <remarks>
 		/// <para>
 		/// (This method is basically for internal use.
-		/// I do not recomment to use this from outside of Azuki.)
+		/// I do not recommend to use this from outside of Azuki.)
 		/// </para>
 		/// <para>
 		/// This method calculates text ranges which will be selected by given rectangle.
@@ -571,10 +596,10 @@ namespace Sgry.Azuki
 			// make rentangle of virtual text view
 			threshRect.X = ScrollPosX;
 			threshRect.Y = FirstVisibleLine * LineSpacing;
-			threshRect.Width = _VisibleSize.Width - XofTextArea;
-			threshRect.Height = _VisibleSize.Height - LineSpacing;
+			threshRect.Width = (_VisibleSize.Width - XofTextArea);
+			threshRect.Height = (_VisibleSize.Height - YofTextArea) - LineSpacing;
 
-			// calculate threshold to do ScrollToCaret
+			// shrink the rectangle if some lines must be visible
 			if( UserPref.AutoScrollNearWindowBorder )
 			{
 				threshRect.X += _SpaceWidth;
@@ -650,11 +675,12 @@ namespace Sgry.Azuki
 			}
 
 			// make clipping rectangle
-			clipRect = new Rectangle( 0, 0, _VisibleSize.Width, _VisibleSize.Height );
+			clipRect = new Rectangle( 0, YofTextArea, _VisibleSize.Width, _VisibleSize.Height );
 
 			// do scroll
 			FirstVisibleLine += delta;
 			_UI.Scroll( clipRect, 0, -(delta * LineSpacing) );
+			_UI.UpdateCaretGraphic();
 		}
 
 		/// <summary>
@@ -688,7 +714,7 @@ namespace Sgry.Azuki
 
 			// make clipping rectangle
 			clipRect.X = XofTextArea;
-			//NO_NEED//clipRect.Y = 0;
+			//NO_NEED//clipRect.Y = YofTextArea;
 			clipRect.Width = _VisibleSize.Width - XofTextArea;
 			clipRect.Height = _VisibleSize.Height;
 
@@ -708,7 +734,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Requests to invalidate specified area.
 		/// </summary>
-		/// <param name="rect">rectangle area to be invalidate (in screen coordinate)</param>
+		/// <param name="rect">rectangle area to be invalidate (in client area coordinate)</param>
 		public void Invalidate( Rectangle rect )
 		{
 //DEBUG//_Gra.ForeColor=Color.Red;_Gra.DrawLine(rect.Left,rect.Top,rect.Right,rect.Bottom);_Gra.DrawLine(rect.Left,rect.Bottom,rect.Right,rect.Top);DebugUtl.Sleep(400);
@@ -819,6 +845,19 @@ namespace Sgry.Azuki
 				else
 					return 0;
 			}
+		}
+
+		internal int YofTextArea
+		{
+			get{ return TopMargin; }
+		}
+
+		/// <summary>
+		/// Gets Y coordinate in client area of specified line.
+		/// </summary>
+		internal int YofLine( int lineIndex )
+		{
+			return (  (lineIndex - FirstVisibleLine) * LineSpacing  ) + YofTextArea;
 		}
 		#endregion
 	}

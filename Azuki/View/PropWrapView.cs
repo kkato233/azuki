@@ -137,10 +137,16 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override Point GetVirPosFromIndex( int lineIndex, int columnIndex )
 		{
-			if( lineIndex < 0 || columnIndex < 0 )
-				throw new ArgumentException( "invalid index was given (minus value)", String.Format("lineIndex:{0} columnIndex:{1}", lineIndex, columnIndex) );
+			if( lineIndex < 0 )
+				throw new ArgumentOutOfRangeException( "lineIndex("+lineIndex+")" );
+			if( columnIndex < 0 )
+				throw new ArgumentOutOfRangeException( "columnIndex("+columnIndex+")" );
 
-			Point pos = new Point( 0, LineSpacing*lineIndex ); // init value is for when the columnIndex is 0
+			Point pos = new Point();
+
+			// set value for when the columnIndex is 0
+			pos.X = 0;
+			pos.Y = lineIndex * LineSpacing;
 
 			// if the location is not the head of the line, calculate x-coord.
 			if( 0 < columnIndex )
@@ -167,7 +173,7 @@ namespace Sgry.Azuki
 			int drawableTextLen;
 
 			// calc line index
-			lineIndex = (pt.Y / LineSpacing);
+			lineIndex = (pt.Y - YofTextArea) / LineSpacing;
 			if( lineIndex < 0 )
 			{
 				lineIndex = 0;
@@ -564,7 +570,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints content to a graphic device.
 		/// </summary>
-		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in screen coord.)</param>
+		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint( Rectangle clipRect )
 		{
 			Debug.Assert( Font != null, "invalid state; Font is null" );
@@ -578,7 +584,11 @@ namespace Sgry.Azuki
 			_Gra.BeginPaint( clipRect );
 #			endif
 
+			// draw top margin
+			DrawTopMargin();
+
 			// draw all lines
+			pos.Y = YofTextArea;
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
 				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineHeight )

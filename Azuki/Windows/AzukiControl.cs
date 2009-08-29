@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-08-09
+// update: 2009-08-29
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1112,6 +1112,7 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Calculates screen location of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid index was given.</exception>
 		public Point GetPositionFromIndex( int index )
 		{
@@ -1123,6 +1124,7 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Calculates screen location of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid index was given.</exception>
 		public Point GetPositionFromIndex( int lineIndex, int columnIndex )
 		{
@@ -1134,6 +1136,7 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets char-index of the char at the point specified by screen location.
 		/// </summary>
+		/// <returns>The index of the character at specified location.</returns>
 		public int GetIndexFromPosition( Point pt )
 		{
 			View.ScreenToVirtual( ref pt );

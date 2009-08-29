@@ -5,6 +5,7 @@
  * add: added UsesTabForIndent property
  * add: KeywordHighlighter enhanced; now keyword matching can be case insensitively (ignore case option)
  * add: KeywordHighlighter enhanced; now word-character set can be customizable for each keyword set
+ * mod: AzukiControl.GetIndexFromScreenPos uses nearest valid position if given position is invalid
  * mod: changed argument of AutoIndentHook.
  * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsoleted
  * add: [Ann] now Ann remembers last window size

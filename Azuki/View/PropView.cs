@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-08-12
+// update: 2009-08-29
 //=========================================================
 //#define DRAW_SLOWLY
 using System;
@@ -56,6 +56,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public override Point GetVirPosFromIndex( int index )
 		{
@@ -67,6 +68,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public override Point GetVirPosFromIndex( int lineIndex, int columnIndex )
 		{
@@ -93,7 +95,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
-		/// <returns>the index of the char or -1 if invalid point was specified.</returns>
+		/// <returns>The index of the character at specified location.</returns>
 		public override int GetIndexFromVirPos( Point pt )
 		{
 			int lineIndex, columnIndex;
@@ -103,7 +105,7 @@ namespace Sgry.Azuki
 			lineIndex = (pt.Y / LineSpacing);
 			if( lineIndex < 0 )
 			{
-				return -1;
+				lineIndex = 0;
 			}
 			else if( Document.LineCount <= lineIndex
 				&& Document.LineCount != 0 )

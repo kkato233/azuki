@@ -237,7 +237,7 @@ namespace Sgry.Azuki
 					{
 						int y = GetVirPosFromIndex( e.OldCaret ).Y - (FirstVisibleLine * LineSpacing);
 						Invalidate(
-								new Rectangle(TextAreaX, y+LineHeight, VisibleSize.Width-TextAreaX, 1)
+								new Rectangle(XofTextArea, y+LineHeight, VisibleSize.Width-XofTextArea, 1)
 							);
 					}
 
@@ -286,7 +286,7 @@ namespace Sgry.Azuki
 			{
 				int y = LineSpacing * (prevCaretLine - FirstVisibleLine);
 				Invalidate(
-						new Rectangle(TextAreaX, y+LineHeight, VisibleSize.Width-TextAreaX, 1)
+						new Rectangle(XofTextArea, y+LineHeight, VisibleSize.Width-XofTextArea, 1)
 					);
 			}
 			
@@ -337,7 +337,7 @@ namespace Sgry.Azuki
 			rect.Height = LineSpacing;
 
 			// invalidate
-			rect.X -= (ScrollPosX - TextAreaX);
+			rect.X -= (ScrollPosX - XofTextArea);
 			Invalidate( rect );
 		}
 
@@ -405,8 +405,8 @@ namespace Sgry.Azuki
 				Rectangle rect = new Rectangle();
 				string textBeforeSel = doc.GetTextInRange( beginLineHead, begin );
 				string textSelected = doc.GetTextInRange( endLineHead, end );
-				int left = MeasureTokenEndX( textBeforeSel, 0 ) - (ScrollPosX - TextAreaX);
-				int right = MeasureTokenEndX( textSelected, 0 ) - (ScrollPosX - TextAreaX);
+				int left = MeasureTokenEndX( textBeforeSel, 0 ) - (ScrollPosX - XofTextArea);
+				int right = MeasureTokenEndX( textSelected, 0 ) - (ScrollPosX - XofTextArea);
 				rect.X = left;
 				rect.Y = LineSpacing * beginL - (FirstVisibleLine * LineSpacing);
 				rect.Width = right - left;
@@ -431,7 +431,7 @@ namespace Sgry.Azuki
 			oldCaretPos = GetVirPosFromIndex( e.Index );
 
 			// invalidate the part at right of the old selection
-			invalidRect1.X = oldCaretPos.X -(ScrollPosX - TextAreaX);
+			invalidRect1.X = oldCaretPos.X -(ScrollPosX - XofTextArea);
 			invalidRect1.Y = oldCaretPos.Y -(FirstVisibleLine * LineSpacing);
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
@@ -516,7 +516,7 @@ namespace Sgry.Azuki
 			rect.Height = LineSpacing;
 
 			// invalidate
-			rect.X -= (ScrollPosX - TextAreaX);
+			rect.X -= (ScrollPosX - XofTextArea);
 			Invalidate( rect );
 		}
 
@@ -540,7 +540,7 @@ namespace Sgry.Azuki
 			// calculate upper part of the invalid area
 			String firstLinePart = doc.GetTextInRange( beginLineHead, begin );
 			upper = new Rectangle();
-			upper.X = MeasureTokenEndX( firstLinePart, 0 ) - (ScrollPosX - TextAreaX);
+			upper.X = MeasureTokenEndX( firstLinePart, 0 ) - (ScrollPosX - XofTextArea);
 			upper.Y = LineSpacing * beginLine - (FirstVisibleLine * LineSpacing);
 			upper.Width = VisibleSize.Width - upper.X;
 			upper.Height = LineSpacing;
@@ -548,14 +548,14 @@ namespace Sgry.Azuki
 			// calculate lower part of the invalid area
 			String finalLinePart = doc.GetTextInRange( endLineHead, end );
 			lower = new Rectangle();
-			lower.X = TextAreaX;
+			lower.X = XofTextArea;
 			lower.Y = LineSpacing * endLine - (FirstVisibleLine * LineSpacing);
 			lower.Width = MeasureTokenEndX( finalLinePart, 0 ) - ScrollPosX;
 			lower.Height = LineSpacing;
 
 			// calculate middle part of the invalid area
 			middle = new Rectangle();
-			middle.X = TextAreaX;
+			middle.X = XofTextArea;
 			middle.Y = LineSpacing * (beginLine + 1) - (FirstVisibleLine * LineSpacing);
 			middle.Width = VisibleSize.Width;
 			middle.Height = lower.Y - middle.Y;
@@ -588,7 +588,7 @@ namespace Sgry.Azuki
 
 			// draw all lines
 			_Gra.SetClipRect( clipRect );
-			pos.X = -(ScrollPosX - TextAreaX);
+			pos.X = -(ScrollPosX - XofTextArea);
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
 				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineHeight )
@@ -654,9 +654,9 @@ namespace Sgry.Azuki
 
 				// calc next drawing pos before drawing text
 				{
-					int virLeft = pos.X - (TextAreaX - ScrollPosX);
+					int virLeft = pos.X - (XofTextArea - ScrollPosX);
 					tokenEndPos.X = MeasureTokenEndX( token, virLeft );
-					tokenEndPos.X += (TextAreaX - ScrollPosX);
+					tokenEndPos.X += (XofTextArea - ScrollPosX);
 				}
 
 				// if this token is out of the clip-rect, skip drawing.
@@ -725,8 +725,8 @@ namespace Sgry.Azuki
 			{
 				// to prevent drawing line number area,
 				// make drawing pos to text area's left if the line end does not exceed left of text area
-				if( pos.X < TextAreaX )
-					pos.X = TextAreaX;
+				if( pos.X < XofTextArea )
+					pos.X = XofTextArea;
 				_Gra.BackColor = ColorScheme.BackColor;
 				_Gra.FillRectangle( pos.X, pos.Y, clipRect.Right-pos.X, LineSpacing );
 			}
@@ -742,7 +742,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw line number
-			if( ShowLineNumber && clipRect.Left < TextAreaX )
+			if( ShowLineNumber && clipRect.Left < XofTextArea )
 			{
 				DrawLineNumber( pos.Y, lineIndex+1 );
 			}

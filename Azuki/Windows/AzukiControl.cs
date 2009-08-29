@@ -335,7 +335,7 @@ namespace Sgry.Azuki.Windows
 
 			// calculate caret position and show/hide caret
 			Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
-			if( newCaretPos.X < _Impl.View.TextAreaX
+			if( newCaretPos.X < _Impl.View.XofTextArea
 				|| newCaretPos.Y < 0 )
 			{
 				WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y );
@@ -638,10 +638,10 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public int ViewWidth
 		{
-			get{ return _Impl.View.TextAreaWidth + _Impl.View.TextAreaX; }
+			get{ return _Impl.View.TextAreaWidth + _Impl.View.XofTextArea; }
 			set
 			{
-				_Impl.View.TextAreaWidth = value - _Impl.View.TextAreaX;
+				_Impl.View.TextAreaWidth = value - _Impl.View.XofTextArea;
 				UpdateCaretGraphic();
 				UpdateScrollBarRange(); // (needed for PropWrapView)
 				Refresh();

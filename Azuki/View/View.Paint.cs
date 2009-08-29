@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-08-13
+// update: 2009-08-29
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -91,7 +91,7 @@ namespace Sgry.Azuki
 				Point p = tokenPos;
 				ScreenToVirtual( ref p );
 				bgRight = Utl.CalcNextTabStop( p.X, TabWidthInPx );
-				bgRight -= ScrollPosX - TextAreaX;
+				bgRight -= ScrollPosX - XofTextArea;
 				
 				// calc desired foreground graphic position
 				fgLeft = tokenPos.X + 2;
@@ -170,7 +170,7 @@ namespace Sgry.Azuki
 		/// <param name="color">Color to be used for drawing the underline.</param>
 		protected void DrawUnderLine( int lineTopY, Color color )
 		{
-			int textAreaRight = _TextAreaWidth + (TextAreaX - ScrollPosX);
+			int textAreaRight = _TextAreaWidth + (XofTextArea - ScrollPosX);
 
 			// calculate position to underline
 			int right = Math.Min( _VisibleSize.Width, textAreaRight );
@@ -178,7 +178,7 @@ namespace Sgry.Azuki
 
 			// draw underline
 			_Gra.ForeColor = color;
-			_Gra.DrawLine( TextAreaX, bottom, right - 2, bottom );
+			_Gra.DrawLine( XofTextArea, bottom, right - 2, bottom );
 		}
 
 		/// <summary>
@@ -206,7 +206,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw margin between the line number and content
-			pos.X = TextAreaX - 2;
+			pos.X = XofTextArea - 2;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing+1 );
 		}

@@ -310,7 +310,7 @@ namespace Sgry.Azuki
 			oldCaretPos = GetVirPosFromIndex( e.Index );
 
 			// invalidate the part at right of the old selection
-			invalidRect1.X = oldCaretPos.X -(ScrollPosX - TextAreaX);
+			invalidRect1.X = oldCaretPos.X -(ScrollPosX - XofTextArea);
 			invalidRect1.Y = oldCaretPos.Y -(FirstVisibleLine * LineSpacing);
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
@@ -584,7 +584,7 @@ namespace Sgry.Azuki
 				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineHeight )
 				{
 					// reset x-coord of drawing position
-					pos.X = -(ScrollPosX - TextAreaX);
+					pos.X = -(ScrollPosX - XofTextArea);
 
 					// draw this line
 					DrawLine( i, ref pos, clipRect );
@@ -630,7 +630,7 @@ namespace Sgry.Azuki
 			Point tokenEndPos = pos;
 			bool inSelection;
 
-			int physTextAreaRight = TextAreaWidth + (TextAreaX - ScrollPosX);
+			int physTextAreaRight = TextAreaWidth + (XofTextArea - ScrollPosX);
 
 			// calc position of head/end of this line
 			lineHead = PLHI[ lineIndex ];
@@ -640,7 +640,7 @@ namespace Sgry.Azuki
 				lineEnd = Document.Length;
 
 			// adjust and set clipping rect
-			if( clipRect.X < TextAreaX )
+			if( clipRect.X < XofTextArea )
 			{
 				// given clip rect covers line number area.
 				// redraw line nubmer and shrink clip rect
@@ -662,8 +662,8 @@ namespace Sgry.Azuki
 				}
 
 				DrawLineNumber( pos.Y, lineNumber );
-				clipRect.Width -= (TextAreaX - clipRect.X);
-				clipRect.X = TextAreaX;
+				clipRect.Width -= (XofTextArea - clipRect.X);
+				clipRect.X = XofTextArea;
 			}
 			if( physTextAreaRight < clipRect.Right )
 			{
@@ -692,9 +692,9 @@ namespace Sgry.Azuki
 
 				// calc next drawing pos before drawing text
 				{
-					int virLeft = pos.X - (TextAreaX - ScrollPosX);
+					int virLeft = pos.X - (XofTextArea - ScrollPosX);
 					tokenEndPos.X = MeasureTokenEndX( token, virLeft );
-					tokenEndPos.X += (TextAreaX - ScrollPosX);
+					tokenEndPos.X += (XofTextArea - ScrollPosX);
 				}
 
 				// if this token is at right of the clip-rect, no need to draw more.
@@ -782,8 +782,8 @@ namespace Sgry.Azuki
 			{
 				// to prevent drawing line number area,
 				// make drawing pos to text area's left if the line end does not exceed left of text area
-				if( pos.X < TextAreaX )
-					pos.X = TextAreaX;
+				if( pos.X < XofTextArea )
+					pos.X = XofTextArea;
 				_Gra.BackColor = ColorScheme.BackColor;
 				_Gra.FillRectangle( pos.X, pos.Y, physTextAreaRight-pos.X, LineSpacing );
 			}

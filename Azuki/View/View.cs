@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-08-09
+// update: 2009-08-29
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -462,7 +462,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void VirtualToScreen( ref Point pt )
 		{
-			pt.Offset( -(ScrollPosX - TextAreaX), -(FirstVisibleLine * LineSpacing) );
+			pt.Offset( -(ScrollPosX - XofTextArea), -(FirstVisibleLine * LineSpacing) );
 		}
 
 		/// <summary>
@@ -470,7 +470,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void ScreenToVirtual( ref Point pt )
 		{
-			pt.Offset( ScrollPosX - TextAreaX, FirstVisibleLine * LineSpacing );
+			pt.Offset( ScrollPosX - XofTextArea, FirstVisibleLine * LineSpacing );
 		}
 
 		/// <summary>
@@ -571,7 +571,7 @@ namespace Sgry.Azuki
 			// make rentangle of virtual text view
 			threshRect.X = ScrollPosX;
 			threshRect.Y = FirstVisibleLine * LineSpacing;
-			threshRect.Width = _VisibleSize.Width - TextAreaX;
+			threshRect.Width = _VisibleSize.Width - XofTextArea;
 			threshRect.Height = _VisibleSize.Height - LineSpacing;
 
 			// calculate threshold to do ScrollToCaret
@@ -687,9 +687,9 @@ namespace Sgry.Azuki
 			}
 
 			// make clipping rectangle
-			clipRect.X = TextAreaX;
+			clipRect.X = XofTextArea;
 			//NO_NEED//clipRect.Y = 0;
-			clipRect.Width = _VisibleSize.Width - TextAreaX;
+			clipRect.Width = _VisibleSize.Width - XofTextArea;
 			clipRect.Height = _VisibleSize.Height;
 
 			// do scroll
@@ -810,7 +810,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
-		internal int TextAreaX
+		internal int XofTextArea
 		{
 			get
 			{

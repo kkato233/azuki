@@ -45,12 +45,15 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets top margin of the view in pixel.
 		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property gets or sets the graphical margin at top of the text view, in pixel.
-		/// </para>
-		/// </remarks>
 		int TopMargin
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets left margin of the view in pixel.
+		/// </summary>
+		int LeftMargin
 		{
 			get; set;
 		}

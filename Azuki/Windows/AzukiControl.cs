@@ -331,6 +331,21 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets or sets left margin of the view in pixel.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+		public int LeftMargin
+		{
+			get{ return View.LeftMargin; }
+			set
+			{
+				View.LeftMargin = value;
+				UpdateCaretGraphic();
+				Invalidate();
+			}
+		}
+
+		/// <summary>
 		/// Updates size and position of the caret graphic.
 		/// </summary>
 		public void UpdateCaretGraphic()

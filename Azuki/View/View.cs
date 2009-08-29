@@ -18,6 +18,7 @@ namespace Sgry.Azuki
 	{
 		#region Fields and Types
 		const int DefaultTabWidth = 8;
+		const int LineNumberAreaPadding = 2;
 		static readonly int[] _LineNumberSamples = new int[]{
 			9999,
 			99999,
@@ -43,6 +44,7 @@ namespace Sgry.Azuki
 		ColorScheme _ColorScheme = ColorScheme.Default;
 		Font _Font;
 		int _TopMargin = 1;
+		int _LeftMargin = 1;
 		DrawingOption _DrawingOption
 			= DrawingOption.DrawsTab
 			| DrawingOption.DrawsFullWidthSpace
@@ -207,7 +209,8 @@ namespace Sgry.Azuki
 			{
 				_LastUsedLineNumberSample = Document.ViewParam.MaxLineNumber;
 			}
-			_LineNumAreaWidth = _Gra.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + 1;
+			_LineNumAreaWidth
+				= _Gra.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + _SpaceWidth;
 		}
 		#endregion
 
@@ -225,6 +228,22 @@ namespace Sgry.Azuki
 					throw new ArgumentOutOfRangeException( "value", "TopMargin must not be a negative number (value:"+value+")" );
 
 				_TopMargin = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets left margin of the view in pixel.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+		public int LeftMargin
+		{
+			get{ return _LeftMargin; }
+			set
+			{
+				if( value < 0 )
+					throw new ArgumentOutOfRangeException( "value", "LeftMargin must not be a negative number (value:"+value+")" );
+
+				_LeftMargin = value;
 			}
 		}
 
@@ -841,7 +860,7 @@ namespace Sgry.Azuki
 			get
 			{
 				if( ShowLineNumber )
-					return _LineNumAreaWidth + 4;
+					return _LineNumAreaWidth + LeftMargin;
 				else
 					return 0;
 			}

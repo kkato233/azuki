@@ -194,21 +194,21 @@ namespace Sgry.Azuki
 			
 			// fill line number area
 			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, pos.Y, _LineNumAreaWidth+2, LineSpacing );
+			_Gra.FillRectangle( 0, pos.Y, _LineNumAreaWidth, LineSpacing );
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( _LineNumAreaWidth+2, pos.Y, 2, LineSpacing );
+			_Gra.FillRectangle( _LineNumAreaWidth, pos.Y, LeftMargin, LineSpacing );
 			
 			// draw line number text
 			if( 0 < lineNumber )
 			{
 				string lineNumText = lineNumber.ToString();
-				pos.X = _LineNumAreaWidth - _Gra.MeasureText( lineNumText ).Width;
+				pos.X = _LineNumAreaWidth - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
 				_Gra.ForeColor = ColorScheme.LineNumberFore;
 				_Gra.DrawText( lineNumText, ref pos, ColorScheme.LineNumberFore );
 			}
 
 			// draw margin line between the line number area and text area
-			pos.X = XofTextArea - 2;
+			pos.X = _LineNumAreaWidth;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing+1 );
 		}
@@ -220,12 +220,12 @@ namespace Sgry.Azuki
 		{
 			// fill area above the line-number area [copied from DrawLineNumber]
 			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, 0, _LineNumAreaWidth+2, YofTextArea );
+			_Gra.FillRectangle( 0, 0, _LineNumAreaWidth, YofTextArea );
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( _LineNumAreaWidth+2, 0, 2, YofTextArea );
+			_Gra.FillRectangle( _LineNumAreaWidth, 0, LeftMargin, YofTextArea );
 
 			// draw margin line between the line number area and text area [copied from DrawLineNumber]
-			int x = XofTextArea - 2;
+			int x = _LineNumAreaWidth;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( x, 0, x, YofTextArea );
 

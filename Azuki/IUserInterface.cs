@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2009-08-09
+// update: 2009-08-29
 //=========================================================
 using System;
 using System.Drawing;
@@ -65,6 +65,24 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Appearance
+		/// <summary>
+		/// Gets or sets top margin of the view in pixel.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+		int TopMargin
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets left margin of the view in pixel.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+		int LeftMargin
+		{
+			get; set;
+		}
+
 		/// <summary>
 		/// Updates size and position of the caret graphic.
 		/// </summary>

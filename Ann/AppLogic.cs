@@ -1,4 +1,4 @@
-// 2009-08-26
+// 2009-08-29
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -454,8 +454,6 @@ namespace Sgry.Ann
 				{
 					if( doc.Encoding == Encoding.BigEndianUnicode
 						|| doc.Encoding == Encoding.Unicode
-						|| doc.Encoding == Encoding.UTF32
-						|| doc.Encoding == Encoding.UTF7
 						|| doc.Encoding == Encoding.UTF8 )
 					{
 						bomBytes = doc.Encoding.GetBytes( "\xFEFF" );

@@ -6,6 +6,7 @@
  * add: KeywordHighlighter で大文字小文字の区別なしでのマッチングを可能に
  * add: KeywordHighlighter で単語構成文字をキーワードセットごとにカスタマイズ可能に
  * add: AzukiControl.TopMargin で上端の描画マージンを設定可能に
+ * add: AzukiControl.LeftMargin で左端の描画マージンを設定可能に
  * mod: AzukiControl.GetIndexFromScreenPos に与えられた位置が不正な場合に最も近い有効な点を使って計算するように
  * mod: AutoIndentHook の引数仕様を変更
  * mod: AzukiControl と IUserInterface の ConvertsTabToSpaces を非推奨に

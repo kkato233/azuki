@@ -208,7 +208,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw margin line between the line number area and text area
-			pos.X = _LineNumAreaWidth;
+			pos.X = _LineNumAreaWidth - 1;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing+1 );
 		}
@@ -225,7 +225,7 @@ namespace Sgry.Azuki
 			_Gra.FillRectangle( _LineNumAreaWidth, 0, LeftMargin, YofTextArea );
 
 			// draw margin line between the line number area and text area [copied from DrawLineNumber]
-			int x = _LineNumAreaWidth;
+			int x = _LineNumAreaWidth - 1;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( x, 0, x, YofTextArea );
 

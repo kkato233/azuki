@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-08-23
+// update: 2009-08-31
 //=========================================================
 using System;
 using System.Drawing;
@@ -550,6 +550,7 @@ namespace Sgry.Azuki
 			string indentChars;
 			int begin, end;
 			int beginL, endL;
+			int beginLineHead, endLineHead;
 
 			// if read-only document, do nothing
 			if( doc.IsReadOnly )
@@ -589,8 +590,15 @@ namespace Sgry.Azuki
 			}
 
 			// select whole range
-			int beginLineHead = doc.GetLineHeadIndex( beginL );
-			int endLineHead = doc.GetLineHeadIndex( endL );
+			beginLineHead = doc.GetLineHeadIndex( beginL );
+			if( endL < doc.LineCount )
+			{
+				endLineHead = doc.GetLineHeadIndex( endL );
+			}
+			else
+			{
+				endLineHead = doc.Length;
+			}
 			doc.SetSelection( beginLineHead, endLineHead );
 		}
 
@@ -602,6 +610,7 @@ namespace Sgry.Azuki
 			Document doc = ui.Document;
 			int begin, end;
 			int beginL, endL;
+			int beginLineHead, endLineHead;
 
 			// if read-only document, do nothing
 			if( doc.IsReadOnly )
@@ -647,8 +656,15 @@ namespace Sgry.Azuki
 			}
 
 			// select whole range
-			int beginLineHead = doc.GetLineHeadIndex( beginL );
-			int endLineHead = doc.GetLineHeadIndex( endL );
+			beginLineHead = doc.GetLineHeadIndex( beginL );
+			if( endL < doc.LineCount )
+			{
+				endLineHead = doc.GetLineHeadIndex( endL );
+			}
+			else
+			{
+				endLineHead = doc.Length;
+			}
 			doc.SetSelection( beginLineHead, endLineHead );
 		}
 		

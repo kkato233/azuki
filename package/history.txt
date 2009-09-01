@@ -16,6 +16,7 @@
 
 == 1.4.2 (2009-  -  ) ==
  * fix: fixed a problem that executing block-indent to non empty final line causes an exception
+ * fix: now Azuki always scrolls to caret after releasing selection with left key or right key
 
 == 1.4.1 (2009-08-23) ==
  * fix: fixed a problem that "converting input tab to spaces" feature inserts wrong number of spaces (mis-calculation)

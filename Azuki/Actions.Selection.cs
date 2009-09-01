@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine (actions to change selection).
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-08-09
+// update: 2009-09-01
 //=========================================================
 using System;
 using System.Drawing;
@@ -26,6 +26,7 @@ namespace Sgry.Azuki
 			if( selEnd != selBegin )
 			{
 				view.Document.SetSelection( selEnd, selEnd );
+				view.ScrollToCaret();
 			}
 			// otherwise, move caret right
 			else
@@ -51,6 +52,7 @@ namespace Sgry.Azuki
 			if( selEnd != selBegin )
 			{
 				view.Document.SetSelection( selBegin, selBegin );
+				view.ScrollToCaret();
 			}
 			// otherwise, move caret left
 			else
@@ -218,6 +220,7 @@ namespace Sgry.Azuki
 			// move caret and scroll
 			doc.SetSelection( nextIndex, nextIndex );
 			view.Scroll( diff );
+			view.ScrollToCaret();
 		}
 
 		/// <summary>
@@ -247,6 +250,7 @@ namespace Sgry.Azuki
 			// move caret and scroll
 			doc.SetSelection( nextIndex, nextIndex );
 			view.Scroll( -diff );
+			view.ScrollToCaret();
 		}
 
 		/// <summary>

@@ -14,11 +14,13 @@
  * add: [Ann] now Ann remembers drawing options
  * add: [Ann] now Ann opens a file in appropriate mode by file extension
 
-== 1.4.2 (2009-  -  ) ==
+== 1.4.2 (2009-09-05) ==
  * fix: fixed a problem that executing block-indent to non empty final line causes an exception
  * fix: now Azuki always scrolls to caret after releasing selection with left key or right key
  * fix: auto-indentation for C styled language now properly ignores '{' character in comment, string literal and so on
  * fix: added lacked C# keywords for CSharpHighlighter
+ * fix: [Ann] now UTF encoded files are saved without BOM code unless it originally save with it
+ * fix: [Ann] tagged as version 1.3.2
 
 == 1.4.1 (2009-08-23) ==
  * fix: fixed a problem that "converting input tab to spaces" feature inserts wrong number of spaces (mis-calculation)

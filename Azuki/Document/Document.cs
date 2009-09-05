@@ -279,6 +279,14 @@ namespace Sgry.Azuki
 			// if given parameters change nothing, do nothing
 			if( _AnchorIndex == anchor && _CaretIndex == caret )
 			{
+				// but on executing rectangle selection with mouse,
+				// slight movement that does not change the selection in the line under the mouse cursor
+				// might change selection in other lines which is not under the mouse cursor.
+				// so invoke event only if it is rectangle selection mode.
+				if( _RectSelectRanges != null )
+				{
+					InvokeSelectionChanged( AnchorIndex, CaretIndex, _RectSelectRanges );
+				}
 				return;
 			}
 

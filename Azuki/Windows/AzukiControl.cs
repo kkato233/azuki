@@ -1294,22 +1294,40 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
-		/// Gets or sets highlighter for currently active document.
-		/// Setting null to this property will disable highlighting.
-		/// See built-in highlighters for
-		/// <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see>.
+		/// Gets or sets highlighter object to highlight currently active document
+		/// or null to disable highlighting.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</seealso>
 		/// <remarks>
-		/// Note that user can create and specify custom highlighter object.
+		/// <para>
+		/// This property gets or sets highlighter for this document.
+		/// </para>
+		/// <para>
+		/// Highlighter objects are used to highlight syntax of documents.
+		/// They implements
+		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
+		/// interface and called
+		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Sgry.Azuki.Document, ref int, ref int)">Highlight</see>
+		/// method every time slightly after user input stopped to execute own highlighting logic.
+		/// If null was set to this property, highlighting feature will be disabled.
+		/// </para>
+		/// <para>
+		/// Azuki provides some built-in highlighters.
+		/// See
+		/// <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see>
+		/// class members.
+		/// </para>
+		/// <para>
+		/// User can create and use custom highlighter object.
 		/// If you want to create a keyword-based highlighter,
-		/// you can customize or extend
+		/// you can extend
 		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>.
 		/// If you want ot create not a keyword based one,
 		/// create a class which implements
 		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
 		/// and write your own highlighting logic.
+		/// </para>
 		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</seealso>
 #		if !PocketPC
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

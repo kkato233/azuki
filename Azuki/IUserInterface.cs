@@ -456,8 +456,8 @@ namespace Sgry.Azuki
 		IGraphics GetIGraphics();
 
 		/// <summary>
-		/// Gets or sets highlighter for currently active document.
-		/// Setting null to this property will disable highlighting.
+		/// Gets or sets highlighter object to highlight currently active document
+		/// or null to disable highlighting.
 		/// </summary>
 		IHighlighter Highlighter
 		{

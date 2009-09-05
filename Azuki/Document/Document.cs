@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-08-09
+// update: 2009-09-05
 //=========================================================
 using System;
 using System.Collections;
@@ -1285,6 +1285,36 @@ namespace Sgry.Azuki
 					_Highlighter.Highlight( this );
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets whether the character at specified index
+		/// is just a character data without meaning on grammer.
+		/// </summary>
+		/// <param name="index">The index of the character to examine.</param>
+		/// <returns>Whether the character is part of a character data or not.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method gets whether the character at specified index
+		/// is just a character data without meaning on grammer.
+		/// 'Character data' here is text data
+		/// that is treated as plain text data on grammer
+		/// like characters in comment, string literal etc.
+		/// </para>
+		/// </remarks>
+		public bool IsCDATA( int index )
+		{
+			CharClass klass;
+
+			klass = GetCharClass( index );
+			return ( klass == CharClass.AttributeValue
+					|| klass == CharClass.CDataSection
+					|| klass == CharClass.Character
+					|| klass == CharClass.Comment
+					|| klass == CharClass.DocComment
+					|| klass == CharClass.Regex
+					|| klass == CharClass.String
+				);
 		}
 		#endregion
 

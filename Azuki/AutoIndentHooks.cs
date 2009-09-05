@@ -1,7 +1,7 @@
 ﻿// file: AutoIndentLogic.cs
 // brief: Logic around auto-indentation.
 // author: YAMAMOTO Suguru
-// update: 2009-08-23
+// update: 2009-09-05
 //=========================================================
 using System;
 using System.Text;
@@ -235,13 +235,13 @@ namespace Sgry.Azuki
 				// seek backward until paired bracket was found
 				for( int i=startIndex-1; endIndex<=i; i-- )
 				{
-					if( doc[i] == bracket )
+					if( doc[i] == bracket && doc.IsCDATA(i) == false )
 					{
 						// a bracket was found.
 						// increase depth count
 						depth++;
 					}
-					else if( doc[i] == pairBracket )
+					else if( doc[i] == pairBracket && doc.IsCDATA(i) == false )
 					{
 						// a paired bracket was found.
 						// decrease count and if the count fell down to zero,

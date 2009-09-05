@@ -87,7 +87,7 @@ ho//ge";
 			h.AddEnclosure( "\"", "\"", CharClass.String, '\\' );
 			h.AddEnclosure( "/*", "*/", CharClass.Comment );
 			h.SetKeywords( new string[]{
-				"if", "int", "interface", "for"
+				"for", "if", "int", "interface", "join"
 			}, CharClass.Keyword );
 			doc.Highlighter = h;
 			//---------------------------------------------
@@ -628,7 +628,7 @@ ho//ge";
 			h.AddEnclosure( "\"", "\"", CharClass.String );
 			h.AddEnclosure( "/*", "*/", CharClass.Comment );
 			h.SetKeywords( new string[]{
-				"if", "int", "interface", "for"
+				"for", "if", "int", "interface", "join"
 			}, CharClass.Keyword );
 			doc.Highlighter = h;
 			//---------------------------------------------

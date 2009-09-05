@@ -1,7 +1,7 @@
 ﻿// file: CSharpHighlighter.cs
 // brief: C# highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-09-05
 //=========================================================
 using System;
 using Color = System.Drawing.Color;
@@ -39,6 +39,12 @@ namespace Sgry.Azuki.Highlighter
 				"ulong", "unchecked", "unsafe", "ushort",
 				"using", "virtual", "void", "volatile", "while"
 			}, CharClass.Keyword );
+
+			SetKeywords( new string[] {
+				"add", "from", "get", "global", "group", "into",
+				"join", "let", "orderby", "partial", "remove",
+				"select", "set", "value", "var", "where", "yield"
+			}, CharClass.Keyword2 );
 
 			SetKeywords( new string[] {
 				"#define", "#elif", "#else", "#endif",

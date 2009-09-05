@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-08-23
+// update: 2009-09-05
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -196,8 +196,12 @@ namespace Sgry.Azuki.Highlighter
 
 			KeywordSet set = new KeywordSet();
 
-			// sort keywords at first
-			//Array.Sort<string>( keywords );
+			// ensure keywords are sorted alphabetically
+#			if !PocketPC
+			for( int i=0; i<keywords.Length-1; i++ )
+				if( 0 <= keywords[i].CompareTo(keywords[i+1]) )
+					throw new ArgumentException( "keywords are not sorted alphabetically; detected ["+keywords[i+1]+"] <= ["+keywords[i]+"]", "keywords" );
+#			endif
 
 			// parse and generate keyword tree
 			for( int i=0; i<keywords.Length; i++ )

@@ -1,9 +1,9 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-06
 //=========================================================
-//#define DRAW_SLOWLY
+//DEBUG//#define DRAW_SLOWLY
 using System;
 using System.Drawing;
 using System.Diagnostics;
@@ -623,6 +623,17 @@ namespace Sgry.Azuki
 			_Gra.BeginPaint( clipRect );
 #			endif
 
+#			if DRAW_SLOWLY
+			_Gra.ForeColor = Color.Red;
+			_Gra.DrawRectangle( clipRect.X, clipRect.Y, clipRect.Width-1, clipRect.Height-1 );
+			_Gra.DrawLine( clipRect.X, clipRect.Y, clipRect.X+clipRect.Width-1, clipRect.Y+clipRect.Height-1 );
+			_Gra.DrawLine( clipRect.X+clipRect.Width-1, clipRect.Y, clipRect.X, clipRect.Y+clipRect.Height-1 );
+			DebugUtl.Sleep(400);
+#			endif
+
+			// draw horizontal ruler
+			DrawHRuler( clipRect );
+
 			// draw top margin
 			DrawTopMargin();
 
@@ -788,10 +799,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw line number
-			if( ShowLineNumber && clipRect.Left < XofTextArea )
-			{
-				DrawLineNumber( pos.Y, lineIndex+1 );
-			}
+			DrawLineNumber( pos.Y, lineIndex+1 );
 		}
 		#endregion
 	}

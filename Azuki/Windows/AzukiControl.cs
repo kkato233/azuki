@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-06
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -524,6 +524,26 @@ namespace Sgry.Azuki.Windows
 				if( View.ShowLineNumber != value )
 				{
 					View.ShowLineNumber = value;
+					Invalidate();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show horizontal ruler or not.
+		/// </summary>
+#		if !PocketPC
+		[Category("Drawing")]
+		[DefaultValue(false)]
+#		endif
+		public bool ShowsHRuler
+		{
+			get{ return View.ShowsHRuler; }
+			set
+			{
+				if( View.ShowsHRuler != value )
+				{
+					View.ShowsHRuler = value;
 					Invalidate();
 				}
 			}

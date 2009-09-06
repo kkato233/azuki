@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-06
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -60,7 +60,10 @@ namespace Sgry.Azuki
 		{
 			set
 			{
+				// apply new font
 				base.Font = value;
+
+				// update metrics
 				_MinimalWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
 			}
 		}
@@ -173,7 +176,7 @@ namespace Sgry.Azuki
 			int drawableTextLen;
 
 			// calc line index
-			lineIndex = (pt.Y - YofTextArea) / LineSpacing;
+			lineIndex = (pt.Y / LineSpacing);
 			if( lineIndex < 0 )
 			{
 				lineIndex = 0;
@@ -584,6 +587,17 @@ namespace Sgry.Azuki
 			_Gra.BeginPaint( clipRect );
 #			endif
 
+#			if DRAW_SLOWLY
+			_Gra.ForeColor = Color.Red;
+			_Gra.DrawRectangle( clipRect.X, clipRect.Y, clipRect.Width-1, clipRect.Height-1 );
+			_Gra.DrawLine( clipRect.X, clipRect.Y, clipRect.X+clipRect.Width-1, clipRect.Y+clipRect.Height-1 );
+			_Gra.DrawLine( clipRect.X+clipRect.Width-1, clipRect.Y, clipRect.X, clipRect.Y+clipRect.Height-1 );
+			DebugUtl.Sleep(400);
+#			endif
+
+			// draw horizontal ruler
+			DrawHRuler( clipRect );
+
 			// draw top margin
 			DrawTopMargin();
 
@@ -620,7 +634,7 @@ namespace Sgry.Azuki
 
 				// calculate position of the underline
 				caretLine = LineLogic.GetLineIndexFromCharIndex( PLHI, Document.CaretIndex );
-				caretPosY = caretLine * LineSpacing - (FirstVisibleLine * LineSpacing);
+				caretPosY = YofTextArea + (caretLine - FirstVisibleLine) * LineSpacing;
 				
 				// draw underline to current line
 				DrawUnderLine( caretPosY, ColorScheme.HighlightColor );
@@ -640,7 +654,7 @@ namespace Sgry.Azuki
 			Point tokenEndPos = pos;
 			bool inSelection;
 
-			int physTextAreaRight = TextAreaWidth + (XofTextArea - ScrollPosX);
+			int physTextAreaRight = XofTextArea + (TextAreaWidth - ScrollPosX);
 
 			// calc position of head/end of this line
 			lineHead = PLHI[ lineIndex ];
@@ -680,10 +694,18 @@ namespace Sgry.Azuki
 				// given clip rect covers the area at right from text area.
 				// fill right area and shrink clip rect
 				int bottom;
-				bottom = Math.Min( clipRect.Bottom, (LineCount - FirstVisibleLine)*LineSpacing );
-				_Gra.BackColor = ColorScheme.LineNumberBack;
-				_Gra.FillRectangle( physTextAreaRight+1, clipRect.Top, clipRect.Right-physTextAreaRight-1, bottom-clipRect.Top );
+
 				_Gra.ForeColor = ColorScheme.LineNumberFore;
+				_Gra.BackColor = ColorScheme.LineNumberBack;
+
+				// fill area
+				bottom = Math.Min( clipRect.Bottom, pos.Y + LineSpacing );
+				_Gra.FillRectangle(
+						physTextAreaRight+1, clipRect.Top,
+						clipRect.Right-physTextAreaRight-1, bottom-clipRect.Top
+					);
+
+				// draw border line
 				_Gra.DrawLine( physTextAreaRight, clipRect.Top, physTextAreaRight, bottom );
 				clipRect.Width = physTextAreaRight - clipRect.X;
 			}

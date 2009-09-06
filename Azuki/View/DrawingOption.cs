@@ -1,7 +1,7 @@
 // file: DrawingOption.cs
 // brief: Enum to describe view's option.
 // author: YAMAMOTO Suguru
-// update: 2008-11-01
+// update: 2009-09-06
 //=========================================================
 using System;
 
@@ -29,6 +29,9 @@ namespace Sgry.Azuki
 		HighlightCurrentLine	= 0x10,
 
 		/// <summary>Shows line number area.</summary>
-		ShowsLineNumber			= 0x20
+		ShowsLineNumber			= 0x20,
+
+		/// <summary>Shows horizontal ruler.</summary>
+		ShowsHRuler				= 0x40
 	}
 }

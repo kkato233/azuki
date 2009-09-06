@@ -17,6 +17,7 @@ namespace Sgry.Azuki
 	abstract partial class View : IView, IDisposable
 	{
 		#region Fields and Types
+		const float GoldenRatio = 1.6180339887f;
 		const int DefaultTabWidth = 8;
 		const int LineNumberAreaPadding = 2;
 		static readonly int[] _LineNumberSamples = new int[]{
@@ -40,17 +41,23 @@ namespace Sgry.Azuki
 		int _TabWidth = DefaultTabWidth;
 		int _TabWidthInPx;
 		int _LCharWidth;
+		int _XCharWidth;
+		int _HRulerHeight;	// height of the largest lines of the horizontal ruler
+		int _HRulerY_5;		// height of the middle lines of the horizontal ruler
+		int _HRulerY_1;		// height of the smallest lines of the horizontal ruler
+		int _HRulerTextHeight;
 
 		ColorScheme _ColorScheme = ColorScheme.Default;
 		Font _Font;
+		Font _HRulerFont;
 		int _TopMargin = 1;
 		int _LeftMargin = 1;
 		DrawingOption _DrawingOption
 			= DrawingOption.DrawsTab
 			| DrawingOption.DrawsFullWidthSpace
 			| DrawingOption.DrawsEol
-			| DrawingOption.ShowsLineNumber
-			| DrawingOption.HighlightCurrentLine;
+			| DrawingOption.HighlightCurrentLine
+			| DrawingOption.ShowsLineNumber;
 		#endregion
 
 		#region Init / Dispose
@@ -78,6 +85,7 @@ namespace Sgry.Azuki
 			this._ColorScheme = other._ColorScheme;
 			this._DrawingOption = other._DrawingOption;
 			//DO_NOT//this._Gra = other._Gra;
+			//DO_NOT//this._HRulerFont = other._HRulerFont;
 			//DO_NOT//this._LCharWidth = other._LCharWidth;
 			//DO_NOT//this._LineHeight = other._LineHeight;
 			//DO_NOT//this._LineNumAreaWidth = other._LineNumAreaWidth;
@@ -181,6 +189,11 @@ namespace Sgry.Azuki
 				// apply font
 				_Font = value;
 				_Gra.Font = value;
+				_HRulerFont = new Font(
+						value.Name,
+						value.Size / GoldenRatio,
+						FontStyle.Regular
+					);
 
 				// update font metrics
 				UpdateMetrics();
@@ -203,6 +216,7 @@ namespace Sgry.Azuki
 			// update other metrics
 			_SpaceWidth = _Gra.MeasureText( " " ).Width;
 			_LCharWidth = _Gra.MeasureText( "l" ).Width;
+			_XCharWidth = _Gra.MeasureText( "x" ).Width;
 			_FullSpaceWidth = _Gra.MeasureText( "\x3000" ).Width;
 			_LineHeight = _Gra.MeasureText( "Mp" ).Height;
 			if( this.Document != null )
@@ -211,6 +225,14 @@ namespace Sgry.Azuki
 			}
 			_LineNumAreaWidth
 				= _Gra.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + _SpaceWidth;
+
+			// update metrics related with horizontal ruler
+			_HRulerHeight = (int)( _LineHeight / GoldenRatio ) + 2;
+			_HRulerY_5 = (int)( _HRulerHeight / (GoldenRatio * GoldenRatio) );
+			_HRulerY_1 = (int)( _HRulerHeight / (GoldenRatio) );
+			_Gra.Font = _HRulerFont;
+			_HRulerTextHeight = (int)( _Gra.MeasureText("Mp").Height * 0.97 );
+			_Gra.Font = _Font;
 		}
 		#endregion
 
@@ -227,7 +249,12 @@ namespace Sgry.Azuki
 				if( value < 0 )
 					throw new ArgumentOutOfRangeException( "value", "TopMargin must not be a negative number (value:"+value+")" );
 
+				// apply value
 				_TopMargin = value;
+
+				// send dummy scroll event
+				// to update screen position of the caret
+				_UI.Scroll( Rectangle.Empty, 0, 0 );
 			}
 		}
 
@@ -243,7 +270,12 @@ namespace Sgry.Azuki
 				if( value < 0 )
 					throw new ArgumentOutOfRangeException( "value", "LeftMargin must not be a negative number (value:"+value+")" );
 
+				// apply value
 				_LeftMargin = value;
+
+				// send dummy scroll event
+				// to update screen position of the caret
+				_UI.Scroll( Rectangle.Empty, 0, 0 );
 			}
 		}
 
@@ -284,6 +316,26 @@ namespace Sgry.Azuki
 					DrawingOption |= DrawingOption.ShowsLineNumber;
 				else
 					DrawingOption &= ~DrawingOption.ShowsLineNumber;
+
+				// send dummy scroll event
+				// to update screen position of the caret
+				_UI.Scroll( Rectangle.Empty, 0, 0 );
+				Invalidate();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show horizontal ruler or not.
+		/// </summary>
+		public bool ShowsHRuler
+		{
+			get{ return (DrawingOption & DrawingOption.ShowsHRuler) != 0; }
+			set
+			{
+				if( value )
+					DrawingOption |= DrawingOption.ShowsHRuler;
+				else
+					DrawingOption &= ~DrawingOption.ShowsHRuler;
 
 				// send dummy scroll event
 				// to update screen position of the caret
@@ -450,6 +502,42 @@ namespace Sgry.Azuki
 		{
 			get{ return _LineHeight+1; }
 		}
+
+		/// <summary>
+		/// Gets width of the line number area in pixel.
+		/// </summary>
+		public int LineNumAreaWidth
+		{
+			get
+			{
+				if( ShowLineNumber )
+					return _LineNumAreaWidth;
+				else
+					return 0;
+			}
+		}
+
+		/// <summary>
+		/// Gets height of the horizontal ruler.
+		/// </summary>
+		public int HRulerHeight
+		{
+			get
+			{
+				if( ShowsHRuler )
+					return _HRulerHeight;
+				else
+					return 0;
+			}
+		}
+
+		/// <summary>
+		/// Gets distance between lines on the horizontal ruler.
+		/// </summary>
+		public int HRulerUnitWidth
+		{
+			get{ return _XCharWidth; }
+		}
 		#endregion
 
 		#region Desired Column Management
@@ -504,7 +592,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void VirtualToScreen( ref Point pt )
 		{
-			pt.X = pt.X + (XofTextArea - ScrollPosX);
+			pt.X = (pt.X - ScrollPosX) + XofTextArea;
 			pt.Y = (pt.Y - FirstVisibleLine * LineSpacing) + YofTextArea;
 		}
 
@@ -513,7 +601,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void ScreenToVirtual( ref Point pt )
 		{
-			pt.X = pt.X - (XofTextArea - ScrollPosX);
+			pt.X = (pt.X + ScrollPosX) - XofTextArea;
 			pt.Y = (pt.Y + FirstVisibleLine * LineSpacing) - YofTextArea;
 		}
 
@@ -869,20 +957,34 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
+		internal int XofLineNumberArea
+		{
+			get{ return 0; }
+		}
+
+		internal int XofLeftMargin
+		{
+			get{ return XofLineNumberArea + LineNumAreaWidth; }
+		}
+
 		internal int XofTextArea
 		{
-			get
-			{
-				if( ShowLineNumber )
-					return _LineNumAreaWidth + LeftMargin;
-				else
-					return 0;
-			}
+			get{ return XofLeftMargin + LeftMargin; }
+		}
+
+		internal int YofHRuler
+		{
+			get{ return 0; }
+		}
+
+		internal int YofTopMargin
+		{
+			get{ return YofHRuler + HRulerHeight; }
 		}
 
 		internal int YofTextArea
 		{
-			get{ return TopMargin; }
+			get{ return YofTopMargin + TopMargin; }
 		}
 
 		/// <summary>

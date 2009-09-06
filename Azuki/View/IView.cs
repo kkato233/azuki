@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-06
 //=========================================================
 using System;
 using System.Drawing;
@@ -78,6 +78,14 @@ namespace Sgry.Azuki
 		/// Gets or sets whether to show line number or not.
 		/// </summary>
 		bool ShowLineNumber
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show horizontal ruler or not.
+		/// </summary>
+		bool ShowsHRuler
 		{
 			get; set;
 		}
@@ -326,6 +334,30 @@ namespace Sgry.Azuki
 		/// Gets distance between lines in pixel.
 		/// </summary>
 		int LineSpacing
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets width of the line number area in pixel.
+		/// </summary>
+		int LineNumAreaWidth
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets height of the horizontal ruler.
+		/// </summary>
+		int HRulerHeight
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets distance between lines on the horizontal ruler.
+		/// </summary>
+		int HRulerUnitWidth
 		{
 			get;
 		}

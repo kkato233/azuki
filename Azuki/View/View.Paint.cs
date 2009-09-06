@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-06
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -170,6 +170,9 @@ namespace Sgry.Azuki
 		/// <param name="color">Color to be used for drawing the underline.</param>
 		protected void DrawUnderLine( int lineTopY, Color color )
 		{
+			if( lineTopY < 0 )
+				return;
+
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			int textAreaRight = _TextAreaWidth + (XofTextArea - ScrollPosX);
 
@@ -190,27 +193,105 @@ namespace Sgry.Azuki
 		protected void DrawLineNumber( int lineTopY, int lineNumber )
 		{
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
-			Point pos = new Point( 0, lineTopY );
+			Point pos = new Point( XofLineNumberArea, lineTopY );
 			
 			// fill line number area
 			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, pos.Y, _LineNumAreaWidth, LineSpacing );
+			_Gra.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
+			
+			// fill left margin area
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( _LineNumAreaWidth, pos.Y, LeftMargin, LineSpacing );
+			_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
 			
 			// draw line number text
 			if( 0 < lineNumber )
 			{
 				string lineNumText = lineNumber.ToString();
-				pos.X = _LineNumAreaWidth - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
+				pos.X = XofLeftMargin - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
 				_Gra.ForeColor = ColorScheme.LineNumberFore;
 				_Gra.DrawText( lineNumText, ref pos, ColorScheme.LineNumberFore );
 			}
 
 			// draw margin line between the line number area and text area
-			pos.X = _LineNumAreaWidth - 1;
+			pos.X = XofLeftMargin - 1;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing+1 );
+		}
+
+		/// <summary>
+		/// Draws horizontal ruler on top of the text area.
+		/// </summary>
+		protected void DrawHRuler( Rectangle clipRect )
+		{
+			int columnNumber = 1;
+			Point pos = new Point( 0, YofHRuler );
+			string columnNumberText;
+			int lineX;
+			Rectangle subClipRect = clipRect;
+
+			if( ShowsHRuler == false || YofTopMargin < clipRect.Y )
+				return;
+
+			// fill ruler area
+			_Gra.ForeColor = ColorScheme.LineNumberFore;
+			_Gra.BackColor = ColorScheme.LineNumberBack;
+			_Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
+
+			// clip out left or right area
+			if( subClipRect.X < XofTextArea )
+			{
+				subClipRect.Width -= XofTextArea - subClipRect.X;
+				subClipRect.X = XofTextArea;
+			}
+			_Gra.SetClipRect( subClipRect );
+
+			// calculate first line to be drawn
+			columnNumber = ScrollPosX / HRulerUnitWidth;
+			lineX = XofTextArea + (columnNumber * HRulerUnitWidth) - ScrollPosX;
+			if( lineX < XofTextArea )
+			{
+				columnNumber++;
+				lineX += HRulerUnitWidth;
+			}
+
+			// draw lines on the ruler
+			_Gra.Font = _HRulerFont;
+			while( lineX < VisibleSize.Width + TabWidthInPx )
+			{
+				// draw ruler line
+				if( (columnNumber % 10) == 0 )
+				{
+					// draw largest line
+					_Gra.DrawLine( lineX, YofHRuler, lineX, YofHRuler+HRulerHeight );
+
+					// draw column text
+					columnNumberText = (columnNumber / 10).ToString();
+					pos.X = lineX - _Gra.MeasureText( columnNumberText ).Width;
+					_Gra.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
+				}
+				else if( (columnNumber % 5) == 0 )
+				{
+					// draw middle-length line
+					_Gra.DrawLine( lineX, YofHRuler+_HRulerY_5, lineX, YofHRuler+HRulerHeight );
+				}
+				else
+				{
+					// draw smallest line
+					_Gra.DrawLine( lineX, YofHRuler+_HRulerY_1, lineX, YofHRuler+HRulerHeight );
+				}
+
+				// go to next line
+				columnNumber++;
+				lineX += HRulerUnitWidth;
+			}
+			_Gra.Font = _Font;
+
+			// draw bottom border line
+			_Gra.DrawLine(
+					XofLeftMargin, YofHRuler + HRulerHeight - 1,
+					VisibleSize.Width, YofHRuler + HRulerHeight - 1
+				);
+			_Gra.RemoveClipRect();
 		}
 
 		/// <summary>
@@ -220,18 +301,20 @@ namespace Sgry.Azuki
 		{
 			// fill area above the line-number area [copied from DrawLineNumber]
 			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, 0, _LineNumAreaWidth, YofTextArea );
+			_Gra.FillRectangle( XofLineNumberArea, YofTopMargin, _LineNumAreaWidth, TopMargin );
+			
+			// fill left margin area [copied from DrawLineNumber]
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( _LineNumAreaWidth, 0, LeftMargin, YofTextArea );
+			_Gra.FillRectangle( XofLeftMargin, YofTopMargin, LeftMargin, TopMargin );
 
 			// draw margin line between the line number area and text area [copied from DrawLineNumber]
-			int x = _LineNumAreaWidth - 1;
+			int x = XofLeftMargin - 1;
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
-			_Gra.DrawLine( x, 0, x, YofTextArea );
+			_Gra.DrawLine( x, YofTopMargin, x, YofTopMargin+TopMargin );
 
 			// fill area above the text area
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( XofTextArea, 0, VisibleSize.Width-XofTextArea, YofTextArea );
+			_Gra.FillRectangle( XofTextArea, YofTopMargin, VisibleSize.Width-XofTextArea, TopMargin );
 		}
 
 		/// <summary>

@@ -1,4 +1,4 @@
-// 2009-08-29
+// 2009-09-06
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -720,6 +720,7 @@ namespace Sgry.Ann
 			MainForm.Azuki.DrawsTab				= AppConfig.DrawsTab;
 			MainForm.Azuki.HighlightsCurrentLine= AppConfig.HighlightsCurrentLine;
 			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
+			MainForm.Azuki.ShowsHRuler			= AppConfig.ShowsHRuler;
 			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
 			MainForm.Azuki.ViewType				= AppConfig.ViewType;
 
@@ -742,6 +743,7 @@ namespace Sgry.Ann
 			AppConfig.DrawsTab				= MainForm.Azuki.DrawsTab;
 			AppConfig.HighlightsCurrentLine	= MainForm.Azuki.HighlightsCurrentLine;
 			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
+			AppConfig.ShowsHRuler			= MainForm.Azuki.ShowsHRuler;
 			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
 			AppConfig.ViewType				= MainForm.Azuki.ViewType;
 

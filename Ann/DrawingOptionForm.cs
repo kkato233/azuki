@@ -1,4 +1,4 @@
-﻿// 2009-03-02
+﻿// 2009-09-06
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -68,6 +68,7 @@ namespace Sgry.Ann
 				_Check_DrawsEolCode.Checked = (value & DrawingOption.DrawsEol) != 0;
 				_Check_HighlightCurrentLine.Checked = (value & DrawingOption.HighlightCurrentLine) != 0;
 				_Check_ShowsLineNumber.Checked = (value & DrawingOption.ShowsLineNumber) != 0;
+				_Check_ShowsHRuler.Checked = (value & DrawingOption.ShowsHRuler) != 0;
 				_DrawingOption = value;
 			}
 		}
@@ -114,6 +115,10 @@ namespace Sgry.Ann
 			{
 				_Azuki_Preview.ShowsLineNumber = _Check_ShowsLineNumber.Checked;
 			}
+			else if( checkBox == _Check_ShowsHRuler )
+			{
+				_Azuki_Preview.ShowsHRuler = _Check_ShowsHRuler.Checked;
+			}
 		}
 
 		void _Num_TabWidth_ValueChanged( object sender, EventArgs e )
@@ -143,6 +148,7 @@ namespace Sgry.Ann
 			_Check_DrawsEolCode = new CheckBox();
 			_Check_HighlightCurrentLine = new CheckBox();
 			_Check_ShowsLineNumber = new CheckBox();
+			_Check_ShowsHRuler = new CheckBox();
 			_Label_TabWidth = new Label();
 			_Num_TabWidth = new NumericUpDown();
 			_Label_Preview = new Label();
@@ -156,7 +162,6 @@ namespace Sgry.Ann
 			_Check_DrawsSpace.Location = new Point( 16, 12 );
 			_Check_DrawsSpace.Name = "_Check_DrawsSpace";
 			_Check_DrawsSpace.Size = new Size( 264, 17 );
-			_Check_DrawsSpace.TabIndex = 0;
 			_Check_DrawsSpace.Text = "Draws &space";
 			_Check_DrawsSpace.Click += _CheckBox_CheckedChanged;
 			// 
@@ -200,6 +205,14 @@ namespace Sgry.Ann
 			_Check_ShowsLineNumber.Text = "Shows line &number";
 			_Check_ShowsLineNumber.Click += _CheckBox_CheckedChanged;
 			// 
+			// _Check_ShowsHRuler
+			// 
+			_Check_ShowsHRuler.Location = new Point( 16, 138 );
+			_Check_ShowsHRuler.Name = "_Check_ShowsHRuler";
+			_Check_ShowsHRuler.Size = new Size( 264, 17 );
+			_Check_ShowsHRuler.Text = "Shows &horizontal ruler";
+			_Check_ShowsHRuler.Click += _CheckBox_CheckedChanged;
+			// 
 			// _Label_TabWidth
 			// 
 			_Label_TabWidth.Location = new Point( 16, 142 );
@@ -209,14 +222,14 @@ namespace Sgry.Ann
 			// 
 			// _Num_TabWidth
 			// 
-			_Num_TabWidth.Location = new Point( 98, 140 );
+			_Num_TabWidth.Location = new Point( 98, 157 );
 			_Num_TabWidth.Name = "_Num_TabWidth";
 			_Num_TabWidth.Size = new Size( 172, 24 );
 			_Num_TabWidth.ValueChanged += _Num_TabWidth_ValueChanged;
 			// 
 			// _Button_OK
 			// 
-			_Button_OK.Location = new Point( 116, 168 );
+			_Button_OK.Location = new Point( 116, 185 );
 			_Button_OK.Name = "_Button_OK";
 			_Button_OK.Size = new Size( 75, 20 );
 			_Button_OK.Text = "OK";
@@ -224,7 +237,7 @@ namespace Sgry.Ann
 			// 
 			// _Button_Cancel
 			// 
-			_Button_Cancel.Location = new Point( 197, 168 );
+			_Button_Cancel.Location = new Point( 197, 185 );
 			_Button_Cancel.Name = "_Button_Cancel";
 			_Button_Cancel.Size = new Size( 75, 20 );
 			_Button_Cancel.Text = "Cancel";
@@ -247,7 +260,6 @@ namespace Sgry.Ann
 			_Azuki_Preview.Location = new Point( 296, 27 );
 			_Azuki_Preview.Name = "_Azuki_Preview";
 			_Azuki_Preview.Size = new Size( 244, 161 );
-			_Azuki_Preview.TabIndex = 9;
 			_Azuki_Preview.TabStop = false;
 			_Azuki_Preview.ViewWidth = 328;
 #			endif
@@ -255,7 +267,7 @@ namespace Sgry.Ann
 			// DrawingOptionForm
 			// 
 			AutoScroll = true;
-			ClientSize = new Size( 560, 198 );
+			ClientSize = new Size( 560, 215 );
 			MinimizeBox = false;
 			Controls.Add( _Check_DrawsSpace );
 			Controls.Add( _Check_DrawsTab );
@@ -263,6 +275,7 @@ namespace Sgry.Ann
 			Controls.Add( _Check_DrawsEolCode );
 			Controls.Add( _Check_HighlightCurrentLine );
 			Controls.Add( _Check_ShowsLineNumber );
+			Controls.Add( _Check_ShowsHRuler );
 			Controls.Add( _Label_TabWidth );
 			Controls.Add( _Num_TabWidth );
 			Controls.Add( _Button_OK );
@@ -286,6 +299,7 @@ namespace Sgry.Ann
 		CheckBox _Check_DrawsFullWidthSpace;
 		CheckBox _Check_HighlightCurrentLine;
 		CheckBox _Check_ShowsLineNumber;
+		CheckBox _Check_ShowsHRuler;
 		Label _Label_Preview;
 		CheckBox _Check_DrawsEolCode;
 		#endregion

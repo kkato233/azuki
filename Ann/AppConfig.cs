@@ -1,4 +1,4 @@
-﻿// 2009-08-23
+﻿// 2009-09-06
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -21,6 +21,7 @@ namespace Sgry.Ann
 		public static bool DrawsTab = true;
 		public static bool HighlightsCurrentLine = true;
 		public static bool ShowsLineNumber = true;
+		public static bool ShowsHRuler = false;
 		public static int TabWidth = 8;
 		public static ViewType ViewType = ViewType.Proportional;
 		public static bool UsesTabForIndent = true;
@@ -52,6 +53,7 @@ namespace Sgry.Ann
 				AppConfig.DrawsTab				= Ini.Get( "Default", "DrawsTab", true );
 				AppConfig.HighlightsCurrentLine	= Ini.Get( "Default", "HighlightsCurrentLine", true );
 				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
+				AppConfig.ShowsHRuler			= Ini.Get( "Default", "ShowsHRuler", false );
 				AppConfig.TabWidth				= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
 				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
 				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
@@ -78,6 +80,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "DrawsTab",				AppConfig.DrawsTab );
 				Ini.Set( "Default", "HighlightsCurrentLine",AppConfig.HighlightsCurrentLine );
 				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
+				Ini.Set( "Default", "ShowsHRuler",			AppConfig.ShowsHRuler );
 				Ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
 				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
 				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );

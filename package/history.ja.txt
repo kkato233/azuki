@@ -10,6 +10,7 @@
  * mod: AzukiControl.GetIndexFromScreenPos に与えられた位置が不正な場合に最も近い有効な点を使って計算するように
  * mod: AutoIndentHook の引数仕様を変更
  * mod: AzukiControl と IUserInterface の ConvertsTabToSpaces を非推奨に
+ * mod: ZoomIn と ZoomOut の実行後にテキストエリアの幅を調整するように
  * add: [Ann] 終了時のウィンドウサイズを記憶するように
  * add: [Ann] 描画オプションを記憶するように
  * add: [Ann] ファイルを開くときに拡張子を判定して適切なファイルモードで開くように

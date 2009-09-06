@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-06
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -772,11 +772,18 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void ZoomIn()
 		{
+			// remember left-end position of text area
+			int oldTextAreaX = XofTextArea;
+
 			// calculate next font size
 			float newSize = (float)(Font.Size / 0.9);
 
-			// apply
+			// apply new font size
 			Font = new Font( Font.Name, newSize, Font.Style );
+
+			// reset text area to sustain total width of view
+			// because changing font size also changes width of line number area,
+			TextAreaWidth += oldTextAreaX - XofTextArea;
 		}
 
 		/// <summary>
@@ -784,6 +791,9 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void ZoomOut()
 		{
+			// remember left-end position of text area
+			int oldTextAreaX = XofTextArea;
+
 			// calculate next font size
 			float newSize = (float)(Font.Size * 0.9);
 			if( newSize < 1 )
@@ -791,8 +801,12 @@ namespace Sgry.Azuki
 				return;
 			}
 
-			// apply
+			// apply new font size
 			Font = new Font( Font.Name, newSize, Font.Style );
+
+			// reset text area to sustain total width of view
+			// because changing font size also changes width of line number area,
+			TextAreaWidth += oldTextAreaX - XofTextArea;
 		}
 		#endregion
 

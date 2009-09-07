@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-09-07
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -17,8 +17,6 @@ namespace Sgry.Azuki
 	/// </summary>
 	class PropWrapView : PropView
 	{
-		int _MinimalWidth;
-
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
@@ -54,21 +52,6 @@ namespace Sgry.Azuki
 
 		#region Properties
 		/// <summary>
-		/// Font to be used for displaying text.
-		/// </summary>
-		public override Font Font
-		{
-			set
-			{
-				// apply new font
-				base.Font = value;
-
-				// update metrics
-				_MinimalWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
-			}
-		}
-
-		/// <summary>
 		/// Gets number of the physical lines.
 		/// </summary>
 		public override int LineCount
@@ -88,13 +71,6 @@ namespace Sgry.Azuki
 				if( value < 0 )
 				{
 					return;
-				}
-
-				// if given value is too small, make it the lowest acceptable value
-				// (to avoid infinite loop in painting logic)
-				if( value <= _MinimalWidth )
-				{
-					value = _MinimalWidth;
 				}
 
 				if( base.TextAreaWidth != value )

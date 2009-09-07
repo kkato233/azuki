@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-09-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -31,6 +31,7 @@ namespace Sgry.Azuki
 		};
 		protected IUserInterface _UI;
 		int _TextAreaWidth = 1024;
+		int _MinimumTextAreaWidth = 300;
 		Size _VisibleSize = new Size( 300, 300 );
 		protected IGraphics _Gra = null;
 		int _LastUsedLineNumberSample = _LineNumberSamples[0];
@@ -144,15 +145,15 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets width of the virtual text area (line number area is not included).
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
 		public virtual int TextAreaWidth
 		{
 			get{ return _TextAreaWidth; }
 			set
 			{
-				if( value < 0 )
-					throw new ArgumentOutOfRangeException( "value", "TextAreaWidth must not be a negative number (value:"+value+")" );
-
+				if( value < _MinimumTextAreaWidth )
+				{
+					value = _MinimumTextAreaWidth;
+				}
 				_TextAreaWidth = value;
 			}
 		}
@@ -233,6 +234,9 @@ namespace Sgry.Azuki
 			_Gra.Font = _HRulerFont;
 			_HRulerTextHeight = (int)( _Gra.MeasureText("Mp").Height * 0.97 );
 			_Gra.Font = _Font;
+
+			// calculate minimum text area width
+			_MinimumTextAreaWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
 		}
 		#endregion
 

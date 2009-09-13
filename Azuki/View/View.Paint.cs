@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-09-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -223,53 +223,49 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected void DrawHRuler( Rectangle clipRect )
 		{
-			int columnNumber = 1;
 			Point pos = new Point( 0, YofHRuler );
 			string columnNumberText;
-			int lineX;
+			int lineX, rulerIndex;
+			int leftMostLineX, leftMostRulerIndex;
 			Rectangle subClipRect = clipRect;
 
 			if( ShowsHRuler == false || YofTopMargin < clipRect.Y )
 				return;
 
-			// fill ruler area
-			_Gra.ForeColor = ColorScheme.LineNumberFore;
-			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
+            _Gra.SetClipRect( subClipRect );
 
-			// clip out left or right area
-			if( subClipRect.X < XofTextArea )
-			{
-				subClipRect.Width -= XofTextArea - subClipRect.X;
-				subClipRect.X = XofTextArea;
-			}
-			_Gra.SetClipRect( subClipRect );
+            // fill ruler area
+            _Gra.ForeColor = ColorScheme.LineNumberFore;
+            _Gra.BackColor = ColorScheme.LineNumberBack;
+            _Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
 
 			// calculate first line to be drawn
-			columnNumber = ScrollPosX / HRulerUnitWidth;
-			lineX = XofTextArea + (columnNumber * HRulerUnitWidth) - ScrollPosX;
-			if( lineX < XofTextArea )
+			leftMostRulerIndex = ScrollPosX / HRulerUnitWidth;
+			leftMostLineX = XofTextArea + (leftMostRulerIndex * HRulerUnitWidth) - ScrollPosX;
+			if( leftMostLineX < XofTextArea )
 			{
-				columnNumber++;
-				lineX += HRulerUnitWidth;
+				leftMostRulerIndex++;
+				leftMostLineX += HRulerUnitWidth;
 			}
 
 			// draw lines on the ruler
 			_Gra.Font = _HRulerFont;
+			lineX = leftMostLineX;
+			rulerIndex = leftMostRulerIndex;
 			while( lineX < VisibleSize.Width + TabWidthInPx )
 			{
 				// draw ruler line
-				if( (columnNumber % 10) == 0 )
+				if( (rulerIndex % 10) == 0 )
 				{
 					// draw largest line
 					_Gra.DrawLine( lineX, YofHRuler, lineX, YofHRuler+HRulerHeight );
 
 					// draw column text
-					columnNumberText = (columnNumber / 10).ToString();
+					columnNumberText = (rulerIndex / 10).ToString();
 					pos.X = lineX - _Gra.MeasureText( columnNumberText ).Width;
 					_Gra.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
 				}
-				else if( (columnNumber % 5) == 0 )
+				else if( (rulerIndex % 5) == 0 )
 				{
 					// draw middle-length line
 					_Gra.DrawLine( lineX, YofHRuler+_HRulerY_5, lineX, YofHRuler+HRulerHeight );
@@ -280,8 +276,8 @@ namespace Sgry.Azuki
 					_Gra.DrawLine( lineX, YofHRuler+_HRulerY_1, lineX, YofHRuler+HRulerHeight );
 				}
 
-				// go to next line
-				columnNumber++;
+				// go to next ruler line
+				rulerIndex++;
 				lineX += HRulerUnitWidth;
 			}
 			_Gra.Font = _Font;
@@ -291,6 +287,35 @@ namespace Sgry.Azuki
 					XofLeftMargin, YofHRuler + HRulerHeight - 1,
 					VisibleSize.Width, YofHRuler + HRulerHeight - 1
 				);
+
+			// draw indicator of caret column
+			_Gra.BackColor = ColorScheme.ForeColor;
+			if( HRulerIndicatorType == HRulerIndicatorType.Position )
+			{
+				Point caretPos = GetVirPosFromIndex( Document.CaretIndex );
+				VirtualToScreen( ref caretPos );
+				_Gra.FillRectangle( caretPos.X, YofHRuler, 2, HRulerHeight );
+			}
+			else if( HRulerIndicatorType == HRulerIndicatorType.CharCount )
+			{
+				int indicatorX;
+				int caretLineIndex, caretColumnIndex;
+
+				GetLineColumnIndexFromCharIndex( Document.CaretIndex, out caretLineIndex, out caretColumnIndex );
+				indicatorX = leftMostLineX + (caretColumnIndex - leftMostRulerIndex) * HRulerUnitWidth;
+				_Gra.FillRectangle(
+						indicatorX + 1, YofHRuler,
+						HRulerUnitWidth-1, HRulerHeight
+					);
+			}
+			else// if( HRulerIndicatorType == HRulerIndicatorType.Segment )
+			{
+				Point indicatorPos = GetVirPosFromIndex( Document.CaretIndex );
+				indicatorPos.X -= (indicatorPos.X % HRulerUnitWidth);
+				VirtualToScreen( ref indicatorPos );
+				_Gra.FillRectangle( indicatorPos.X+1, YofHRuler, HRulerUnitWidth-1, HRulerHeight );
+			}
+
 			_Gra.RemoveClipRect();
 		}
 
@@ -548,7 +573,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets next token for painting.
 		/// </summary>
-		protected int NextPaintToken( Document doc, int index, int nextLineHead, out CharClass out_klass, out bool out_inSelection )
+		protected int NextPaintToken(
+				Document doc, int index, int nextLineHead,
+				out CharClass out_klass, out bool out_inSelection
+			)
 		{
 			DebugUtl.Assert( nextLineHead <= doc.Length, "param 'nextLineHead'("+nextLineHead+") must not be greater than 'doc.Length'("+doc.Length+")." );
 
@@ -621,7 +649,10 @@ namespace Sgry.Azuki
 			/// <summary>
 			/// Gets fore/back color pair from scheme according to char class.
 			/// </summary>
-			public static void ColorFromCharClass( ColorScheme cs, CharClass klass, bool inSelection, out Color fore, out Color back )
+			public static void ColorFromCharClass(
+					ColorScheme cs, CharClass klass, bool inSelection,
+					out Color fore, out Color back
+				)
 			{
 				if( inSelection )
 				{

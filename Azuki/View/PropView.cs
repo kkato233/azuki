@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-09-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -201,6 +201,9 @@ namespace Sgry.Azuki
 
 			try
 			{
+				// invalidate indicator graphic on horizontal ruler
+				InvalidateHRuler( e.OldCaret );
+
 				// if the anchor moved, firstly invalidate old selection area
 				// because invalidation logic below does not expect the anchor's move.
 				if( e.OldAnchor != anchor )
@@ -347,12 +350,12 @@ namespace Sgry.Azuki
 			int beginLineHead;
 			string token = String.Empty;
 
-            // get chars at left of invalid rect
+			// get chars at left of invalid rect
 			beginLineHead = GetLineHeadIndex( beginL );
-            if( beginLineHead < begin )
-            {
-			    token = Document.GetTextInRange( beginLineHead, begin );
-            }
+			if( beginLineHead < begin )
+			{
+				token = Document.GetTextInRange( beginLineHead, begin );
+			}
 			
 			// calculate invalid rect
 			rect.X = MeasureTokenEndX( token, 0 );
@@ -481,6 +484,9 @@ namespace Sgry.Azuki
 				Invalidate( invalidRect2 );
 			}
 
+			// invalidate indicator graphic on horizontal ruler
+			InvalidateHRuler( oldCaretPos );
+
 			base.HandleContentChanged( sender, e );
 		}
 
@@ -602,6 +608,87 @@ namespace Sgry.Azuki
 				Invalidate( middle );
 			if( 0 < lower.Height )
 				Invalidate( lower );
+		}
+
+		void InvalidateHRuler( int oldCaretIndex )
+		{
+			Point oldCaretPos = GetVirPosFromIndex( oldCaretIndex );
+			VirtualToScreen( ref oldCaretPos );
+			InvalidateHRuler( oldCaretPos );
+		}
+
+		void InvalidateHRuler( Point oldCaretPos )
+		{
+			Rectangle invalidRect_old;
+			Rectangle invalidRect_new;
+			Point newCaretPos;
+
+			// invalidate indicator graphic on horizontal ruler
+			if( ShowsHRuler )
+			{
+				newCaretPos = GetVirPosFromIndex( Document.CaretIndex );
+				VirtualToScreen( ref newCaretPos );
+
+				if( HRulerIndicatorType == HRulerIndicatorType.Position )
+				{
+					// calculate indicator rectangle for old caret position
+					invalidRect_old = new Rectangle(
+							oldCaretPos.X, YofHRuler, 3, HRulerHeight
+						);
+
+					// calculate indicator rectangle for new caret position
+					invalidRect_new = new Rectangle(
+							newCaretPos.X, YofHRuler, 3, HRulerHeight
+						);
+				}
+				else if( HRulerIndicatorType == HRulerIndicatorType.CharCount )
+				{
+					int dummy;
+					Point virOldCaretPos;
+					int oldCaretColumnIndex, newCaretColumnIndex;
+					Point pos = new Point();
+
+					// calculate indicator rectangle for old caret position
+					virOldCaretPos = oldCaretPos;
+					ScreenToVirtual( ref virOldCaretPos );
+					GetLineColumnIndexFromCharIndex(
+							GetIndexFromVirPos(virOldCaretPos), out dummy, out oldCaretColumnIndex
+						);
+					pos.X = oldCaretColumnIndex * HRulerUnitWidth;
+					VirtualToScreen( ref pos );
+					invalidRect_old = new Rectangle(
+							pos.X, YofHRuler, HRulerUnitWidth, HRulerHeight
+						);
+
+					// calculate indicator rectangle for new caret position
+					GetLineColumnIndexFromCharIndex(
+							Document.CaretIndex, out dummy, out newCaretColumnIndex
+						);
+					pos.X = newCaretColumnIndex * HRulerUnitWidth;
+					VirtualToScreen( ref pos );
+					invalidRect_new = new Rectangle(
+							pos.X, YofHRuler, HRulerUnitWidth, HRulerHeight
+						);
+				}
+				else// if( HRulerIndicatorType == HRulerIndicatorType.Segment )
+				{
+					// calculate indicator rectangle for old caret position
+					invalidRect_old = new Rectangle(
+							oldCaretPos.X - HRulerUnitWidth, YofHRuler,
+							HRulerUnitWidth*2, HRulerHeight
+						);
+
+					// calculate indicator rectangle for new caret position
+					invalidRect_new = new Rectangle(
+							newCaretPos.X - HRulerUnitWidth, YofHRuler,
+							HRulerUnitWidth*2, HRulerHeight
+						);
+				}
+
+				// invalidate old and new indicator
+				Invalidate( invalidRect_old );
+				Invalidate( invalidRect_new );
+			}
 		}
 		#endregion
 

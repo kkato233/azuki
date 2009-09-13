@@ -66,8 +66,6 @@
     <Compile Include="UserPref.cs" />
     <Compile Include="WordLogic.cs" />
     <Compile Include="DebugUtl.cs" />
-    <Compile Include="View\DrawingOption.cs" />
-    <Compile Include="View\IView.cs" />
     <Compile Include="Document\CharClass.cs" />
     <Compile Include="Document\Document.cs" />
     <Compile Include="Document\TextBuffer.cs" />
@@ -92,6 +90,9 @@
     <Compile Include="Test\TestDriver.cs" />
     <Compile Include="Test\KeywordHighlighterTest.cs" />
     <Compile Include="View\ColorScheme.cs" />
+    <Compile Include="View\DrawingOption.cs" />
+    <Compile Include="View\IView.cs" />
+    <Compile Include="View\HRulerIndicator.cs" />
     <Compile Include="View\PropView.cs" />
     <Compile Include="View\PropWrapView.cs" />
     <Compile Include="View\View.cs" />

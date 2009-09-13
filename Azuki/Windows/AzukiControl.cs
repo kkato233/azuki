@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-09-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -319,6 +319,11 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets top margin of the view in pixel.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+#		if !PocketPC
+		[Category("Drawing")]
+		[DefaultValue(1)]
+		[Description("Specify margin at top of the text area in pixel.")]
+#		endif
 		public int TopMargin
 		{
 			get{ return View.TopMargin; }
@@ -334,6 +339,11 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets left margin of the view in pixel.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
+#		if !PocketPC
+		[Category("Drawing")]
+		[DefaultValue(1)]
+		[Description("Specify margin at left of the text area in pixel.")]
+#		endif
 		public int LeftMargin
 		{
 			get{ return View.LeftMargin; }
@@ -343,6 +353,20 @@ namespace Sgry.Azuki.Windows
 				UpdateCaretGraphic();
 				Invalidate();
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets type of the indicator on the horizontal ruler.
+		/// </summary>
+#		if !PocketPC
+		[Category("Drawing")]
+		[DefaultValue(HRulerIndicatorType.Segment)]
+		[Description("Specify type of the indicator on the horizontal ruler.")]
+#		endif
+		public HRulerIndicatorType HRulerIndicatorType
+		{
+			get{ return View.HRulerIndicatorType; }
+			set{ View.HRulerIndicatorType = value; }
 		}
 
 		/// <summary>

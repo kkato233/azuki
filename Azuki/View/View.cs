@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-09-07
+// update: 2009-09-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -47,6 +47,7 @@ namespace Sgry.Azuki
 		int _HRulerY_5;		// height of the middle lines of the horizontal ruler
 		int _HRulerY_1;		// height of the smallest lines of the horizontal ruler
 		int _HRulerTextHeight;
+		HRulerIndicatorType _HRulerIndicatorType = HRulerIndicatorType.Segment;
 
 		ColorScheme _ColorScheme = ColorScheme.Default;
 		Font _Font;
@@ -284,6 +285,15 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets type of the indicator on the horizontal ruler.
+		/// </summary>
+		public HRulerIndicatorType HRulerIndicatorType
+		{
+			get{ return _HRulerIndicatorType; }
+			set{ _HRulerIndicatorType = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets view options.
 		/// </summary>
 		public DrawingOption DrawingOption
@@ -321,9 +331,7 @@ namespace Sgry.Azuki
 				else
 					DrawingOption &= ~DrawingOption.ShowsLineNumber;
 
-				// send dummy scroll event
-				// to update screen position of the caret
-				_UI.Scroll( Rectangle.Empty, 0, 0 );
+				_UI.UpdateCaretGraphic();
 				Invalidate();
 			}
 		}
@@ -341,9 +349,7 @@ namespace Sgry.Azuki
 				else
 					DrawingOption &= ~DrawingOption.ShowsHRuler;
 
-				// send dummy scroll event
-				// to update screen position of the caret
-				_UI.Scroll( Rectangle.Empty, 0, 0 );
+				_UI.UpdateCaretGraphic();
 				Invalidate();
 			}
 		}
@@ -848,7 +854,7 @@ namespace Sgry.Azuki
 		/// <param name="rect">rectangle area to be invalidate (in client area coordinate)</param>
 		public void Invalidate( Rectangle rect )
 		{
-//DEBUG//_Gra.ForeColor=Color.Red;_Gra.DrawLine(rect.Left,rect.Top,rect.Right,rect.Bottom);_Gra.DrawLine(rect.Left,rect.Bottom,rect.Right,rect.Top);DebugUtl.Sleep(400);
+//DEBUG//_Gra.ForeColor=Color.Red;_Gra.DrawLine(rect.Left,rect.Top,rect.Right-1,rect.Bottom-1);_Gra.DrawLine(rect.Left,rect.Bottom-1,rect.Right-1,rect.Top);DebugUtl.Sleep(400);
 			_UI.Invalidate( rect );
 		}
 

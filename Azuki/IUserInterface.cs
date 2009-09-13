@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2009-08-29
+// update: 2009-09-13
 //=========================================================
 using System;
 using System.Drawing;
@@ -79,6 +79,14 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
 		int LeftMargin
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets type of the indicator on the horizontal ruler.
+		/// </summary>
+		HRulerIndicatorType HRulerIndicatorType
 		{
 			get; set;
 		}

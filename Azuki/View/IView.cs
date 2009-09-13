@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-09-13
 //=========================================================
 using System;
 using System.Drawing;
@@ -54,6 +54,14 @@ namespace Sgry.Azuki
 		/// Gets or sets left margin of the view in pixel.
 		/// </summary>
 		int LeftMargin
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets type of the indicator on the horizontal ruler.
+		/// </summary>
+		HRulerIndicatorType HRulerIndicatorType
 		{
 			get; set;
 		}

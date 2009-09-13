@@ -92,7 +92,7 @@
     <Compile Include="View\ColorScheme.cs" />
     <Compile Include="View\DrawingOption.cs" />
     <Compile Include="View\IView.cs" />
-    <Compile Include="View\HRulerIndicator.cs" />
+    <Compile Include="View\HRulerIndicatorType.cs" />
     <Compile Include="View\PropView.cs" />
     <Compile Include="View\PropWrapView.cs" />
     <Compile Include="View\View.cs" />

@@ -1,4 +1,4 @@
-﻿// file: HRulerIndicator.cs
+﻿// file: HRulerIndicatorType.cs
 // brief: indicator type on horizontal ruler
 // author: YAMAMOTO Suguru
 // update: 2009-09-13

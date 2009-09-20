@@ -582,19 +582,21 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public abstract Point GetVirPosFromIndex( int index );
 
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public abstract Point GetVirPosFromIndex( int lineIndex, int columnIndex );
 
 		/// <summary>
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
-		/// <returns>the index of the char or -1 if invalid point was specified.</returns>
+		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
 		public abstract int GetIndexFromVirPos( Point pt );
 
 		/// <summary>
@@ -706,6 +708,71 @@ namespace Sgry.Azuki
 			}
 
 			return selRanges.ToArray();
+		}
+
+		/// <summary>
+		/// Calculates location of character at specified index in horizontal ruler index.
+		/// </summary>
+		/// <param name="charIndex">The index of the character to calculate its location.</param>
+		/// <returns>Horizontal ruler index of the character.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method calculates location of character at specified index
+		/// in horizontal ruler index.
+		/// </para>
+		/// <para>
+		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
+		/// exist between left-end of the text area
+		/// and the character at index specified by <paramref name="charIndex"/>.
+		/// This value is zero-based index.
+		/// </para>
+		/// </remarks>
+		public int GetHRulerIndex( int charIndex )
+		{
+			Point virPos;
+
+			if( charIndex < 0 || Document.Length < charIndex )
+				throw new ArgumentOutOfRangeException( "charIndex", "Specified index is out of range. (value:"+charIndex+", document length:"+Document.Length+")" );
+
+			// calculate location of the character in coordinate in virtual text area
+			virPos = GetVirPosFromIndex( charIndex );
+
+			// calculate how many smallest lines exist at left of the character
+			return (virPos.X / HRulerUnitWidth);
+		}
+
+		/// <summary>
+		/// Calculates location of character at specified index in horizontal ruler index.
+		/// </summary>
+		/// <param name="lineIndex">The line index of the character to calculate its location.</param>
+		/// <param name="columnIndex">The column index of the character to calculate its location.</param>
+		/// <returns>Horizontal ruler index of the character.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method calculates location of character at specified index
+		/// in horizontal ruler index.
+		/// </para>
+		/// <para>
+		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
+		/// exist between left-end of the text area
+		/// and the character at index specified by <paramref name="charIndex"/>.
+		/// This value is zero-based index.
+		/// </para>
+		/// </remarks>
+		public int GetHRulerIndex( int lineIndex, int columnIndex )
+		{
+			Point virPos;
+
+			if( lineIndex < 0 || LineCount <= lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex", "Specified index is out of range. (value:"+lineIndex+", line count:"+LineCount+")" );
+			if( columnIndex < 0 )
+				throw new ArgumentOutOfRangeException( "columnIndex", "Specified index is out of range. (value:"+columnIndex+")" );
+
+			// calculate location of the character in coordinate in virtual text area
+			virPos = GetVirPosFromIndex( lineIndex, columnIndex );
+
+			// calculate how many smallest lines exist at left of the character
+			return (virPos.X / HRulerUnitWidth);
 		}
 		#endregion
 

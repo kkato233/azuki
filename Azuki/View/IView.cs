@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-09-13
+// update: 2009-09-20
 //=========================================================
 using System;
 using System.Drawing;
@@ -264,6 +264,45 @@ namespace Sgry.Azuki
 		/// </para>
 		/// </remarks>
 		int[] GetRectSelectRanges( Rectangle selRect );
+
+		/// <summary>
+		/// Calculates location of character at specified index in horizontal ruler index.
+		/// </summary>
+		/// <param name="charIndex">The index of the character to calculate its location.</param>
+		/// <returns>Horizontal ruler index of the character.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method calculates location of character at specified index
+		/// in horizontal ruler index.
+		/// </para>
+		/// <para>
+		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
+		/// exist between left-end of the text area
+		/// and the character at index specified by <paramref name="charIndex"/>.
+		/// This value is zero-based index.
+		/// </para>
+		/// </remarks>
+		int GetHRulerIndex( int charIndex );
+
+		/// <summary>
+		/// Calculates location of character at specified index in horizontal ruler index.
+		/// </summary>
+		/// <param name="lineIndex">The line index of the character to calculate its location.</param>
+		/// <param name="columnIndex">The column index of the character to calculate its location.</param>
+		/// <returns>Horizontal ruler index of the character.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method calculates location of character at specified index
+		/// in horizontal ruler index.
+		/// </para>
+		/// <para>
+		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
+		/// exist between left-end of the text area
+		/// and the character at index specified by <paramref name="charIndex"/>.
+		/// This value is zero-based index.
+		/// </para>
+		/// </remarks>
+		int GetHRulerIndex( int lineIndex, int columnIndex );
 		#endregion
 
 		#region Operations

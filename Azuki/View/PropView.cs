@@ -72,10 +72,10 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		public override Point GetVirPosFromIndex( int lineIndex, int columnIndex )
 		{
-			if( lineIndex < 0 )
-				throw new ArgumentOutOfRangeException( "lineIndex("+lineIndex+")" );
+			if( lineIndex < 0 || LineCount <= lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex", "Specified index is out of range. (value:"+lineIndex+", line count:"+LineCount+")" );
 			if( columnIndex < 0 )
-				throw new ArgumentOutOfRangeException( "columnIndex("+columnIndex+")" );
+				throw new ArgumentOutOfRangeException( "columnIndex", "Specified index is out of range. (value:"+columnIndex+")" );
 
 			Point pos = new Point();
 

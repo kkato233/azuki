@@ -188,14 +188,14 @@ namespace Sgry.Azuki
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		Point GetVirPosFromIndex( int index );
 
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		Point GetVirPosFromIndex( int lineIndex, int columnIndex );
 
 		/// <summary>
@@ -217,26 +217,26 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets the index of the first char in the line.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		int GetLineHeadIndex( int lineIndex );
 
 		/// <summary>
 		/// Gets the index of the first char in the physical line
 		/// which contains the specified char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		int GetLineHeadIndexFromCharIndex( int charIndex );
 
 		/// <summary>
 		/// Calculates physical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex );
 
 		/// <summary>
 		/// Calculates char-index from physical line/column index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex );
 
 		/// <summary>

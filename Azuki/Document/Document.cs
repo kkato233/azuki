@@ -235,7 +235,7 @@ namespace Sgry.Azuki
 			if( lineIndex < 0 || columnIndex < 0 )
 				throw new ArgumentOutOfRangeException( "lineIndex or columnIndex", "index must not be negative value. (lineIndex:"+lineIndex+", columnIndex:"+columnIndex+")" );
 			if( _LHI.Count <= lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex", "too large line index was given (given:"+lineIndex+" actual line count:"+_LHI.Count+")" );
+				throw new ArgumentOutOfRangeException( "lineIndex", "too large line index was given (given:"+lineIndex+", actual line count:"+_LHI.Count+")" );
 			
 			int caretIndex = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI, lineIndex, columnIndex );
 			SetSelection( caretIndex, caretIndex );

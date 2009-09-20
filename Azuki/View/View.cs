@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-09-13
+// update: 2009-09-20
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -672,12 +672,21 @@ namespace Sgry.Azuki
 			int leftIndex;
 			int rightIndex;
 			int y;
+			int selRectBottom;
+
+			// if bottom coordinate of the selection rectangle is negative value,
+			// modify it to zero.
+			selRectBottom = selRect.Bottom;
+			if( selRect.Bottom < 0 )
+			{
+				selRectBottom = 0;
+			}
 
 			// get text in the rect
 			leftPos.X = selRect.Left;
 			rightPos.X = selRect.Right;
 			y = selRect.Top - (selRect.Top % LineSpacing);
-			while( y <= selRect.Bottom )
+			while( y <= selRectBottom )
 			{
 				// calculate sub-selection range made with this line
 				leftPos.Y = rightPos.Y = y;

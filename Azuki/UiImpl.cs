@@ -287,105 +287,115 @@ namespace Sgry.Azuki
 			Document doc = Document;
 			int selBegin, selEnd;
 
-			// just notify and return if in read only mode
-			if( Document.IsReadOnly )
+			try
 			{
-				Plat.Inst.MessageBeep();
-				return;
-			}
-
-			// clear rectangle selection
-			if( Document.RectSelectRanges != null )
-			{
-				UiImpl.DeleteRectSelectText( Document );
-			}
-
-			// try to use hook delegate
-			if( _AutoIndentHook != null
-				&& _AutoIndentHook(_UI, ch) == true )
-			{
-				goto update;
-			}
-
-			// handle surrogate pairs
-			if( Char.IsSurrogate(ch) )
-			{
-				if( _FirstSurrogateChar == '\0' )
+				// just notify and return if in read only mode
+				if( doc.IsReadOnly )
 				{
-					// this is first char of a surrogate pair. remember it.
-					_FirstSurrogateChar = ch;
+					Plat.Inst.MessageBeep();
 					return;
 				}
-			}
-			else
-			{
-				// Azuki accepts surrogate pairs only if it was continuously inserted.
-				// so we clear the history
-				_FirstSurrogateChar = '\0';
-			}
 
-			// make string to be inserted
-			doc.GetSelection( out selBegin, out selEnd );
-			if( _FirstSurrogateChar != '\0' )
-			{
-				// this is a second char of a surrogate pair.
-				// compose the surrogate pair
-				str = "" + _FirstSurrogateChar + ch;
-				_FirstSurrogateChar = '\0';
-			}
-			else if( LineLogic.IsEolChar(ch) )
-			{
-				str = doc.EolCode;
-			}
-			else if( ch == '\t' && _UsesTabForIndent )
-			{
-				StringBuilder buf = new StringBuilder( 32 );
-				
-				// get x-coord of caret index
-				Point newCaretPos = View.GetVirPosFromIndex( selBegin );
+				// begin grouping UNDO action
+				doc.BeginUndo();
 
-				// calc next tab stop
-				Point nextTabStopPos = newCaretPos;
-				nextTabStopPos.X += View.TabWidthInPx;
-				nextTabStopPos.X = nextTabStopPos.X - (nextTabStopPos.X % View.TabWidthInPx);
-
-				// make padding spaces
-				int spaceCount = (nextTabStopPos.X - newCaretPos.X) / View.SpaceWidthInPx;
-				str = String.Empty;
-				for( int i=0; i<spaceCount; i++ )
+				// clear rectangle selection
+				if( doc.RectSelectRanges != null )
 				{
-					str += ' ';
+					UiImpl.DeleteRectSelectText( doc );
 				}
+
+				// try to use hook delegate
+				if( _AutoIndentHook != null
+					&& _AutoIndentHook(_UI, ch) == true )
+				{
+					goto update;
+				}
+
+				// handle surrogate pairs
+				if( Char.IsSurrogate(ch) )
+				{
+					if( _FirstSurrogateChar == '\0' )
+					{
+						// this is first char of a surrogate pair. remember it.
+						_FirstSurrogateChar = ch;
+						return;
+					}
+				}
+				else
+				{
+					// Azuki accepts surrogate pairs only if it was continuously inserted.
+					// so we clear the history
+					_FirstSurrogateChar = '\0';
+				}
+
+				// make string to be inserted
+				doc.GetSelection( out selBegin, out selEnd );
+				if( _FirstSurrogateChar != '\0' )
+				{
+					// this is a second char of a surrogate pair.
+					// compose the surrogate pair
+					str = "" + _FirstSurrogateChar + ch;
+					_FirstSurrogateChar = '\0';
+				}
+				else if( LineLogic.IsEolChar(ch) )
+				{
+					str = doc.EolCode;
+				}
+				else if( ch == '\t' && _UsesTabForIndent )
+				{
+					StringBuilder buf = new StringBuilder( 32 );
+					
+					// get x-coord of caret index
+					Point newCaretPos = View.GetVirPosFromIndex( selBegin );
+
+					// calc next tab stop
+					Point nextTabStopPos = newCaretPos;
+					nextTabStopPos.X += View.TabWidthInPx;
+					nextTabStopPos.X = nextTabStopPos.X - (nextTabStopPos.X % View.TabWidthInPx);
+
+					// make padding spaces
+					int spaceCount = (nextTabStopPos.X - newCaretPos.X) / View.SpaceWidthInPx;
+					str = String.Empty;
+					for( int i=0; i<spaceCount; i++ )
+					{
+						str += ' ';
+					}
+				}
+				else if( ch == '\x3000' && ConvertsFullWidthSpaceToSpace )
+				{
+					str = "\x0020";
+				}
+				else
+				{
+					str = ch.ToString();
+				}
+				newCaretIndex = selBegin + str.Length;
+
+				// calc replacement target range
+				if( IsOverwriteMode
+					&& selBegin == selEnd && selEnd+1 < doc.Length
+					&& LineLogic.IsEolChar(doc[selBegin]) != true )
+				{
+					selEnd++;
+				}
+
+				// replace selection to input char
+				doc.Replace( str, selBegin, selEnd );
+				doc.SetSelection( newCaretIndex, newCaretIndex );
+
+			update:
+				// set desired column
+				_View.SetDesiredColumn();
+
+				// update graphic
+				_View.ScrollToCaret();
+				//NO_NEED//_View.Invalidate( xxx ); // Doc_ContentChanged will do invalidation well.
 			}
-			else if( ch == '\x3000' && ConvertsFullWidthSpaceToSpace )
+			finally
 			{
-				str = "\x0020";
+				doc.EndUndo();
 			}
-			else
-			{
-				str = ch.ToString();
-			}
-			newCaretIndex = selBegin + str.Length;
-
-			// calc replacement target range
-			if( IsOverwriteMode
-				&& selBegin == selEnd && selEnd+1 < doc.Length
-				&& LineLogic.IsEolChar(doc[selBegin]) != true )
-			{
-				selEnd++;
-			}
-
-			// replace selection to input char
-			doc.Replace( str, selBegin, selEnd );
-			doc.SetSelection( newCaretIndex, newCaretIndex );
-
-		update:
-			// set desired column
-			_View.SetDesiredColumn();
-
-			// update graphic
-			_View.ScrollToCaret();
-			//NO_NEED//_View.Invalidate( xxx ); // Doc_ContentChanged will do invalidation well.
 		}
 		#endregion
 

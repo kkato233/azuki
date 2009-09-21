@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-08-31
+// update: 2009-09-21
 //=========================================================
 using System;
 using System.Drawing;
@@ -40,7 +40,9 @@ namespace Sgry.Azuki
 			if( doc.RectSelectRanges != null )
 			{
 				//--- case of rectangle selection ---
+				doc.BeginUndo();
 				UiImpl.DeleteRectSelectText( doc );
+				doc.EndUndo();
 				ui.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
@@ -100,7 +102,9 @@ namespace Sgry.Azuki
 			if( doc.RectSelectRanges != null )
 			{
 				//--- case of rectangle selection ---
+				doc.BeginUndo();
 				UiImpl.DeleteRectSelectText( doc );
+				doc.EndUndo();
 				ui.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
@@ -148,7 +152,9 @@ namespace Sgry.Azuki
 			if( doc.RectSelectRanges != null )
 			{
 				//--- case of rectangle selection ---
+				doc.BeginUndo();
 				UiImpl.DeleteRectSelectText( doc );
+				doc.EndUndo();
 				ui.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
@@ -208,7 +214,9 @@ namespace Sgry.Azuki
 			if( doc.RectSelectRanges != null )
 			{
 				//--- case of rectangle selection ---
+				doc.BeginUndo();
 				UiImpl.DeleteRectSelectText( doc );
+				doc.EndUndo();
 				ui.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
@@ -273,7 +281,9 @@ namespace Sgry.Azuki
 				// delete selected text
 				if( doc.RectSelectRanges != null )
 				{
+					doc.BeginUndo();
 					UiImpl.DeleteRectSelectText( doc );
+					doc.EndUndo();
 					Plat.Inst.SetClipboardText( text, TextDataType.Rectangle );
 				}
 				else
@@ -388,6 +398,9 @@ namespace Sgry.Azuki
 				return;
 			}
 			
+			// begin grouping edit action
+			doc.BeginUndo();
+
 			// delete currently selected text before insertion
 			doc.GetSelection( out begin, out end );
 			if( doc.RectSelectRanges != null )
@@ -464,6 +477,9 @@ namespace Sgry.Azuki
 				// insert
 				doc.Replace( clipboardText, insertIndex, insertIndex );
 			}
+
+			// end grouping UNDO action
+			doc.EndUndo();
 
 			// move caret
 			ui.View.SetDesiredColumn();
@@ -583,11 +599,13 @@ namespace Sgry.Azuki
 			}
 
 			// indent each lines
+			doc.BeginUndo();
 			for( int i=beginL; i<endL; i++ )
 			{
 				int lineHead = doc.GetLineHeadIndex( i );
 				doc.Replace( indentChars, lineHead, lineHead );
 			}
+			doc.EndUndo();
 
 			// select whole range
 			beginLineHead = doc.GetLineHeadIndex( beginL );
@@ -628,6 +646,7 @@ namespace Sgry.Azuki
 			}
 
 			// unindent each lines
+			doc.BeginUndo();
 			for( int i=beginL; i<endL; i++ )
 			{
 				int lineHead = doc.GetLineHeadIndex( i );
@@ -654,6 +673,7 @@ namespace Sgry.Azuki
 					}
 				}
 			}
+			doc.EndUndo();
 
 			// select whole range
 			beginLineHead = doc.GetLineHeadIndex( beginL );

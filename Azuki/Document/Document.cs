@@ -739,7 +739,7 @@ namespace Sgry.Azuki
 		/// <see cref="Sgry.Azuki.Document.EndUndo">EndUndo method</see>.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.EndUndo">Document.EndUndo method</see>.
+		/// <seealso cref="Sgry.Azuki.Document.EndUndo">Document.EndUndo method</seealso>
 		public void BeginUndo()
 		{
 			_History.BeginUndo();
@@ -753,7 +753,7 @@ namespace Sgry.Azuki
 		/// Call of this method stops grouping up editing actions.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.BeginUndo">Document.BeginUndo method</see>.
+		/// <seealso cref="Sgry.Azuki.Document.BeginUndo">Document.BeginUndo method</seealso>
 		public void EndUndo()
 		{
 			_History.EndUndo();

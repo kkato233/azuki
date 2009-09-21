@@ -703,17 +703,17 @@ namespace Sgry.Azuki
 			anchorDelta = _AnchorIndex - oldAnchor;
 			caretDelta = _CaretIndex - oldCaret;
 
-			// calc anchor/caret index in current text
-			oldAnchor += anchorDelta;
-			oldCaret += caretDelta;
-
 			// stack UNDO history
 			if( _IsRecordingHistory )
 			{
-				undo = new EditAction( this, begin, oldText, text );
+				undo = new EditAction( this, begin, oldText, text, oldAnchor, oldCaret );
 				_History.Add( undo );
 			}
 			_LastModifiedTime = DateTime.Now;
+
+			// convert anchor/caret index in current text
+			oldAnchor += anchorDelta;
+			oldCaret += caretDelta;
 
 			Debug.Assert( begin <= Length );
 

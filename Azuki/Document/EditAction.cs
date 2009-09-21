@@ -26,6 +26,8 @@ namespace Sgry.Azuki
 		int _Index;
 		string _DeletedText;
 		string _InsertedText;
+		int _OldAnchorIndex;
+		int _OldCaretIndex;
 		EditAction _Next = null;
 		#endregion
 
@@ -37,12 +39,16 @@ namespace Sgry.Azuki
 		/// <param name="index">index indicatating where the replacement has occured</param>
 		/// <param name="deletedText">deleted text by the replacement</param>
 		/// <param name="insertedText">inserted text by the replacement</param>
-		public EditAction( Document doc, int index, string deletedText, string insertedText )
+		/// <param name="oldAnchorIndex">index of the selection anchor at when the replacement has occured</param>
+		/// <param name="oldCaretIndex">index of the caret at when the replacement has occured</param>
+		public EditAction( Document doc, int index, string deletedText, string insertedText, int oldAnchorIndex, int oldCaretIndex )
 		{
 			_Document = doc;
 			_Index = index;
 			_DeletedText = deletedText;
 			_InsertedText = insertedText;
+			_OldAnchorIndex = oldAnchorIndex;
+			_OldCaretIndex = oldCaretIndex;
 		}
 		#endregion
 
@@ -84,7 +90,7 @@ namespace Sgry.Azuki
 				_Document.Replace( _DeletedText, _Index, _Index+_InsertedText.Length );
 
 				// recover old selection
-				_Document.SetSelection( _Index, _Index+_DeletedText.Length );
+				_Document.SetSelection( _OldAnchorIndex, _OldCaretIndex );
 			}
 			_Document.IsRecordingHistory = true;
 		}
@@ -131,11 +137,11 @@ namespace Sgry.Azuki
 				// invalidation logic of Azuki
 				_Document.SetSelection( _Index, _Index );
 
+				// recover old selection
+				_Document.SetSelection( _OldAnchorIndex, _OldCaretIndex );
+
 				// replace back to old text
 				_Document.Replace( _InsertedText, _Index, _Index+_DeletedText.Length );
-
-				// recover old selection
-				_Document.SetSelection( _Index, _Index+_InsertedText.Length );
 			}
 			_Document.IsRecordingHistory = true;
 		}

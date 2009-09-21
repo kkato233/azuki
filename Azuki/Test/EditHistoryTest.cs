@@ -36,7 +36,9 @@ namespace Sgry.Azuki.Test
 
 			for( int i=0; i<len; i++ )
 			{
-				history.Add( new EditAction(doc, i, i.ToString(), (i+'a').ToString()) );
+				history.Add(
+						new EditAction(doc, i, i.ToString(), (i+'a').ToString(), 0, 0)
+					);
 			}
 			
 			TestUtl.AssertEquals( true, history.CanUndo );
@@ -70,7 +72,9 @@ namespace Sgry.Azuki.Test
 			// add some
 			for( int i=0; i<len1; i++ )
 			{
-				history.Add( new EditAction(doc, i, i.ToString(), (i+'a').ToString()) );
+				history.Add(
+						new EditAction(doc, i, i.ToString(), (i+'a').ToString(), 0, 0)
+					);
 			}
 			
 			TestUtl.AssertEquals( true, history.CanUndo );
@@ -97,7 +101,9 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( true, history.CanRedo );
 
 			// add one and ensure that it can redo no more
-			history.Add( new EditAction(doc, len3, (len3).ToString(), (len3+'a').ToString()) );
+			history.Add(
+					new EditAction(doc, len3, (len3).ToString(), (len3+'a').ToString(), 0, 0)
+				);
 			TestUtl.AssertEquals( true, history.CanUndo );
 			TestUtl.AssertEquals( false, history.CanRedo );
 

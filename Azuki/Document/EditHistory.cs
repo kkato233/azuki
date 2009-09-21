@@ -110,7 +110,7 @@ namespace Sgry.Azuki
 		{
 			if( _IsGroupingActions == false )
 			{
-				Add( new EditAction(null, 0, null, null) );
+				Add( new EditAction(null, 0, null, null, 0, 0) );
 				_IsGroupingActions = true;
 			}
 		}

@@ -2,7 +2,7 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-05-16
+// update: 2009-09-21
 //=========================================================
 using System;
 
@@ -18,7 +18,7 @@ namespace Sgry.Azuki
 		EditAction[] _Stack;
 		int _Capacity = 32;
 		int _NextIndex = 0;
-//		int _MaximumCount = 2;
+		bool _IsGroupingActions = false;
 		#endregion
 
 		#region Init / Dispose
@@ -37,6 +37,13 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void Add( EditAction action )
 		{
+			if( _IsGroupingActions )
+			{
+				//--- executing group UNDO ---
+				// chain given action to latest action
+				action.Next = GetUndoAction();
+			}
+
 			// if there is no more space, expand buffer
 			if( _Capacity <= _NextIndex )
 			{
@@ -94,6 +101,26 @@ namespace Sgry.Azuki
 			{
 				_Stack[i] = null;
 			}
+		}
+
+		/// <summary>
+		/// Begins grouping up editing actions into a single UNDO action.
+		/// </summary>
+		public void BeginUndo()
+		{
+			if( _IsGroupingActions == false )
+			{
+				Add( new EditAction(null, 0, null, null) );
+				_IsGroupingActions = true;
+			}
+		}
+
+		/// <summary>
+		/// Ends grouping up editing actions.
+		/// </summary>
+		public void EndUndo()
+		{
+			_IsGroupingActions = false;
 		}
 		#endregion
 

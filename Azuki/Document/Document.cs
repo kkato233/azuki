@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-09-05
+// update: 2009-09-21
 //=========================================================
 using System;
 using System.Collections;
@@ -729,6 +729,36 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Editing Behavior
+		/// <summary>
+		/// Begins grouping up editing actions into a single UNDO action.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// After call of this method, editing actions will be grouped up into a single UNDO action.
+		/// To end grouping up actions, use
+		/// <see cref="Sgry.Azuki.Document.EndUndo">EndUndo method</see>.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.EndUndo">Document.EndUndo method</see>.
+		public void BeginUndo()
+		{
+			_History.BeginUndo();
+		}
+
+		/// <summary>
+		/// Ends grouping up editing actions.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Call of this method stops grouping up editing actions.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.BeginUndo">Document.BeginUndo method</see>.
+		public void EndUndo()
+		{
+			_History.EndUndo();
+		}
+
 		/// <summary>
 		/// Executes UNDO.
 		/// </summary>

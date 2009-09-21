@@ -8,6 +8,7 @@
  * add: by AzukiControl.TopMargin property, drawing margin at top of the view can be now customizable
  * add: by AzukiControl.LeftMargin property, drawing margin at left of the view can be now customizable
  * add: added AzukiControl.LineSpacing
+ * add: supported group UNDO (groups actions between call of Document.BeginUndo and call of Document.EndUndo)
  * mod: AzukiControl.GetIndexFromScreenPos uses nearest valid position if given position is invalid
  * mod: changed argument of AutoIndentHook.
  * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsoleted
@@ -202,4 +203,5 @@
 
 == 0.8.0 (2008-05-06) ==
  * first release
+
 

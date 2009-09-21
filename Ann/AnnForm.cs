@@ -1,4 +1,4 @@
-// 2009-08-26
+// 2009-09-21
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -28,8 +28,8 @@ namespace Sgry.Ann
 		public AnnForm( AppLogic app )
 		{
 			_App = app;
-			InitUIComponent();
 			InitMenuComponents();
+			InitUIComponent();
 			InitMenuMap();
 			InitKeyMap();
 			ResetShortcutInMenu();
@@ -67,6 +67,15 @@ namespace Sgry.Ann
 		public void ActivateSearchPanel()
 		{
 			_SearchPanel.Activate( _Azuki.CaretIndex );
+		}
+
+		/// <summary>
+		/// Deactivates and set focus to text search panel.
+		/// </summary>
+		public void DeactivateSearchPanel()
+		{
+			_SearchPanel.Deactivate();
+			_Azuki.Focus();
 		}
 
 		/// <summary>
@@ -208,7 +217,7 @@ namespace Sgry.Ann
 		}
 		#endregion
 
-		#region Drag & Drop handler
+		#region GUI Event Handlers
 #		if !PocketPC
 		void Form_DragDrop( object sender, DragEventArgs e )
 		{
@@ -267,19 +276,20 @@ namespace Sgry.Ann
 			// _Azuki
 			// 
 			_Azuki.Dock = DockStyle.Fill;
-			_Azuki.Location = new Point( 0, 0 );
 			_Azuki.TabWidth = 8;
 			_Azuki.ViewWidth = 235;
 			_Azuki.KeyDown += HandleKeyAction;
 			_Azuki.GotFocus += delegate {
-				_SearchPanel.Deactivate();
+				DeactivateSearchPanel();
 			};
 			//
 			// _SearchPanel
 			//
 			_SearchPanel.Dock = DockStyle.Bottom;
 			_SearchPanel.Enabled = false;
-			_SearchPanel.Visible = false;
+			_SearchPanel.PatternFixed += delegate {
+				DeactivateSearchPanel();
+			};
 			//
 			// AnnForm
 			// 

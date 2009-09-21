@@ -19,6 +19,12 @@
  * add: [Ann] now Ann opens a file in appropriate mode by file extension
  * mod: [Ann] changed layout of the text search panel
 
+== 1.4.3 (2009-09-21) ==
+ * fix: in particular condition, pressing tab key inserts nothing if "converting input tab to spaces" feature is enabled
+ * fix: caret movement stops inproper position when pressing Ctrl+Left on paticular condition (ex. pressing Ctrl+Left when caret is at right of "5ii")
+ * fix: [Ann] file will be improperly saved in case of that the file will be shorten (this problem exists only in Ann 1.3.2)
+ * fix: [Ann] tagged as version 1.3.3
+
 == 1.4.2 (2009-09-05) ==
  * fix: fixed a problem that executing block-indent to non empty final line causes an exception
  * fix: now Azuki always scrolls to caret after releasing selection with left key or right key

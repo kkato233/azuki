@@ -463,6 +463,7 @@ namespace Sgry.Ann
 				// write file bytes
 				using( file = File.OpenWrite(doc.FilePath) )
 				{
+					file.SetLength( 0 );
 					file.Write( bomBytes, 0, bomBytes.Length );
 					file.Write( contentBytes, 0, contentBytes.Length );
 				}

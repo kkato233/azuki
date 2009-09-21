@@ -345,17 +345,24 @@ namespace Sgry.Azuki
 				else if( ch == '\t' && _UsesTabForIndent )
 				{
 					StringBuilder buf = new StringBuilder( 32 );
+					Point caretPos;
+					Point nextTabStopPos;
 					
 					// get x-coord of caret index
-					Point newCaretPos = View.GetVirPosFromIndex( selBegin );
+					caretPos = View.GetVirPosFromIndex( selBegin );
 
 					// calc next tab stop
-					Point nextTabStopPos = newCaretPos;
+					// ([*] When distance of the caret and next tab stop is narrower than a space width,
+					// no padding chars will be made and 'nothing will happen.'
+					// To avoid such case, here we add an extra space width
+					// before calculating next tab stop.)
+					nextTabStopPos = caretPos;
+					nextTabStopPos.X += View.SpaceWidthInPx - 1; // [*]
 					nextTabStopPos.X += View.TabWidthInPx;
-					nextTabStopPos.X = nextTabStopPos.X - (nextTabStopPos.X % View.TabWidthInPx);
+					nextTabStopPos.X -= (nextTabStopPos.X % View.TabWidthInPx);
 
 					// make padding spaces
-					int spaceCount = (nextTabStopPos.X - newCaretPos.X) / View.SpaceWidthInPx;
+					int spaceCount = (nextTabStopPos.X - caretPos.X) / View.SpaceWidthInPx;
 					str = String.Empty;
 					for( int i=0; i<spaceCount; i++ )
 					{

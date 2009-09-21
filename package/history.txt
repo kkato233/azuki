@@ -15,6 +15,7 @@
  * add: [Ann] now Ann remembers last window size
  * add: [Ann] now Ann remembers drawing options
  * add: [Ann] now Ann opens a file in appropriate mode by file extension
+ * mod: [Ann] changed layout of the text search panel
 
 == 1.4.2 (2009-09-05) ==
  * fix: fixed a problem that executing block-indent to non empty final line causes an exception

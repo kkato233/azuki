@@ -290,7 +290,7 @@ namespace Sgry.Azuki
 				return;
 			}
 
-			// ensure that given index is not in middle of the surrogate pairs
+			// ensure that given index is not in middle of a surrogate pair or a CR-LF pair
 			Utl.ConstrainIndex( _Buffer, ref anchor, ref caret );
 
 			// get anchor/caret position in new text content

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-09-20
+// update: 2009-09-21
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -193,6 +193,7 @@ namespace Sgry.Azuki.Windows
 
 			_Impl.ClearKeyBind();
 
+			// bind keys to move caret
 			SetKeyBind( Keys.Right, Actions.MoveRight );
 			SetKeyBind( Keys.Left, Actions.MoveLeft );
 			SetKeyBind( Keys.Down, Actions.MoveDown );
@@ -206,6 +207,7 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.Home|Keys.Control, Actions.MoveToFileHead );
 			SetKeyBind( Keys.End|Keys.Control, Actions.MoveToFileEnd );
 
+			// bind keys to set selection
 			SetKeyBind( Keys.Right|Keys.Shift, Actions.SelectToRight );
 			SetKeyBind( Keys.Left|Keys.Shift, Actions.SelectToLeft );
 			SetKeyBind( Keys.Down|Keys.Shift, Actions.SelectToDown );
@@ -218,12 +220,17 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.PageUp|Keys.Shift, Actions.SelectToPageUp );
 			SetKeyBind( Keys.Home|Keys.Control|Keys.Shift, Actions.SelectToFileHead );
 			SetKeyBind( Keys.End|Keys.Control|Keys.Shift, Actions.SelectToFileEnd );
-			
+			SetKeyBind( Keys.Right|Keys.Alt, Actions.RectSelectToRight );
+			SetKeyBind( Keys.Left|Keys.Alt, Actions.RectSelectToLeft );
+			SetKeyBind( Keys.Up|Keys.Alt, Actions.RectSelectToUp );
+			SetKeyBind( Keys.Down|Keys.Alt, Actions.RectSelectToDown );
+			SetKeyBind( Keys.A|Keys.Control, Actions.SelectAll );
+
+			// bind keys to edit document
 			SetKeyBind( Keys.Back, Actions.BackSpace );
 			SetKeyBind( Keys.Back|Keys.Control, Actions.BackSpaceWord );
 			SetKeyBind( Keys.Delete, Actions.Delete );
 			SetKeyBind( Keys.Delete|Keys.Control, Actions.DeleteWord );
-			SetKeyBind( Keys.A|Keys.Control, Actions.SelectAll );
 			SetKeyBind( Keys.V|Keys.Control, Actions.Paste );
 			SetKeyBind( Keys.C|Keys.Control, Actions.Copy );
 			SetKeyBind( Keys.X|Keys.Control, Actions.Cut );
@@ -231,9 +238,9 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.Z|Keys.Control|Keys.Shift, Actions.Redo );
 			SetKeyBind( Keys.Y|Keys.Control, Actions.Redo );
 
+			// bind misc keys
 			SetKeyBind( (Keys)VK_OEM4|Keys.Control, Actions.GoToMatchedBracket );
 			SetKeyBind( (Keys)VK_OEM6|Keys.Control, Actions.GoToMatchedBracket );
-
 			SetKeyBind( Keys.B|Keys.Control, Actions.ToggleRectSelectMode );
 			SetKeyBind( Keys.Insert, Actions.ToggleOverwriteMode );
 			SetKeyBind( Keys.F5, Actions.Refresh );

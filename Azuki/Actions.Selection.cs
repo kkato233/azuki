@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine (actions to change selection).
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-09-01
+// update: 2009-09-21
 //=========================================================
 using System;
 using System.Drawing;
@@ -13,7 +13,7 @@ namespace Sgry.Azuki
 	{
 		#region Caret Movement
 		/// <summary>
-		/// Move caret to right.
+		/// Moves caret to right.
 		/// </summary>
 		public static void MoveRight( IUserInterface ui )
 		{
@@ -39,7 +39,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to left.
+		/// Moves caret to left.
 		/// </summary>
 		public static void MoveLeft( IUserInterface ui )
 		{
@@ -65,7 +65,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret down.
+		/// Moves caret down.
 		/// </summary>
 		public static void MoveDown( IUserInterface ui )
 		{
@@ -74,7 +74,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret up.
+		/// Moves caret up.
 		/// </summary>
 		public static void MoveUp( IUserInterface ui )
 		{
@@ -83,7 +83,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to next word.
+		/// Moves caret to next word.
 		/// </summary>
 		public static void MoveToNextWord( IUserInterface ui )
 		{
@@ -105,7 +105,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to previous word.
+		/// Moves caret to previous word.
 		/// </summary>
 		public static void MoveToPrevWord( IUserInterface ui )
 		{
@@ -127,7 +127,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to line head.
+		/// Moves caret to line head.
 		/// </summary>
 		public static void MoveToLineHead( IUserInterface ui )
 		{
@@ -149,7 +149,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to the first non-whitespace char at the line.
+		/// Moves caret to the first non-whitespace char at the line.
 		/// </summary>
 		public static void MoveToLineHeadSmart( IUserInterface ui )
 		{
@@ -171,7 +171,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to line end.
+		/// Moves caret to line end.
 		/// </summary>
 		public static void MoveToLineEnd( IUserInterface ui )
 		{
@@ -193,7 +193,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to one page after.
+		/// Moves caret to one page after.
 		/// </summary>
 		public static void MovePageDown( IUserInterface ui )
 		{
@@ -224,7 +224,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to one page before.
+		/// Moves caret to one page before.
 		/// </summary>
 		public static void MovePageUp( IUserInterface ui )
 		{
@@ -254,7 +254,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to file head.
+		/// Moves caret to file head.
 		/// </summary>
 		public static void MoveToFileHead( IUserInterface ui )
 		{
@@ -276,7 +276,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Move caret to file end.
+		/// Moves caret to file end.
 		/// </summary>
 		public static void MoveToFileEnd( IUserInterface ui )
 		{
@@ -300,7 +300,7 @@ namespace Sgry.Azuki
 
 		#region Selection
 		/// <summary>
-		/// Expand selection to right.
+		/// Expands selection to right.
 		/// </summary>
 		public static void SelectToRight( IUserInterface ui )
 		{
@@ -312,7 +312,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to left.
+		/// Expands selection to left.
 		/// </summary>
 		public static void SelectToLeft( IUserInterface ui )
 		{
@@ -324,7 +324,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection down.
+		/// Expands selection down.
 		/// </summary>
 		public static void SelectToDown( IUserInterface ui )
 		{
@@ -333,7 +333,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection up.
+		/// Expands selection up.
 		/// </summary>
 		public static void SelectToUp( IUserInterface ui )
 		{
@@ -342,7 +342,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to next word begin.
+		/// Expands selection to next word begin.
 		/// </summary>
 		public static void SelectToNextWord( IUserInterface ui )
 		{
@@ -354,7 +354,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to previous word begin.
+		/// Expands selection to previous word begin.
 		/// </summary>
 		public static void SelectToPrevWord( IUserInterface ui )
 		{
@@ -366,7 +366,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to line head.
+		/// Expands selection to line head.
 		/// </summary>
 		public static void SelectToLineHead( IUserInterface ui )
 		{
@@ -378,7 +378,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to the first non-whitespace char at the line.
+		/// Expands selection to the first non-whitespace char at the line.
 		/// </summary>
 		public static void SelectToLineHeadSmart( IUserInterface ui )
 		{
@@ -390,7 +390,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to line end.
+		/// Expands selection to line end.
 		/// </summary>
 		public static void SelectToLineEnd( IUserInterface ui )
 		{
@@ -402,7 +402,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to one page after.
+		/// Expands selection to one page after.
 		/// </summary>
 		public static void SelectToPageDown( IUserInterface ui )
 		{
@@ -432,7 +432,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to one page before.
+		/// Expands selection to one page before.
 		/// </summary>
 		public static void SelectToPageUp( IUserInterface ui )
 		{
@@ -461,7 +461,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to file head.
+		/// Expands selection to file head.
 		/// </summary>
 		public static void SelectToFileHead( IUserInterface ui )
 		{
@@ -473,7 +473,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Expand selection to file end.
+		/// Expands selection to file end.
 		/// </summary>
 		public static void SelectToFileEnd( IUserInterface ui )
 		{
@@ -485,7 +485,83 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Select all text.
+		/// Expands rectangle selection to right.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action expands rectangle selection to right.
+		/// If Azuki is not in rectangle selection mode,
+		/// it automatically switches to rectangle selection mode.
+		/// </para>
+		/// </remarks>
+		public static void RectSelectToRight( IUserInterface ui )
+		{
+			// force to enable rectangle selection
+			ui.IsRectSelectMode = true;
+
+			// expand selection
+			SelectToRight( ui );
+		}
+
+		/// <summary>
+		/// Expands rectangle selection to left.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action expands rectangle selection to left.
+		/// If Azuki is not in rectangle selection mode,
+		/// it automatically switches to rectangle selection mode.
+		/// </para>
+		/// </remarks>
+		public static void RectSelectToLeft( IUserInterface ui )
+		{
+			// force to enable rectangle selection
+			ui.IsRectSelectMode = true;
+
+			// expand selection
+			SelectToLeft( ui );
+		}
+
+		/// <summary>
+		/// Expands selection down.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action expands rectangle selection down.
+		/// If Azuki is not in rectangle selection mode,
+		/// it automatically switches to rectangle selection mode.
+		/// </para>
+		/// </remarks>
+		public static void RectSelectToDown( IUserInterface ui )
+		{
+			// force to enable rectangle selection
+			ui.IsRectSelectMode = true;
+
+			// expand selection
+			SelectToDown( ui );
+		}
+
+		/// <summary>
+		/// Expands selection up.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This action expands rectangle selection up.
+		/// If Azuki is not in rectangle selection mode,
+		/// it automatically switches to rectangle selection mode.
+		/// </para>
+		/// </remarks>
+		public static void RectSelectToUp( IUserInterface ui )
+		{
+			// force to enable rectangle selection
+			ui.IsRectSelectMode = true;
+
+			// expand selection
+			SelectToUp( ui );
+		}
+
+		/// <summary>
+		/// Selects all text.
 		/// </summary>
 		public static void SelectAll( IUserInterface ui )
 		{

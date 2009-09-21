@@ -16,12 +16,12 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Moves caret to the index where the specified method calculates.
 		/// </summary>
-		public static void MoveCaret( CalcMethod calculater, IUserInterface ui )
+		public static void MoveCaret( CalcMethod calculator, IUserInterface ui )
 		{
 			Document doc = ui.Document;
 			IView view = ui.View;
 
-			int nextIndex = calculater( view );
+			int nextIndex = calculator( view );
 			if( nextIndex == doc.CaretIndex )
 			{
 				// notify that the caret not moved
@@ -40,14 +40,14 @@ namespace Sgry.Azuki
 		/// Expand selection to the index where the specified method calculates
 		/// (selection anchor will not be changed).
 		/// </summary>
-		public static void SelectTo( CalcMethod calculater, IUserInterface ui )
+		public static void SelectTo( CalcMethod calculator, IUserInterface ui )
 		{
 			Document doc = ui.Document;
 			IView view = ui.View;
 			int nextIndex;
 
 			// calculate where to expand selection
-			nextIndex = calculater( view );
+			nextIndex = calculator( view );
 			if( nextIndex == doc.CaretIndex )
 			{
 				// notify that the caret not moved

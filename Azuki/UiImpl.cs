@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-08-23
+// update: 2009-09-21
 //=========================================================
 using System;
 using System.Text;
@@ -37,7 +37,7 @@ namespace Sgry.Azuki
 		bool _UsesTabForIndent = false;
 		bool _ConvertsFullWidthSpaceToSpace = false;
 
-		Point _MouseDownPos = new Point( -1, 0 ); // this X coordinate also be used as a flag to determine whether the mouse button is down or not
+		Point _MouseDownVirPos = new Point( -1, 0 ); // this X coordinate also be used as a flag to determine whether the mouse button is down or not
 		bool _MouseDragging = false;
 		bool _IsRectSelectMode = false;
 
@@ -537,8 +537,8 @@ namespace Sgry.Azuki
 			}
 
 			// remember mouse down screen position and convert it to virtual view's coordinate
-			_MouseDownPos = pos;
 			View.ScreenToVirtual( ref pos );
+			_MouseDownVirPos = pos;
 
 			if( buttonIndex == 0 ) // left click
 			{
@@ -565,7 +565,7 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
-			_MouseDownPos.X = -1;
+			_MouseDownVirPos.X = -1;
 			_MouseDragging = false;
 			_IsRectSelectMode = false;
 		}
@@ -598,35 +598,33 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseMove( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
+			int xOffset, yOffset;
+
 			// if mouse button was not down, ignore
-			if( _MouseDownPos.X < 0 )
+			if( _MouseDownVirPos.X < 0 )
 				return;
 
 			// make sure that these coordinates are positive value
 			pos.X = Math.Max( 0, pos.X );
 			pos.Y = Math.Max( 0, pos.Y );
+			View.ScreenToVirtual( ref pos );
 
 			// if it was slight movement, ignore
 			if( _MouseDragging == false )
 			{
-				int xOffset = Math.Abs( pos.X - _MouseDownPos.X );
-				int yOffset = Math.Abs( pos.Y - _MouseDownPos.Y );
-				if( View.DragThresh < xOffset || View.DragThresh < yOffset )
-				{
-					_MouseDragging = true;
-				}
-				else
+				xOffset = Math.Abs( pos.X - _MouseDownVirPos.X );
+				yOffset = Math.Abs( pos.Y - _MouseDownVirPos.Y );
+				if( xOffset <= View.DragThresh && yOffset <= View.DragThresh )
 				{
 					return;
 				}
 			}
+			_MouseDragging = true;
 
 			// dragging with left button?
 			if( buttonIndex == 0 )
 			{
 				int curPosIndex;
-
-				View.ScreenToVirtual( ref pos );
 
 				// calc index of where the mouse pointer is on
 				curPosIndex = View.GetIndexFromVirPos( pos );
@@ -639,8 +637,7 @@ namespace Sgry.Azuki
 				if( _IsRectSelectMode )
 				{
 					//--- rectangle selection ---
-					Point anchorPos = _MouseDownPos;
-					View.ScreenToVirtual( ref anchorPos );
+					Point anchorPos = _MouseDownVirPos;
 					Document.RectSelectRanges = View.GetRectSelectRanges(
 							MakeRectFromTwoPoints(anchorPos, pos)
 						);

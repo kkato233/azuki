@@ -1,4 +1,4 @@
-// 2009-09-06
+// 2009-09-21
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -713,6 +713,10 @@ namespace Sgry.Ann
 			// apply config
 			MainForm.Azuki.Font					= AppConfig.Font;
 			MainForm.ClientSize					= AppConfig.WindowSize;
+			if( AppConfig.WindowMaximized )
+			{
+				MainForm.WindowState = FormWindowState.Maximized;
+			}
 
 			MainForm.Azuki.DrawsEolCode			= AppConfig.DrawsEolCode;
 			MainForm.Azuki.DrawsFullWidthSpace	= AppConfig.DrawsFullWidthSpace;
@@ -735,7 +739,11 @@ namespace Sgry.Ann
 		{
 			// update config fields
 			AppConfig.Font					= MainForm.Azuki.Font;
-			AppConfig.WindowSize			= MainForm.ClientSize;
+			AppConfig.WindowMaximized		= (MainForm.WindowState == FormWindowState.Maximized);
+			if( MainForm.WindowState == FormWindowState.Maximized == false )
+			{
+				AppConfig.WindowSize = MainForm.ClientSize;
+			}
 
 			AppConfig.DrawsEolCode			= MainForm.Azuki.DrawsEolCode;
 			AppConfig.DrawsFullWidthSpace	= MainForm.Azuki.DrawsFullWidthSpace;

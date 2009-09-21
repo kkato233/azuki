@@ -1,4 +1,4 @@
-﻿// 2009-09-06
+﻿// 2009-09-21
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,6 +15,7 @@ namespace Sgry.Ann
 		
 		public static Font Font = new Font( "Courier New", 11, FontStyle.Regular );
 		public static Size WindowSize = new Size( 360, 400 );
+		public static bool WindowMaximized = false;
 		public static bool DrawsEolCode = true;
 		public static bool DrawsFullWidthSpace = true;
 		public static bool DrawsSpace = true;
@@ -47,6 +48,7 @@ namespace Sgry.Ann
 
 				AppConfig.Font					= new Font( str, fontSize, FontStyle.Regular );
 				AppConfig.WindowSize			= new Size( width, height );
+				AppConfig.WindowMaximized		= Ini.Get( "Default", "WindowMaximized", false );
 				AppConfig.DrawsEolCode			= Ini.Get( "Default", "DrawsEolCode", true );
 				AppConfig.DrawsFullWidthSpace	= Ini.Get( "Default", "DrawsFullWidthSpace", true );
 				AppConfig.DrawsSpace			= Ini.Get( "Default", "DrawsSpace", true );
@@ -74,6 +76,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "Font",					AppConfig.Font.Name );
 				Ini.Set( "Default", "WindowWidth",			AppConfig.WindowSize.Width );
 				Ini.Set( "Default", "WindowHeight",			AppConfig.WindowSize.Height );
+				Ini.Set( "Default", "WindowMaximized",		AppConfig.WindowMaximized );
 				Ini.Set( "Default", "DrawsEolCode",			AppConfig.DrawsEolCode );
 				Ini.Set( "Default", "DrawsFullWidthSpace",	AppConfig.DrawsFullWidthSpace );
 				Ini.Set( "Default", "DrawsSpace",			AppConfig.DrawsSpace );

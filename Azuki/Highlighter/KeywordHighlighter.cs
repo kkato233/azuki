@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-09-05
+// update: 2009-09-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -13,27 +13,81 @@ namespace Sgry.Azuki.Highlighter
 	/// A keyword-based highlighter which can highlight
 	/// matched keywords and parts being enclosed by specified pair.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This class provides feature to highlight document in keyword oriented way.
+	/// Users can create an instance of this class and customize it directly to achieve
+	/// desired highlighting result, or can define a child class of this and customize it.
+	/// </para>
+	/// <para>
+	/// KeywordHighlighter can highlight three types of text pattern as follows.
+	/// </para>
+	/// <list type="number">
+	///		<item>keyword set</item>
+	///		<item>line highlight</item>
+	///		<item>enclosure</item>
+	/// </list>
+	/// <para>
+	/// Keyword set is a set of keywords.
+	/// KeywordHighlighter scans document and highlight all registered keywords found,
+	/// as char-class associated with the keyword set.
+	/// For example, C/C++ source code includes keywords and pre-processor macro keywords
+	/// so user may define one keyword set containing all C/C++ keywords and associate
+	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>.Keyword,
+	/// and another keyword set containing all pre-processor macro keywords and associate
+	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>.Macro.
+	/// To register keyword sets, use
+	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean, String)">
+	/// AddKeywordSet</see> method.
+	/// </para>
+	/// <para>
+	/// Line highlight is a text pattern that begins with particular pattern at anywhere in a line
+	/// and must ends at the end of the line.
+	/// Line highlight is designed to highlight single line comment syntax
+	/// that very many programming language defines.
+	/// To register line highlight target, use
+	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddLineHighlight">AddLineHighlight</see> method.
+	/// </para>
+	/// <para>
+	/// Enclosure is a text pattern that is enclosed with beginning pattern and ending pattern.
+	/// Typical example of enclosure type is &quot;string literal&quot; and &quot;single line comment&quot;
+	/// in programming languages.
+	/// To register enclosure target, use
+	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddEnclosure(String, String, CharClass, Boolean, Char)">
+	/// AddEnclosure</see> method.
+	/// </para>
+	/// </remarks>
+	/// <example>
+	/// <para>
+	/// Next example creates a highlighter object to highlight C# source code.
+	/// </para>
+	/// <code lang="C#">
+	/// KeywordHighlighter kh = new KeywordHighlighter();
+	/// 
+	/// // register keyword set
+	/// kh.AddKeywordSet( new string[]{
+	/// 	"abstract", "as", "base", "bool", ...
+	/// }, CharClass.Keyword );
+	/// 
+	/// // register pre-processor keywords
+	/// kh.AddKeywordSet( new string[] {
+	/// 	"#define", "#elif", "#else", "#endif", ...
+	/// }, CharClass.Macro );
+	/// 
+	/// // register string literals and character literal
+	/// kh.AddEnclosure( "'", "'", CharClass.String, false, '\\' );
+	/// kh.AddEnclosure( "@\"", "\"", CharClass.String, true, '\"' );
+	/// kh.AddEnclosure( "\"", "\"", CharClass.String, false, '\\' );
+	/// 
+	/// // register comment
+	/// kh.AddEnclosure( "/**", "*/", CharClass.DocComment, true );
+	/// kh.AddEnclosure( "/*", "*/", CharClass.Comment, true );
+	/// kh.AddLineHighlight( "///", CharClass.DocComment );
+	/// kh.AddLineHighlight( "//", CharClass.Comment );
+	/// </code>
+	/// </example>
 	public class KeywordHighlighter : IHighlighter
 	{
-		#region Public Fields
-		/// <summary>
-		/// Default word-character set.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This is the default word-character set used by KeywordHighlighter.
-		/// Alphabets, numbers and underscore ('_') are included in this set.
-		/// </para>
-		/// <para>
-		/// KeywordHighlighter treats a sequence of characters in a word character set as a word.
-		/// Especially word-characters
-		/// If there are keywords that contain characters not included in the word character set,
-		/// KeywordHighlighter may fail to highlight such keywords properly.
-		/// </para>
-		/// </remarks>
-		public static readonly string DefaultWordCharSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
-		#endregion
-
 		#region Inner Types and Fields
 		class KeywordSet
 		{
@@ -58,6 +112,7 @@ namespace Sgry.Azuki.Highlighter
 #			endif
 		}
 
+		static readonly string DefaultWordCharSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
 		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
 		List<Enclosure> _LineHighlights = new List<Enclosure>( 2 );
@@ -72,22 +127,49 @@ namespace Sgry.Azuki.Highlighter
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
 		/// </summary>
-		public void AddEnclosure( string openPattern, string closePattern, CharClass klass )
+		public void AddEnclosure(
+				string openPattern, string closePattern, CharClass klass
+			)
 		{
-			AddEnclosure( openPattern, closePattern, klass, '\0' );
+			AddEnclosure( openPattern, closePattern, klass, true, '\0' );
 		}
 
 		/// <summary>
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
 		/// </summary>
-		public void AddEnclosure( string openPattern, string closePattern, CharClass klass, char escapeChar )
+		public void AddEnclosure(
+				string openPattern, string closePattern, CharClass klass, bool multiLine
+			)
+		{
+			AddEnclosure( openPattern, closePattern, klass, multiLine, '\0' );
+		}
+
+		/// <summary>
+		/// Adds a pair of strings and character-class
+		/// that characters between the pair will be classified as.
+		/// </summary>
+		public void AddEnclosure(
+				string openPattern, string closePattern, CharClass klass, char escapeChar
+			)
+		{
+			AddEnclosure( openPattern, closePattern, klass, true, escapeChar );
+		}
+
+		/// <summary>
+		/// Adds a pair of strings and character-class
+		/// that characters between the pair will be classified as.
+		/// </summary>
+		public void AddEnclosure(
+				string openPattern, string closePattern, CharClass klass, bool multiLine, char escapeChar
+			)
 		{
 			Enclosure pair = new Enclosure();
 			pair.opener = openPattern;
 			pair.closer = closePattern;
 			pair.klass = klass;
 			pair.escape = escapeChar;
+			pair.multiLine = multiLine;
 			_Enclosures.Add( pair );
 		}
 
@@ -125,44 +207,85 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Sets keywords to highlight.
+		/// (Please use AddKeywordSet instead.)
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method is obsoleted.
+		/// Please use
+		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass)">
+		/// AddKeywordSet</see> method instead.
+		/// </para>
+		/// </remarks>
+		[Obsolete("Please use AddKeywordSet method instead.", false)]
+		public void SetKeywords( string[] keywords, CharClass klass )
+		{
+			AddKeywordSet( keywords, klass, false, DefaultWordCharSet );
+		}
+
+		/// <summary>
+		/// (Please use AddKeywordSet instead.)
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method is obsoleted.
+		/// Please use
+		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean, String)">
+		/// AddKeywordSet</see> method instead.
+		/// </para>
+		/// </remarks>
+		[Obsolete("Please use AddKeywordSet method instead.", false)]
+		public void SetKeywords( string[] keywords, CharClass klass, bool ignoreCase, string wordCharSet )
+		{
+			AddKeywordSet( keywords, klass, ignoreCase, wordCharSet );
+		}
+
+		/// <summary>
+		/// Adds a set of keywords to be highlighted.
 		/// </summary>
 		/// <param name="keywords">Sorted array of keywords.</param>
 		/// <param name="klass">Char-class to be applied to the keyword set.</param>
 		/// <remarks>
 		/// <para>
-		/// This method sets the keywords to be highlighted.
+		/// This method registers a set keywords to be highlighted.
+		/// </para>
+		/// <para>
 		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
 		/// as <paramref name="klass"/> character class.
 		/// Please ensure that keywords in <paramref name="keywords"/> parameter
-		/// must be alphabetically sorted,
-		/// otherwise keywords may not be highlighted properly.
+		/// must be alphabetically sorted.
+		/// If they are not sorted, <see cref="ArgumentException"/> will be thrown.
 		/// </para>
 		/// <para>
 		/// The keywords will be matched case sensitively
-		/// and supporsed to be consisted with only alphabets, numbers and underscore ('_').
+		/// and supposed to be consisted with only alphabets, numbers and underscore ('_').
 		/// </para>
 		/// </remarks>
-		public void SetKeywords( string[] keywords, CharClass klass )
+		/// <seealso cref="AddKeywordSet(String[], CharClass, Boolean, String)">AddKeywordSet method (another overloaded method)</seealso>
+		public void AddKeywordSet( string[] keywords, CharClass klass )
 		{
-			SetKeywords( keywords, klass, false, DefaultWordCharSet );
+			AddKeywordSet( keywords, klass, false, DefaultWordCharSet );
 		}
 
 		/// <summary>
-		/// Sets keywords to highlight.
+		/// Adds a set of keywords to be highlighted.
 		/// </summary>
 		/// <param name="keywords">Sorted array of keywords.</param>
 		/// <param name="klass">Char-class to be applied to the keyword set.</param>
 		/// <param name="ignoreCase">Whether case of the keywords should be ignored or not.</param>
-		/// <param name="wordCharSet">Word-character set to use (can be null.)</param>
+		/// <param name="wordCharSet">Word-character-set to use (can be null.)</param>
+		/// <exception cref="System.ArgumentException">Keywords in <paramref name="keywords"/> are not sorted alphabetically.</exception>
+		/// <exception cref="System.ArgumentNullException">Parameter <paramref name="keywords"/> is null.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method sets the keywords to be highlighted.
+		/// This method registers a set keywords to be highlighted.
+		/// </para>
+		/// <para>
 		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
 		/// as <paramref name="klass"/> character class.
 		/// Please ensure that keywords in <paramref name="keywords"/> parameter
-		/// must be alphabetically sorted,
-		/// otherwise keywords may not be highlighted properly.
+		/// must be alphabetically sorted.
+		/// If they are not sorted, <see cref="ArgumentException"/> will be thrown.
 		/// </para>
 		/// <para>
 		/// If <paramref name="ignoreCase"/> is true,
@@ -173,23 +296,31 @@ namespace Sgry.Azuki.Highlighter
 		/// Otherwise keywords may not be highlighted properly.
 		/// </para>
 		/// <para>
-		/// The <paramref name="wordCharSet"/> parameter is a set of characters
-		/// that KeywordHighlighter treats a sequence of characters in that as a word.
+		/// The value of <paramref name="wordCharSet"/> parameter is used as a word-character-set.
+		/// KeywordHighlighter treats a sequence of characters in a word-character-set as a word.
 		/// If null was passed as <paramref name="wordCharSet"/> parameter,
-		/// <see cref="DefaultWordCharSet"/> will be used instead.
-		/// This parameter affects especially when KeywordHighlighter seeks or matches keywords.
-		/// For example, if a keyword partially matched to a token in a document,
+		/// internally defined default set will be used.
+		/// Default word-character-set is 
+		/// <c>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789</c>.
+		/// </para>
+		/// <para>
+		/// Word-character-set parameter affects keyword matching process.
+		/// If a keyword partially matched to a token in a document,
 		/// KeywordHighlighter checks whether the character at the place where the match ended
-		/// is one of the word-character set or not.
-		/// Then if it was NOT a one of the word-character set,
-		/// KeywordHighlighter treats the token ends there,
-		/// so the token will be highlighted.
-		/// If there are keywords that contain characters not included in the word character set,
-		/// KeywordHighlighter may fail to highlight such keywords properly.
-		/// 
+		/// is included in the word-character-set or not.
+		/// Then if it was NOT a one of the word-character-set,
+		/// KeywordHighlighter determines the token ended there
+		/// and highlight the token.
+		/// For example, if word-character-set is set as &quot;abc_&quot; and document is
+		/// &quot;abc-def abc_def&quot;, &quot;abc&quot; of &quot;abc-def&quot; will be highlighted
+		/// but &quot;abc&quot; of &quot;abc_def&quot; will NOT be highlighted
+		/// because following character for former one ('-') is not included in the word-character-set
+		/// but one of the latter pattern ('_') is included.
+		/// Note that if there are keywords that contain characters not included in the word character set,
+		/// KeywordHighlighter will not highlight such keywords properly.
 		/// </para>
 		/// </remarks>
-		public void SetKeywords( string[] keywords, CharClass klass, bool ignoreCase, string wordCharSet )
+		public void AddKeywordSet( string[] keywords, CharClass klass, bool ignoreCase, string wordCharSet )
 		{
 			if( keywords == null )
 				throw new ArgumentNullException("keywords");

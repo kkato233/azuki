@@ -1,7 +1,7 @@
 ﻿// file: HighlighterUtl.cs
 // brief: common utility for built-in highlighters.
 // author: YAMAMOTO Suguru
-// update: 2008-08-23
+// update: 2009-09-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -25,6 +25,9 @@ namespace Sgry.Azuki.Highlighter
 		
 		/// <summary>Escape char used in the enclosing pair.</summary>
 		public char escape;
+
+		/// <summary>Whether this enclosure must exist in a line or not.</summary>
+		public bool multiLine;
 
 #		if DEBUG
 		public override string ToString()
@@ -198,23 +201,50 @@ namespace Sgry.Azuki.Highlighter
 		public static int FindCloser( Document doc, Enclosure pair, int startIndex, int endIndex )
 		{
 			int index;
+			int lineEndIndex;
 
+			// calculate line-end index
+			lineEndIndex = GetLineEndIndexFromCharIndex( doc, startIndex );
 			if( pair.closer == null )
 			{
-				// return line-end
-				return GetLineEndIndexFromCharIndex( doc, startIndex );
+				// if closer is not specified, the line end is the end position
+				return lineEndIndex;
 			}
-			else
+
+			// find closer
+			index = startIndex - 1;
+			do
 			{
-				// treat escape
-				index = Find( doc, pair.closer, startIndex, endIndex );
-				while( Utl.IsEscapedCloser(doc, pair, index) )
+				index++;
+
+				// find next closer candidate
+				if( pair.multiLine == false && lineEndIndex < endIndex )
 				{
-					index++;
+					index = Find( doc, pair.closer, index, lineEndIndex );
+					if( index < 0 )
+					{
+						index = lineEndIndex;
+					}
+				}
+				else
+				{
 					index = Find( doc, pair.closer, index, endIndex );
 				}
-				return index;
+
+				// if escape char is same as the closer text pattern,
+				// the character we found is a candidate not of a closer but of an escape char
+				// so here we skip the escape character if next char can be a closer
+				if( pair.escape.ToString() == pair.closer )
+				{
+					if( index+1 < doc.Length && doc[index+1] == pair.escape )
+					{
+						index++;
+					}
+				}
 			}
+			while( Utl.IsEscapedCloser(doc, pair, index) );
+
+			return index;
 		}
 
 		/// <summary>
@@ -272,20 +302,33 @@ namespace Sgry.Azuki.Highlighter
 			{
 				int index = foundCloserTokenIndex;
 
-				// previous char is an escape char?
-				if( 1 <= index && doc[index-1] == pair.escape )
+				// if escape char is same as the closer text pattern,
+				// the character we found is not a candidate of closer but escape character.
+				/*if( pair.escape.ToString() == pair.closer )
 				{
-					// previous char of the previous char is an escape char?
-					if( 2 <= index && doc[index-2] == pair.escape )
+					// next char is a closer?
+					if( index+1 < doc.Length && doc[index+1] == pair.escape )
 					{
-						// the escape char just before the closer token is escaped;
-						// so the closer token is not escaped
-						return false;
-					}
-					else
-					{
-						// found closer char is a closer
 						return true;
+					}
+				}
+				else*/
+				{
+					// previous char is an escape char?
+					if( 1 <= index && doc[index-1] == pair.escape )
+					{
+						// previous char of the previous char is an escape char?
+						if( 2 <= index && doc[index-2] == pair.escape )
+						{
+							// the escape char just before the closer token is escaped;
+							// so the closer token is not escaped
+							return false;
+						}
+						else
+						{
+							// found closer char is a closer
+							return true;
+						}
 					}
 				}
 

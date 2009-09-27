@@ -18,7 +18,7 @@ namespace Sgry.Azuki.Highlighter
 		/// </summary>
 		public RubyHighlighter()
 		{
-			SetKeywords( new string[] {
+			AddKeywordSet( new string[] {
 				"alias", "and", "BEGIN", "begin", "break", "case", "class",
 				"def", "defined", "do", "else", "elsif", "end", "END", "ensure",
 				"false", "for", "if", "in", "module", "next", "nil", "not",

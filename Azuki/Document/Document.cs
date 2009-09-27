@@ -734,9 +734,15 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// After call of this method, editing actions will be grouped up into a single UNDO action.
-		/// To end grouping up actions, use
+		/// Call of this method creates a new group of actions in UNDO history
+		/// and collect modification to this document until call of
 		/// <see cref="Sgry.Azuki.Document.EndUndo">EndUndo method</see>.
+		/// </para>
+		/// <para>
+		/// If no actions has been executed between call of BeginUndo and EndUndo,
+		/// an UNDO action which do nothing will be stored in UNDO history.
+		/// After call of this method, this method does nothing until EndUndo method was called
+		/// so calling this method multiple times in a row happens nothing.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.EndUndo">Document.EndUndo method</seealso>
@@ -751,6 +757,10 @@ namespace Sgry.Azuki
 		/// <remarks>
 		/// <para>
 		/// Call of this method stops grouping up editing actions.
+		/// After call of this method,
+		/// this method does nothing until
+		/// <see cref="Sgry.Azuki.Document.BeginUndo">BeginUndo</see>.
+		/// method was called.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.BeginUndo">Document.BeginUndo method</seealso>

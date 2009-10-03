@@ -1,4 +1,4 @@
-// 2009-09-21
+// 2009-10-03
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -741,7 +741,7 @@ namespace Sgry.Ann
 			// update config fields
 			AppConfig.Font					= MainForm.Azuki.Font;
 			AppConfig.WindowMaximized		= (MainForm.WindowState == FormWindowState.Maximized);
-			if( MainForm.WindowState == FormWindowState.Maximized == false )
+			if( MainForm.WindowState == FormWindowState.Normal )
 			{
 				AppConfig.WindowSize = MainForm.ClientSize;
 			}

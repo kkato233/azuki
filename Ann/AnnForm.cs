@@ -1,4 +1,4 @@
-// 2009-09-21
+// 2009-10-03
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -191,6 +191,9 @@ namespace Sgry.Ann
 
 		void InitKeyMap()
 		{
+			_KeyMap[ Keys.F3 ]							= Actions.FindNext;
+			_KeyMap[ Keys.F3|Keys.Shift ]				= Actions.FindPrev;
+
 			_KeyMap[ Keys.N|Keys.Control ]				= Actions.CreateNewDocument;
 			_KeyMap[ Keys.O|Keys.Control ]				= Actions.OpenDocument;
 			_KeyMap[ Keys.S|Keys.Control ]				= Actions.SaveDocument;

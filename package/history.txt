@@ -18,6 +18,7 @@
  * add: [Ann] now Ann remembers drawing options
  * add: [Ann] now Ann opens a file in appropriate mode by file extension
  * mod: [Ann] changed layout of the text search panel
+ * mod: [Ann] now F3 is bound to "Find next", Shift+F3 is bound to "Find previous"
 
 == 1.4.3 (2009-09-21) ==
  * fix: in particular condition, pressing tab key inserts nothing if "converting input tab to spaces" feature is enabled

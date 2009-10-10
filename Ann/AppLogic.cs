@@ -1,4 +1,4 @@
-// 2009-10-03
+// 2009-10-10
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +65,8 @@ namespace Sgry.Ann
 				_MainForm.Closed += MainForm_Closed;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
+				_MainForm.TabPanel.Items = Documents;
+				_MainForm.TabPanel.TabSelected += TabPanel_TabSelected;
 
 				// handle initially set document
 				Document doc = new Document();
@@ -105,9 +107,11 @@ namespace Sgry.Ann
 				MainForm.Azuki.Document = value;
 				MainForm.Azuki.ScrollToCaret();
 				MainForm.Azuki.UpdateCaretGraphic();
+				MainForm.TabPanel.SelectedItem = value;
 
 				// update UI
 				MainForm.UpdateUI();
+				MainForm.TabPanel.Invalidate();
 			}
 		}
 		#endregion
@@ -718,6 +722,7 @@ namespace Sgry.Ann
 			{
 				MainForm.WindowState = FormWindowState.Maximized;
 			}
+			MainForm.TabPanelEnabled			= AppConfig.TabPanelEnabled;
 
 			MainForm.Azuki.DrawsEolCode			= AppConfig.DrawsEolCode;
 			MainForm.Azuki.DrawsFullWidthSpace	= AppConfig.DrawsFullWidthSpace;
@@ -728,7 +733,6 @@ namespace Sgry.Ann
 			MainForm.Azuki.ShowsHRuler			= AppConfig.ShowsHRuler;
 			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
 			MainForm.Azuki.ViewType				= AppConfig.ViewType;
-
 			MainForm.Azuki.UsesTabForIndent		= AppConfig.UsesTabForIndent;
 			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
 
@@ -745,6 +749,7 @@ namespace Sgry.Ann
 			{
 				AppConfig.WindowSize = MainForm.ClientSize;
 			}
+			AppConfig.TabPanelEnabled		= MainForm.TabPanelEnabled;
 
 			AppConfig.DrawsEolCode			= MainForm.Azuki.DrawsEolCode;
 			AppConfig.DrawsFullWidthSpace	= MainForm.Azuki.DrawsFullWidthSpace;
@@ -755,7 +760,6 @@ namespace Sgry.Ann
 			AppConfig.ShowsHRuler			= MainForm.Azuki.ShowsHRuler;
 			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
 			AppConfig.ViewType				= MainForm.Azuki.ViewType;
-
 			AppConfig.UsesTabForIndent		= MainForm.Azuki.UsesTabForIndent;
 			AppConfig.ConvertsFullWidthSpaceToSpace = MainForm.Azuki.ConvertsFullWidthSpaceToSpace;
 
@@ -823,6 +827,19 @@ namespace Sgry.Ann
 		void MainForm_Closed( object sender, EventArgs e )
 		{
 			SaveConfig();
+		}
+
+		void TabPanel_TabSelected( MouseEventArgs e, Document item )
+		{
+			if( e.Button == MouseButtons.Left )
+			{
+				ActiveDocument = item;
+			}
+			else if( e.Button == MouseButtons.Middle )
+			{
+				MainForm.TabPanel.Invalidate();
+				CloseDocument( item );
+			}
 		}
 
 		void Azuki_Resize( object sender, EventArgs e )

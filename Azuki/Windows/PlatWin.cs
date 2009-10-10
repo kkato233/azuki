@@ -2,7 +2,7 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-08-02
+// update: 2008-10-10
 //=========================================================
 using System;
 using System.Drawing;
@@ -541,7 +541,11 @@ namespace Sgry.Azuki.Windows
 			oldPen = WinApi.SelectObject( DC, NullPen );
 			oldBrush = WinApi.SelectObject( DC, _Brush );
 
+#			if !PocketPC
 			WinApi.Rectangle( DC, x, y, x+width+1, y+height+1 );
+#			else
+			WinApi.Rectangle( DC, x, y, x+width, y+height );
+#			endif
 
 			WinApi.SelectObject( DC, oldPen );
 			WinApi.SelectObject( DC, oldBrush );

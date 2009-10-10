@@ -82,6 +82,9 @@
     <Compile Include="EncodingAnalyzer.cs" />
     <Compile Include="FileType.cs" />
     <Compile Include="Ini.cs" />
+    <Compile Include="TabPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,4 @@
-// 2009-08-26
+// 2009-10-10
 using System;
 using System.Text;
 using Sgry.Azuki;
@@ -107,15 +107,13 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
-#		if DEBUG
 		/// <summary>
-		/// ToString for debug.
+		/// Gets display name of this document.
 		/// </summary>
 		public override string ToString()
 		{
 			return DisplayNameWithFlags;
 		}
-#		endif
 		#endregion
 	}
 }

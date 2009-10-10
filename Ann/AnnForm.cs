@@ -1,4 +1,4 @@
-// 2009-10-03
+// 2009-10-10
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -41,6 +41,7 @@ namespace Sgry.Ann
 			DragDrop += Form_DragDrop;
 #			endif
 			_SearchPanel.SetFont( this.Font );
+			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
 		}
 		#endregion
 
@@ -59,6 +60,27 @@ namespace Sgry.Ann
 		public SearchPanel SearchPanel
 		{
 			get{ return _SearchPanel; }
+		}
+
+		/// <summary>
+		/// Gets tab panel.
+		/// </summary>
+		public TabPanel<Document> TabPanel
+		{
+			get{ return _TabPanel; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether tab panel is enabled or not.
+		/// </summary>
+		public bool TabPanelEnabled
+		{
+			get{ return _TabPanel.Visible; }
+			set
+			{
+				_TabPanel.Visible = value;
+				_MI_View_ShowTabPanel.Checked = value;
+			}
 		}
 
 		/// <summary>
@@ -172,6 +194,7 @@ namespace Sgry.Ann
 			
 			_MenuMap[ _MI_View_ShowSpecialChar ]	= Actions.SelectSpecialCharVisibility;
 			_MenuMap[ _MI_View_WrapLines ]			= Actions.ToggleWrapLines;
+			_MenuMap[ _MI_View_ShowTabPanel ]		= Actions.ToggleTabPanel;
 
 			_MenuMap[ _MI_Mode_Text ]		= Actions.SetToTextMode;
 			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
@@ -281,10 +304,15 @@ namespace Sgry.Ann
 			_Azuki.Dock = DockStyle.Fill;
 			_Azuki.TabWidth = 8;
 			_Azuki.ViewWidth = 235;
+			_Azuki.BorderStyle = BorderStyle.None;
 			_Azuki.KeyDown += HandleKeyAction;
 			_Azuki.GotFocus += delegate {
 				DeactivateSearchPanel();
 			};
+			//
+			// _TabPanel
+			//
+			_TabPanel.Dock = DockStyle.Top;
 			//
 			// _SearchPanel
 			//
@@ -298,6 +326,7 @@ namespace Sgry.Ann
 			// 
 			ClientSize = new Size( 360, 400 );
 			Controls.Add( _Azuki );
+			Controls.Add( _TabPanel );
 			Controls.Add( _SearchPanel );
 			Text = "Ann";
 			ResumeLayout( false );
@@ -353,6 +382,7 @@ namespace Sgry.Ann
 
 			_MI_View.MenuItems.Add( _MI_View_ShowSpecialChar );
 			_MI_View.MenuItems.Add( _MI_View_WrapLines );
+			_MI_View.MenuItems.Add( _MI_View_ShowTabPanel );
 
 			_MI_Mode.MenuItems.Add( _MI_Mode_Text );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
@@ -396,6 +426,7 @@ namespace Sgry.Ann
 			_MI_View.Text = "&View";
 			_MI_View_ShowSpecialChar.Text = "Show &Special Chars...";
 			_MI_View_WrapLines.Text = "&Wrap lines";
+			_MI_View_ShowTabPanel.Text = "Show &tab panel";
 			_MI_Mode.Text = "&Mode";
 			_MI_Mode_Text.Text = "&Text";
 			_MI_Mode_Latex.Text = "&LaTeX";
@@ -498,6 +529,7 @@ namespace Sgry.Ann
 		MenuItem _MI_View					= new MenuItem();
 		MenuItem _MI_View_ShowSpecialChar	= new MenuItem();
 		MenuItem _MI_View_WrapLines			= new MenuItem();
+		MenuItem _MI_View_ShowTabPanel		= new MenuItem();
 		MenuItem _MI_Mode			= new MenuItem();
 		MenuItem _MI_Mode_Text		= new MenuItem();
 		MenuItem _MI_Mode_Latex		= new MenuItem();
@@ -514,6 +546,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Help_MemoryUsage	= new MenuItem();
 		MenuItem _MI_Help_About			= new MenuItem();
 		AzukiControl _Azuki;
+		TabPanel<Document> _TabPanel = new TabPanel<Document>();
 		SearchPanel _SearchPanel = new SearchPanel();
 		#endregion
 

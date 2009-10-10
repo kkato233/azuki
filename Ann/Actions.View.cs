@@ -1,4 +1,4 @@
-// 2009-08-02
+// 2009-10-10
 using System;
 using System.Windows.Forms;
 using Sgry.Azuki;
@@ -50,6 +50,15 @@ namespace Sgry.Ann
 			}
 			azuki.ScrollToCaret();
 			app.MainForm.UpdateUI(); // update check state of menu item
+		};
+
+		/// <summary>
+		/// Toggles whether tab panel is enabled or not.
+		/// </summary>
+		public static AnnAction ToggleTabPanel
+			= delegate( AppLogic app )
+		{
+			app.MainForm.TabPanelEnabled = !( app.MainForm.TabPanelEnabled );
 		};
 	}
 }

@@ -8,6 +8,8 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Sgry.Ann</RootNamespace>
     <AssemblyName>Ann</AssemblyName>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,6 +50,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TabPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Actions.File.cs" />

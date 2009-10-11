@@ -15,6 +15,7 @@
  * mod: changed argument of AutoIndentHook.
  * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsoleted
  * mod: after executing ZoomIn or ZoomOut, width of text area will be adjusted
+ * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls
  * add: [Ann] now Ann has simple tab interface
  * add: [Ann] now Ann remembers last window size
  * add: [Ann] now Ann remembers drawing options

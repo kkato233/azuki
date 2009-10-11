@@ -9,6 +9,7 @@
  * add: AzukiControl.LeftMargin で左端の描画マージンを設定可能に
  * add: AzukiControl.LineSpacing を追加
  * add: グループ UNDO をサポート（Document.BeginUndo の呼び出しから Document.EndUndo の呼び出しまでをグループ化）
+ * add: Document.FindNext と Document.FindPrev のオーバーロードを追加
  * mod: UNDO 時の選択状態を記憶するようにし、UNDO 実行時にその状態を復元するように
  * mod: AzukiControl.GetIndexFromScreenPos に与えられた位置が不正な場合に最も近い有効な点を使って計算するように
  * mod: AutoIndentHook の引数仕様を変更

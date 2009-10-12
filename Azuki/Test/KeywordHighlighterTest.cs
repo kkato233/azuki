@@ -86,7 +86,7 @@ ho//ge";
 			KeywordHighlighter h = new KeywordHighlighter();
 			h.AddEnclosure( "\"", "\"", CharClass.String, '\\' );
 			h.AddEnclosure( "/*", "*/", CharClass.Comment );
-			h.SetKeywords( new string[]{
+			h.AddKeywordSet( new string[]{
 				"for", "if", "int", "interface", "join"
 			}, CharClass.Keyword );
 			doc.Highlighter = h;
@@ -627,7 +627,7 @@ ho//ge";
 			int begin_, end_;
 			h.AddEnclosure( "\"", "\"", CharClass.String );
 			h.AddEnclosure( "/*", "*/", CharClass.Comment );
-			h.SetKeywords( new string[]{
+			h.AddKeywordSet( new string[]{
 				"for", "if", "int", "interface", "join"
 			}, CharClass.Keyword );
 			doc.Highlighter = h;

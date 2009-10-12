@@ -241,7 +241,7 @@ namespace Sgry
 	class AutoLogger
 	{
 		#region Fields
-		StringBuilder _Buf = new StringBuilder();
+		StringBuilder _Buf = new StringBuilder( 1024 );
 		#endregion
 
 		#region Init / Dispose
@@ -249,10 +249,10 @@ namespace Sgry
 		{
 			try
 			{
-				using( StreamWriter file = new StreamWriter(DebugUtl.LogFilePath, true) )
+				using( FileStream file = new FileStream(DebugUtl.LogFilePath, FileMode.Append) )
 				{
-					file.Write( _Buf.ToString() );
-					file.WriteLine();
+					byte[] bytes = Encoding.UTF8.GetBytes( _Buf.ToString() );
+					file.Write( bytes, 0, bytes.Length );
 				}
 			}
 			catch( IOException )

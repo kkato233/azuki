@@ -1,7 +1,7 @@
 // file: TabPanel.cs
 // brief: simple tab control
 // create: 2006-01-08 YAMAMOTO Suguru
-// update: 2009-10-10 YAMAMOTO Suguru
+// update: 2009-10-12 YAMAMOTO Suguru
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,8 @@ namespace Sgry.Azuki
 			BackColor = Color.LightGray;
 			ActiveTabBackColor = Color.White;
 			TabLineColor = Color.Gray;
-			Font = new Font( FontFamily.GenericSansSerif, 10, FontStyle.Regular );
+			_TabTextFont = new Font( FontFamily.GenericSansSerif, 10, FontStyle.Regular );
+			SetFont( _TabTextFont );
 		}
 		#endregion
 

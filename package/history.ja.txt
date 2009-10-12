@@ -15,6 +15,7 @@
  * mod: AutoIndentHook の引数仕様を変更
  * mod: AzukiControl と IUserInterface の ConvertsTabToSpaces を非推奨に
  * mod: ZoomIn と ZoomOut の実行後にテキストエリアの幅を調整するように
+ * mod: 日本語入力を文字単位ではなく確定した文節単位で受け付けるように
  * fix: 折り返しモードで画面右端付近で文字を入力すると水平スクロールしてしまう問題を修正
  * add: [Ann] 簡易タブインタフェースをサポート
  * add: [Ann] 終了時のウィンドウサイズを記憶するように

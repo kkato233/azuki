@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2009-07-25
+// update: 2009-10-12
 //=========================================================
 using System;
 using System.Text;
@@ -39,8 +39,8 @@ namespace Sgry.Azuki.Windows
 		public const int WM_KEYFIRST = 0x0100;
 		public const int WM_KEYDOWN = 0x0100;
 		public const int WM_KEYUP = 0x0101;
-		public const int WM_KEYCHAR = 0x0102;
-		public const int WM_KEYUNICHAR = 0x0109;
+		public const int WM_CHAR = 0x0102;
+		public const int WM_UNICHAR = 0x0109;
 		public const int WM_KEYLAST = 0x0109;
 
 		public const int WM_MOUSEMOVE = 0x0200;
@@ -54,7 +54,9 @@ namespace Sgry.Azuki.Windows
 
 		public const int WM_IME_STARTCOMPOSITION =  0x010D;
 		public const int WM_IME_ENDCOMPOSITION = 0x010E;
+		public const int WM_IME_COMPOSITION = 0x010F;
 		public const int WM_IME_NOTIFY = 0x0282;
+		public const int WM_IME_CHAR = 0x0286;
 		public const int WM_IME_REQUEST = 0x0288;
 		public const int IMR_RECONVERTSTRING = 0x0004;
 		public const int SCS_QUERYRECONVERTSTRING = 0x00020000;
@@ -86,6 +88,9 @@ namespace Sgry.Azuki.Windows
 		public const UInt32 CF_PRIVATEFIRST = 0x200;
 		public const UInt32 CF_PRIVATELAST = 0x2ff;
 
+		public const Int32 GCS_COMPSTR = 0x0008;
+		public const Int32 GCS_RESULTSTR = 0x0800;
+
 		const int SIF_RANGE = 0x01;
 		const int SIF_PAGE  = 0x02;
 		const int SIF_POS   = 0x04;
@@ -102,7 +107,7 @@ namespace Sgry.Azuki.Windows
 		#endregion
 
 		#region Types
-		public delegate IntPtr WNDPROC( IntPtr window, Int32 message, IntPtr wParam, IntPtr lParam );
+		public delegate IntPtr WNDPROC( IntPtr window, UInt32 message, IntPtr wParam, IntPtr lParam );
 
 		[StructLayout(LayoutKind.Sequential)]
 		struct SIZE
@@ -660,6 +665,9 @@ namespace Sgry.Azuki.Windows
 		public static extern Int32 ImmReleaseContext( IntPtr hWnd, IntPtr context );
 
 		[DllImport(imm32_dll)]
+		public static unsafe extern Int32 ImmGetCompositionStringW( IntPtr imContext, UInt32 index, void* out_string, UInt32 maxStringLen );
+
+		[DllImport(imm32_dll)]
 		public static unsafe extern Int32 ImmSetCompositionStringW( IntPtr imContext, UInt32 index, void* lpComp, UInt32 dwCompLen, void* lpRead, UInt32 readLen );
 
 		[DllImport(imm32_dll)]
@@ -724,7 +732,7 @@ namespace Sgry.Azuki.Windows
 		}
 		
 		[DllImport(user32_dll)]
-		public static extern IntPtr CallWindowProc( IntPtr wndProc, IntPtr window, Int32 message, IntPtr wParam, IntPtr lParam );
+		public static extern IntPtr CallWindowProc( IntPtr wndProc, IntPtr window, UInt32 message, IntPtr wParam, IntPtr lParam );
 		#endregion
 	}
 }

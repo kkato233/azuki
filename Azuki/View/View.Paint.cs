@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-09-13
+// update: 2009-10-12
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -174,15 +174,13 @@ namespace Sgry.Azuki
 				return;
 
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
-			int textAreaRight = _TextAreaWidth + (XofTextArea - ScrollPosX);
 
 			// calculate position to underline
-			int right = Math.Min( _VisibleSize.Width, textAreaRight );
 			int bottom = lineTopY + _LineHeight;
 
 			// draw underline
 			_Gra.ForeColor = color;
-			_Gra.DrawLine( XofTextArea, bottom, right - 2, bottom );
+			_Gra.DrawLine( XofTextArea, bottom, _VisibleSize.Width, bottom );
 		}
 
 		/// <summary>

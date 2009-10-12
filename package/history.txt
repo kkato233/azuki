@@ -17,6 +17,7 @@
  * mod: after executing ZoomIn or ZoomOut, width of text area will be adjusted
  * mod: character input through IME is now consumed not by characters but by composition clauses
  * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls
+ * fix: in not line-wrapping mode, underline to highlight current line was not always drawn to right end
  * add: [Ann] now Ann has simple tab interface
  * add: [Ann] now Ann remembers last window size
  * add: [Ann] now Ann remembers drawing options

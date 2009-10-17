@@ -112,7 +112,7 @@ namespace Sgry.Azuki.Highlighter
 #			endif
 		}
 
-		static readonly string DefaultWordCharSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+		static readonly string DefaultWordCharSet = null;
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
 		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
 		List<Enclosure> _LineHighlights = new List<Enclosure>( 2 );

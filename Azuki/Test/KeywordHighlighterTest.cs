@@ -1,4 +1,4 @@
-﻿// 2009-01-12
+﻿// 2009-10-17
 #if DEBUG
 using System;
 
@@ -482,7 +482,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The XXXXEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "11 24 34", epi.ToString() );
+				TestUtl.AssertEquals( "11 24 34 47", epi.ToString() );
 
 				// odd number of pairs
 				doc.Text = initText;
@@ -500,7 +500,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The X\"X\"EPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "5 8 11 24 34", epi.ToString() );
+				TestUtl.AssertEquals( "5 8 11 24 34 47", epi.ToString() );
 			}
 
 			// replace from in to in
@@ -523,7 +523,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"Uph\"og/eEPI\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 9 16 29 39", epi.ToString() );
+				TestUtl.AssertEquals( "4 9 16 29 39 52", epi.ToString() );
 
 				// even number of pairs
 				doc.Text = initText;
@@ -546,7 +546,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateXXXX method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 27 37", epi.ToString() );
+				TestUtl.AssertEquals( "4 27 37 50", epi.ToString() );
 
 				// odd number of pairs
 				doc.Text = initText;
@@ -564,7 +564,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"Update\"XX\" method is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 12 14 27 37", epi.ToString() );
+				TestUtl.AssertEquals( "4 12 14 27 37 50", epi.ToString() );
 			}
 
 			// replace from out to out
@@ -587,7 +587,7 @@ ho//ge";
 				begin_ = begin; end_ = doc.Length;
 				h.Highlight( doc, ref begin_, ref end_ );
 				TestUtl.AssertEquals( "The \"UpdateEPI\" mh\"og/ed is \"currently \"main target.", doc.Text );
-				TestUtl.AssertEquals( "4 15 18 29 39", epi.ToString() );
+				TestUtl.AssertEquals( "4 15 18 29 39 52", epi.ToString() );
 
 				// even number of pairs
 				doc.Text = initText;
@@ -604,20 +604,46 @@ ho//ge";
 		{
 			Document doc = new Document();
 			KeywordHighlighter h = new KeywordHighlighter();
-			h.AddEnclosure( "\"", "\"", CharClass.String, '\\' );
-			h.AddEnclosure( "/*", "*/", CharClass.Comment );
+			h.AddEnclosure( "\"", "\"", CharClass.String, false, '\\' );
+			h.AddEnclosure( "'", "'", CharClass.String, true, '\'' );
 			doc.Highlighter = h;
-			int i;
 
-			// syn
-			doc.Text = "A\"B\\\"C\"D";
+			// AB"abcd"CD
+			doc.Text = "AB\"abcd\"CD";
 			h.Highlight( doc );
-			for( i=0; i<1; i++ )
-				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
-			for( ; i<7; i++ )
-				TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(i) );
-			for( ; i<8; i++ )
-				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
+			TestUtl.AssertEquals( "2 8", h._EPI.ToString() );
+
+			// AB"ab\cd"CD
+			doc.Text = "AB\"ab\\cd\"CD";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( "2 9", h._EPI.ToString() );
+
+			// AB"ab\"cd"CD
+			doc.Text = "AB\"ab\\\"cd\"CD";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( "2 10", h._EPI.ToString() );
+
+			// AB"ab
+			// cd"CD
+			doc.Text = "AB\"ab\r\ncd\"CD";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( "2 5 9 12", h._EPI.ToString() );
+
+			// AB"ab\
+			// cd"CD
+			doc.Text = "AB\"ab\\\r\ncd\"CD";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( "2 11", h._EPI.ToString() );
+
+			// AB'ab''cd'CD
+			doc.Text = "AB'ab''cd'CD";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( "2 10", h._EPI.ToString() );
+
+			// AB'ab'Z'cd'CD
+			doc.Text = "AB'ab'Z'cd'CD";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( "2 6 7 11", h._EPI.ToString() );
 		}
 
 		static void Test_EnclosingPairs()

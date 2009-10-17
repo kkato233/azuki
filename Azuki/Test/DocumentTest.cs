@@ -664,7 +664,7 @@ namespace Sgry.Azuki.Test
 
 				// inverted range
 				try{ doc.FindNext("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range
 				TestUtl.AssertEquals( null, doc.FindNext("a", 0, 0, true) );
@@ -752,7 +752,7 @@ namespace Sgry.Azuki.Test
 
 				// inverted range
 				try{ doc.FindPrev("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range
 				TestUtl.AssertEquals( null, doc.FindPrev("a", 0, 0, true) );
@@ -837,7 +837,7 @@ namespace Sgry.Azuki.Test
 
 				// inverted range
 				try{ doc.FindNext(new Regex("a[^b]+"), 2, 1); Debug.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range
 				result = doc.FindNext( new Regex("a[^b]+"), 0, 0 );
@@ -959,7 +959,7 @@ namespace Sgry.Azuki.Test
 
 				// inverted range
 				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
-				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
+				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range
 				TestUtl.AssertEquals( (Regex)null, doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 0, 0) );

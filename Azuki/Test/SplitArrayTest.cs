@@ -16,25 +16,25 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine( "[Test for Azuki.SplitArray]" );
 
 			// init
-			Console.WriteLine( "test {0} - initial state", test_num );
+			Console.WriteLine( "test {0} - initial state", ++test_num );
 			TestUtl.Do( Test_Init );
 
 			// add
-			Console.WriteLine( "test {0} - Add()", test_num );
+			Console.WriteLine( "test {0} - Add()", ++test_num );
 			TestUtl.Do( Test_Add );
 
 			// clear
-			Console.WriteLine( "test {0} - Clear()", test_num );
+			Console.WriteLine( "test {0} - Clear()", ++test_num );
 			TestUtl.Do( Test_Clear );
 
 			// Insert
-			Console.WriteLine( "test {0} - Insert()", test_num );
+			Console.WriteLine( "test {0} - Insert()", ++test_num );
 			TestUtl.Do( Test_Insert_One );
 			TestUtl.Do( Test_Insert_Array );
 			TestUtl.Do( Test_Insert_Cvt );
 
 			// Replace
-			Console.WriteLine( "test {0} - Replace()", test_num );
+			Console.WriteLine( "test {0} - Replace()", ++test_num );
 			TestUtl.Do( Test_Replace );
 
 // SetAt (to part2)
@@ -42,15 +42,15 @@ namespace Sgry.Azuki.Test
 //TestUtl.AssertEquals( chars[6] == 'Z' );
 
 			// Delete
-			Console.WriteLine( "test {0} - Delete()", test_num );
+			Console.WriteLine( "test {0} - Delete()", ++test_num );
 			TestUtl.Do( Test_Delete );
 			
 			// GetRange
-			Console.WriteLine( "test {0} - GetRange()", test_num );
+			Console.WriteLine( "test {0} - GetRange()", ++test_num );
 			TestUtl.Do( Test_GetRange );
 
 			// Convertion (ToArray, GetRange)
-			Console.WriteLine( "test {0} - Convertion()", test_num );
+			Console.WriteLine( "test {0} - Convertion()", ++test_num );
 			TestUtl.Do( Test_Convertion );
 
 			Console.WriteLine( "done." );

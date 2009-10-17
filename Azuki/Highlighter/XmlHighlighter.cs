@@ -1,7 +1,7 @@
 ﻿// file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2009-08-23
+// update: 2009-10-17
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -29,17 +29,20 @@ namespace Sgry.Azuki.Highlighter
 			Enclosure doubleQuote = new Enclosure();
 			doubleQuote.opener = doubleQuote.closer = "\"";
 			doubleQuote.klass = CharClass.String;
+			doubleQuote.multiLine = true;
 			_Enclosures.Add( doubleQuote );
 
 			Enclosure singleQuote = new Enclosure();
 			singleQuote.opener = singleQuote.closer = "'";
 			singleQuote.klass = CharClass.String;
+			singleQuote.multiLine = true;
 			_Enclosures.Add( singleQuote );
 
 			Enclosure comment = new Enclosure();
 			comment.opener = "<!--";
 			comment.closer = "-->";
 			comment.klass = CharClass.Comment;
+			comment.multiLine = true;
 			_Enclosures.Add( comment );
 		}
 		#endregion

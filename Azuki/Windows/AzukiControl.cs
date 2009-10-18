@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-10-17
+// update: 2009-10-18
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,6 @@ namespace Sgry.Azuki.Windows
 		bool _ShowsHScrollBar = true;
 		bool _UseCtrlTabToMoveFocus = true;
 		int _WheelPos = 0;
-		long _InputSuppressLimit = 0;
 		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
 		
 		InvalidateProc1 _invalidateProc1 = null;
@@ -101,6 +100,9 @@ namespace Sgry.Azuki.Windows
 			}
 		}
 
+		/// <summary>
+		/// Invokes HandleDestroyed event.
+		/// </summary>
 		protected override void OnHandleDestroyed( EventArgs e )
 		{
 			base.OnHandleDestroyed( e );
@@ -1531,6 +1533,9 @@ namespace Sgry.Azuki.Windows
 			View.HScroll( delta );
 		}
 
+		/// <summary>
+		/// Invokes GotFocus event.
+		/// </summary>
 		protected override void OnGotFocus( EventArgs e )
 		{
 			base.OnGotFocus( e );
@@ -1539,6 +1544,9 @@ namespace Sgry.Azuki.Windows
 			UpdateCaretGraphic();
 		}
 
+		/// <summary>
+		/// Invokes LostFocus event.
+		/// </summary>
 		protected override void OnLostFocus( EventArgs e )
 		{
 			base.OnLostFocus( e );
@@ -1546,6 +1554,9 @@ namespace Sgry.Azuki.Windows
 			WinApi.HideCaret( Handle );
 		}
 
+		/// <summary>
+		/// Invokes KeyDown event.
+		/// </summary>
 		protected override void OnKeyDown( KeyEventArgs e )
 		{
 			base.OnKeyDown( e );
@@ -1557,6 +1568,9 @@ namespace Sgry.Azuki.Windows
 			_Impl.HandleKeyDown( (uint)e.KeyData );
 		}
 
+		/// <summary>
+		/// Invokes KeyPress event.
+		/// </summary>
 		protected override void OnKeyPress( KeyPressEventArgs e )
 		{
 			base.OnKeyPress( e );
@@ -1608,6 +1622,9 @@ namespace Sgry.Azuki.Windows
 			e.Handled = true;
 		}
 
+		/// <summary>
+		/// Invokes Resize event.
+		/// </summary>
 		protected override void OnResize( EventArgs e )
 		{
 			base.OnResize( e );
@@ -2072,63 +2089,6 @@ namespace Sgry.Azuki.Windows
 					// move IMM window to caret position
 					WinApi.SetImeWindowFont( Handle, Font );
 				}
-				else if( message == WinApi.WM_IME_ENDCOMPOSITION )
-				{
-					// put down the flag to ignore character input event
-					_InputSuppressLimit = 0;
-				}
-				else if( message == WinApi.WM_IME_COMPOSITION )
-				{
-					// if this event notifies that a portion of the composition was completed,
-					// get the partial string and insert it to the document
-					if( (lParam.ToInt64() & WinApi.GCS_RESULTSTR) != 0 )
-					{
-						const long suppressingSpan = 500; // 50 milliseconds
-
-						IntPtr imc = WinApi.ImmGetContext( Handle );
-						unsafe
-						{
-							char[] buf;
-							Int32 bufSize;
-
-							// prepare buffer to receive composition result
-							bufSize = WinApi.ImmGetCompositionStringW( imc, WinApi.GCS_RESULTSTR, null, 0 );
-							buf = new char[ bufSize/2 ];
-							fixed( void* p = buf )
-							{
-								WinApi.ImmGetCompositionStringW( imc, WinApi.GCS_RESULTSTR, p, (uint)bufSize );
-							}
-
-							// insert it to the active document
-							if( Document.IsReadOnly == false )
-							{
-								Document.Replace( new String(buf) );
-							}
-						}
-						WinApi.ImmReleaseContext( Handle, imc );
-
-						// Record current time stamp to ignore following WM_IME_CHAR/WM_CHAR.
-						// Because composition result will be sent in form of
-						// WM_IME_CHAR (or WM_CHAR in WinCE) sequence
-						// just after WM_IME_COMPOSITION with GCS_RESULTSTR,
-						// suppress input for a while
-						_InputSuppressLimit = DateTime.Now.Ticks + suppressingSpan;
-					}
-				}
-				else if( message == WinApi.WM_IME_CHAR )
-				{
-#					if !PocketPC
-					if( DateTime.Now.Ticks < _InputSuppressLimit )
-						return IntPtr.Zero;
-#					endif
-				}
-				else if( message == WinApi.WM_CHAR )
-				{
-#					if PocketPC
-					if( DateTime.Now.Ticks < _InputSuppressLimit )
-						return IntPtr.Zero;
-#					endif
-				}
 				else if( message == WinApi.WM_IME_REQUEST
 					&& wParam.ToInt64() == (long)WinApi.IMR_RECONVERTSTRING )
 				{
@@ -2151,13 +2111,13 @@ namespace Sgry.Azuki.Windows
 					if( keyData == (Keys.Tab)
 						&& AcceptsTab )
 					{
-						base.OnKeyDown( new KeyEventArgs(keyData) );
+						OnKeyDown( new KeyEventArgs(keyData) );
 						return IntPtr.Zero;
 					}
 					if( keyData == (Keys.Tab | Keys.Control)
 						&& UseCtrlTabToMoveFocus == false )
 					{
-						base.OnKeyDown( new KeyEventArgs(keyData) );
+						OnKeyDown( new KeyEventArgs(keyData) );
 						return IntPtr.Zero;
 					}
 				}

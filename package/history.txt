@@ -15,7 +15,6 @@
  * mod: changed argument of AutoIndentHook.
  * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsoleted
  * mod: after executing ZoomIn or ZoomOut, width of text area will be adjusted
- * mod: character input through IME is now consumed not by characters but by composition clauses
  * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls
  * fix: in not line-wrapping mode, underline to highlight current line was not always drawn to right end
  * fix: now AzukiControl ignores key events if an outer event handler set true for Handled property of KeyEventArgs (KeyPressEvent)

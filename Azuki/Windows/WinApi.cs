@@ -88,8 +88,10 @@ namespace Sgry.Azuki.Windows
 		public const UInt32 CF_PRIVATEFIRST = 0x200;
 		public const UInt32 CF_PRIVATELAST = 0x2ff;
 
+		public const Int32 GCS_COMPREADSTR = 0x0001;
 		public const Int32 GCS_COMPSTR = 0x0008;
 		public const Int32 GCS_RESULTSTR = 0x0800;
+		public const Int32 SCS_SETSTR = (GCS_COMPREADSTR|GCS_COMPSTR);
 
 		const int SIF_RANGE = 0x01;
 		const int SIF_PAGE  = 0x02;

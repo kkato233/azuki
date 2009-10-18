@@ -2,10 +2,10 @@
 // brief: An INI file parser.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// version: 2.1.0
+// version: 2.1.1
 // platform: .NET 2.0
 // create: 2006-09-24 YAMAMOTO Suguru
-// update: 2009-08-02 YAMAMOTO Suguru
+// update: 2009-10-17 YAMAMOTO Suguru
 // license: zlib license (see END of this file)
 //=========================================================
 using System;
@@ -188,7 +188,7 @@ namespace Sgry
 			if( encoding == null )
 				throw new ArgumentNullException( "encoding" );
 
-			using( Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read) )
+			using( Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) )
 			{
 				Load( new StreamReader(stream, encoding) );
 			}
@@ -294,7 +294,7 @@ namespace Sgry
 				throw new ArgumentException( "parameter newLineCode must not be an empty string." );
 
 			// write INI formatted string into the file
-			using( FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write) )
+			using( FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite) )
 			{
 				StreamWriter writer = new StreamWriter( file, encoding );
 				writer.NewLine = newLineCode;
@@ -367,6 +367,8 @@ namespace Sgry
 		public virtual string Get( string sectionName, string entryName, string defaultValue )
 		{
 			Section section;
+			bool found;
+			string value;
 
 			if( sectionName == null )
 				throw new ArgumentNullException( "sectionName" );
@@ -384,15 +386,14 @@ namespace Sgry
 			}
 
 			// get value of the entry
-			try
-			{
-				return section[ entryName ];
-			}
-			catch( KeyNotFoundException )
+			found = section.TryGetValue( entryName, out value );
+			if( found == false )
 			{
 				// there is no such entry so using default value.
 				return defaultValue;
 			}
+
+			return value;
 		}
 
 		/// <summary>
@@ -518,27 +519,27 @@ namespace Sgry
 		public virtual void Remove( string sectionName, string entryName )
 		{
 			Section section;
+			bool found;
 
 			if( sectionName == null )
 				throw new ArgumentNullException( "sectionName" );
 			if( entryName == null )
 				throw new ArgumentNullException( "entryName" );
 
-			try
+			// 指定セクションを取得
+			found = _Sections.TryGetValue( sectionName, out section );
+			if( found == false )
 			{
-				// 指定セクションを取得
-				section = _Sections[sectionName];
-
-				// 指定エントリーがあれば削除
-				section.Remove( entryName );
-				if( section.Count == 0 )
-				{
-					// もうエントリーが一つも無いのでセクションも削除
-					_Sections.Remove( sectionName );
-				}
+				return;
 			}
-			catch( KeyNotFoundException )
-			{}
+
+			// 指定エントリーがあれば削除
+			section.Remove( entryName );
+			if( section.Count == 0 )
+			{
+				// もうエントリーが一つも無いのでセクションも削除
+				_Sections.Remove( sectionName );
+			}
 		}
 
 		/// <summary>
@@ -682,14 +683,16 @@ namespace Sgry
 
 		Section GetSection( string sectionName )
 		{
-			try
-			{
-				return _Sections[ sectionName ];
-			}
-			catch( KeyNotFoundException )
+			Section section;
+			bool found;
+
+			found = _Sections.TryGetValue( sectionName, out section );
+			if( found == false )
 			{
 				return null;
 			}
+
+			return section;
 		}
 
 		static class Utl
@@ -966,6 +969,9 @@ day_of_week=Sunday
 
 /*********************************************************
 Version History
+
+[v2.1.1] 2009-10-17
+・ファイルを開くときに共有モードで開くように
 
 [v2.1.0] 2009-08-02
 ・Ini.Get<T> を enum に対応させた

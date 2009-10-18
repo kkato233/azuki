@@ -2,10 +2,10 @@
 // brief: Japanese charactor encoding analyzer.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// version: 1.3.0
-// platform: .NET 1.1
+// version: 2.0.0
+// platform: .NET 2.0 (may work on .NET 1.1)
 // create: 2006-05-17 YAMAMOTO Suguru
-// update: 2009-03-29 YAMAMOTO Suguru
+// update: 2009-10-18 YAMAMOTO Suguru
 // license: zlib license (see END of this file)
 //=========================================================
 using System;
@@ -17,617 +17,829 @@ namespace Sgry
 {
 	/// <summary>
 	/// 日本語の文字エンコーディングを推定する機能を提供します。
+	/// ISO-2022-JP (JIS)、Shift_JIS、EUC-JP、UTF-8、UTF-16 に対応しています。
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// 日本語の文字エンコーディングを推定する機能をします。
 	/// 対応しているエンコーディングは
 	/// ISO-2022-JP (JIS)、Shift_JIS、EUC-JP、UTF-8、UTF-16 です。
-	/// なお UTF-16 については BOM (Byte Order Mark) の有無でしか判定していないため、
-	/// BOM の無い UTF-16 エンコーディングされたデータは推定できません。
+	/// </para>
 	/// </remarks>
 	public class EncodingAnalyzer
 	{
-		/// <summary>
-		/// （このクラスはインスタンス化できません。）
-		/// </summary>
-		EncodingAnalyzer()
-		{}
+		#region Fields
+		const int LowerLimit			= 50;
+
+		const int BasePoint				= 100;
+		const int UnknownCharPoint		= 50;
+		const int ControlCodePoint		= 10;
+		const int HojoKanjiPoint		= 7;
+		const int SecondLevelKanjiPoint	= 6;
+		const int HankakuKanaPoint		= 4;
+		const int OtherLanguagePoint	= 1;
+
+		const int AsciiIndex	= 0;
+		const int UniIndex		= 1;
+		const int UniBigIndex	= 2;
+		const int Utf8Index		= 3;
+		const int JisIndex		= 4;
+		const int EucIndex		= 5;
+		const int SjisIndex		= 6;
+		#endregion
 
 		#region Public interface
 		/// <summary>
 		/// 日本語文字エンコーディングを推定します。
 		/// </summary>
-		/// <param name="text">推定対象となるバイト列。</param>
+		/// <param name="filePath">推定対象となるファイルのパス</param>
 		/// <returns>推定されたエンコーディング。</returns>
-		/// <exception cref="ArgumentNullException">引数 text が null です。</exception>
-		/// <remarks>
-		/// 指定したバイト列を日本語文字列と解釈して使われている文字エンコーディングを推定します。
-		/// ASCII 文字しか含まれないようなバイト列はシステム標準のエンコーディングとみなします。
-		/// またどんなデータでも何かの文字エンコーディングであると算出するため null は返しません。
-		/// </remarks>
-		public static Encoding Analyze( byte[] text )
-		{
-			bool dummy;
-			return Analyze( text, out dummy );
-		}
-
-		/// <summary>
-		/// 日本語文字エンコーディングを推定します。
-		/// </summary>
-		/// <param name="text">推定対象となるバイト列。</param>
-		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
-		/// <returns>推定されたエンコーディング。</returns>
-		/// <exception cref="ArgumentNullException">引数 text が null です。</exception>
-		/// <remarks>
-		/// 指定したバイト列を日本語文字列と解釈して使われている文字エンコーディングを推定します。
-		/// ASCII 文字しか含まれないようなバイト列はシステム標準のエンコーディングとみなします。
-		/// またどんなデータでも何かの文字エンコーディングであると算出するため null は返しません。
-		/// </remarks>
-		public static Encoding Analyze( byte[] text, out bool withBom )
-		{
-			int eucPoint, sjisPoint;
-
-			if( text == null )
-				throw new ArgumentNullException( "text" );
-			
-			// UTF-16?
-			if( IsUtf16Le(text) )
-			{
-				withBom = true;
-				return Encoding.Unicode;
-			}
-			if( IsUtf16Be(text) )
-			{
-				withBom = true;
-				return Encoding.BigEndianUnicode;
-			}
-
-			// JIS?
-			if( IsJis(text) )
-			{
-				withBom = false;
-				return Encoding.GetEncoding( "iso-2022-jp" );
-			}
-			
-			// UTF-8 or ASCII?
-			if( IsUtf8(text, out withBom) )
-			{
-				// possibly it is ASCII. check about it.
-				if( IsAscii(text) )
-				{
-					withBom = false;
-					return Encoding.Default; // for ASCII, use system default encoding.
-				}
-
-				return Encoding.UTF8;
-			}
-
-			// EUC-JP or Shift_JIS?
-			// calculate improbability point for each encoding
-			eucPoint = CalcEucImprobabilityPoint( text );
-			sjisPoint = CalcSjisImprobabilityPoint( text );
-			if( eucPoint < sjisPoint )
-			{
-				withBom = false;
-				return Encoding.GetEncoding( "euc-jp" );
-			}
-			else
-			{
-				withBom = false;
-				return Encoding.GetEncoding( "shift_jis" );
-			}
-		}
-
-		/// <summary>
-		/// 日本語文字エンコーディングを推定します。
-		/// </summary>
-		/// <param name="filePath">文字エンコーディングを推定するファイルのパス。</param>
-		/// <returns>推定されたエンコーディング。</returns>
-		/// <exception cref="ArgumentNullException">引数 path が null です。</exception>
-		/// <exception cref="PathTooLongException">指定されたパスが長すぎます。</exception>
-		/// <exception cref="NotSupportedException">指定されたパスの形式はサポートしていません。</exception>
-		/// <exception cref="DirectoryNotFoundException">指定されたパスが無効でアクセスできません。</exception>
-		/// <exception cref="FileNotFoundException">指定されたファイルが見つかりません。</exception>
-		/// <exception cref="UnauthorizedAccessException">
-		///		指定したパスがディレクトリを指しているか、
-		///		指定したファイルへのアクセス権がユーザにありません。
-		/// </exception>
-		/// <exception cref="IOException">ファイルを開くときにエラーが発生しました。</exception>
-		/// <remarks>
-		/// 指定したファイルの内容を読み出して日本語文字列と解釈し、
-		/// 使われている文字エンコーディングを推定します。
-		/// 読み出したファイルの内容はメソッド内部で破棄されます。
-		/// ASCII 文字しか含まれないようなバイト列は
-		/// システム標準のエンコーディングとみなします。
-		/// またどんなデータでも何かの文字エンコーディングであると算出するため null は返しません。
-		/// </remarks>
+		/// <exception cref="System.IO.IOException">ストリームからの読み出し中に I/O エラーが発生しました。</exception>
+		/// <exception cref="System.IO.PathTooLongException">指定したパスが長すぎます。</exception>
+		/// <exception cref="System.IO.FileNotFoundException">指定したファイルが見つかりませんでした。</exception>
+		/// <exception cref="System.IO.DirectoryNotFoundException">指定したパスが無効です。</exception>
+		/// <exception cref="System.NotSupportedException">サポートしていないパス形式が指定されました。</exception>
+		/// <exception cref="System.UnauthorizedAccessException">指定したファイルへの読み取りアクセスが拒否されました。</exception>
+		/// <exception cref="System.ArgumentException">パス文字列として不正な値が指定されました。</exception>
+		/// <exception cref="System.ArgumentNullException">引数 filePath が null です。</exception>
 		public static Encoding Analyze( string filePath )
 		{
-			bool dummy;
-			byte[] fileContent;
-			return Analyze( filePath, out dummy, out fileContent );
+			bool withBom, maybeBinary;
+			return Analyze( filePath, out withBom, out maybeBinary );
 		}
 
 		/// <summary>
 		/// 日本語文字エンコーディングを推定します。
 		/// </summary>
-		/// <param name="filePath">文字エンコーディングを推定するファイルのパス。</param>
+		/// <param name="filePath">推定対象となるファイルのパス</param>
 		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
 		/// <returns>推定されたエンコーディング。</returns>
-		/// <exception cref="ArgumentNullException">引数 path が null です。</exception>
-		/// <exception cref="PathTooLongException">指定されたパスが長すぎます。</exception>
-		/// <exception cref="NotSupportedException">指定されたパスの形式はサポートしていません。</exception>
-		/// <exception cref="DirectoryNotFoundException">指定されたパスが無効でアクセスできません。</exception>
-		/// <exception cref="FileNotFoundException">指定されたファイルが見つかりません。</exception>
-		/// <exception cref="UnauthorizedAccessException">
-		///		指定したパスがディレクトリを指しているか、
-		///		指定したファイルへのアクセス権がユーザにありません。
-		/// </exception>
-		/// <exception cref="IOException">ファイルを開くときにエラーが発生しました。</exception>
-		/// <remarks>
-		/// 指定したファイルの内容を読み出して日本語文字列と解釈し、
-		/// 使われている文字エンコーディングを推定します。
-		/// 読み出したファイルの内容はメソッド内部で破棄されます。
-		/// ASCII 文字しか含まれないようなバイト列は
-		/// システム標準のエンコーディングとみなします。
-		/// またどんなデータでも何かの文字エンコーディングであると算出するため null は返しません。
-		/// </remarks>
+		/// <exception cref="System.IO.IOException">ストリームからの読み出し中に I/O エラーが発生しました。</exception>
+		/// <exception cref="System.IO.PathTooLongException">指定したパスが長すぎます。</exception>
+		/// <exception cref="System.IO.FileNotFoundException">指定したファイルが見つかりませんでした。</exception>
+		/// <exception cref="System.IO.DirectoryNotFoundException">指定したパスが無効です。</exception>
+		/// <exception cref="System.NotSupportedException">サポートしていないパス形式が指定されました。</exception>
+		/// <exception cref="System.UnauthorizedAccessException">指定したファイルへの読み取りアクセスが拒否されました。</exception>
+		/// <exception cref="System.ArgumentException">パス文字列として不正な値が指定されました。</exception>
+		/// <exception cref="System.ArgumentNullException">引数 filePath が null です。</exception>
 		public static Encoding Analyze( string filePath, out bool withBom )
 		{
-			byte[] fileContent;
-			return Analyze( filePath, out withBom, out fileContent );
+			bool maybeBinary;
+			return Analyze( filePath, out withBom, out maybeBinary );
 		}
 
 		/// <summary>
 		/// 日本語文字エンコーディングを推定します。
 		/// </summary>
-		/// <param name="filePath">文字エンコーディングを推定するファイルのパス。</param>
+		/// <param name="filePath">推定対象となるファイルのパス</param>
 		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
-		/// <param name="fileContent">読みだしたファイルの内容がこの変数に格納されます。</param>
-		/// <returns>推定されたエンコーディング。</returns>
-		/// <exception cref="ArgumentNullException">引数 path が null です。</exception>
-		/// <exception cref="PathTooLongException">指定されたパスが長すぎます。</exception>
-		/// <exception cref="NotSupportedException">指定されたパスの形式はサポートしていません。</exception>
-		/// <exception cref="DirectoryNotFoundException">指定されたパスが無効でアクセスできません。</exception>
-		/// <exception cref="FileNotFoundException">指定されたファイルが見つかりません。</exception>
-		/// <exception cref="UnauthorizedAccessException">
-		///		指定したパスがディレクトリを指しているか、
-		///		指定したファイルへのアクセス権がユーザにありません。
-		/// </exception>
-		/// <exception cref="IOException">ファイルを開くときにエラーが発生しました。</exception>
-		/// <remarks>
-		/// 指定したファイルの内容を読み出して日本語文字列と解釈し、
-		/// 使われている文字エンコーディングを推定します。
-		/// 読み出したファイルの内容はメソッド内部で破棄されず、
-		/// 引数 fileContent で与えた変数に設定して返します。
-		/// ASCII 文字しか含まれないようなバイト列は
-		/// システム標準のエンコーディングとみなします。
-		/// またどんなデータでも何かの文字エンコーディングであると算出するため null は返しません。
-		/// </remarks>
-		/// <example>
-		/// <code>
-		/// Encoding encoding;
-		/// bool withBom;
-		/// byte[] content;
-		/// string text;
-		/// 
-		/// // 文字コードを推定
-		/// encoding = EncodingAnalyzer.Analyze( "sample.txt", out withBom, out content );
-		/// 
-		/// // 指定文字コードとして Unicode に変換
-		/// text = encoding.GetString( content );
-		/// if( withBom )
-		/// 	text = text.Substring( 1 ); // 効率悪いがサンプルなのでご勘弁・・・
-		/// 
-		/// // 結果を表示
-		/// Console.WriteLine(
-		/// 	"sample.txt: encoding={0}, BOM={1}, content=[{2}]",
-		/// 	encoding.WebName,
-		/// 	withBom,
-		/// 	encoding.GetString(content).Substring( 0, Math.Min(8, content.Length) )
-		/// );
-		/// </code>
-		/// </example>
-		public static Encoding Analyze( string filePath, out bool withBom, out byte[] fileContent )
+		/// <param name="maybeBinary">ストリームの内容がバイナリである疑いが強い場合 true が設定されます。</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="System.IO.IOException">ストリームからの読み出し中に I/O エラーが発生しました。</exception>
+		/// <exception cref="System.IO.PathTooLongException">指定したパスが長すぎます。</exception>
+		/// <exception cref="System.IO.FileNotFoundException">指定したファイルが見つかりませんでした。</exception>
+		/// <exception cref="System.IO.DirectoryNotFoundException">指定したパスが無効です。</exception>
+		/// <exception cref="System.NotSupportedException">サポートしていないパス形式が指定されました。</exception>
+		/// <exception cref="System.UnauthorizedAccessException">指定したファイルへの読み取りアクセスが拒否されました。</exception>
+		/// <exception cref="System.ArgumentException">パス文字列として不正な値が指定されました。</exception>
+		/// <exception cref="System.ArgumentNullException">引数 filePath が null です。</exception>
+		public static Encoding Analyze( string filePath, out bool withBom, out bool maybeBinary )
 		{
-			FileStream file = null;
+			FileStream file;
 			
-			// read all bytes from the file
-			using( file = File.Open(filePath, FileMode.Open, FileAccess.Read) )
+			if( filePath == null )
+				throw new ArgumentNullException( "filePath" );
+
+			using( file = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) )
 			{
-				fileContent = new byte[ file.Length ];
-				file.Read( fileContent, 0, (int)file.Length );
+				return Analyze( file, out withBom, out maybeBinary );
 			}
+		}
+
+		/// <summary>
+		/// 日本語文字エンコーディングを推定します。
+		/// </summary>
+		/// <param name="stream">推定対象となるバイト列を読み出すストリーム</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="System.ObjectDisposedException">ストリームがすでに閉じられています。</exception>
+		/// <exception cref="System.NotSupportedException">読み取りがサポートされないストリームが指定されました。</exception>
+		/// <exception cref="System.IO.IOException">ストリームからの読み出し中に I/O エラーが発生しました。</exception>
+		/// <exception cref="System.ArgumentNullException">引数 stream が null です。</exception>
+		public static Encoding Analyze( Stream stream )
+		{
+			bool withBom, maybeBinary;
+			return Analyze( stream, out withBom, out maybeBinary );
+		}
+
+		/// <summary>
+		/// 日本語文字エンコーディングを推定します。
+		/// </summary>
+		/// <param name="stream">推定対象となるバイト列を読み出すストリーム</param>
+		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="System.ObjectDisposedException">ストリームがすでに閉じられています。</exception>
+		/// <exception cref="System.NotSupportedException">読み取りがサポートされないストリームが指定されました。</exception>
+		/// <exception cref="System.IO.IOException">ストリームからの読み出し中に I/O エラーが発生しました。</exception>
+		/// <exception cref="System.ArgumentNullException">引数 stream が null です。</exception>
+		public static Encoding Analyze( Stream stream, out bool withBom )
+		{
+			bool maybeBinary;
+			return Analyze( stream, out withBom, out maybeBinary );
+		}
+
+		/// <summary>
+		/// 日本語文字エンコーディングを推定します。
+		/// </summary>
+		/// <param name="stream">推定対象となるバイト列を読み出すストリーム</param>
+		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
+		/// <param name="maybeBinary">ストリームの内容がバイナリである疑いが強い場合 true が設定されます。</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="System.ObjectDisposedException">ストリームがすでに閉じられています。</exception>
+		/// <exception cref="System.NotSupportedException">読み取りがサポートされないストリームが指定されました。</exception>
+		/// <exception cref="System.IO.IOException">ストリームからの読み出し中に I/O エラーが発生しました。</exception>
+		/// <exception cref="System.ArgumentNullException">引数 stream が null です。</exception>
+		public static Encoding Analyze( Stream stream, out bool withBom, out bool maybeBinary )
+		{
+			byte[] buf;
+
+			if( stream == null )
+				throw new ArgumentNullException( "stream" );
+
+			// prepare buffer to receive bytes
+			buf = new byte[ stream.Length ];
+			
+			// read some bytes from the file
+			stream.Read( buf, 0, buf.Length );
 
 			// analyze it
-			return Analyze( fileContent, out withBom );
+			return Analyze( buf, out withBom, out maybeBinary );
+		}
+
+		/// <summary>
+		/// 日本語文字エンコーディングを推定します。
+		/// </summary>
+		/// <param name="text">推定対象となるバイト列</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="ArgumentNullException">引数 text が null です。</exception>
+		public static Encoding Analyze( byte[] text )
+		{
+			bool withBom, maybeBinary;
+			return Analyze( text, out withBom, out maybeBinary );
+		}
+
+		/// <summary>
+		/// 日本語文字エンコーディングを推定します。
+		/// </summary>
+		/// <param name="text">推定対象となるバイト列</param>
+		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="System.ArgumentNullException">引数 text が null です。</exception>
+		public static Encoding Analyze( byte[] text, out bool withBom )
+		{
+			bool maybeBinary;
+			return Analyze( text, out withBom, out maybeBinary );
+		}
+
+		/// <summary>
+		/// 日本語文字エンコーディングを推定します。
+		/// </summary>
+		/// <param name="text">推定対象となるバイト列</param>
+		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
+		/// <param name="maybeBinary">ストリームの内容がバイナリである疑いが強い場合 true が設定されます。</param>
+		/// <returns>推定されたエンコーディング。失敗すると null。</returns>
+		/// <exception cref="System.ArgumentNullException">引数 text が null です。</exception>
+		public static Encoding Analyze( byte[] text, out bool withBom, out bool maybeBinary )
+		{
+			if( text == null )
+				throw new ArgumentNullException( "text" );
+
+			int[] points = new int[7];
+			int[] indexes = new int[7];
+			int candidateIndex = -1;
+			int nextCandidateIndex = -1;
+
+			// らしさポイントを初期化
+			for( int i=0; i<points.Length; i++ )
+			{
+				points[i] = BasePoint;
+				indexes[i] = 0;
+			}
+
+			try
+			{
+				// BOM コードが付いていればすぐ文字コードを確定
+				if( 1 < text.Length && text[0] == 0xfe && text[1] == 0xff )
+				{
+					withBom = true;
+					maybeBinary = false;
+					return Encoding.BigEndianUnicode;
+				}
+				if( 1 < text.Length && text[0] == 0xff && text[1] == 0xfe )
+				{
+					withBom = true;
+					maybeBinary = false;
+					return Encoding.Unicode;
+				}
+				if( 2 < text.Length && text[0] == 0xef && text[1] == 0xbb && text[2] == 0xbf )
+				{
+					withBom = true;
+					maybeBinary = false;
+					return Encoding.UTF8;
+				}
+
+				// 全バイトシーケンスを解析
+				for(;;)
+				{
+					// ASCII らしさを計算
+					if( 0 < points[AsciiIndex] )
+					{
+						UpdateAsciiPoint( text, ref indexes[AsciiIndex], ref points[AsciiIndex] );
+					}
+
+					// UTF-16 らしさを計算
+					if( 0 < points[UniIndex] )
+					{
+						UpdateUniPoint( text, ref indexes[UniIndex], ref points[UniIndex] );
+					}
+
+					// UTF-16 (BigEndian) らしさを計算
+					if( 0 < points[UniBigIndex] )
+					{
+						UpdateUniBigPoint( text, ref indexes[UniBigIndex], ref points[UniBigIndex] );
+					}
+
+					// UTF-8 らしさを計算
+					if( 0 < points[Utf8Index] )
+					{
+						UpdateUtf8Point( text, ref indexes[Utf8Index], ref points[Utf8Index] );
+					}
+
+					// ISO-2022-JP らしさを計算
+					if( 0 < points[JisIndex] )
+					{
+						UpdateJisPoint( text, ref indexes[JisIndex], ref points[JisIndex] );
+					}
+
+					// EUC-JP らしさを計算
+					if( 0 < points[EucIndex] )
+					{
+						UpdateEucPoint( text, ref indexes[EucIndex], ref points[EucIndex] );
+					}
+
+					// Shift_JIS らしさを計算
+					if( 0 < points[SjisIndex] )
+					{
+						UpdateSjisPoint( text, ref indexes[SjisIndex], ref points[SjisIndex] );
+					}
+
+#					if false
+					{
+						Console.Write("<{0,4}@{1,-4}", points[0], indexes[0]);
+						for( int i=1; i<points.Length; i++ )
+						{
+							Console.Write( ", {0,4}@{1,-4}", points[i], indexes[i] );
+						}
+						Console.WriteLine(">");
+					}
+#					endif
+
+					// らしさポイントを比較
+					StatPoints( points, out candidateIndex, out nextCandidateIndex );
+					if( points[nextCandidateIndex] <= LowerLimit )
+					{
+						break;
+					}
+				}
+			}
+			catch( IndexOutOfRangeException )
+			{}
+
+			// 結果を返す
+			if( candidateIndex < 0 )
+			{
+				StatPoints( points, out candidateIndex, out nextCandidateIndex );
+			}
+			maybeBinary = (points[candidateIndex] < LowerLimit);
+			withBom = false;
+			return EncodingFromIndex( candidateIndex );
 		}
 		#endregion
 
 		#region Analysis Logic
 		/// <summary>
-		/// 指定バイト列が ASCII 文字列かどうかを判定します。
+		/// ASCII 文字列らしさポイントを指定位置のデータから更新します。
 		/// </summary>
-		static bool IsAscii( byte[] text )
+		static void UpdateAsciiPoint( byte[] text, ref int index, ref Int32 point )
 		{
 			Debug.Assert( text != null );
+			Debug.Assert( 0 < point );
 
-			// ASCII として不正な文字を検索
-			foreach( byte by in text )
+			byte by;
+
+			// ASCII コードの範囲内か確認
+			by = text[ index ];
+			index++;
+			if( 0x7f < by )
 			{
-				if( by < 0x20 || 0x7E < by )
+				point = 0;
+				index++;
+				return;
+			}
+
+			// ASCII コードであれば制御コードならばポイントを下げる
+			if( Utl.IsControlCode(by) )
+			{
+				point -= ControlCodePoint;
+			}
+		}
+
+		/// <summary>
+		/// Shift_JIS 文字列らしさポイントを指定位置のデータから更新します。
+		/// </summary>
+		static void UpdateSjisPoint( byte[] text, ref int index, ref Int32 point )
+		{
+			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( 0 < point );
+
+			byte firstByte, secondByte;
+
+			// １バイト目を取得
+			firstByte = text[ index ];
+			index++;
+			if( Utl.IsControlCode(firstByte) )
+			{
+				point -= ControlCodePoint; // 制御文字
+			}
+			else if( firstByte <= 0x7e )
+			{
+				; // ASCII 文字
+			}
+			else if( firstByte <= 0x80 )
+			{
+				point -= UnknownCharPoint; // 不正値
+			}
+			else if( Utl.IsSjisKanjiFirstByte(firstByte) )
+			{
+				// 後続が漢字の２バイト目かどうか判定
+				secondByte = text[ index ];
+				index++;
+				if( Utl.IsSjisKanjiSecondByte(secondByte) )
 				{
-					if( by != 0x0A && by != 0x0D )
+					//--- 漢字 ---
+					// 第二水準の漢字ならポイントを下げる
+					if( Utl.IsSjisSecondLevelChar(firstByte, secondByte) )
 					{
-						return false;
+						point -= SecondLevelKanjiPoint;
 					}
+					return;
+				}
+				else
+				{
+					point -= UnknownCharPoint; // 不正値
 				}
 			}
-
-			// すべて ASCII として正常だった
-			return true;
+			else if( firstByte <= 0xa0 )
+			{
+				point -= UnknownCharPoint; // 不正値
+			}
+			else if( firstByte <= 0xdf )
+			{
+				point -= HankakuKanaPoint; // 半角カナ
+			}
+			else if( firstByte <= 0xff )
+			{
+				point -= UnknownCharPoint; // 不正値
+			}
 		}
 
 		/// <summary>
-		/// 指定バイト列が JIS エンコーディングされた文字列かどうかを判定します。
+		/// EUC-JP 文字列らしさポイントを指定位置のデータから更新します。
 		/// </summary>
-		/// <remarks>
-		/// JIS に特徴的な、漢字開始制御フラグ(KANJI_IN)が含まれるかどうかで判定します。
-		/// </remarks>
-		static bool IsJis( byte[] text )
+		static void UpdateEucPoint( byte[] text, ref int index, ref Int32 point )
 		{
 			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( 0 < point );
 
-			bool isJis = false;
-			int pos = 0;
+			byte firstByte, secondByte, thirdByte;
 
-			// ESC コードを検索し、その直後２バイトを読んで KANJI_IN か判定
-			pos = Utl.FindFirstOf( text, pos, 0x1B );
-			while( pos != -1 )
+			// １バイト目を取得
+			firstByte = text[ index ];
+			index++;
+			if( Utl.IsControlCode(firstByte) )
 			{
-				isJis = true;
-
-				// 後続シーケンスが ISO-2022-JP として正しいか検証
-				if( !Utl.IsValidIso2022jpEscSeq(text, pos) )
+				point -= ControlCodePoint; // 制御コード
+			}
+			else if( firstByte <= 0x7e )
+			{
+				; // ASCII文字
+			}
+			else if( firstByte <= 0x8d )
+			{
+				point -= UnknownCharPoint; // 不明な文字
+			}
+			else if( firstByte <= 0x8e )
+			{
+				// 半角カナかどうか確認
+				secondByte = text[ index ];
+				index++;
+				if( 0xa1 <= secondByte && secondByte <= 0xdf )
 				{
-					isJis = false; // 不正な ESC シーケンス
-					break;
+					point -= HankakuKanaPoint; // 半角カナ
 				}
-
-				// 次の ESC コードを検索
-				pos = Utl.FindFirstOf( text, pos+1, 0x1B );
-			}
-
-			return isJis;
-		}
-
-		/// <summary>
-		/// 指定バイト列が UTF-8 エンコーディングされた文字列かどうかを判定します。
-		/// </summary>
-		/// <param name="text">判定対象のバイト列</param>
-		/// <param name="withBom">この変数に Byte Order Mark が付いているかどうかが格納されます。</param>
-		/// <returns>UTF-8 ならば true</returns>
-		static bool IsUtf8( byte[] text, out bool withBom )
-		{
-			// [UTF-8 bit pattern]
-			// 0xxxxxxx                                               (00-7f)
-			// 110xxxxx 10xxxxxx                                      (c0-df)(80-bf)
-			// 1110xxxx 10xxxxxx 10xxxxxx                             (e0-ef)(80-bf)(80-bf)
-			// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx                    (f0-f7)(80-bf)(80-bf)(80-bf)
-			// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx           (f8-fb)(80-bf)(80-bf)(80-bf)(80-bf)
-			// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx  (fc-fd)(80-bf)(80-bf)(80-bf)(80-bf)(80-bf)
-			Debug.Assert( text != null );
-
-			int offset = 0;
-			int followingByteCount;
-
-			// UTF-8 特有の BOM で始まるならば UTF-8 とする
-			if( 2 < text.Length
-				&& text[0] == 0xef
-				&& text[1] == 0xbb
-				&& text[2] == 0xbf )
-			{
-				withBom = true;
-				return true;
-			}
-			withBom = false;
-			
-			// 先頭から UTF-8 のビットパターンになっているか確認していく
-			while( offset < text.Length )
-			{
-				// 最初のバイトから後続バイトがいくつあるのか取得
-				if(      (text[offset]&0x80) == 0x00 )	followingByteCount = 0;
-				else if( (text[offset]&0xe0) == 0xc0 )	followingByteCount = 1;
-				else if( (text[offset]&0xf0) == 0xe0 )	followingByteCount = 2;
-				else if( (text[offset]&0xf8) == 0xf0 )	followingByteCount = 3;
-				else if( (text[offset]&0xfc) == 0xf8 )	followingByteCount = 4;
-				else if( (text[offset]&0xfe) == 0xfc )	followingByteCount = 5;
-				else return false; // invalid for UTF-8
-				
-				// 後続バイトのビットパターンが 10xxxxxx か判定
-				for( int i=1; i<=followingByteCount; i++ )
+				else
 				{
-					if( (text[offset+i]&0xc0) != 0x80 )
-					{
-						return false; // invalid for UTF-8
-					}
-				}
-				
-				// 判定する文字のあるオフセットを移動
-				offset += followingByteCount + 1;
-			}
-			
-			// 全バイトのビットパターンが UTF-8 として正常だった
-			return true;
-		}
-
-		/// <summary>
-		/// 指定バイト列が UTF-16 (Little Endian) エンコーディングされた文字列かどうかを判定します。
-		/// </summary>
-		/// <param name="text">判定対象のバイト列</param>
-		/// <returns>UTF-16 (LE) ならば true</returns>
-		/// <remarks>
-		/// 先頭２バイトに BOM があるかどうかで判断します。
-		/// </remarks>
-		static bool IsUtf16Le( byte[] text )
-		{
-			Debug.Assert( text != null );
-			if( text.Length <= 1 )
-				return false;
-
-			return (text[0] == 0xff && text[1] == 0xfe);
-		}
-
-		/// <summary>
-		/// 指定バイト列が UTF-16 (Big Endian) エンコーディングされた文字列かどうかをを判定します。
-		/// </summary>
-		/// <param name="text">判定対象のバイト列</param>
-		/// <returns>UTF-16 (BE) ならば true</returns>
-		/// <remarks>
-		/// 先頭２バイトに BOM があるかどうかで判断します。
-		/// </remarks>
-		static bool IsUtf16Be( byte[] text )
-		{
-			Debug.Assert( text != null );
-			if( text.Length <= 1 )
-				return false;
-
-			return (text[0] == 0xfe && text[1] == 0xff);
-		}
-		
-		/// <summary>
-		/// EUC でない可能性を点数にして計算します。
-		/// </summary>
-		/// <returns>EUC でない可能性を表す点数</returns>
-		static int CalcEucImprobabilityPoint( byte[] text )
-		{
-			Debug.Assert( text != null );
-
-			int point = 0;
-			int japaneseCount = 0; // 見つけた日本語文字の数
-			
-			try
-			{
-				for( int i=0; i<text.Length; i++ )
-				{
-					// 漢字の１バイト目か？
-					if( 0xa1 <= text[i] && text[i] <= 0xfe )
-					{
-						// ２バイト目が漢字として不正ならば、減点
-						if( text[i+1] < 0xa1 || 0xfe < text[i+1] )
-						{
-							point += 10;
-						}
-						// 第二水準の漢字なら、小さく減点 (不頻出)
-						else if( 0xd0 <= text[i] )
-						{
-							point += 1;
-							i++;
-							japaneseCount++;
-						}
-						// 第一水準の漢字だった
-						else
-						{
-							i++;
-							japaneseCount++;
-						}
-					}
-					// 半角カナの１バイト目か？
-					else if( text[i] == 0x8e )
-					{
-						// 半角カナの２バイト目か？
-						if( 0xa1 <= text[i+1] && text[i+1] <= 0xdf )
-						{
-							point += 1; // 半角カナは嫌われている
-							i++;
-							japaneseCount++;
-						}
-						else
-						{
-							point += 10; // ２バイト目が不正
-						}
-					}
-					// 半角カナ以外で１バイト目が 0x80 以上なら、減点
-					else if( 0x80 <= text[i] )
-					{
-						point += 10;
-					}
-					
-					// 十分な量を確認したため、もう判断を終了
-					if( 100 < japaneseCount )
-					{
-						return point;
-					}
+					point -= UnknownCharPoint; // 不明な文字
 				}
 			}
-			catch( IndexOutOfRangeException )
+			else if( firstByte <= 0x8f )
 			{
-				// 規格上あるはずの後続バイトが無かった
-				point += 30;
-			}
-			
-			return point;
-		}
-
-		/// <summary>
-		/// Shift_JIS でない可能性を点数にして計算します。
-		/// </summary>
-		/// <returns>Shift_JIS でない可能性を表す点数</returns>
-		static int CalcSjisImprobabilityPoint( byte[] text )
-		{
-			Debug.Assert( text != null );
-
-			int point = 0;
-			int japaneseCount = 0; // 見つけた日本語文字の数
-			
-			try
-			{
-				for( int i=0; i<text.Length; i++ )
+				// 補助漢字かどうか確認
+				secondByte = text[ index ];
+				index++;
+				if( 0xa1 <= secondByte && secondByte <= 0xfe )
 				{
-					// 漢字の１バイト目か？
-					if( Utl.IsSjisFirstByte(text[i]) )
+					thirdByte = text[ index ];
+					index++;
+					if( 0xa1 <= thirdByte && thirdByte <= 0xfe )
 					{
-						// 漢字の２バイト目として不正なら、減点
-						if( Utl.IsSjisSecondByte(text[i+1]) == false )
-						{
-							point += 10;
-						}
-						// 第二水準の漢字の漢字なら、小さく原点 (不頻出)
-						else if( Utl.IsSjisSecondLevelChar(text[i], text[i+1]) )
-						{
-							point += 1;
-							i++;
-							japaneseCount++;
-						}
-						// 第一水準の漢字
-						else
-						{
-							i++;
-							japaneseCount++;
-						}
-					}
-					// 0x80 以上？
-					else if( 0x80 <= text[i] )
-					{
-						// 半角カナなら、小さく減点。でなければ減点。
-						if( 0xa1 <= text[i+1] && text[i+1] <= 0xdf )
-						{
-							point += 1;
-							i++;
-							japaneseCount++;
-						}
-						else
-						{
-							point += 10; // 半角カナでもない：謎の文字
-						}
-					}
-					
-					// 十分な量を確認したため、もう判断を終了
-					if( 100 < japaneseCount )
-					{
-						return point;
-					}
-				}
-			}
-			catch( IndexOutOfRangeException )
-			{
-				// 規格上あるはずの後続バイトが無かった
-				point += 30;
-			}
-			
-			return point;
-		}
-		#endregion
-
-		#region Utilities
-		class Utl
-		{
-			public static bool IsValidIso2022jpEscSeq( byte[] bytes, int escIndex )
-			{
-				// Reference:
-				// - ISO-2022-JP-1... RFC 2237
-				// - ISO-2022-JP-2... RFC 1544
-				byte secondByte;
-				byte thirdByte;
-
-				try
-				{
-					secondByte = bytes[ escIndex + 1 ];
-					if( secondByte == '$' )
-					{
-						thirdByte = bytes[ escIndex + 2 ];
-						if( thirdByte == 'A' || thirdByte == 'B'
-							|| thirdByte == '@' || thirdByte == '(' )
-							return true;
-						else
-							return false;
-					}
-					else if( secondByte == '(' )
-					{
-						thirdByte = bytes[ escIndex + 2 ];
-						if( thirdByte == 'B' || thirdByte == 'I' || thirdByte == 'J' )
-							return true;
-						else
-							return false;
-					}
-					else if( secondByte == '.' )
-					{
-						thirdByte = bytes[ escIndex + 2 ];
-						if( thirdByte == 'A' || thirdByte == 'F' )
-							return true;
-						else
-							return false;
-					}
-					else if( secondByte == 'N' )
-					{
-						return true;
+						point -= HojoKanjiPoint; // 補助漢字
 					}
 					else
 					{
-						return false;
+						point -= UnknownCharPoint; // 不明な文字
+					}
+				}
+				else
+				{
+					point -= UnknownCharPoint; // 不明な文字
+				}
+			}
+			else if( firstByte <= 0xa0 )
+			{
+				point -= UnknownCharPoint; // 不明な文字
+			}
+			else if( firstByte <= 0xa8 )
+			{
+				// 第一水準の漢字か確認
+				secondByte = text[ index ];
+				index++;
+				if( 0xa1 <= secondByte && secondByte <= 0xfe )
+				{
+					; // 第一水準の漢字
+				}
+				else
+				{
+					point -= UnknownCharPoint; // 不明な文字
+				}
+			}
+			else if( firstByte <= 0xfe )
+			{
+				// 第一水準でない漢字か確認
+				secondByte = text[ index ];
+				index++;
+				if( 0xa1 <= secondByte && secondByte <= 0xfe )
+				{
+					; // 第一水準でない漢字
+				}
+				else
+				{
+					point -= UnknownCharPoint; // 不明な文字
+				}
+			}
+			else if( firstByte <= 0xff )
+			{
+				point = 0; // 不明な文字・・・というよりバイナリ？
+			}
+		}
+
+		/// <summary>
+		/// JIS 文字列らしさポイントを指定位置のデータから更新します。
+		/// </summary>
+		static void UpdateJisPoint( byte[] text, ref int index, ref Int32 point )
+		{
+			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( 0 < point );
+
+			byte firstByte, secondByte, thirdByte;
+
+			firstByte = text[ index ];
+			index++;
+			if( firstByte == 0x1b )
+			{
+				try
+				{
+					// エスケープシーケンスを解釈
+					secondByte = text[ index ];
+					index++;
+					if( 0x20 <= secondByte && secondByte <= 0x2f )
+					{
+						thirdByte = text[ index ];
+						index++;
+						if( 0x30 <= thirdByte && thirdByte <= 0x7e )
+						{
+							; // 正しいエスケープシーケンス
+						}
+						else
+						{
+							point = 0; // まったくの不正値
+						}
+					}
+					else
+					{
+						point = 0; // まったくの不正値
 					}
 				}
 				catch( IndexOutOfRangeException )
 				{
-					return false;
+					point -= UnknownCharPoint;
 				}
 			}
-
-			/// <summary>
-			/// ESC コードの後続２バイトを判定して
-			/// その３バイトが JIS の KANJI_IN（３バイト）かどうかを判定します。
-			/// </summary>
-			/// <param name="secondByte">ESC コード直後のバイト値</param>
-			/// <param name="thirdByte">ESC コードの２バイト後ろのバイト値</param>
-			/// <returns>KANJI_IN なら true</returns>
-			public static bool IsKanjiIn( byte secondByte, byte thirdByte )
+			else if( firstByte < 0x20 )
 			{
-				// JIS-1982 の KANJI_IN は <ESC>$B
-				const byte KANJI_IN_1 = 0x24; // $
-				const byte KANJI_IN_2 = 0x42; // B
-				
-				// JIS-1978 の KANJI_IN は <ESC>$@
-				const byte KANJI_IN_2_old = 0x40; // @
-
-				if( KANJI_IN_1 == secondByte
-					&& KANJI_IN_2 == thirdByte )
+				if( firstByte != 0x09 && firstByte != 0x0a && firstByte != 0x0d )
 				{
-					return true; // JIS-1982
+					point -= ControlCodePoint; // 制御コード
 				}
-				else if( KANJI_IN_1 == secondByte
-					&& KANJI_IN_2_old == thirdByte )
-				{
-					return true; // JIS-1978
-				}
+			}
+			else if( 0xa1 <= firstByte && firstByte <= 0xdf )
+			{
+				point -= HankakuKanaPoint; // 半角カナコード (8-bit JIS)
+			}
+			else if( 0x7f < firstByte )
+			{
+				point -= UnknownCharPoint; // 不正値
+			}
+		}
 
-				return false;
+		/// <summary>
+		/// UTF-8 文字列らしさポイントを指定位置のデータから更新します。
+		/// </summary>
+		static void UpdateUtf8Point( byte[] text, ref int index, ref Int32 point )
+		{
+			// [UTF-8 bit pattern]
+			// 0xxxxxxx                                               (00-7f)
+			// 110yyyxx 10xxxxxx                                      (c0-df)(80-bf)
+			// 1110yyyy 10yyyyxx 10xxxxxx                             (e0-ef)(80-bf)(80-bf)
+			// 11110zzz 10zzyyyy 10yyyyxx 10xxxxxx                    (f0-f7)(80-bf)(80-bf)(80-bf)
+			// 111110ss 10zzzzzz 10zzyyyy 10yyyyxx 10xxxxxx           (f8-fb)(80-bf)(80-bf)(80-bf)(80-bf)
+			// 1111110s 10ssssss 10zzzzzz 10zzyyyy 10yyyyxx 10xxxxxx  (fc-fd)(80-bf)(80-bf)(80-bf)(80-bf)(80-bf)
+			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( 0 < point );
+
+			byte firstByte;
+			byte by;
+			char firstCh, secondCh;
+
+			// 何バイトの文字か判定
+			firstByte = text[ index ];
+			index++;
+			if( (firstByte & 0x80) == 0x00 )
+			{
+				// 1-byte character
+				firstCh = (char)( firstByte & 0x7f );
+				secondCh = '\x0000';
+			}
+			else if( (firstByte & 0xe0) == 0xc0 )
+			{
+				// 2-byte character
+				firstCh = (char)( (firstByte & 0x1f) << 6 );
+				secondCh = '\x0000';
+
+				by = text[ index ];
+				index++;
+				firstCh |= (char)( by & 0x7f );
+			}
+			else if( (firstByte & 0xf0) == 0xe0 )
+			{
+				// 3-byte character
+				firstCh = (char)( (firstByte & 0x0f) << 12 );
+				secondCh = '\x0000';
+
+				by = text[ index ];
+				index++;
+				firstCh |= (char)( (by & 0x7f) << 6 );
+
+				by = text[ index ];
+				index++;
+				firstCh |= (char)( by & 0x7f );
+			}
+			else if( (firstByte & 0xf8) == 0xf0 )
+			{
+				// 4-byte character
+				firstCh = '\x0000';
+				secondCh = (char)( (firstByte & 0x07) << 2 );
+
+				by = text[ index ];
+				index++;
+				secondCh |= (char)( (by & 0x30) >> 4 );
+				firstCh |= (char)( (by & 0x0f) << 12 );
+
+				by = text[ index ];
+				index++;
+				firstCh |= (char)( (by & 0x3f) << 6 );
+
+				by = text[ index ];
+				index++;
+				firstCh |= (char)( by & 0x7f );
+			}
+			else if( (firstByte & 0xfc) == 0xf8 )
+			{
+				// 5-byte character
+				point -= UnknownCharPoint; // 不正なシーケンス
+				return;
+			}
+			else if( (firstByte & 0xfe) == 0xfc )
+			{
+				// 6-byte character
+				point -= UnknownCharPoint; // 不正なシーケンス
+				return;
+			}
+			else
+			{
+				point = 0; // まったく不正なシーケンス
+				return;
 			}
 
+			// 文字を検証
+			CalcUnicodePoint( firstCh, secondCh, ref point );
+		}
+
+		/// <summary>
+		/// Unicode 文字列らしさポイントを指定位置のデータから更新します。
+		/// </summary>
+		static void UpdateUniPoint( byte[] text, ref int index, ref Int32 point )
+		{
+			Debug.Assert( text != null );
+			Debug.Assert( 0 < point );
+
+			byte firstByte, secondByte;
+			char firstCh, secondCh;
+
+			// １文字目を取得
+			firstByte = text[ index++ ];
+			secondByte = text[ index++ ];
+			firstCh = (char)( firstByte | (secondByte << 8) );
+
+			// ２文字目を取得
+			secondCh = '\x0000';
+			if( 0xd800 <= firstCh && firstCh <= 0xdbff )
+			{
+				try
+				{
+					firstByte = text[ index++ ];
+					secondByte = text[ index++ ];
+					secondCh = (char)( firstByte | (secondByte << 8) );
+				}
+				catch( IndexOutOfRangeException )
+				{}
+			}
+
+			// らしさポイントを計算
+			CalcUnicodePoint( firstCh, secondCh, ref point );
+		}
+
+		/// <summary>
+		/// Unicode (big endian) 文字列らしさポイントを指定位置のデータから更新します。
+		/// </summary>
+		static void UpdateUniBigPoint( byte[] text, ref int index, ref Int32 point )
+		{
+			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( 0 < point );
+
+			byte firstByte, secondByte;
+			char firstCh, secondCh;
+
+			// １文字目を取得
+			firstByte = text[ index++ ];
+			secondByte = text[ index++ ];
+			firstCh = (char)( (firstByte << 8) | secondByte );
+
+			// ２文字目を取得
+			secondCh = '\x0000';
+			if( 0xd800 <= firstCh && firstCh <= 0xdbff )
+			{
+				try
+				{
+					firstByte = text[ index++ ];
+					secondByte = text[ index++ ];
+					secondCh = (char)( firstByte | (secondByte << 8) );
+				}
+				catch( IndexOutOfRangeException )
+				{}
+			}
+
+			// らしさポイントを計算
+			CalcUnicodePoint( firstCh, secondCh, ref point );
+		}
+
+		/// <summary>
+		/// Unicode 文字列らしさポイントを計算します。
+		/// </summary>
+		static void CalcUnicodePoint( char firstCh, char secondCh, ref int point )
+		{
+			char[] uniChars = new char[2];
+
+			if( firstCh <= 0x001f || firstCh == 0x007f )
+			{
+				if( firstCh != 0x09 && firstCh != 0x0a && firstCh != 0x0d )
+				{
+					point -= ControlCodePoint; // 制御コード
+				}
+			}
+			else if( firstCh <= 0x007e )
+			{
+				; // ASCII文字
+			}
+			else if( 0x2150 <= firstCh && firstCh <= 0x22ff )
+			{
+				; // 記号類
+			}
+			else if( 0x3000 <= firstCh && firstCh <= 0x30ff )
+			{
+				; // ひらがな、カタカナ
+			}
+			else if( 0x4e00 <= firstCh && firstCh <= 0x9fff )
+			{
+				; // CJK統合漢字
+			}
+			else if( 0xff61 <= firstCh && firstCh <= 0xff9f )
+			{
+				point -= HankakuKanaPoint; // 半角カナ
+			}
+			else if( (0x07c0 <= firstCh && firstCh <= 0x08ff)
+				|| (0x0fd0 <= firstCh && firstCh <= 0x10cf)
+				|| (0x1678 <= firstCh && firstCh <= 0x177f)
+				|| (0x18b0 <= firstCh && firstCh <= 0x19df)
+				|| (0x1a00 <= firstCh && firstCh <= 0x1dbf)
+				|| (0x20c0 <= firstCh && firstCh <= 0x2d7f)
+				|| (0x2de0 <= firstCh && firstCh <= 0x2e7f)
+				|| (0xa4c8 <= firstCh && firstCh <= 0xabff)
+				|| (0xfa70 <= firstCh && firstCh <= 0xfaff)
+				|| (0xfb50 <= firstCh && firstCh <= 0xfe0f)
+				|| (0xfff0 <= firstCh && firstCh <= 0xfffd) )
+			{
+				// メイリオフォントにグリフが収録されていない範囲は
+				// 日本語としてまず使われないと判断
+				point -= UnknownCharPoint;
+			}
+			else
+			{
+				// 非日本語文字や記号類
+				point -= SecondLevelKanjiPoint;
+			}
+		}
+		#endregion
+
+		#region Utilities
+		static Encoding EncodingFromIndex( int index )
+		{
+			if( index == AsciiIndex )
+				return Encoding.ASCII;
+			if( index == SjisIndex )
+				return Encoding.GetEncoding( "shift_jis" );
+			if( index == EucIndex )
+				return Encoding.GetEncoding( "euc-jp" );
+			if( index == JisIndex )
+				return Encoding.GetEncoding( "iso-2022-jp" );
+			if( index == Utf8Index )
+				return Encoding.UTF8;
+			if( index == UniIndex )
+				return Encoding.Unicode;
+			if( index == UniBigIndex )
+				return Encoding.BigEndianUnicode;
+			
+			return Encoding.Default;
+		}
+
+		static void StatPoints( int[] points, out int biggestIndex, out int nextBiggestIndex )
+		{
+			biggestIndex = nextBiggestIndex = 0;
+			for( int i=1; i<points.Length; i++ )
+			{
+				if( points[biggestIndex] <= points[i] )
+				{
+					nextBiggestIndex = biggestIndex;
+					biggestIndex = i;
+				}
+				else if( points[nextBiggestIndex] <= points[i]
+					&& points[i] < points[biggestIndex] )
+				{
+					nextBiggestIndex = i;
+				}
+			}
+		}
+
+		class Utl
+		{
 			/// <summary>
 			/// Shift_JIS 漢字の１バイト目である可能性があるか判定します。
 			/// </summary>
-			/// <returns>可能性があれば true</returns>
-			public static bool IsSjisFirstByte( byte ch )
+			public static bool IsSjisKanjiFirstByte( byte ch )
 			{
 				if( 0x81 <= ch && ch <= 0x9f )
 				{
@@ -644,8 +856,7 @@ namespace Sgry
 			/// <summary>
 			/// Shift_JIS 漢字の２バイト目である可能性があるか判定します。
 			/// </summary>
-			/// <returns>可能性があれば true</returns>
-			public static bool IsSjisSecondByte( byte ch )
+			public static bool IsSjisKanjiSecondByte( byte ch )
 			{
 				if( 0x40 <= ch && ch <= 0x7e )
 				{
@@ -658,105 +869,157 @@ namespace Sgry
 				
 				return false;
 			}
-			
+
 			/// <summary>
 			/// Shift_JIS の第二水準の漢字か判定します。
 			/// </summary>
-			/// <returns>第二水準の漢字なら true</returns>
-			public static bool IsSjisSecondLevelChar( byte by1, byte by2 )
+			public static bool IsSjisSecondLevelChar( byte firstByte, byte secondByte )
 			{
-				if( 0x989f <= (by1 * 256 + by2) )
+				if( 0x989f <= ((firstByte << 8) | secondByte) )
 				{
 					return true;
 				}
 				
 				return false;
 			}
-			
+
 			/// <summary>
-			/// 最初に指定バイトが現れる位置を検索します。
+			/// ASCII 制御コードかどうか判定します。
 			/// </summary>
-			public static int FindFirstOf( byte[] array, int startIndex, byte element )
+			public static bool IsControlCode( byte by )
 			{
-				Debug.Assert( array != null );
-				Debug.Assert( 0 <= startIndex );
-
-				for( int i=startIndex; i<array.Length; i++ )
+				if( by <= 0x1f || by == 0x7f )
 				{
-					if( element.Equals(array[i]) )
-					{
-						return i;
-					}
+					if( by != 0x09 && by != 0x0a && by != 0x0d )
+						return true;
+					else
+						return false;
 				}
-
-				return -1;
+				else
+				{
+					return false;
+				}
 			}
 		}
 		#endregion
 
 		#region Unit Test
-#		if DEBUG
+#		if false
 		internal static void Test()
 		{
-			string[] test_file_names = new string[]{
-				"euc.txt", "euc-2.txt",
-				"jis.txt", "jis-2.txt",
-				"sjis.txt", "sjis-2.txt",
-				"utf8.txt", "utf8b.txt",
-				"utf16le.txt", "utf16be.txt",
-				"empty.txt", "binary.txt"
-			};
-			string[] expected_results = new string[]{
-				"euc-jp", "euc-jp",
-				"iso-2022-jp", "iso-2022-jp",
-				"shift_jis", "shift_jis",
-				Encoding.UTF8.WebName, Encoding.UTF8.WebName,
-				Encoding.Unicode.WebName, Encoding.BigEndianUnicode.WebName,
-				Encoding.Default.WebName, Encoding.Default.WebName
-			};
+			System.Diagnostics.Stopwatch stopwatch;
+			long t = 0;
 			Encoding actual;
 			bool withBom;
+			bool maybeBinary;
 			byte[] fileContent;
-			string appDirPath;
-			string filePath;
+			string exeDir;
+			TextWriter output = TextWriter.Null;
+			//DEBUG//output = Console.Out;
 
 			Console.WriteLine( "[Sgry.EncodingAnalyzer]" );
 
-			// move to assembly's directory
-			appDirPath = Path.GetDirectoryName(
-				System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName
+			// execute a task to cache program
+			EncodingAnalyzer.Analyze( new byte[]{0xe6, 0x96, 0x87, 0xe5, 0xad, 0x97, 0xe5, 0x8c, 0x96, 0xe3, 0x81, 0x91}, out withBom, out maybeBinary );
+
+			// test special binary sequences
+			t = 0;
+			fileContent = new byte[]{ 0xff, 0xfe };
+			{
+				stopwatch = System.Diagnostics.Stopwatch.StartNew();
+				{
+					actual = EncodingAnalyzer.Analyze( fileContent, out withBom, out maybeBinary );
+				}
+				t += stopwatch.ElapsedTicks;
+				Debug.Assert( actual == Encoding.Unicode );
+				Debug.Assert( withBom == true );
+			}
+			fileContent = new byte[]{ 0xfe, 0xff };
+			{
+				stopwatch = System.Diagnostics.Stopwatch.StartNew();
+				{
+					actual = EncodingAnalyzer.Analyze( fileContent, out withBom, out maybeBinary );
+				}
+				t += stopwatch.ElapsedTicks;
+				Debug.Assert( actual == Encoding.BigEndianUnicode );
+				Debug.Assert( withBom == true );
+			}
+			fileContent = new byte[]{ 0xef, 0xbb, 0xbf };
+			{
+				stopwatch = System.Diagnostics.Stopwatch.StartNew();
+				{
+					actual = EncodingAnalyzer.Analyze( fileContent, out withBom, out maybeBinary );
+				}
+				t += stopwatch.ElapsedTicks;
+				Debug.Assert( actual == Encoding.UTF8 );
+				Debug.Assert( withBom == true );
+			}
+			fileContent = new byte[]{ 0xe6, 0x96, 0x87, 0xe5, 0xad, 0x97, 0xe5, 0x8c, 0x96, 0xe3, 0x81, 0x91 };
+			{
+				stopwatch = System.Diagnostics.Stopwatch.StartNew();
+				{
+					actual = EncodingAnalyzer.Analyze( fileContent, out withBom, out maybeBinary );
+				}
+				t += stopwatch.ElapsedTicks;
+				Debug.Assert( actual == Encoding.UTF8 );
+				Debug.Assert( withBom == false );
+			}
+			fileContent = new byte[]{ 0x1b, 0x24, 0x42 };
+			{
+				stopwatch = System.Diagnostics.Stopwatch.StartNew();
+				{
+					actual = EncodingAnalyzer.Analyze( fileContent, out withBom, out maybeBinary );
+				}
+				t += stopwatch.ElapsedTicks;
+				Debug.Assert( actual == Encoding.GetEncoding("iso-2022-jp") );
+				Debug.Assert( withBom == false );
+			}
+			fileContent = new byte[]{  };
+			{
+				stopwatch = System.Diagnostics.Stopwatch.StartNew();
+				{
+					actual = EncodingAnalyzer.Analyze( fileContent, out withBom, out maybeBinary );
+				}
+				t += stopwatch.ElapsedTicks;
+				Debug.Assert( actual == Encoding.Default );
+				Debug.Assert( withBom == false );
+			}
+
+			// get directory where this assembly exists
+			exeDir = Path.GetDirectoryName(
+				System.Reflection.Assembly.GetExecutingAssembly().Location
 			);
 
 			// test all test files
-			for( int i=0; i<test_file_names.Length; i++ )
+			foreach( string filePath in Directory.GetFiles(exeDir, "*.txt", SearchOption.AllDirectories) )
 			{
-				Console.Write( "{0}...\t", test_file_names[i] );
+				StringComparison ignoreCase = StringComparison.InvariantCultureIgnoreCase;
+				string fileName = Path.GetFileName( filePath );
+				output.Write( "{0,-36}... ", filePath.Substring(exeDir.Length+1) );
 				{
-					filePath = Path.Combine( appDirPath, test_file_names[i] );
-					actual = EncodingAnalyzer.Analyze( filePath, out withBom, out fileContent );
-					if( withBom )
-						Console.WriteLine( "{0} (BOM)", actual.WebName );
+					stopwatch = System.Diagnostics.Stopwatch.StartNew();
+					{
+						actual = EncodingAnalyzer.Analyze( filePath, out withBom, out maybeBinary );
+					}
+					t += stopwatch.ElapsedTicks;
+					if( maybeBinary )
+						output.Write( "binary ({0,-17})", actual.WebName+"(BOM)" );
+					else if( withBom )
+						output.Write( "{0,-17}", actual.WebName+"(BOM)" );
 					else
-						Console.WriteLine( "{0}", actual.WebName );
+						output.Write( "{0,-17}", actual.WebName );
 				}
-				Debug.Assert( actual.WebName == expected_results[i] );
+				if( (maybeBinary && fileName.EndsWith("binary.txt", ignoreCase) == false)
+					|| (maybeBinary == false && fileName.EndsWith(actual.WebName+".txt", ignoreCase) == false) )
+				{
+					string msg = String.Format( "FAILED ({0} is not {1})", fileName, actual.WebName );
+					//DEBUG//Debug.Fail( msg );
+					output.Write( msg );
+				}
+				output.WriteLine( "" );
 			}
 
-			// test all test files
-			fileContent = new byte[]{ 0x1b, 0x24, 0x42 };
-			{
-				actual = EncodingAnalyzer.Analyze( fileContent, out withBom );
-				Debug.Assert( actual.WebName == "iso-2022-jp" );
-				Debug.Assert( withBom == false );
-			}
-			fileContent = new byte[]{ 0x1b, 0x24 };
-			{
-				actual = EncodingAnalyzer.Analyze( fileContent, out withBom );
-				Debug.Assert( actual.WebName == "utf-8" );
-				Debug.Assert( withBom == false );
-			}
-
-			Console.WriteLine( "done." );
+			Console.WriteLine( "done. ({0} ms)", t / (System.Diagnostics.Stopwatch.Frequency / 1000) );
 			Console.WriteLine();
 		}
 #		endif
@@ -767,12 +1030,16 @@ namespace Sgry
 /*
 Version History
 
-[v1.3.0] 2009-03-29
+[v2.0.0] 2009-10-17
+- 独自ロジックで一から再実装
+- 処理を高速化
+- BOM 無しの UTF-16 でも解析可能に
+
+[v1.3.0] 2009-03-15
 - ライセンスを zlib license に変更
 - ドキュメントに大幅加筆
 - 単体テストを付属
 - 特定条件を満たすバイナリパターンを解析中に例外が発生する問題を修正
-- .NET Compact Framework 2.0 でも動作確認を行うように
 
 [v1.2.2] 2008-11-01
 - 空のファイルを解析すると例外が発生する問題を修正

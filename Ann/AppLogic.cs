@@ -1,4 +1,4 @@
-// 2009-10-10
+// 2009-10-18
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -732,6 +732,7 @@ namespace Sgry.Ann
 			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
 			MainForm.Azuki.ShowsHRuler			= AppConfig.ShowsHRuler;
 			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
+			MainForm.Azuki.LinePadding			= AppConfig.LinePadding;
 			MainForm.Azuki.ViewType				= AppConfig.ViewType;
 			MainForm.Azuki.UsesTabForIndent		= AppConfig.UsesTabForIndent;
 			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
@@ -759,6 +760,7 @@ namespace Sgry.Ann
 			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
 			AppConfig.ShowsHRuler			= MainForm.Azuki.ShowsHRuler;
 			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
+			AppConfig.LinePadding			= MainForm.Azuki.LinePadding;
 			AppConfig.ViewType				= MainForm.Azuki.ViewType;
 			AppConfig.UsesTabForIndent		= MainForm.Azuki.UsesTabForIndent;
 			AppConfig.ConvertsFullWidthSpaceToSpace = MainForm.Azuki.ConvertsFullWidthSpaceToSpace;

@@ -1,4 +1,4 @@
-﻿// 2009-10-10
+﻿// 2009-10-18
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -25,6 +25,7 @@ namespace Sgry.Ann
 		public static bool ShowsLineNumber = true;
 		public static bool ShowsHRuler = false;
 		public static int TabWidth = 8;
+		public static int LinePadding = 1;
 		public static ViewType ViewType = ViewType.Proportional;
 		public static bool UsesTabForIndent = true;
 		public static bool ConvertsFullWidthSpaceToSpace = true;
@@ -59,6 +60,7 @@ namespace Sgry.Ann
 				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
 				AppConfig.ShowsHRuler			= Ini.Get( "Default", "ShowsHRuler", false );
 				AppConfig.TabWidth				= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
+				AppConfig.LinePadding			= Ini.GetInt( "Default", "LinePadding", 1, 100, 1 );
 				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
 				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
@@ -88,6 +90,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
 				Ini.Set( "Default", "ShowsHRuler",			AppConfig.ShowsHRuler );
 				Ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
+				Ini.Set( "Default", "LinePadding",			AppConfig.LinePadding );
 				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
 				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );

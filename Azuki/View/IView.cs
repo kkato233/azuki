@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-09-20
+// update: 2009-10-18
 //=========================================================
 using System;
 using System.Drawing;
@@ -375,6 +375,14 @@ namespace Sgry.Azuki
 		int LineHeight
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Gets or sets size of padding between lines in pixel.
+		/// </summary>
+		int LinePadding
+		{
+			get; set;
 		}
 
 		/// <summary>

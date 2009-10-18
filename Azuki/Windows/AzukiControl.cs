@@ -695,6 +695,20 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets or sets size of padding between lines in pixel.
+		/// </summary>
+#		if !PocketPC
+		[Category("Drawing")]
+		[DefaultValue(1)]
+		[Description("Height of padding between lines.")]
+#		endif
+		public int LinePadding
+		{
+			get{ return View.LinePadding; }
+			set{ View.LinePadding = value; }
+		}
+
+		/// <summary>
 		/// Gets distance between lines in pixel.
 		/// </summary>
 #		if !PocketPC

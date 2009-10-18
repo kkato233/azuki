@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-09-13
+// update: 2009-09-18
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -730,7 +730,7 @@ namespace Sgry.Azuki
 			pos.Y = YofTextArea;
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
-				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineHeight )
+				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineSpacing )
 				{
 					DrawLine( i, pos, clipRect );
 				}

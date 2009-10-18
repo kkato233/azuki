@@ -7,6 +7,7 @@
  * add: enhanced KeywordHighlighter; now word-character set can be customizable for each keyword set
  * add: by AzukiControl.TopMargin property, drawing margin at top of the view can be now customizable
  * add: by AzukiControl.LeftMargin property, drawing margin at left of the view can be now customizable
+ * add: added AzukiControl.LinePadding
  * add: added AzukiControl.LineSpacing
  * add: supported group UNDO (groups actions between call of Document.BeginUndo and call of Document.EndUndo)
  * add: added overloads for Document.FindNext and Document.FindPrev

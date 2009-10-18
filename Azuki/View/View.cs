@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-12
+// update: 2009-10-18
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -39,6 +39,7 @@ namespace Sgry.Azuki
 		int _SpaceWidth; 					// Width of a space char (U+0020) in pixel
 		protected int _FullSpaceWidth = 0;	// Width of a full-width space char (U+3000) in pixel
 		int _LineHeight;
+		int _LinePadding = 1;
 		int _TabWidth = DefaultTabWidth;
 		int _TabWidthInPx;
 		int _LCharWidth;
@@ -93,6 +94,7 @@ namespace Sgry.Azuki
 			//DO_NOT//this._LineNumAreaWidth = other._LineNumAreaWidth;
 			//DO_NOT//this._SpaceWidth = other._SpaceWidth;
 			this._TabWidth = other._TabWidth;
+			this._LinePadding = other._LinePadding;
 			//DO_NOT//this._TabWidthInPx = other._TabWidthInPx;
 			this._TextAreaWidth = other._TextAreaWidth;
 			//DO_NOT//this._UI = other._UI;
@@ -506,11 +508,25 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets size of padding between lines in pixel.
+		/// </summary>
+		public int LinePadding
+		{
+			get{ return _LinePadding; }
+			set
+			{
+				if( value < 1 )
+					value = 1;
+				_LinePadding = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets distance between lines in pixel.
 		/// </summary>
 		public int LineSpacing
 		{
-			get{ return _LineHeight+1; }
+			get{ return _LineHeight+_LinePadding; }
 		}
 
 		/// <summary>

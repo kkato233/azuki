@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-09-07
+// update: 2009-10-18
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -581,7 +581,7 @@ namespace Sgry.Azuki
 			pos.Y = YofTextArea;
 			for( int i=FirstVisibleLine; i<LineCount; i++ )
 			{
-				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineHeight )
+				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineSpacing )
 				{
 					// reset x-coord of drawing position
 					pos.X = -(ScrollPosX - XofTextArea);

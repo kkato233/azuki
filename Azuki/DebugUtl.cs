@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-08-10
+// update: 2009-10-20
 //=========================================================
 using System;
 using System.IO;
@@ -30,155 +30,18 @@ namespace Sgry
 		#region Fields and Constants
 #		if !PocketPC
 		public const string kernel32_dll = "kernel32";
-		public const string LogDateHeader = "[yyyy-MM-dd hh:mm:ss.fff] ";
 #		else
 		public const string kernel32_dll = "coredll";
-		public const string LogDateHeader = "mm.ss ";
 #		endif
 		static Object LockKey = new Object();
-		static string _LogFilePath = null;
 		static AutoLogger _AutoLogger = null;
-		static StringBuilder _IndentStr = new StringBuilder( 8 );
 		#endregion
 
 		#region Logging
-		public static string LogFilePath
-		{
-			get
-			{
-				if( _LogFilePath == null )
-				{
-					Assembly exe = Assembly.GetExecutingAssembly();
-					string exePath = exe.GetModules()[0].FullyQualifiedName;
-					string exeDirPath = Path.GetDirectoryName( exePath );
-					_LogFilePath = Path.Combine( exeDirPath, "log.txt" );
-				}
-				return _LogFilePath;
-			}
-		}
-
-		/// <summary>
-		/// Writes message to a log file with date and time.
-		/// </summary>
-		public static void LogOut( string format, params object[] p )
-		{
-			LogOutEx( "", format, p );
-		}
-
-		/// <summary>
-		/// Outputs message to debug log file.
-		/// </summary>
-		/// <param name="flags">i=indent, u=unindent, p=PID, t=TID</param>
-		/// <param name="format">Format of log message to write.</param>
-		/// <param name="p">Parameters to be used in the given message format.</param>
-		public static void LogOutEx( string flags, string format, params object[] p )
-		{
-			try
-			{
-				lock( LockKey )
-				{
-					int pid;
-					int tid = 0;
-					DateTime now = DateTime.Now;
-					StringBuilder pidPart = new StringBuilder( 32 );
-
-					// handle message flags
-					if( 0 <= flags.IndexOf('p') )
-					{
-						pid = Process.GetCurrentProcess().Id;
-						tid = Thread.CurrentThread.ManagedThreadId;
-						pidPart.Append( "[" + pid.ToString("X4") );
-						if( 0 <= flags.IndexOf('t') )
-						{
-							pidPart.Append( "," + tid.ToString("X2") );
-						}
-						pidPart.Append( "] " );
-					}
-
-					// write log
-					using( StreamWriter file = new StreamWriter(LogFilePath, true) )
-					{
-						file.Write( now.ToString(LogDateHeader) );
-						file.Write( pidPart.ToString() );
-						file.Write( _IndentStr.ToString() );
-						file.WriteLine( String.Format(format, p) );
-					}
-
-					// handle indentation flags
-					if( 0 <= flags.IndexOf('i') )
-					{
-						_IndentStr.Append( "  " );
-					}
-					if( 0 <= flags.IndexOf('u') )
-					{
-						_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
-					}
-				}
-			}
-			catch( IOException )
-			{}
-			catch( UnauthorizedAccessException )
-			{}
-			catch( System.Security.SecurityException )
-			{}
-			catch( Exception ex )
-			{
-				Debug.Fail( ex.ToString() );
-			}
-		}
-
-		/// <summary>
-		/// Writs only message to a log file.
-		/// </summary>
-		public static void LogOut_Raw( string format, params object[] p )
-		{
-			try
-			{
-				lock( LockKey )
-				{
-					using( StreamWriter file = new StreamWriter(LogFilePath, true) )
-					{
-						file.WriteLine( String.Format(format, p) );
-					}
-				}
-			}
-			catch{}
-		}
-
-		/// <summary>
-		/// Indent log message.
-		/// </summary>
-		public static void LogIndent()
-		{
-			try
-			{
-				lock( LockKey )
-				{
-					_IndentStr.Append( "  " );
-				}
-			}
-			catch{}
-		}
-
-		/// <summary>
-		/// Unindent log message.
-		/// </summary>
-		public static void LogUnindent()
-		{
-			try
-			{
-				lock( LockKey )
-				{
-					_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
-				}
-			}
-			catch{}
-		}
-
 		/// <summary>
 		/// Log writer object that actually write just before the application ends.
 		/// </summary>
-		public static AutoLogger AutoLogger
+		public static AutoLogger Log
 		{
 			get
 			{
@@ -193,8 +56,10 @@ namespace Sgry
 		#endregion
 
 		#region Diagnostics
-		[DllImport(kernel32_dll)]
-		public static extern void Sleep( int millisecs );
+		public static void Sleep( int millisecs )
+		{
+			Thread.CurrentThread.Join( millisecs );
+		}
 
 		/// <summary>
 		/// Gets system performance counter value in millisecond.
@@ -238,44 +103,204 @@ namespace Sgry
 		#endregion
 	}
 
+	/// <summary>
+	/// A logger for both .NET Framework and .NET Compact Framework.
+	/// </summary>
 	class AutoLogger
 	{
 		#region Fields
-		StringBuilder _Buf = new StringBuilder( 1024 );
+		StringBuilder _Buffer = null;
+		bool _WriteProcessID = false;
+		bool _WriteThreadID = false;
+		string _LogFilePath = null;
+		static StringBuilder _IndentStr = new StringBuilder( 8 );
+#		if !PocketPC
+		public const string LogDateHeader = "[yyyy-MM-dd hh:mm:ss.fff] ";
+#		else
+		public const string LogDateHeader = "mm.ss ";
+#		endif
 		#endregion
 
 		#region Init / Dispose
 		~AutoLogger()
 		{
-			try
+			Flush();
+		}
+		#endregion
+
+		#region Properties
+		/// <summary>
+		/// Gets or sets whether process ID will be written in each log lines or not.
+		/// </summary>
+		public bool WritePID
+		{
+			get{ return _WriteProcessID; }
+			set{ _WriteProcessID = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether thread ID will be written in each log lines or not.
+		/// </summary>
+		public bool WriteTID
+		{
+			get{ return _WriteThreadID; }
+			set{ _WriteThreadID = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether written log lines are actually written to file instantly or not.
+		/// </summary>
+		public bool Realtime
+		{
+			get{ return (_Buffer == null); }
+			set
 			{
-				using( FileStream file = new FileStream(DebugUtl.LogFilePath, FileMode.Append) )
+				if( value == true )
 				{
-					byte[] bytes = Encoding.UTF8.GetBytes( _Buf.ToString() );
-					file.Write( bytes, 0, bytes.Length );
+					// nullify memory buffer in realtime mode
+					_Buffer = null;
+				}
+				else if( _Buffer == null )
+				{
+					// realtime mode was disabled so prepare memory buffer
+					_Buffer = new StringBuilder( 1024 );
 				}
 			}
-			catch( IOException )
-			{}
+		}
+
+		public string LogFilePath
+		{
+			get
+			{
+				if( _LogFilePath == null )
+				{
+					Assembly exe = Assembly.GetExecutingAssembly();
+					string exePath = exe.GetModules()[0].FullyQualifiedName;
+					string exeDirPath = Path.GetDirectoryName( exePath );
+					_LogFilePath = Path.Combine( exeDirPath, "log.txt" );
+				}
+				return _LogFilePath;
+			}
 		}
 		#endregion
 
 		#region Write
 		/// <summary>
-		/// Writes message to a log file with date and time.
+		/// Writes buffered data to file.
 		/// </summary>
-		public void WriteLine( string format, params object[] p )
+		public void Flush()
 		{
-			Console.Error.WriteLine( format, p );
 			try
 			{
-				DateTime now = DateTime.Now;
+				lock( this )
+				{
+					FileStream file;
 
-				_Buf.Append( now.ToString(DebugUtl.LogDateHeader) );
-				_Buf.Append( String.Format(format, p) );
-				_Buf.Append( Console.Out.NewLine );
+					// if in realtime mode or buffer is empty, do nothing
+					if( _Buffer == null || _Buffer.Length <= 0 )
+					{
+						return;
+					}
+
+					// write buffered data
+					using( file = File.Open(LogFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite) )
+					{
+						byte[] bytes = Encoding.UTF8.GetBytes( _Buffer.ToString() );
+						file.Write( bytes, 0, bytes.Length );
+					}
+
+					// clear buffer
+					_Buffer.Length = 0;
+				}
 			}
-			catch{}
+			catch( IOException )
+			{}
+		}
+
+		/// <summary>
+		/// Writes message to a log file.
+		/// </summary>
+		public void Write( string format, params object[] p )
+		{
+			TextWriter writer = null;
+
+			lock( this )
+			{
+				try
+				{
+					int pid;
+					int tid = 0;
+					DateTime now = DateTime.Now;
+					StringBuilder pidPart = new StringBuilder( 32 );
+
+					// append extra header info
+					if( _WriteProcessID )
+					{
+						pid = Process.GetCurrentProcess().Id;
+						tid = Thread.CurrentThread.ManagedThreadId;
+						pidPart.Append( "[" + pid.ToString("X4") );
+						if( _WriteThreadID )
+						{
+							pidPart.Append( "," + tid.ToString("X2") );
+						}
+						pidPart.Append( "] " );
+					}
+
+					// open log
+					if( Realtime )
+					{
+						writer = new StreamWriter(
+								File.Open(LogFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite),
+								Encoding.UTF8
+							);
+					}
+					else
+					{
+						writer = new StringWriter( _Buffer );
+					}
+
+					// write log
+					writer.Write( now.ToString(LogDateHeader) );
+					writer.Write( pidPart.ToString() );
+					writer.Write( _IndentStr.ToString() );
+					writer.WriteLine( String.Format(format, p) );
+				}
+				catch( IOException )
+				{}
+				catch( UnauthorizedAccessException )
+				{}
+				catch( System.Security.SecurityException )
+				{}
+				catch( Exception ex )
+				{
+					Debug.Fail( ex.ToString() );
+				}
+				finally
+				{
+					if( writer != null )
+					{
+						writer.Close();
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Writes message to a log file and adds indent.
+		/// </summary>
+		public void WriteI( string format, params object[] p )
+		{
+			Write( format, p );
+			_IndentStr.Append( "  " );
+		}
+
+		/// <summary>
+		/// Writes message to a log file and adds unindent.
+		/// </summary>
+		public void WriteU( string format, params object[] p )
+		{
+			Write( format, p );
+			_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
 		}
 		#endregion
 	}

@@ -699,7 +699,7 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint( Rectangle clipRect )
 		{
-			DebugUtl.Assert( Font != null, "invalid state; Font is null" );
+			DebugUtl.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			DebugUtl.Assert( Document != null, "invalid state; Document is null" );
 
 			int selBegin, selEnd;

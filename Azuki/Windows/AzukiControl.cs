@@ -377,38 +377,44 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public void UpdateCaretGraphic()
 		{
-			if( Document == null )
-				throw new InvalidOperationException( "Document was not set yet." );
-
 #			if !PocketPC
 			if( DesignMode )
 				return;
 #			endif
+
+			// do nothing if not focused
 			if( Focused == false )
 				return;
 
-			// calculate caret size
-			_CaretSize.Width = Utl.CalcOverwriteCaretWidth( Document, _Impl.View, CaretIndex, IsOverwriteMode );
+			// update caret size
+			_CaretSize.Height = View.LineHeight;
 
-			// calculate caret position and show/hide caret
-			Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
-			if( newCaretPos.X < _Impl.View.XofTextArea
-				|| newCaretPos.Y < _Impl.View.YofTextArea )
+			// if document is already set, update caret size according to the state
+			if( Document != null )
 			{
-				WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y );
-				WinApi.HideCaret( Handle );
-			}
-			else
-			{
-				//NO_NEED//_Caret.Destroy();
-				WinApi.CreateCaret( Handle, _CaretSize );
-				WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y ); // must be called after creation in CE
-				
-				WinApi.ShowCaret( Handle );
-			}
+				// calculate caret size
+				_CaretSize.Width = Utl.CalcOverwriteCaretWidth( Document, _Impl.View, CaretIndex, IsOverwriteMode );
 
-			// move IMM window to there if exists
-			WinApi.SetImeWindowPos( Handle, newCaretPos );
+				// calculate caret position and show/hide caret
+				Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
+				if( newCaretPos.X < _Impl.View.XofTextArea
+					|| newCaretPos.Y < _Impl.View.YofTextArea )
+				{
+					WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y );
+					WinApi.HideCaret( Handle );
+				}
+				else
+				{
+					//NO_NEED//_Caret.Destroy();
+					WinApi.CreateCaret( Handle, _CaretSize );
+					WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y ); // must be called after creation in CE
+					
+					WinApi.ShowCaret( Handle );
+				}
+
+				// move IMM window to there if exists
+				WinApi.SetImeWindowPos( Handle, newCaretPos );
+			}
 		}
 
 		/// <summary>
@@ -416,18 +422,14 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public override Font Font
 		{
-			get{ return base.Font; }
+			get{ return View.FontInfo; }
 			set
 			{
 				if( value == null )
 					throw new ArgumentException( "invalid operation; AzukiControl.Font was set to null." );
 
 				base.Font = value;
-				View.Font = value;
-
-				// update caret height
-				_CaretSize.Height = View.LineHeight;
-				WinApi.CreateCaret( Handle, _CaretSize );
+				View.FontInfo = new FontInfo( value );
 			}
 		}
 
@@ -2101,7 +2103,7 @@ namespace Sgry.Azuki.Windows
 				else if( message == WinApi.WM_IME_STARTCOMPOSITION )
 				{
 					// move IMM window to caret position
-					WinApi.SetImeWindowFont( Handle, Font );
+					WinApi.SetImeWindowFont( Handle, View.FontInfo );
 				}
 				else if( message == WinApi.WM_IME_REQUEST
 					&& wParam.ToInt64() == (long)WinApi.IMR_RECONVERTSTRING )

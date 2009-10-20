@@ -19,6 +19,7 @@ namespace Sgry.Azuki
 		#region Fields and Types
 		const float GoldenRatio = 1.6180339887f;
 		const int DefaultTabWidth = 8;
+		const int MinimumFontSize = 1;
 		const int LineNumberAreaPadding = 2;
 		static readonly int[] _LineNumberSamples = new int[]{
 			9999,
@@ -51,8 +52,8 @@ namespace Sgry.Azuki
 		HRulerIndicatorType _HRulerIndicatorType = HRulerIndicatorType.Segment;
 
 		ColorScheme _ColorScheme = ColorScheme.Default;
-		Font _Font;
-		Font _HRulerFont;
+		FontInfo _Font = new FontInfo( "Courier New", 10, FontStyle.Regular );
+		FontInfo _HRulerFont;
 		int _TopMargin = 1;
 		int _LeftMargin = 1;
 		DrawingOption _DrawingOption
@@ -101,8 +102,8 @@ namespace Sgry.Azuki
 			this._VisibleSize = other._VisibleSize;
 
 			// set Font through property
-			if( other._Font != null )
-				this.Font = other.Font;
+			if( other.FontInfo != null )
+				this.FontInfo = other.FontInfo;
 
 			// finally, re-calculate graphic metrics
 			// (because there is a metric which needs a reference to Document to be calculated
@@ -173,7 +174,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets the font used for drawing text.
 		/// </summary>
-		public virtual Font Font
+		public virtual FontInfo FontInfo
 		{
 			get{ return _Font; }
 			set
@@ -181,27 +182,19 @@ namespace Sgry.Azuki
 				if( value == null )
 					throw new ArgumentNullException( "View.Font was set to null." );
 
-				// because UI module's Font property must be set before this,
-				// set UI module's one if it's not set yet
-				if( _UI.Font.Name != value.Name
-					|| _UI.Font.Size != value.Size )
-				{
-					_UI.Font = value;
-					return;
-				}
-
 				// apply font
 				_Font = value;
-				_Gra.Font = value;
-				_HRulerFont = new Font(
+				_Gra.FontInfo = value;
+				_HRulerFont = new FontInfo(
 						value.Name,
-						value.Size / GoldenRatio,
+						(int)( value.Size / GoldenRatio ),
 						FontStyle.Regular
 					);
 
-				// update font metrics
+				// update font metrics and graphic
 				UpdateMetrics();
 				Invalidate();
+				_UI.UpdateCaretGraphic();
 			}
 		}
 
@@ -234,9 +227,9 @@ namespace Sgry.Azuki
 			_HRulerHeight = (int)( _LineHeight / GoldenRatio ) + 2;
 			_HRulerY_5 = (int)( _HRulerHeight / (GoldenRatio * GoldenRatio) );
 			_HRulerY_1 = (int)( _HRulerHeight / (GoldenRatio) );
-			_Gra.Font = _HRulerFont;
+			_Gra.FontInfo = _HRulerFont;
 			_HRulerTextHeight = (int)( _Gra.MeasureText("Mp").Height * 0.97 );
-			_Gra.Font = _Font;
+			_Gra.FontInfo = _Font;
 
 			// calculate minimum text area width
 			_MinimumTextAreaWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
@@ -973,10 +966,14 @@ namespace Sgry.Azuki
 			int oldTextAreaX = XofTextArea;
 
 			// calculate next font size
-			float newSize = (float)(Font.Size / 0.9);
+			int newSize = (int)( FontInfo.Size / 0.9 );
+			if( newSize <= FontInfo.Size )
+			{
+				newSize = FontInfo.Size + 1;
+			}
 
 			// apply new font size
-			Font = new Font( Font.Name, newSize, Font.Style );
+			FontInfo = new FontInfo( FontInfo.Name, newSize, FontInfo.Style );
 
 			// reset text area to sustain total width of view
 			// because changing font size also changes width of line number area,
@@ -992,14 +989,14 @@ namespace Sgry.Azuki
 			int oldTextAreaX = XofTextArea;
 
 			// calculate next font size
-			float newSize = (float)(Font.Size * 0.9);
-			if( newSize < 1 )
+			int newSize = (int)(FontInfo.Size * 0.9);
+			if( newSize < MinimumFontSize )
 			{
-				return;
+				newSize = MinimumFontSize;
 			}
 
 			// apply new font size
-			Font = new Font( Font.Name, newSize, Font.Style );
+			FontInfo = new FontInfo( FontInfo.Name, newSize, FontInfo.Style );
 
 			// reset text area to sustain total width of view
 			// because changing font size also changes width of line number area,

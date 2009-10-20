@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-10-12
+// update: 2009-10-18
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -230,12 +230,12 @@ namespace Sgry.Azuki
 			if( ShowsHRuler == false || YofTopMargin < clipRect.Y )
 				return;
 
-            _Gra.SetClipRect( subClipRect );
+			_Gra.SetClipRect( subClipRect );
 
-            // fill ruler area
-            _Gra.ForeColor = ColorScheme.LineNumberFore;
-            _Gra.BackColor = ColorScheme.LineNumberBack;
-            _Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
+			// fill ruler area
+			_Gra.ForeColor = ColorScheme.LineNumberFore;
+			_Gra.BackColor = ColorScheme.LineNumberBack;
+			_Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
 
 			// calculate first line to be drawn
 			leftMostRulerIndex = ScrollPosX / HRulerUnitWidth;
@@ -247,7 +247,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw lines on the ruler
-			_Gra.Font = _HRulerFont;
+			_Gra.FontInfo = _HRulerFont;
 			lineX = leftMostLineX;
 			rulerIndex = leftMostRulerIndex;
 			while( lineX < VisibleSize.Width + TabWidthInPx )
@@ -278,7 +278,7 @@ namespace Sgry.Azuki
 				rulerIndex++;
 				lineX += HRulerUnitWidth;
 			}
-			_Gra.Font = _Font;
+			_Gra.FontInfo = _Font;
 
 			// draw bottom border line
 			_Gra.DrawLine(

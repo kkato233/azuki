@@ -2,7 +2,7 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-10-10
+// update: 2008-10-18
 //=========================================================
 using System;
 using System.Drawing;
@@ -320,22 +320,32 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Font used for drawing/measuring text.
 		/// </summary>
-		public Font Font
+		public FontInfo FontInfo
 		{
 			set
 			{
 				Debug.Assert( value != null, "invalid operation; PlatWin.Font must not be set as null." );
 				
-				WinApi.LogFont lf;
-				
 				// delete old font
 				Utl.SafeDeleteObject( _Font );
 
 				// create font handle from Font instance of .NET
-				lf = WinApi.CreateLogFont( IntPtr.Zero, value );
-				lf.quality = 5; // CLEARTYPE_QUALITY
-				_Font = WinApi.CreateFontIndirectW( lf );
+				unsafe
+				{
+					WinApi.LOGFONTW logicalFont;
+
+					WinApi.CreateLogFont( IntPtr.Zero, value, out logicalFont );
+					_Font = WinApi.CreateFontIndirectW( &logicalFont );
+				}
 			}
+		}
+
+		/// <summary>
+		/// Font used for drawing/measuring text.
+		/// </summary>
+		public Font Font
+		{
+			set{ FontInfo = new FontInfo(value); }
 		}
 
 		/// <summary>

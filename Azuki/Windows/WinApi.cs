@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2009-10-12
+// update: 2009-10-18
 //=========================================================
 using System;
 using System.Text;
@@ -194,14 +194,14 @@ namespace Sgry.Azuki.Windows
 			public byte charSet;
 		}
 
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
-		public class LogFont
+		[StructLayout(LayoutKind.Sequential)]
+		public unsafe struct LOGFONTW
 		{
-			public int height;
-			public int width;
-			public int escapement;
-			public int orientation;
-			public int weight;
+			public Int32 height;
+			public Int32 width;
+			public Int32 escapement;
+			public Int32 orientation;
+			public Int32 weight;
 			public byte italic;
 			public byte underline;
 			public byte strikeOut;
@@ -210,8 +210,7 @@ namespace Sgry.Azuki.Windows
 			public byte clipPrecision;
 			public byte quality;
 			public byte pitchAndFamily;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)]
-			public string faceName;
+			public fixed char faceName[32];
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
@@ -431,10 +430,10 @@ namespace Sgry.Azuki.Windows
 			Debug.Assert( rc != UInt32.MaxValue, "failed to set text alignment by SetTextAlign." );
 		}
 
-		public static unsafe LogFont CreateLogFont( IntPtr window, Font font )
+		public static unsafe void CreateLogFont( IntPtr window, FontInfo font, out LOGFONTW lf )
 		{
 			const int LOGPIXELSY = 90;
-			LogFont lf = new LogFont();
+			lf = new LOGFONTW();
 			IntPtr dc;
 			int dpi_y;
 
@@ -443,19 +442,39 @@ namespace Sgry.Azuki.Windows
 				dpi_y = GetDeviceCaps( dc, LOGPIXELSY );
 			}
 			ReleaseDC( window, dc );
+			lf.escapement = 0;
+			lf.orientation = 0;
 			lf.height = -(int)( font.Size * dpi_y / 72 );
 			lf.weight = (font.Style & FontStyle.Bold) != 0 ? 700 : 400; // FW_BOLD or FW_NORMAL
 			lf.italic = (byte)( (font.Style & FontStyle.Italic) != 0 ? 1 : 0 );
-//			lf.quality = 5; // CLEARTYPE_QUALITY
+			lf.underline = 0;
+			lf.strikeOut = 0;
+			lf.charSet = 1; // DEFAULT_CHARSET
+			lf.outPrecision = 0; // OUT_DEFAULT_PRECIS
+			lf.clipPrecision = 0; // CLIP_DEFAULT_PRECIS
+			lf.quality = 5; // CLEARTYPE_QUALITY
+			lf.pitchAndFamily = 0; // DEFAULT_PITCH
 
 			// set font name
-			lf.faceName = font.Name;
-
-			return lf;
+			fixed( char* p = lf.faceName )
+			{
+				for( int i=0; i<32; i++ )
+				{
+					if( font.Name.Length <= i || font.Name[i] == '\0' )
+					{
+						return;
+					}
+					p[i] = font.Name[i];
+				}
+				p[31] = '\0';
+			}
 		}
 
 		[DllImport(gdi32_dll)]
-		public unsafe static extern IntPtr CreateFontIndirectW( [In, MarshalAs(UnmanagedType.LPStruct)] LogFont lf );
+		public unsafe static extern IntPtr CreateFontIndirectW( void* logFont );
+
+		[DllImport(gdi32_dll)]
+		public unsafe static extern Int32 GetTextFaceW( IntPtr hdc, Int32 maxFaceNameLen, char* out_faceName );
 
 		[DllImport(gdi32_dll)]
 		public static extern Int32 SetTextColor( IntPtr hdc, Int32 color );
@@ -645,17 +664,16 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>Sets font of the IME composition window (pre-edit window) </summary>
-		public static void SetImeWindowFont( IntPtr window, Font font )
+		public static void SetImeWindowFont( IntPtr window, FontInfo font )
 		{
 			IntPtr imContext;
-			LogFont logFont;
+			LOGFONTW logicalFont;
 
 			imContext = ImmGetContext( window );
 			unsafe
 			{
-				logFont = CreateLogFont( window, font );
-				
-				ImmSetCompositionFontW( imContext, logFont );
+				CreateLogFont( window, font, out logicalFont );
+				ImmSetCompositionFontW( imContext, &logicalFont );
 			}
 			ImmReleaseContext( window, imContext );
 		}
@@ -676,7 +694,7 @@ namespace Sgry.Azuki.Windows
 		static unsafe extern Int32 ImmSetCompositionWindow( IntPtr imContext, COMPOSITIONFORM* compForm );
 
 		[DllImport(imm32_dll)]
-		static unsafe extern Int32 ImmSetCompositionFontW( IntPtr imContext,  [In, MarshalAs(UnmanagedType.LPStruct)] LogFont logFont );
+		static unsafe extern Int32 ImmSetCompositionFontW( IntPtr imContext,  void* logFont );
 
 		[DllImport(imm32_dll)]
 		public static extern UInt32 ImmGetProperty( IntPtr inputLocale, UInt32 index );

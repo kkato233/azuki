@@ -364,7 +364,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets the font used for drawing text.
 		/// </summary>
-		Font Font
+		FontInfo FontInfo
 		{
 			get; set;
 		}

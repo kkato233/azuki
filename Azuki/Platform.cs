@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2009-08-02
+// update: 2009-10-18
 //=========================================================
 using System;
 using System.Text;
@@ -89,6 +89,14 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Font used for drawing/measuring text.
+		/// </summary>
+		FontInfo FontInfo
+		{
+			set;
+		}
+
+		/// <summary>
 		/// Foreground color used by drawing APIs.
 		/// </summary>
 		Color ForeColor
@@ -156,6 +164,77 @@ namespace Sgry.Azuki
 		/// Note that right and bottom edge will also be painted.
 		/// </summary>
 		void FillRectangle( int x, int y, int width, int height );
+		#endregion
+	}
+
+	/// <summary>
+	/// Information about font.
+	/// </summary>
+	public class FontInfo
+	{
+		#region Properties
+		/// <summary>
+		/// Font face name of this font.
+		/// </summary>
+		public string Name;
+
+		/// <summary>
+		/// Size of this font in pt (point).
+		/// </summary>
+		public int Size;
+
+		/// <summary>
+		/// Style of this font.
+		/// </summary>
+		public FontStyle Style;
+		#endregion
+
+		#region Init / Dispose
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public FontInfo( string name, int size, FontStyle style )
+		{
+			Name = name;
+			Size = size;
+			Style = style;
+		}
+
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public FontInfo( Font font )
+		{
+#			if !PocketPC
+			if( font.OriginalFontName != null )
+				Name = font.OriginalFontName;
+			else
+				Name = font.Name;
+#			else
+			Name = font.Name;
+#			endif
+
+			Size = (int)font.Size;
+			Style = font.Style;
+		}
+		#endregion
+
+		#region Utilities
+		/// <summary>
+		/// Creates new instance of System.Drawing.Font with same information.
+		/// </summary>
+		public Font ToFont()
+		{
+			return new Font( Name, Size, Style );
+		}
+
+		/// <summary>
+		/// Creates new instance of System.Drawing.Font with same information.
+		/// </summary>
+		public static implicit operator Font( FontInfo other )
+		{
+			return other.ToFont();
+		}
 		#endregion
 	}
 

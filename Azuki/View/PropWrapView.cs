@@ -40,7 +40,7 @@ namespace Sgry.Azuki
 		{
 			// update physical line head indexes if needed
 			if( Document.ViewParam.LastModifiedTime != Document.LastModifiedTime
-				|| Document.ViewParam.LastFontHashCode != Font.GetHashCode()
+				|| Document.ViewParam.LastFontHashCode != FontInfo.GetHashCode()
 				|| Document.ViewParam.LastTextAreaWidth != TextAreaWidth )
 			{
 				DebugUtl.Assert( 0 < PLHI.Count );
@@ -540,7 +540,7 @@ namespace Sgry.Azuki
 
 			// remember the condition of the calculation
 			Document.ViewParam.LastTextAreaWidth = TextAreaWidth;
-			Document.ViewParam.LastFontHashCode = Font.GetHashCode();
+			Document.ViewParam.LastFontHashCode = FontInfo.GetHashCode();
 			Document.ViewParam.LastModifiedTime = Document.LastModifiedTime;
 		}
 		#endregion
@@ -552,7 +552,7 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint( Rectangle clipRect )
 		{
-			Debug.Assert( Font != null, "invalid state; Font is null" );
+			Debug.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			Debug.Assert( Document != null, "invalid state; Document is null" );
 
 			int selBegin, selEnd;
@@ -619,7 +619,7 @@ namespace Sgry.Azuki
 
 		void DrawLine( int lineIndex, ref Point pos, Rectangle clipRect )
 		{
-			Debug.Assert( this.Font != null );
+			Debug.Assert( this.FontInfo != null );
 			Debug.Assert( this.Document != null );
 
 			// note that given pos is NOT virtual position BUT screen position.

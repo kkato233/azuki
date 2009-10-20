@@ -716,7 +716,7 @@ namespace Sgry.Ann
 			AppConfig.Load();
 
 			// apply config
-			MainForm.Azuki.Font					= AppConfig.Font;
+			MainForm.Azuki.Font					= AppConfig.FontInfo;
 			MainForm.ClientSize					= AppConfig.WindowSize;
 			if( AppConfig.WindowMaximized )
 			{
@@ -744,7 +744,7 @@ namespace Sgry.Ann
 		public void SaveConfig()
 		{
 			// update config fields
-			AppConfig.Font					= MainForm.Azuki.Font;
+			AppConfig.FontInfo				= new FontInfo( MainForm.Azuki.Font );
 			AppConfig.WindowMaximized		= (MainForm.WindowState == FormWindowState.Maximized);
 			if( MainForm.WindowState == FormWindowState.Normal )
 			{

@@ -13,7 +13,7 @@ namespace Sgry.Ann
 	{
 		static string _IniFilePath;
 		
-		public static Font Font = new Font( "Courier New", 11, FontStyle.Regular );
+		public static FontInfo FontInfo = new FontInfo( "Courier New", 11, FontStyle.Regular );
 		public static Size WindowSize = new Size( 360, 400 );
 		public static bool WindowMaximized = false;
 		public static bool TabPanelEnabled = false;
@@ -43,12 +43,12 @@ namespace Sgry.Ann
 			{
 				Ini.Load( IniFilePath, Encoding.UTF8 );
 
-				int fontSize = Ini.GetInt( "Default", "FontSize", 8, Int32.MaxValue, 11 );
+				int fontSize = Ini.GetInt( "Default", "FontSize", 1, Int32.MaxValue, 10 );
 				str = Ini.Get( "Default", "Font", null );
 				width = Ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, 300 );
 				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 400 );
 
-				AppConfig.Font					= new Font( str, fontSize, FontStyle.Regular );
+				AppConfig.FontInfo				= new FontInfo( str, fontSize, FontStyle.Regular );
 				AppConfig.WindowSize			= new Size( width, height );
 				AppConfig.WindowMaximized		= Ini.Get( "Default", "WindowMaximized", false );
 				AppConfig.TabPanelEnabled		= Ini.Get( "Default", "TabPanelEnabled", false );
@@ -76,8 +76,8 @@ namespace Sgry.Ann
 		{
 			try
 			{
-				Ini.Set( "Default", "FontSize",				AppConfig.Font.Size );
-				Ini.Set( "Default", "Font",					AppConfig.Font.Name );
+				Ini.Set( "Default", "FontSize",				AppConfig.FontInfo.Size );
+				Ini.Set( "Default", "Font",					AppConfig.FontInfo.Name );
 				Ini.Set( "Default", "WindowWidth",			AppConfig.WindowSize.Width );
 				Ini.Set( "Default", "WindowHeight",			AppConfig.WindowSize.Height );
 				Ini.Set( "Default", "WindowMaximized",		AppConfig.WindowMaximized );

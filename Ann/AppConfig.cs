@@ -1,4 +1,4 @@
-﻿// 2009-10-18
+﻿// 2009-10-21
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -21,6 +21,7 @@ namespace Sgry.Ann
 		public static bool DrawsFullWidthSpace = true;
 		public static bool DrawsSpace = true;
 		public static bool DrawsTab = true;
+		public static bool DrawsEofMark = false;
 		public static bool HighlightsCurrentLine = true;
 		public static bool ShowsLineNumber = true;
 		public static bool ShowsHRuler = false;
@@ -56,6 +57,7 @@ namespace Sgry.Ann
 				AppConfig.DrawsFullWidthSpace	= Ini.Get( "Default", "DrawsFullWidthSpace", true );
 				AppConfig.DrawsSpace			= Ini.Get( "Default", "DrawsSpace", true );
 				AppConfig.DrawsTab				= Ini.Get( "Default", "DrawsTab", true );
+				AppConfig.DrawsEofMark			= Ini.Get( "Default", "DrawsEofMark", false );
 				AppConfig.HighlightsCurrentLine	= Ini.Get( "Default", "HighlightsCurrentLine", true );
 				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
 				AppConfig.ShowsHRuler			= Ini.Get( "Default", "ShowsHRuler", false );
@@ -86,6 +88,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "DrawsFullWidthSpace",	AppConfig.DrawsFullWidthSpace );
 				Ini.Set( "Default", "DrawsSpace",			AppConfig.DrawsSpace );
 				Ini.Set( "Default", "DrawsTab",				AppConfig.DrawsTab );
+				Ini.Set( "Default", "DrawsEofMark",			AppConfig.DrawsEofMark );
 				Ini.Set( "Default", "HighlightsCurrentLine",AppConfig.HighlightsCurrentLine );
 				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
 				Ini.Set( "Default", "ShowsHRuler",			AppConfig.ShowsHRuler );

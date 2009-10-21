@@ -1,4 +1,4 @@
-// 2009-10-18
+// 2009-10-21
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -728,6 +728,7 @@ namespace Sgry.Ann
 			MainForm.Azuki.DrawsFullWidthSpace	= AppConfig.DrawsFullWidthSpace;
 			MainForm.Azuki.DrawsSpace			= AppConfig.DrawsSpace;
 			MainForm.Azuki.DrawsTab				= AppConfig.DrawsTab;
+			MainForm.Azuki.DrawsEofMark			= AppConfig.DrawsEofMark;
 			MainForm.Azuki.HighlightsCurrentLine= AppConfig.HighlightsCurrentLine;
 			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
 			MainForm.Azuki.ShowsHRuler			= AppConfig.ShowsHRuler;
@@ -756,6 +757,7 @@ namespace Sgry.Ann
 			AppConfig.DrawsFullWidthSpace	= MainForm.Azuki.DrawsFullWidthSpace;
 			AppConfig.DrawsSpace			= MainForm.Azuki.DrawsSpace;
 			AppConfig.DrawsTab				= MainForm.Azuki.DrawsTab;
+			AppConfig.DrawsEofMark			= MainForm.Azuki.DrawsEofMark;
 			AppConfig.HighlightsCurrentLine	= MainForm.Azuki.HighlightsCurrentLine;
 			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
 			AppConfig.ShowsHRuler			= MainForm.Azuki.ShowsHRuler;

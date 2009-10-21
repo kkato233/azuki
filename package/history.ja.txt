@@ -2,11 +2,12 @@
  * add: 矩形（箱形）選択が可能に（マウス、キーボードのどちらでも）
  * add: AzukiControl.ShowsHRuler で水平ルーラーを表示可能に
  * add: 特殊（行、矩形）な形式でコピーしたデータを Visual Studio にペースト可能に（逆も可能に）
- * add: UsesTabForIndent プロパティを追加
+ * add: AzukiControl.UsesTabForIndent プロパティを追加
  * add: KeywordHighlighter で大文字小文字の区別なしでのマッチングを可能に
  * add: KeywordHighlighter で単語構成文字をキーワードセットごとにカスタマイズ可能に
  * add: AzukiControl.TopMargin で上端の描画マージンを設定可能に
  * add: AzukiControl.LeftMargin で左端の描画マージンを設定可能に
+ * add: AzukiControl.DrawsEofMark プロパティで EOF 位置を描画できるように
  * add: AzukiControl.LinePadding を追加
  * add: AzukiControl.LineSpacing を追加
  * add: グループ UNDO をサポート（Document.BeginUndo の呼び出しから Document.EndUndo の呼び出しまでをグループ化）

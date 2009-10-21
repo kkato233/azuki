@@ -1,7 +1,7 @@
 // file: DrawingOption.cs
 // brief: Enum to describe view's option.
 // author: YAMAMOTO Suguru
-// update: 2009-09-06
+// update: 2009-10-21
 //=========================================================
 using System;
 
@@ -22,7 +22,7 @@ namespace Sgry.Azuki
 		/// <summary>Draws tab character.</summary>
 		DrawsTab				= 0x04,
 
-		/// <summary>Draws EOL code.</summary>
+		/// <summary>Draws EOL (End Of Line) code.</summary>
 		DrawsEol				= 0x08,
 
 		/// <summary>Shows line number area.</summary>
@@ -32,6 +32,9 @@ namespace Sgry.Azuki
 		ShowsLineNumber			= 0x20,
 
 		/// <summary>Shows horizontal ruler.</summary>
-		ShowsHRuler				= 0x40
+		ShowsHRuler				= 0x40,
+
+		/// <summary>Draws EOF (End Of File) mark.</summary>
+		DrawsEof				= 0x80
 	}
 }

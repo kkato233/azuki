@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-10-18
+// update: 2009-10-21
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -657,6 +657,19 @@ namespace Sgry.Azuki.Windows
 		{
 			get{ return View.DrawsTab; }
 			set{ View.DrawsTab = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show EOF mark or not.
+		/// </summary>
+#		if !PocketPC
+		[Category("Drawing")]
+		[DefaultValue(false)]
+#		endif
+		public bool DrawsEofMark
+		{
+			get{ return View.DrawsEofMark; }
+			set{ View.DrawsEofMark = value; }
 		}
 
 		/// <summary>

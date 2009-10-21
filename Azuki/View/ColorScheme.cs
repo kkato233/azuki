@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2009-07-05
+// update: 2009-10-21
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -129,6 +129,7 @@ namespace Sgry.Azuki
 			this.SelectionBack = azuki;
 			this.WhiteSpaceColor = Color.Silver;
 			this.EolColor = shin_bashi;
+			this.EofColor = shin_bashi;
 			this.HighlightColor = azuki;
 			this.LineNumberFore = hana_asagi;
 			this.LineNumberBack = Color.FromArgb( 0xef, 0xef, 0xff );
@@ -173,6 +174,11 @@ namespace Sgry.Azuki
 		/// Color of EOL chars.
 		/// </summary>
 		public Color EolColor;
+
+		/// <summary>
+		/// Color of EOF chars.
+		/// </summary>
+		public Color EofColor;
 
 		/// <summary>
 		/// Underline color of the line which the caret is on.

@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-09-18
+// update: 2009-10-21
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -862,6 +862,17 @@ namespace Sgry.Azuki
 				pos = tokenEndPos;
 				begin = end;
 				end = NextPaintToken( Document, begin, lineEnd, out klass, out inSelection );
+			}
+
+			// draw EOF mark
+			if( DrawsEofMark && lineEnd == Document.Length )
+			{
+				DebugUtl.Assert( lineHead <= lineEnd );
+				if( lineHead == lineEnd
+					|| (0 < lineEnd && LineLogic.IsEolChar(Document[lineEnd-1]) == false) )
+				{
+					DrawEofMark( ref pos );
+				}
 			}
 
 			// fill right of the line text

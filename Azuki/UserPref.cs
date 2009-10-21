@@ -2,7 +2,7 @@
 // brief: User preferences that affects all Azuki instances.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-05-03
+// update: 2009-10-21
 //=========================================================
 using System;
 using System.Text;
@@ -22,6 +22,7 @@ namespace Sgry.Azuki
 	{
 		static bool _CopyLineWhenNoSelection = true;
 		static bool _AutoScrollNearWindowBorder = true;
+		static bool _UseTextForEofMark = true;
 
 		/// <summary>
 		/// If true, cut/copy action targets the current line if nothing selected.
@@ -57,8 +58,17 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public static bool AutoScrollNearWindowBorder
 		{
-			get { return _AutoScrollNearWindowBorder; }
-			set { _AutoScrollNearWindowBorder = value; }
+			get{ return _AutoScrollNearWindowBorder; }
+			set{ _AutoScrollNearWindowBorder = value; }
+		}
+
+		/// <summary>
+		/// If true, Azuki draws EOF mark as text "[EOF]".
+		/// </summary>
+		public static bool UseTextForEofMark
+		{
+			get{ return _UseTextForEofMark; }
+			set{ _UseTextForEofMark = value; }
 		}
 	}
 }

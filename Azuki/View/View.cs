@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-18
+// update: 2009-10-21
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -409,6 +409,22 @@ namespace Sgry.Azuki
 					DrawingOption |= DrawingOption.DrawsEol;
 				else
 					DrawingOption &= ~DrawingOption.DrawsEol;
+				Invalidate();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to draw EOF mark by special graphic or not.
+		/// </summary>
+		public bool DrawsEofMark
+		{
+			get{ return (DrawingOption & DrawingOption.DrawsEof) != 0; }
+			set
+			{
+				if( value )
+					DrawingOption |= DrawingOption.DrawsEof;
+				else
+					DrawingOption &= ~DrawingOption.DrawsEof;
 				Invalidate();
 			}
 		}

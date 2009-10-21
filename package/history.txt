@@ -2,11 +2,12 @@
  * add: rectangler selection by both mouse and keyboard
  * add: horizontal ruler can be used by AzukiControl.ShowsHRuler
  * add: now copied special (line, rectangle) text data can be paste in Visual Studio (and vice-versa)
- * add: added UsesTabForIndent property
+ * add: added AzukiControl.UsesTabForIndent property
  * add: enhanced KeywordHighlighter; now keyword matching can be case insensitive (ignore case option)
  * add: enhanced KeywordHighlighter; now word-character set can be customizable for each keyword set
  * add: by AzukiControl.TopMargin property, drawing margin at top of the view can be now customizable
  * add: by AzukiControl.LeftMargin property, drawing margin at left of the view can be now customizable
+ * add: added AzukiControl.DrawsEofMark property for drawing EOF position
  * add: added AzukiControl.LinePadding
  * add: added AzukiControl.LineSpacing
  * add: supported group UNDO (groups actions between call of Document.BeginUndo and call of Document.EndUndo)

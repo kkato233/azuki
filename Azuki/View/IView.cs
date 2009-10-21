@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-10-18
+// update: 2009-10-21
 //=========================================================
 using System;
 using System.Drawing;
@@ -126,6 +126,14 @@ namespace Sgry.Azuki
 		/// Gets or sets whether to draw EOL code with special graphic or not.
 		/// </summary>
 		bool DrawsEolCode
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether to draw EOF mark or not.
+		/// </summary>
+		bool DrawsEofMark
 		{
 			get; set;
 		}

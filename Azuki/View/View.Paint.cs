@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-10-18
+// update: 2009-10-21
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -338,6 +338,32 @@ namespace Sgry.Azuki
 			// fill area above the text area
 			_Gra.BackColor = ColorScheme.BackColor;
 			_Gra.FillRectangle( XofTextArea, YofTopMargin, VisibleSize.Width-XofTextArea, TopMargin );
+		}
+
+		/// <summary>
+		/// Draws EOF mark.
+		/// </summary>
+		protected void DrawEofMark( ref Point pos )
+		{
+			_Gra.BackColor = ColorScheme.BackColor;
+			if( UserPref.UseTextForEofMark )
+			{
+				int width = _Gra.MeasureText( "[EOF]" ).Width;
+				_Gra.FillRectangle( pos.X, pos.Y, width+2, LineSpacing );
+				pos.X += 2;
+				_Gra.DrawText( "[EOF]", ref pos, ColorScheme.EofColor );
+				pos.X += width;
+			}
+			else
+			{
+				int width = LineHeight - (LineHeight >> 2);
+				_Gra.FillRectangle( pos.X, pos.Y, width, LineSpacing );
+				_Gra.ForeColor = ColorScheme.EofColor;
+				_Gra.DrawLine( pos.X+2, pos.Y+2, pos.X+2, pos.Y + LineHeight - 3 );
+				_Gra.DrawLine( pos.X+2, pos.Y+2, pos.X + width - 3, pos.Y+2 );
+				_Gra.DrawLine( pos.X+2, pos.Y + LineHeight - 3, pos.X + width - 3, pos.Y+2 );
+				pos.X += width;
+			}
 		}
 
 		/// <summary>

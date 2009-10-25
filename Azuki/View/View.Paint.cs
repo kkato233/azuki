@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-10-21
+// update: 2009-10-25
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -125,7 +125,7 @@ namespace Sgry.Azuki
 					return;
 
 				// calc metric
-				int width = (_LineHeight >> 1); // _LineHeight/2
+				int width = EolCodeWithInPx;
 				int y_middle = tokenPos.Y + width;
 				int x_middle = tokenPos.X + (width >> 1); // width/2
 				int halfSpaceWidth = (_SpaceWidth >> 1); // _SpaceWidth/2
@@ -396,43 +396,47 @@ namespace Sgry.Azuki
 			subToken = new StringBuilder( token.Length );
 			for( int i=0; i<token.Length; i++ )
 			{
-				// tab?
 				if( token[i] == '\t' )
 				{
-					// if something is in buffer, add its length and clear buffer.
+					//--- found a tab ---
+					// calculate drawn length of cached characters
 					hitRightLimit = MeasureTokenEndX_TreatSubToken( _Gra, i, subToken, rightLimitX, ref x, ref drawableLength );
 					if( hitRightLimit )
 					{
-						return x; // hit the right limit
+						// before this tab, cached characters already hit the limit.
+						return x;
 					}
 
 					// calc next tab stop
 					subTokenWidth = Utl.CalcNextTabStop( x, TabWidthInPx );
 					if( rightLimitX <= subTokenWidth )
 					{
+						// this tab hit the right limit.
+Debug.Assert( drawableLength == i );
 						drawableLength = i;
-						return x; // hit the right limit.
+						return x;
 					}
 					drawableLength++;
 					x = subTokenWidth;
 				}
 				else if( LineLogic.IsEolChar(token, i) )
 				{
-					// detected EOL code.
-
+					//--- detected an EOL char ---
+					// calculate drawn length of cached characters
 					hitRightLimit = MeasureTokenEndX_TreatSubToken( _Gra, i, subToken, rightLimitX, ref x, ref drawableLength );
 					if( hitRightLimit )
 					{
-						return x; // hit the right limit
+						// before this EOL char, cached characters already hit the limit.
+						return x;
 					}
 
 					// check whether this EOL code can be drawn or not
-					x += (_LineHeight >> 1);
-					if( rightLimitX <= x )
+					if( rightLimitX <= x + EolCodeWithInPx )
 					{
-						x = rightLimitX; // hit the right limit
+						// this EOL code hit the right limit.
 						return x;
 					}
+					x += EolCodeWithInPx;
 
 					// treat this EOL code
 					drawableLength++;
@@ -445,9 +449,10 @@ namespace Sgry.Azuki
 				}
 				else
 				{
-					if( rightLimitX < subToken.Length )
+					if( 64 < subToken.Length )
 					{
-						// because any glyph in any font has at least 1px width, break seeking.
+						// pretty long text was cached.
+						// calculate its width and check whether drawable or not
 						hitRightLimit = MeasureTokenEndX_TreatSubToken( _Gra, i, subToken, rightLimitX, ref x, ref drawableLength );
 						if( hitRightLimit )
 						{
@@ -491,12 +496,10 @@ namespace Sgry.Azuki
 				// given width is too narrow to draw this sub-token.
 				// chop after the limit and re-calc subtoken's width
 				drawableLength = i - (subToken.Length - relDLen);
-				char[] buf = new char[ relDLen ];
-				for( int j=0; j<relDLen; j++ )
-				{
-					buf[j] = subToken[j];
-				}
-				x += gra.MeasureText( new String(buf) ).Width;
+				x += gra.MeasureText(
+						subToken.ToString(0, relDLen)
+					).Width;
+				subToken.Length = 0;
 				return true;
 			}
 

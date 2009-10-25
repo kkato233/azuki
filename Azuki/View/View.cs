@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-21
+// update: 2009-10-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1115,6 +1115,11 @@ namespace Sgry.Azuki
 		internal int YofLine( int lineIndex )
 		{
 			return (  (lineIndex - FirstVisibleLine) * LineSpacing  ) + YofTextArea;
+		}
+
+		internal int EolCodeWithInPx
+		{
+			get{ return (_LineHeight >> 1); }
 		}
 		#endregion
 	}

@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-10-20
+// update: 2009-10-25
 //=========================================================
 using System;
 using System.IO;
@@ -109,11 +109,15 @@ namespace Sgry
 	class AutoLogger
 	{
 		#region Fields
+		const long MaxLogFileSize = 8 * 1024 * 1024;
 		StringBuilder _Buffer = null;
 		bool _WriteProcessID = false;
 		bool _WriteThreadID = false;
 		string _LogFilePath = null;
+		string _OldLogFilePath = null;
 		static StringBuilder _IndentStr = new StringBuilder( 8 );
+		bool _HeaderNotWritten = true;
+		TextWriter _SecondOutput = Console.Error;
 #		if !PocketPC
 		public const string LogDateHeader = "[yyyy-MM-dd hh:mm:ss.fff] ";
 #		else
@@ -163,11 +167,23 @@ namespace Sgry
 				else if( _Buffer == null )
 				{
 					// realtime mode was disabled so prepare memory buffer
-					_Buffer = new StringBuilder( 1024 );
+					_Buffer = new StringBuilder( 4096 );
 				}
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets additional message output target.
+		/// </summary>
+		public TextWriter SecondOutput
+		{
+			get{ return _SecondOutput; }
+			set{ _SecondOutput = value; }
+		}
+
+		/// <summary>
+		/// Gets path of log file.
+		/// </summary>
 		public string LogFilePath
 		{
 			get
@@ -180,6 +196,24 @@ namespace Sgry
 					_LogFilePath = Path.Combine( exeDirPath, "log.txt" );
 				}
 				return _LogFilePath;
+			}
+		}
+
+		/// <summary>
+		/// Gets path of backup of old log file.
+		/// </summary>
+		public string OldLogFilePath
+		{
+			get
+			{
+				if( _OldLogFilePath == null )
+				{
+					Assembly exe = Assembly.GetExecutingAssembly();
+					string exePath = exe.GetModules()[0].FullyQualifiedName;
+					string exeDirPath = Path.GetDirectoryName( exePath );
+					_OldLogFilePath = Path.Combine( exeDirPath, "log.old" );
+				}
+				return _OldLogFilePath;
 			}
 		}
 		#endregion
@@ -200,6 +234,16 @@ namespace Sgry
 					if( _Buffer == null || _Buffer.Length <= 0 )
 					{
 						return;
+					}
+
+					// back up log if it is so large
+					if( File.Exists(LogFilePath) )
+					{
+						if( MaxLogFileSize < new FileInfo(LogFilePath).Length )
+						{
+							File.Delete( OldLogFilePath );
+							File.Move( LogFilePath, OldLogFilePath );
+						}
 					}
 
 					// write buffered data
@@ -228,27 +272,20 @@ namespace Sgry
 			{
 				try
 				{
-					int pid;
-					int tid = 0;
-					DateTime now = DateTime.Now;
-					StringBuilder pidPart = new StringBuilder( 32 );
-
-					// append extra header info
-					if( _WriteProcessID )
-					{
-						pid = Process.GetCurrentProcess().Id;
-						tid = Thread.CurrentThread.ManagedThreadId;
-						pidPart.Append( "[" + pid.ToString("X4") );
-						if( _WriteThreadID )
-						{
-							pidPart.Append( "," + tid.ToString("X2") );
-						}
-						pidPart.Append( "] " );
-					}
-
 					// open log
 					if( Realtime )
 					{
+						// back up log if it is so large
+						if( File.Exists(LogFilePath) )
+						{
+							if( MaxLogFileSize < new FileInfo(LogFilePath).Length )
+							{
+								File.Delete( OldLogFilePath );
+								File.Move( LogFilePath, OldLogFilePath );
+							}
+						}
+
+						// open file
 						writer = new StreamWriter(
 								File.Open(LogFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite),
 								Encoding.UTF8
@@ -259,11 +296,46 @@ namespace Sgry
 						writer = new StringWriter( _Buffer );
 					}
 
-					// write log
-					writer.Write( now.ToString(LogDateHeader) );
-					writer.Write( pidPart.ToString() );
-					writer.Write( _IndentStr.ToString() );
-					writer.WriteLine( String.Format(format, p) );
+					// write header
+					if( _HeaderNotWritten )
+					{
+						int pid;
+						int tid = 0;
+						DateTime now = DateTime.Now;
+						StringBuilder pidPart = new StringBuilder( 32 );
+
+						// append extra header info
+						if( _WriteProcessID )
+						{
+							pid = Process.GetCurrentProcess().Id;
+							tid = Thread.CurrentThread.ManagedThreadId;
+							pidPart.Append( "[" + pid.ToString("X4") );
+							if( _WriteThreadID )
+							{
+								pidPart.Append( "," + tid.ToString("X2") );
+							}
+							pidPart.Append( "] " );
+						}
+
+						writer.Write( now.ToString(LogDateHeader) );
+						writer.Write( pidPart.ToString() );
+						writer.Write( _IndentStr.ToString() );
+						if( SecondOutput != null )
+						{
+							SecondOutput.Write( now.ToString(LogDateHeader) );
+							SecondOutput.Write( pidPart.ToString() );
+							SecondOutput.Write( _IndentStr.ToString() );
+						}
+
+						_HeaderNotWritten = false;
+					}
+
+					// write message
+					writer.Write( String.Format(format, p) );
+					if( SecondOutput != null )
+					{
+						SecondOutput.Write( String.Format(format, p) );
+					}
 				}
 				catch( IOException )
 				{}
@@ -286,21 +358,31 @@ namespace Sgry
 		}
 
 		/// <summary>
-		/// Writes message to a log file and adds indent.
+		/// Writes message to a log file and terminate the line.
 		/// </summary>
-		public void WriteI( string format, params object[] p )
+		public void WriteLine( string format, params object[] p )
 		{
 			Write( format, p );
+			Write( Console.Out.NewLine );
+			_HeaderNotWritten = true;
+		}
+
+		/// <summary>
+		/// Writes message to a log file and adds indent.
+		/// </summary>
+		public void WriteLineI( string format, params object[] p )
+		{
+			WriteLine( format, p );
 			_IndentStr.Append( "  " );
 		}
 
 		/// <summary>
 		/// Writes message to a log file and adds unindent.
 		/// </summary>
-		public void WriteU( string format, params object[] p )
+		public void WriteLineU( string format, params object[] p )
 		{
-			Write( format, p );
 			_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
+			WriteLine( format, p );
 		}
 		#endregion
 	}

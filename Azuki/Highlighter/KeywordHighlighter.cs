@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-09-27
+// update: 2009-10-24
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace Sgry.Azuki.Highlighter
 	/// and another keyword set containing all pre-processor macro keywords and associate
 	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>.Macro.
 	/// To register keyword sets, use
-	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean, String)">
+	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean)">
 	/// AddKeywordSet</see> method.
 	/// </para>
 	/// <para>
@@ -94,7 +94,6 @@ namespace Sgry.Azuki.Highlighter
 			public CharTreeNode root = new CharTreeNode();
 			public CharClass klass = CharClass.Normal;
 			public bool ignoresCase = false;
-			public string wordChars = KeywordHighlighter.DefaultWordCharSet;
 		}
 
 		class CharTreeNode
@@ -112,7 +111,8 @@ namespace Sgry.Azuki.Highlighter
 #			endif
 		}
 
-		static readonly string DefaultWordCharSet = null;
+		const string DefaultWordCharSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+		string _WordCharSet = null;
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
 		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
 		List<Enclosure> _LineHighlights = new List<Enclosure>( 2 );
@@ -220,24 +220,7 @@ namespace Sgry.Azuki.Highlighter
 		[Obsolete("Please use AddKeywordSet method instead.", false)]
 		public void SetKeywords( string[] keywords, CharClass klass )
 		{
-			AddKeywordSet( keywords, klass, false, DefaultWordCharSet );
-		}
-
-		/// <summary>
-		/// (Please use AddKeywordSet instead.)
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This method is obsoleted.
-		/// Please use
-		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean, String)">
-		/// AddKeywordSet</see> method instead.
-		/// </para>
-		/// </remarks>
-		[Obsolete("Please use AddKeywordSet method instead.", false)]
-		public void SetKeywords( string[] keywords, CharClass klass, bool ignoreCase, string wordCharSet )
-		{
-			AddKeywordSet( keywords, klass, ignoreCase, wordCharSet );
+			AddKeywordSet( keywords, klass, false );
 		}
 
 		/// <summary>
@@ -245,13 +228,15 @@ namespace Sgry.Azuki.Highlighter
 		/// </summary>
 		/// <param name="keywords">Sorted array of keywords.</param>
 		/// <param name="klass">Char-class to be applied to the keyword set.</param>
+		/// <exception cref="System.ArgumentException">Parameter 'keywords' are not sorted alphabetically.</exception>
+		/// <exception cref="System.ArgumentNullException">Parameter 'keywords' is null.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method registers a set keywords to be highlighted.
+		/// This method registers a set of keywords to be highlighted.
 		/// </para>
 		/// <para>
 		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
-		/// as <paramref name="klass"/> character class.
+		/// as a character class specified by <paramref name="klass"/> parameter.
 		/// Please ensure that keywords in <paramref name="keywords"/> parameter
 		/// must be alphabetically sorted.
 		/// If they are not sorted, <see cref="ArgumentException"/> will be thrown.
@@ -259,12 +244,15 @@ namespace Sgry.Azuki.Highlighter
 		/// <para>
 		/// The keywords will be matched case sensitively
 		/// and supposed to be consisted with only alphabets, numbers and underscore ('_').
+		/// If other character must be considered as a part of keyword,
+		/// use <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.WordCharSet">WordCharSet</see>
+		/// property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="AddKeywordSet(String[], CharClass, Boolean, String)">AddKeywordSet method (another overloaded method)</seealso>
+		/// <seealso cref="AddKeywordSet(String[], CharClass, Boolean)">AddKeywordSet method (another overloaded method)</seealso>
 		public void AddKeywordSet( string[] keywords, CharClass klass )
 		{
-			AddKeywordSet( keywords, klass, false, DefaultWordCharSet );
+			AddKeywordSet( keywords, klass, false );
 		}
 
 		/// <summary>
@@ -273,16 +261,15 @@ namespace Sgry.Azuki.Highlighter
 		/// <param name="keywords">Sorted array of keywords.</param>
 		/// <param name="klass">Char-class to be applied to the keyword set.</param>
 		/// <param name="ignoreCase">Whether case of the keywords should be ignored or not.</param>
-		/// <param name="wordCharSet">Word-character-set to use (can be null.)</param>
-		/// <exception cref="System.ArgumentException">Keywords in <paramref name="keywords"/> are not sorted alphabetically.</exception>
-		/// <exception cref="System.ArgumentNullException">Parameter <paramref name="keywords"/> is null.</exception>
+		/// <exception cref="System.ArgumentException">Parameter 'keywords' are not sorted alphabetically.</exception>
+		/// <exception cref="System.ArgumentNullException">Parameter 'keywords' is null.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method registers a set keywords to be highlighted.
+		/// This method registers a set of keywords to be highlighted.
 		/// </para>
 		/// <para>
 		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
-		/// as <paramref name="klass"/> character class.
+		/// as a character class specified by <paramref name="klass"/> parameter.
 		/// Please ensure that keywords in <paramref name="keywords"/> parameter
 		/// must be alphabetically sorted.
 		/// If they are not sorted, <see cref="ArgumentException"/> will be thrown.
@@ -291,36 +278,16 @@ namespace Sgry.Azuki.Highlighter
 		/// If <paramref name="ignoreCase"/> is true,
 		/// KeywordHighlighter ignores case of all given keywords on matching.
 		/// Note that if <paramref name="ignoreCase"/> is true,
-		/// all characters of keywords must be in lower case,
-		/// or all characters must be in upper case.
-		/// Otherwise keywords may not be highlighted properly.
+		/// all characters of keywords must be in lower case
+		/// otherwise keywords may not be highlighted properly.
 		/// </para>
 		/// <para>
-		/// The value of <paramref name="wordCharSet"/> parameter is used as a word-character-set.
-		/// KeywordHighlighter treats a sequence of characters in a word-character-set as a word.
-		/// If null was passed as <paramref name="wordCharSet"/> parameter,
-		/// internally defined default set will be used.
-		/// Default word-character-set is 
-		/// <c>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789</c>.
-		/// </para>
-		/// <para>
-		/// Word-character-set parameter affects keyword matching process.
-		/// If a keyword partially matched to a token in a document,
-		/// KeywordHighlighter checks whether the character at the place where the match ended
-		/// is included in the word-character-set or not.
-		/// Then if it was NOT a one of the word-character-set,
-		/// KeywordHighlighter determines the token ended there
-		/// and highlight the token.
-		/// For example, if word-character-set is set as &quot;abc_&quot; and document is
-		/// &quot;abc-def abc_def&quot;, &quot;abc&quot; of &quot;abc-def&quot; will be highlighted
-		/// but &quot;abc&quot; of &quot;abc_def&quot; will NOT be highlighted
-		/// because following character for former one ('-') is not included in the word-character-set
-		/// but one of the latter pattern ('_') is included.
-		/// Note that if there are keywords that contain characters not included in the word character set,
-		/// KeywordHighlighter will not highlight such keywords properly.
+		/// If other character must be considered as a part of keyword,
+		/// use <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.WordCharSet">WordCharSet</see>
+		/// property.
 		/// </para>
 		/// </remarks>
-		public void AddKeywordSet( string[] keywords, CharClass klass, bool ignoreCase, string wordCharSet )
+		public void AddKeywordSet( string[] keywords, CharClass klass, bool ignoreCase )
 		{
 			if( keywords == null )
 				throw new ArgumentNullException("keywords");
@@ -331,7 +298,10 @@ namespace Sgry.Azuki.Highlighter
 #			if !PocketPC
 			for( int i=0; i<keywords.Length-1; i++ )
 				if( 0 <= keywords[i].CompareTo(keywords[i+1]) )
-					throw new ArgumentException( "keywords are not sorted alphabetically; detected ["+keywords[i+1]+"] <= ["+keywords[i]+"]", "keywords" );
+					throw new ArgumentException(
+						String.Format("keywords must be sorted alphabetically; '{0}' is expected to be greater than '{1}' but not greater.", keywords[i+1], keywords[i]),
+						"value"
+					);
 #			endif
 
 			// parse and generate keyword tree
@@ -351,10 +321,6 @@ namespace Sgry.Azuki.Highlighter
 			// set other attributes
 			set.klass = klass;
 			set.ignoresCase = ignoreCase;
-			if( wordCharSet != null )
-			{
-				set.wordChars = wordCharSet;
-			}
 
 			// add to keyword list
 			_Keywords.Add( set );
@@ -418,6 +384,63 @@ namespace Sgry.Azuki.Highlighter
 		{
 			_Keywords.Clear();
 		}
+
+		/// <summary>
+		/// Gets or sets word-character set.
+		/// </summary>
+		/// <exception cref="ArgumentException">Characters in value are not sorted alphabetically.</exception>
+		/// <remarks>
+		/// <para>
+		/// KeywordHighlighter treats a sequence of characters in a word-character set as a word.
+		/// The word-character set must be an alphabetically sorted character sequence.
+		/// Setting this property to a character sequence which is not sorted alphabetically,
+		/// <see cref="System.ArgumentException"/> will be thrown.
+		/// If this property was set to null, KeywordHighlighter uses
+		/// internally defined default word-character set.
+		/// Default word-character set is
+		/// <c>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz</c>.
+		/// </para>
+		/// <para>
+		/// Word-character set affects keyword matching process.
+		/// If a keyword partially matched to a token in a document,
+		/// KeywordHighlighter checks whether the character at the place where the match ended
+		/// is included in the word-character set or not.
+		/// Then if it was NOT a one of the word-character set,
+		/// KeywordHighlighter determines the token which ends there is a keyword
+		/// and highlight the token.
+		/// For example, if word-character set is &quot;abc_&quot; and document is
+		/// &quot;abc-def abc_def&quot;, &quot;abc&quot; of &quot;abc-def&quot; will be highlighted
+		/// but &quot;abc&quot; of &quot;abc_def&quot; will NOT be highlighted
+		/// because following character for former one ('-') is not included in the word-character set
+		/// but one of the latter pattern ('_') is included.
+		/// Note that if there are keywords that contain characters not included in the word-character set,
+		/// KeywordHighlighter will not highlight such keywords properly.
+		/// </para>
+		/// </remarks>
+		public string WordCharSet
+		{
+			get
+			{
+				if( _WordCharSet != null )
+					return _WordCharSet;
+				else
+					return DefaultWordCharSet;
+			}
+			set
+			{
+				// ensure word characters are sorted alphabetically
+#				if !PocketPC
+				for( int i=0; i<value.Length-1; i++ )
+					if( value[i+1] < value[i] )
+						throw new ArgumentException(
+							String.Format("word character set must be a sequence of alphabetically sorted characters; '{0}' (U+{1:x4}) is expected to be greater than '{2}' (U+{3:x4}) but not greater.", value[i+1], (int)value[i+1], value[i], (int)value[i]),
+							"value"
+						);
+#				endif
+
+				_WordCharSet = value;
+			}
+		}
 		#endregion
 
 		#region Highlighting Logic
@@ -476,7 +499,7 @@ dirtyEnd = doc.Length;
 				}
 
 				// highlight keyword if this token is a keyword
-				highlighted = TryHighlightKeyword( doc, _Keywords, index, dirtyEnd, out nextIndex );
+				highlighted = TryHighlightKeyword( doc, _Keywords, _WordCharSet, index, dirtyEnd, out nextIndex );
 				if( highlighted )
 				{
 					index = nextIndex;
@@ -492,7 +515,7 @@ dirtyEnd = doc.Length;
 				}
 				
 				// this token is normal class; reset classes and seek to next token
-				nextIndex = HighlighterUtl.FindNextToken( doc, index, DefaultWordCharSet );
+				nextIndex = HighlighterUtl.FindNextToken( doc, index, _WordCharSet );
 				for( int i=index; i<nextIndex; i++ )
 				{
 					doc.SetCharClass( i, CharClass.Normal );
@@ -574,14 +597,14 @@ dirtyEnd = doc.Length;
 		/// <summary>
 		/// Do keyword matching in [startIndex, endIndex) through keyword char-tree.
 		/// </summary>
-		static bool TryHighlightKeyword( Document doc, List<KeywordSet> keywords, int startIndex, int endIndex, out int nextSeekIndex )
+		static bool TryHighlightKeyword( Document doc, List<KeywordSet> keywords, string wordCharSet, int startIndex, int endIndex, out int nextSeekIndex )
 		{
 			bool highlighted = false;
 
 			nextSeekIndex = startIndex;
 			foreach( KeywordSet set in keywords )
 			{
-				highlighted = TryHighlightKeyword_One( doc, set, startIndex, endIndex, out nextSeekIndex );
+				highlighted = TryHighlightKeyword_One( doc, set, wordCharSet, startIndex, endIndex, out nextSeekIndex );
 				if( highlighted )
 				{
 					break;
@@ -591,7 +614,10 @@ dirtyEnd = doc.Length;
 			return highlighted;
 		}
 
-		static bool TryHighlightKeyword_One( Document doc, KeywordSet set, int startIndex, int endIndex, out int nextSeekIndex )
+		static bool TryHighlightKeyword_One(
+				Document doc, KeywordSet set, string wordCharSet,
+				int startIndex, int endIndex, out int nextSeekIndex
+			)
 		{
 			CharTreeNode node;
 			int index;
@@ -622,7 +648,7 @@ dirtyEnd = doc.Length;
 				if( Matches(node.ch, doc[index], set.ignoresCase) )
 				{
 					// matched.
-					if( MatchedExactly(doc, node, index, set.wordChars) )
+					if( MatchedExactly(doc, node, index, wordCharSet) )
 					{
 						//--- the keyword exactly matched ---
 						// (at least the keyword was partially matched,

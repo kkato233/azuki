@@ -1,7 +1,7 @@
 ﻿// file: HighlighterUtl.cs
 // brief: common utility for built-in highlighters.
 // author: YAMAMOTO Suguru
-// update: 2009-10-17
+// update: 2009-10-24
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -308,18 +308,23 @@ namespace Sgry.Azuki.Highlighter
 		{
 			if( wordChars == null )
 			{
+				//--- use default word character set ---
 				if( 'a' <= ch && ch <= 'z' )
 					return true;
 				if( 'A' <= ch && ch <= 'Z' )
 					return true;
 				if( '0' <= ch && ch <= '9' )
 					return true;
+				if( ch == '_' )
+					return true;
 
 				return false;
 			}
 			else
 			{
-				return ( 0 <= wordChars.IndexOf(ch) );
+				//--- use custom word character set ---
+				int index = Array.BinarySearch<char>( wordChars.ToCharArray(), ch );
+				return (0 <= index && index < wordChars.Length);
 			}
 		}
 

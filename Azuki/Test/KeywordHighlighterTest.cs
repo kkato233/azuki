@@ -1,4 +1,4 @@
-﻿// 2009-10-17
+﻿// 2009-10-24
 #if DEBUG
 using System;
 
@@ -37,6 +37,10 @@ namespace Sgry.Azuki.Test
 			// around enclosing pairs
 			Console.WriteLine("test {0} - Enclosing Pairs", testNum++);
 			TestUtl.Do( Test_EnclosingPairs );
+
+			// word character
+			Console.WriteLine("test {0} - Word Character", testNum++);
+			TestUtl.Do( Test_WordChar );
 
 			Console.WriteLine( "done." );
 			Console.WriteLine();
@@ -650,7 +654,7 @@ ho//ge";
 		{
 			Document doc = new Document();
 			KeywordHighlighter h = new KeywordHighlighter();
-			int begin_, end_;
+			int begin, end;
 			h.AddEnclosure( "\"", "\"", CharClass.String );
 			h.AddEnclosure( "/*", "*/", CharClass.Comment );
 			h.AddKeywordSet( new string[]{
@@ -670,12 +674,56 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(20) );
 
 				doc.Replace( "Z", 7, 8 ); // printf(Z%s\n", name);
-				begin_ = 7; end_ = doc.Length;
-				h.Highlight( doc, ref begin_, ref end_ );
+				begin = 7; end = doc.Length;
+				h.Highlight( doc, ref begin, ref end );
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(11) );
 				TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(12) );
 				TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(20) );
+			}
+		}
+
+		static void Test_WordChar()
+		{
+			Document doc = new Document();
+			KeywordHighlighter h;
+
+			//---------------------------------------------
+			h = new KeywordHighlighter();
+			{
+				h.AddKeywordSet( new string[]{"SELECT"}, CharClass.Keyword );
+				doc.Highlighter = h;
+
+				doc.Text = @"SELECT ABC-SELECT SELECT-ABC";
+				h.Highlight( doc );
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(0) );		// S<--
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(5) );		// SELECT<--
+				TestUtl.AssertEquals( CharClass.Normal,  doc.GetCharClass(6) );		// SELECT <--
+				TestUtl.AssertEquals( CharClass.Normal,  doc.GetCharClass(7) );		// SELECT A<--
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(11) );	// SELECT ABC-S<--
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(16) );	// SELECT ABC-SELECT<--
+				TestUtl.AssertEquals( CharClass.Normal,  doc.GetCharClass(17) );	// SELECT ABC-SELECT <--
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(23) );	// SELECT ABC-SELECT SELECT<--
+				TestUtl.AssertEquals( CharClass.Normal,  doc.GetCharClass(26) );	// SELECT ABC-SELECT SELECT-ABC<--
+			}
+
+			h = new KeywordHighlighter();
+			{
+				h.AddKeywordSet( new string[]{"SELECT"}, CharClass.Keyword );
+				h.WordCharSet = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				doc.Highlighter = h;
+
+				doc.Text = @"SELECT ABC-SELECT SELECT-ABC";
+				h.Highlight( doc );
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(0) );	// S<--
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(5) );	// SELECT<--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(6) );	// SELECT <--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(7) );	// SELECT A<--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(11) );	// SELECT ABC-S<--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(16) );	// SELECT ABC-SELECT<--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(17) );	// SELECT ABC-SELECT <--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(23) );	// SELECT ABC-SELECT SELECT<--
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(26) );	// SELECT ABC-SELECT SELECT-ABC<--
 			}
 		}
 	}

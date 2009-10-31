@@ -81,7 +81,7 @@ namespace Sgry.Azuki
 			// execute UNDO actions during stopping to record actions.
 			_Document.IsRecordingHistory = false;
 			{
-				// release selection to ensure the graphic will properly be updated
+				// release selection to ensure that the graphic will be properly updated.
 				// because UNDO may cause some cases which is not supported by
 				// invalidation logic of Azuki
 				_Document.SetSelection( _Index, _Index );

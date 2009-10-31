@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-11
+// update: 2009-10-31
 //=========================================================
 using System;
 using System.Collections;
@@ -22,8 +22,9 @@ namespace Sgry.Azuki
 	public class Document : IEnumerable
 	{
 		#region Fields
-		TextBuffer _Buffer = new TextBuffer( 512, 256 );
+		TextBuffer _Buffer = new TextBuffer( 4096, 1024 );
 		SplitArray<int> _LHI = new SplitArray<int>( 64 ); // line head indexes
+		SplitArray<LineDirtyState> _LDS = new SplitArray<LineDirtyState>( 64 ); // line dirty states
 		EditHistory _History = new EditHistory();
 		int _CaretIndex = 0;
 		int _AnchorIndex = 0;
@@ -55,6 +56,56 @@ namespace Sgry.Azuki
 		};
 		#endregion
 
+		/// <summary>
+		/// Gets dirty state of specified line.
+		/// </summary>
+		/// <param name="lineIndex">Index of the line that to get dirty state of.</param>
+		/// <returns>Dirty state of the specified line.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method gets dirty state of specified line.
+		/// Dirty state of lines will changed as below.
+		/// </para>
+		/// <list type="bullet">
+		///		<item>
+		///		If a line was not modified yet, the dirty state of the line is
+		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Clean.
+		///		</item>
+		///		<item>
+		///		If a line was modified, its dirty state will be changed to
+		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Dirty
+		///		</item>
+		///		<item>
+		///		Setting false to
+		///		<see cref="Sgry.Azuki.Document.IsDirty">Document.IsDirty</see>
+		///		property will set all states of modified lines to
+		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Cleaned.
+		///		</item>
+		///		<item>
+		///		Calling
+		///		<see cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory</see>
+		///		to reset all states of lines to
+		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Clean.
+		///		</item>
+		/// </list>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.LineDirtyState">LineDirtyState enum</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.IsDirty">Document.IsDirty property</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory method</seealso>
+		public LineDirtyState GetLineDirtyState( int lineIndex )
+		{
+			if( LineCount <= lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex" );
+
+			Debug.Assert( _LDS.Count == _LHI.Count );
+			Debug.Assert( lineIndex < _LDS.Count );
+			if( _LDS.Count <= lineIndex )
+			{
+				return LineDirtyState.Clean;
+			}
+			return _LDS[lineIndex];
+		}
+
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
@@ -64,6 +115,10 @@ namespace Sgry.Azuki
 			// initialize LHI
 			_LHI.Clear();
 			_LHI.Add( 0 );
+
+			// initialize LDS
+			_LDS.Clear();
+			_LDS.Add( 0 );
 		}
 		#endregion
 
@@ -84,7 +139,22 @@ namespace Sgry.Azuki
 			{
 				bool valueChanged = (_IsDirty != value);
 				
+				// apply value
 				_IsDirty = value;
+
+				// 'clean' up dirty state of modified lines
+				if( _IsDirty == false )
+				{
+					for( int i=0; i<_LDS.Count; i++ )
+					{
+						if( _LDS[i] == LineDirtyState.Dirty )
+						{
+							_LDS[i] = LineDirtyState.Cleaned;
+						}
+					}
+				}
+
+				// invoke event
 				if( valueChanged )
 				{
 					InvokeDirtyStateChanged();
@@ -156,9 +226,11 @@ namespace Sgry.Azuki
 		/// Gets view specific parameters associated with this document.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// There are some parameters that are dependent on each document
 		/// but are not parameters about document content.
 		/// This property contains such parameters.
+		/// </para>
 		/// </remarks>
 		internal ViewParam ViewParam
 		{
@@ -637,6 +709,7 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public void Replace( string text, int begin, int end )
 		{
+			Debug.Assert( _LHI.Count == _LDS.Count, "LHI.Count("+_LHI.Count+") is not LDS.Count("+_LDS.Count+")" );
 			if( begin < 0 || _Buffer.Count < begin )
 				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given (begin:"+begin+", this.Length:"+Length+")." );
 			if( end < begin || _Buffer.Count < end )
@@ -664,8 +737,11 @@ namespace Sgry.Azuki
 			// delete target range
 			if( begin < end )
 			{
-				LineLogic.LHI_Delete( _LHI, _Buffer, begin, end );
+				// manage line head indexes and delete content
+				LineLogic.LHI_Delete( _LHI, _LDS, _Buffer, begin, end );
 				_Buffer.Delete( begin, end );
+
+				// manage caret/anchor index
 				if( begin < _CaretIndex )
 				{
 					_CaretIndex -= end - begin;
@@ -683,8 +759,11 @@ namespace Sgry.Azuki
 			// then, insert text
 			if( 0 < text.Length )
 			{
-				LineLogic.LHI_Insert( _LHI, _Buffer, text, begin );
+				// manage line head indexes and insert content
+				LineLogic.LHI_Insert( _LHI, _LDS, _Buffer, text, begin );
 				_Buffer.Insert( begin, text.ToCharArray() );
+
+				// manage caret/anchor index
 				if( begin <= _CaretIndex )
 				{
 					_CaretIndex += text.Length;
@@ -716,13 +795,10 @@ namespace Sgry.Azuki
 			oldCaret += caretDelta;
 
 			Debug.Assert( begin <= Length );
+			Debug.Assert( _LHI.Count == _LDS.Count, "LHI.Count("+_LHI.Count+") is not LMF.Count("+_LDS.Count+")" );
 
 			// cast event
-			if( _IsDirty == false )
-			{
-				_IsDirty = true;
-				InvokeDirtyStateChanged();
-			}
+			IsDirty = true;
 			InvokeContentChanged( begin, oldText, text );
 			InvokeSelectionChanged( oldAnchor, oldCaret, null );
 		}
@@ -798,6 +874,10 @@ namespace Sgry.Azuki
 		public void ClearHistory()
 		{
 			_History.Clear();
+			for( int i=0; i<_LDS.Count; i++ )
+			{
+				_LDS[i] = LineDirtyState.Clean;
+			}
 		}
 
 		/// <summary>

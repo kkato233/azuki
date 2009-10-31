@@ -200,6 +200,17 @@ namespace Sgry.Azuki
 			// fill left margin area
 			_Gra.BackColor = ColorScheme.BackColor;
 			_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
+if( Document.GetLineDirtyState(lineNumber-1) != LineDirtyState.Clean )
+{
+string todo=@"仮実装。
+・コンテンツ変更時の描画更新方法
+・そもそものグラフィック表示の方法";
+	if( Document.GetLineDirtyState(lineNumber-1) == LineDirtyState.Dirty )
+		_Gra.BackColor = Color.Red;
+	else
+		_Gra.BackColor = Color.Green;
+	_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
+}
 			
 			// draw line number text
 			if( 0 < lineNumber )

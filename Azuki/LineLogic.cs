@@ -1,7 +1,7 @@
 // file: LineLogic.cs
 // brief: Logics to manipulate line/column in a string.
 // author: YAMAMOTO Suguru
-// update: 2009-01-12
+// update: 2009-10-31
 //=========================================================
 using System;
 using System.Collections;
@@ -169,25 +169,32 @@ namespace Sgry.Azuki
 		/// Maintain line head indexes for text insertion.
 		/// THIS MUST BE CALLED BEFORE ACTUAL INSERTION.
 		/// </summary>
-		public static void LHI_Insert( SplitArray<int> lhi, TextBuffer text, string insertText, int insertIndex )
+		public static void LHI_Insert(
+				SplitArray<int> lhi, SplitArray<LineDirtyState> lms, TextBuffer text, string insertText, int insertIndex
+			)
 		{
 			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0, "lhi must have 0 as a first member." );
+			DebugUtl.Assert( lms != null && 0 < lms.Count, "lms must have at one or more items." );
+			DebugUtl.Assert( lhi.Count == lms.Count, "lhi.Count("+lhi.Count+") is not lms.Count("+lms.Count+")" );
 			DebugUtl.Assert( insertText != null && 0 < insertText.Length, "insertText must not be null nor empty." );
 			DebugUtl.Assert( 0 <= insertIndex && insertIndex <= text.Count, "insertIndex is out of range ("+insertIndex+")." );
 			int insTargetLine, dummy;
+			int lineIndex; // work variable
 			int lineHeadIndex;
 			int lineEndIndex;
 			int insLineCount;
 
 			// at first, find the line which contains the insertion point
 			GetLineColumnIndexFromCharIndex( text, lhi, insertIndex, out insTargetLine, out dummy );
+			lineIndex = insTargetLine;
 
 			// if the inserting divides a CR+LF, insert an entry for the CR separated
 			if( 0 < insertIndex && text[insertIndex-1] == '\r'
 				&& insertIndex < text.Count && text[insertIndex] == '\n' )
 			{
-				lhi.Insert( insTargetLine+1, insertIndex );
-				insTargetLine++;
+				lhi.Insert( lineIndex+1, insertIndex );
+				lms.Insert( lineIndex+1, LineDirtyState.Dirty );
+				lineIndex++;
 			}
 
 			// if inserted text begins with LF and is inserted just after a CR,
@@ -195,8 +202,9 @@ namespace Sgry.Azuki
 			if( 0 < insertIndex && text[insertIndex-1] == '\r'
 				&& 0 < insertText.Length && insertText[0] == '\n' )
 			{
-				lhi.Delete( insTargetLine, insTargetLine+1 );
-				insTargetLine--;
+				lhi.Delete( lineIndex, lineIndex+1 );
+				lms.Delete( lineIndex, lineIndex+1 );
+				lineIndex--;
 			}
 
 			// insert line index entries to LHI
@@ -212,7 +220,8 @@ namespace Sgry.Azuki
 					// this is the final line. no need to insert new entry
 					break;
 				}
-				lhi.Insert( insTargetLine+insLineCount, insertIndex+lineEndIndex+1 );
+				lhi.Insert( lineIndex+insLineCount, insertIndex+lineEndIndex+1 );
+				lms.Insert( lineIndex+insLineCount, LineDirtyState.Dirty );
 				insLineCount++;
 
 				// find next line head
@@ -225,15 +234,35 @@ namespace Sgry.Azuki
 			if( 0 < insertText.Length && insertText[insertText.Length - 1] == '\r'
 				&& insertIndex < text.Count && text[insertIndex] == '\n' )
 			{
-				int lastInsertedLine = insTargetLine + insLineCount - 1;
+				int lastInsertedLine = lineIndex + insLineCount - 1;
 				lhi.Delete( lastInsertedLine, lastInsertedLine+1 );
-				insTargetLine--;
+				lms.Delete( lastInsertedLine, lastInsertedLine+1 );
+				lineIndex--;
 			}
 
 			// shift all followings
-			for( int i=insTargetLine+insLineCount; i<lhi.Count; i++ )
+			for( int i=lineIndex+insLineCount; i<lhi.Count; i++ )
 			{
 				lhi[i] += insertText.Length;
+			}
+
+			// mark the insertion target line as 'dirty'
+			if( insertText[0] == '\n'
+				&& 0 < insertIndex && text[insertIndex-1] == '\r'
+				&& insertIndex < text.Count && text[insertIndex] != '\n' )
+			{
+				// inserted text has a LF at beginning
+				// and there is a CR (not CR+LF) at insertion point.
+				// because in this case insertion target line should be
+				// the line containing the existing CR,
+				// mark not calculated insertion target line
+				// but the line at one line before.
+				DebugUtl.Assert( 0 < insTargetLine );
+				lms[insTargetLine-1] = LineDirtyState.Dirty;
+			}
+			else
+			{
+				lms[insTargetLine] = LineDirtyState.Dirty;
 			}
 		}
 		
@@ -241,11 +270,16 @@ namespace Sgry.Azuki
 		/// Maintain line head indexes for text deletion.
 		/// THIS MUST BE CALLED BEFORE ACTUAL DELETION.
 		/// </summary>
-		public static void LHI_Delete( SplitArray<int> lhi, TextBuffer text, int delBegin, int delEnd )
+		public static void LHI_Delete(
+				SplitArray<int> lhi, SplitArray<LineDirtyState> lms, TextBuffer text, int delBegin, int delEnd
+			)
 		{
 			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0, "lhi must have 0 as a first member." );
+			DebugUtl.Assert( lms != null && 0 < lms.Count, "lms must have one or more items." );
+			DebugUtl.Assert( lhi.Count == lms.Count, "lhi.Count("+lhi.Count+") is not lms.Count("+lms.Count+")" );
 			DebugUtl.Assert( 0 <= delBegin && delBegin < text.Count, "delBegin is out of range." );
 			DebugUtl.Assert( delBegin <= delEnd && delEnd <= text.Count, "delEnd is out of range." );
+			int delFirstLine;
 			int delFromL, delToL;
 			int dummy;
 			int delLen = delEnd - delBegin;
@@ -253,6 +287,7 @@ namespace Sgry.Azuki
 			// calculate line indexes of both ends of the range
 			GetLineColumnIndexFromCharIndex( text, lhi, delBegin, out delFromL, out dummy );
 			GetLineColumnIndexFromCharIndex( text, lhi, delEnd, out delToL, out dummy );
+			delFirstLine = delFromL;
 
 			if( 0 < delBegin && text[delBegin-1] == '\r' )
 			{
@@ -260,6 +295,7 @@ namespace Sgry.Azuki
 				{
 					// if the deletion creates a new CR+LF, delete an entry of the CR
 					lhi.Delete( delToL, delToL+1 );
+					lms.Delete( delToL, delToL+1 );
 					delToL--;
 				}
 				else if( text[delBegin] == '\n' )
@@ -267,6 +303,7 @@ namespace Sgry.Azuki
 					// if the deletion divides a CR+LF at left side of deletion range,
 					// insert an entry for the CR
 					lhi.Insert( delToL, delBegin );
+					lms.Insert( delToL, LineDirtyState.Dirty );
 					delFromL++;
 					delToL++;
 				}
@@ -282,6 +319,25 @@ namespace Sgry.Azuki
 			if( delFromL < delToL )
 			{
 				lhi.Delete( delFromL+1, delToL+1 );
+				lms.Delete( delFromL+1, delToL+1 );
+			}
+
+			// mark the deletion target line as 'dirty'
+			if( 0 < delBegin && text[delBegin-1] == '\r'
+				&& delEnd < text.Count && text[delEnd] == '\n'
+				&& 0 < delFirstLine )
+			{
+				// there is a CR (not CR+LF) at left of the deletion beginning position
+				// and there is a LF (not CR+LF) at right of the deletion ending position.
+				// because in this case deletion target line should be
+				// the line containing the existing CR,
+				// mark not calculated deletion target line
+				// but the line at one line before.
+				lms[delFirstLine-1] = LineDirtyState.Dirty;
+			}
+			else
+			{
+				lms[delFirstLine] = LineDirtyState.Dirty;
 			}
 		}
 		#endregion

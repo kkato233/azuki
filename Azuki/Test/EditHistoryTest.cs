@@ -1,5 +1,5 @@
 ﻿// 2008-05-31
-#if DEBUG
+#if TEST
 using System;
 
 namespace Sgry.Azuki.Test

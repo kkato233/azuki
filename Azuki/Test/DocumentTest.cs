@@ -1,5 +1,5 @@
 // 2009-02-22
-#if DEBUG
+#if TEST
 using System;
 using System.Collections;
 using System.Collections.Generic;

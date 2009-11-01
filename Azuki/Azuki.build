@@ -36,8 +36,8 @@ Azuki text editor engine for .NET Framework.
 <property name="document_name_cf" value="${path::change-extension(assembly_name_cf, 'xml')}"/>
 <property name="pdb_name_cf" value="${path::change-extension(assembly_name_cf, 'pdb')}"/>
 
-<property name="tester_name" value="test.exe"/>
-<property name="tester_pdb_name" value="test.pdb"/>
+<property name="tester_name" value="AzukiTest.exe"/>
+<property name="tester_pdb_name" value="AzukiTest.pdb"/>
 
 
 <!--=======================

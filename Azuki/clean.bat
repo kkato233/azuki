@@ -15,12 +15,13 @@ del ..\package\Azuki.xml  2> NUL
 del ..\package\AzukiCompact.pdb  2> NUL
 del ..\package\AzukiCompact.dll  2> NUL
 del ..\package\AzukiCompact.xml  2> NUL
-del ..\package\Test.pdb  2> NUL
-del ..\package\Test.exe  2> NUL
+del ..\package\AzukiTest.pdb  2> NUL
+del ..\package\AzukiTest.exe  2> NUL
 
 del ..\package\Azuki.exe  2> NUL
 del ..\package\Azuki.vshost.*  2> NUL
 del ..\package\Azuki.exe.log.txt  2> NUL
+del ..\package\AzukiTest.vshost.*  2> NUL
 
 endlocal
 echo.

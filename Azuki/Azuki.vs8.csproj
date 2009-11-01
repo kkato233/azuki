@@ -84,12 +84,6 @@
     <Compile Include="Highlighter\JavaHighlighter.cs" />
     <Compile Include="Highlighter\XmlHighlighter.cs" />
     <Compile Include="Highlighter\RubyHighlighter.cs" />
-    <Compile Include="Test\DocumentTest.cs" />
-    <Compile Include="Test\EditHistoryTest.cs" />
-    <Compile Include="Test\LineLogicTest.cs" />
-    <Compile Include="Test\SplitArrayTest.cs" />
-    <Compile Include="Test\TestDriver.cs" />
-    <Compile Include="Test\KeywordHighlighterTest.cs" />
     <Compile Include="View\ColorScheme.cs" />
     <Compile Include="View\DrawingOption.cs" />
     <Compile Include="View\HRulerIndicatorType.cs" />

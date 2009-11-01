@@ -3,11 +3,12 @@ setlocal
 
 set version=
 set sevenzip=a
+set msbuild_opt=-nologo -v:m -t:Build -clp:ForceNoAlign;ShowCommandLine
 
 :: test environment
-(nant 2>&1) > NUL
+(msbuild.exe 2>&1) > NUL
 if "%ERRORLEVEL%" == "9009" (
-	echo NAnt was not found in PATH.
+	echo msbuild.exe was not found in PATH.
 	goto ERROR
 )
 (7z 2>&1) > NUL
@@ -31,13 +32,13 @@ set /p version="Please input version string (ex: 1.2.0):"
 echo ========================================
 echo   [1/4] run tests
 echo ========================================
-nant -nologo -q test
+msbuild.exe AzukiTest.vs8.sln %msbuild_opt%
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
 
 pushd package
-test.exe
+AzukiTest.exe
 popd
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
@@ -48,14 +49,7 @@ echo.
 echo ========================================
 echo   [2/4] build assembly
 echo ========================================
-echo building FF version...
-nant -nologo -q build
-if not "%ERRORLEVEL%" == "0" (
-	goto ERROR
-)
-
-echo building CF version...
-nant -nologo -q cf
+msbuild.exe All.vs8.sln %msbuild_opt% -p:Configuration=Release
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )

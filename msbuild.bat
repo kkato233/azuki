@@ -2,8 +2,8 @@
 setlocal
 
 set _OPT=-nologo -v:m -t:Build
-set _OPT=%_OPT% -p:Configuration=Release -clp:ForceNoAlign
-set _OPT=%_OPT%;ShowCommandLine
+set _OPT=%_OPT% -p:Configuration=Release
+set _OPT=%_OPT% -clp:ForceNoAlign;ShowCommandLine
 set _SOLUTION_FILE=%~1
 
 if "%~1"=="" (

@@ -1,8 +1,9 @@
-﻿@echo off
+@echo off
 setlocal
 
 :: Sandcastle Help File Builder directory path
 set SHFB_DIR=%ProgramFiles%\Sandcastle Help File Builder
+if not "%ProgramFiles(x86)%" == "" set SHFB_DIR=%ProgramFiles(x86)%\Sandcastle Help File Builder
 
 :: set PATH
 set PATH_BACKUP=%PATH%

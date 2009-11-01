@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-10-21
+// update: 2009-11-01
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -201,6 +201,9 @@ namespace Sgry.Azuki
 
 			try
 			{
+				if( e.ByContentChanged )
+					return;
+
 				// invalidate indicator graphic on horizontal ruler
 				InvalidateHRuler( e.OldCaret );
 
@@ -278,7 +281,7 @@ namespace Sgry.Azuki
 				// so avoid crashing application
 				Invalidate();
 #				if DEBUG
-				throw new Exception( "INTERNAL ERROR", ex );
+				throw new Exception( "NON FATAL INTERNAL ERROR", ex );
 #				else
 				ex.GetHashCode(); // (suppressing warning)
 #				endif
@@ -459,6 +462,9 @@ namespace Sgry.Azuki
 			oldCaretPos = GetVirPosFromIndex( e.Index );
 			VirtualToScreen( ref oldCaretPos );
 
+			// invalidate indicator graphic on horizontal ruler
+			InvalidateHRuler( oldCaretPos );
+
 			// invalidate the part at right of the old selection
 			invalidRect1.X = oldCaretPos.X;
 			invalidRect1.Y = oldCaretPos.Y;
@@ -484,10 +490,8 @@ namespace Sgry.Azuki
 				Invalidate( invalidRect2 );
 			}
 
-			// invalidate indicator graphic on horizontal ruler
-			InvalidateHRuler( oldCaretPos );
-
-			base.HandleContentChanged( sender, e );
+			//DO_NOT//base.HandleContentChanged( sender, e );
+			DrawDirtBar( invalidRect1.Top, Document.GetLineIndexFromCharIndex(e.Index) );
 		}
 
 		/// <summary>
@@ -610,35 +614,41 @@ namespace Sgry.Azuki
 				Invalidate( lower );
 		}
 
-		void InvalidateHRuler( int oldCaretIndex )
+		protected void InvalidateHRuler( int oldCaretIndex )
 		{
 			Point oldCaretPos = GetVirPosFromIndex( oldCaretIndex );
 			VirtualToScreen( ref oldCaretPos );
 			InvalidateHRuler( oldCaretPos );
 		}
 
-		void InvalidateHRuler( Point oldCaretPos )
+		protected void InvalidateHRuler( Point oldCaretScreenPos )
 		{
 			Rectangle invalidRect_old;
 			Rectangle invalidRect_new;
-			Point newCaretPos;
+			Point newCaretScreenPos;
 
-			// invalidate indicator graphic on horizontal ruler
 			if( ShowsHRuler )
 			{
-				newCaretPos = GetVirPosFromIndex( Document.CaretIndex );
-				VirtualToScreen( ref newCaretPos );
+				// invalidate indicator graphic on horizontal ruler
+				newCaretScreenPos = GetVirPosFromIndex( Document.CaretIndex );
+				VirtualToScreen( ref newCaretScreenPos );
 
 				if( HRulerIndicatorType == HRulerIndicatorType.Position )
 				{
+					// if horizontal poisition of the caret not changed, do nothing
+					if( oldCaretScreenPos.X == newCaretScreenPos.X )
+					{
+						return;
+					}
+
 					// calculate indicator rectangle for old caret position
 					invalidRect_old = new Rectangle(
-							oldCaretPos.X, YofHRuler, 3, HRulerHeight
+							oldCaretScreenPos.X, YofHRuler, 3, HRulerHeight
 						);
 
 					// calculate indicator rectangle for new caret position
 					invalidRect_new = new Rectangle(
-							newCaretPos.X, YofHRuler, 3, HRulerHeight
+							newCaretScreenPos.X, YofHRuler, 3, HRulerHeight
 						);
 				}
 				else if( HRulerIndicatorType == HRulerIndicatorType.CharCount )
@@ -648,12 +658,23 @@ namespace Sgry.Azuki
 					int oldCaretColumnIndex, newCaretColumnIndex;
 					Point pos = new Point();
 
-					// calculate indicator rectangle for old caret position
-					virOldCaretPos = oldCaretPos;
+					// calculate old / new caret column index
+					virOldCaretPos = oldCaretScreenPos;
 					ScreenToVirtual( ref virOldCaretPos );
 					GetLineColumnIndexFromCharIndex(
 							GetIndexFromVirPos(virOldCaretPos), out dummy, out oldCaretColumnIndex
 						);
+					GetLineColumnIndexFromCharIndex(
+							Document.CaretIndex, out dummy, out newCaretColumnIndex
+						);
+
+					// if column index was not changed, do nothing
+					if( oldCaretColumnIndex == newCaretColumnIndex )
+					{
+						return;
+					}
+
+					// calculate indicator rectangle for old caret position
 					pos.X = oldCaretColumnIndex * HRulerUnitWidth;
 					VirtualToScreen( ref pos );
 					invalidRect_old = new Rectangle(
@@ -661,9 +682,6 @@ namespace Sgry.Azuki
 						);
 
 					// calculate indicator rectangle for new caret position
-					GetLineColumnIndexFromCharIndex(
-							Document.CaretIndex, out dummy, out newCaretColumnIndex
-						);
 					pos.X = newCaretColumnIndex * HRulerUnitWidth;
 					VirtualToScreen( ref pos );
 					invalidRect_new = new Rectangle(
@@ -674,13 +692,13 @@ namespace Sgry.Azuki
 				{
 					// calculate indicator rectangle for old caret position
 					invalidRect_old = new Rectangle(
-							oldCaretPos.X - HRulerUnitWidth, YofHRuler,
+							oldCaretScreenPos.X - HRulerUnitWidth, YofHRuler,
 							HRulerUnitWidth*2, HRulerHeight
 						);
 
 					// calculate indicator rectangle for new caret position
 					invalidRect_new = new Rectangle(
-							newCaretPos.X - HRulerUnitWidth, YofHRuler,
+							newCaretScreenPos.X - HRulerUnitWidth, YofHRuler,
 							HRulerUnitWidth*2, HRulerHeight
 						);
 				}
@@ -711,7 +729,7 @@ namespace Sgry.Azuki
 #			endif
 
 #			if DRAW_SLOWLY
-			_Gra.ForeColor = Color.Red;
+			_Gra.ForeColor = Color.Blue;
 			_Gra.DrawRectangle( clipRect.X, clipRect.Y, clipRect.Width-1, clipRect.Height-1 );
 			_Gra.DrawLine( clipRect.X, clipRect.Y, clipRect.X+clipRect.Width-1, clipRect.Y+clipRect.Height-1 );
 			_Gra.DrawLine( clipRect.X+clipRect.Width-1, clipRect.Y, clipRect.X, clipRect.Y+clipRect.Height-1 );
@@ -897,7 +915,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw line number
-			DrawLineNumber( pos.Y, lineIndex+1 );
+			DrawLineNumber( pos.Y, lineIndex+1, true );
 		}
 		#endregion
 	}

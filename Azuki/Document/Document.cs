@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-31
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Collections;
@@ -56,6 +56,64 @@ namespace Sgry.Azuki
 		};
 		#endregion
 
+		#region Init / Dispose
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public Document()
+		{
+			// initialize LHI
+			_LHI.Clear();
+			_LHI.Add( 0 );
+
+			// initialize LDS
+			_LDS.Clear();
+			_LDS.Add( 0 );
+		}
+		#endregion
+
+		#region States
+		/// <summary>
+		/// Gets or sets the flag that is true if there are any unsaved modifications.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Dirty flag is the flag that is true if there are any unsaved modifications.
+		/// Although any changes occured in Azuki sets this flag true automatically,
+		/// setting this flag back to false must be done by user manually.
+		/// Application is responsible to do so after saving content.
+		/// </para>
+		/// </remarks>
+		public bool IsDirty
+		{
+			get{ return _IsDirty; }
+			set
+			{
+				bool valueChanged = (_IsDirty != value);
+				
+				// apply value
+				_IsDirty = value;
+
+				// 'clean' up dirty state of modified lines
+				if( _IsDirty == false )
+				{
+					for( int i=0; i<_LDS.Count; i++ )
+					{
+						if( _LDS[i] == LineDirtyState.Dirty )
+						{
+							_LDS[i] = LineDirtyState.Cleaned;
+						}
+					}
+				}
+
+				// invoke event
+				if( valueChanged )
+				{
+					InvokeDirtyStateChanged();
+				}
+			}
+		}
+
 		/// <summary>
 		/// Gets dirty state of specified line.
 		/// </summary>
@@ -94,72 +152,16 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory method</seealso>
 		public LineDirtyState GetLineDirtyState( int lineIndex )
 		{
-			if( LineCount <= lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex" );
-
+			Debug.Assert( lineIndex <= _LDS.Count );
 			Debug.Assert( _LDS.Count == _LHI.Count );
-			Debug.Assert( lineIndex < _LDS.Count );
+			if( lineIndex < 0 || LineCount < lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex", "lineIndex param is "+lineIndex+" but must be positive and equal to or less than "+LineCount );
+
 			if( _LDS.Count <= lineIndex )
 			{
 				return LineDirtyState.Clean;
 			}
 			return _LDS[lineIndex];
-		}
-
-		#region Init / Dispose
-		/// <summary>
-		/// Creates a new instance.
-		/// </summary>
-		public Document()
-		{
-			// initialize LHI
-			_LHI.Clear();
-			_LHI.Add( 0 );
-
-			// initialize LDS
-			_LDS.Clear();
-			_LDS.Add( 0 );
-		}
-		#endregion
-
-		#region States
-		/// <summary>
-		/// Gets or sets the flag that is true if there are any unsaved modifications.
-		/// </summary>
-		/// <remarks>
-		/// Dirty flag is the flag that is true if there are any unsaved modifications.
-		/// Although any changes occured in Azuki sets this flag true automatically,
-		/// setting this flag back to false must be done manually
-		/// so application is responsible to do so after saving content.
-		/// </remarks>
-		public bool IsDirty
-		{
-			get{ return _IsDirty; }
-			set
-			{
-				bool valueChanged = (_IsDirty != value);
-				
-				// apply value
-				_IsDirty = value;
-
-				// 'clean' up dirty state of modified lines
-				if( _IsDirty == false )
-				{
-					for( int i=0; i<_LDS.Count; i++ )
-					{
-						if( _LDS[i] == LineDirtyState.Dirty )
-						{
-							_LDS[i] = LineDirtyState.Cleaned;
-						}
-					}
-				}
-
-				// invoke event
-				if( valueChanged )
-				{
-					InvokeDirtyStateChanged();
-				}
-			}
 		}
 
 		/// <summary>
@@ -357,7 +359,7 @@ namespace Sgry.Azuki
 				// so invoke event only if it is rectangle selection mode.
 				if( _RectSelectRanges != null )
 				{
-					InvokeSelectionChanged( AnchorIndex, CaretIndex, _RectSelectRanges );
+					InvokeSelectionChanged( AnchorIndex, CaretIndex, _RectSelectRanges, false );
 				}
 				return;
 			}
@@ -376,11 +378,11 @@ namespace Sgry.Azuki
 			// invoke event
 			if( oldRectSelectRanges != null )
 			{
-				InvokeSelectionChanged( oldAnchor, oldCaret, oldRectSelectRanges );
+				InvokeSelectionChanged( oldAnchor, oldCaret, oldRectSelectRanges, false );
 			}
 			else
 			{
-				InvokeSelectionChanged( oldAnchor, oldCaret, oldRectSelectRanges );
+				InvokeSelectionChanged( oldAnchor, oldCaret, oldRectSelectRanges, false );
 			}
 		}
 
@@ -800,7 +802,7 @@ namespace Sgry.Azuki
 			// cast event
 			IsDirty = true;
 			InvokeContentChanged( begin, oldText, text );
-			InvokeSelectionChanged( oldAnchor, oldCaret, null );
+			InvokeSelectionChanged( oldAnchor, oldCaret, null, true );
 		}
 		#endregion
 
@@ -1708,7 +1710,7 @@ namespace Sgry.Azuki
 		/// Occurs when the selection was changed.
 		/// </summary>
 		public event SelectionChangedEventHandler SelectionChanged;
-		void InvokeSelectionChanged( int oldAnchor, int oldCaret, int[] oldRectSelectRanges )
+		void InvokeSelectionChanged( int oldAnchor, int oldCaret, int[] oldRectSelectRanges, bool byContentChanged )
 		{
 #			if DEBUG
 			Debug.Assert( 0 <= oldAnchor );
@@ -1723,7 +1725,7 @@ namespace Sgry.Azuki
 			{
 				SelectionChanged(
 						this,
-						new SelectionChangedEventArgs(oldAnchor, oldCaret, oldRectSelectRanges)
+						new SelectionChangedEventArgs(oldAnchor, oldCaret, oldRectSelectRanges, byContentChanged)
 					);
 			}
 		}
@@ -1889,15 +1891,17 @@ namespace Sgry.Azuki
 		int _OldAnchor;
 		int _OldCaret;
 		int[] _OldRectSelectRanges;
+		bool _ByContentChanged;
 
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
-		public SelectionChangedEventArgs( int anchorIndex, int caretIndex, int[] oldRectSelectRanges )
+		public SelectionChangedEventArgs( int anchorIndex, int caretIndex, int[] oldRectSelectRanges, bool byContentChanged )
 		{
 			_OldAnchor = anchorIndex;
 			_OldCaret = caretIndex;
 			_OldRectSelectRanges = oldRectSelectRanges;
+			_ByContentChanged = byContentChanged;
 		}
 
 		/// <summary>
@@ -1922,6 +1926,14 @@ namespace Sgry.Azuki
 		public int[] OldRectSelectRanges
 		{
 			get{ return _OldRectSelectRanges; }
+		}
+
+		/// <summary>
+		/// This value will be true if this event has been occured because the document was modified.
+		/// </summary>
+		public bool ByContentChanged
+		{
+			get{ return _ByContentChanged; }
 		}
 	}
 

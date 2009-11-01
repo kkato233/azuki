@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-09-21
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Text;
@@ -71,8 +71,7 @@ namespace Sgry.Azuki
 			_HighlighterThread = null;
 
 			// uninstall document event handlers
-			Document.SelectionChanged -= Doc_SelectionChanged;
-			Document.ContentChanged -= Doc_ContentChanged;
+			UninstallDocumentEventHandlers( Document );
 
 			// dispose view
 			_View.Dispose();
@@ -94,16 +93,14 @@ namespace Sgry.Azuki
 				// uninstall event handlers
 				if( Document != null )
 				{
-					Document.SelectionChanged -= Doc_SelectionChanged;
-					Document.ContentChanged -= Doc_ContentChanged;
+					UninstallDocumentEventHandlers( Document );
 				}
 
 				// replace document
 				_Document = value;
 
 				// install event handlers
-				value.SelectionChanged += Doc_SelectionChanged;
-				value.ContentChanged += Doc_ContentChanged;
+				InstallDocumentEventHandlers( value );
 
 				// delegate to View
 				View.HandleDocumentChanged( prevDoc );
@@ -154,10 +151,8 @@ namespace Sgry.Azuki
 				// (AzukiControl's event handler MUST be called AFTER view's one)
 				if( Document != null )
 				{
-					Document.ContentChanged -= Doc_ContentChanged;
-					Document.ContentChanged += Doc_ContentChanged;
-					Document.SelectionChanged -= Doc_SelectionChanged;
-					Document.SelectionChanged += Doc_SelectionChanged;
+					UninstallDocumentEventHandlers( Document );
+					InstallDocumentEventHandlers( Document );
 				}
 
 				// tell new view object that the document object was changed
@@ -676,6 +671,20 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Event Handlers
+		void InstallDocumentEventHandlers( Document doc )
+		{
+			doc.SelectionChanged += Doc_SelectionChanged;
+			doc.ContentChanged += Doc_ContentChanged;
+			doc.DirtyStateChanged += Doc_DirtyStateChanged;
+		}
+
+		void UninstallDocumentEventHandlers( Document doc )
+		{
+			doc.SelectionChanged -= Doc_SelectionChanged;
+			doc.ContentChanged -= Doc_ContentChanged;
+			doc.DirtyStateChanged -= Doc_DirtyStateChanged;
+		}
+
 		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
 			// delegate to view object
@@ -685,7 +694,7 @@ namespace Sgry.Azuki
 			_UI.UpdateCaretGraphic();
 
 			// send event to component users
-			((Windows.AzukiControl)_UI).InvokeCaretMoved();
+			_UI.InvokeCaretMoved();
 		}
 
 		public void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
@@ -709,6 +718,14 @@ namespace Sgry.Azuki
 				_DirtyRangeEnd = e.Index + e.NewText.Length;
 			}
 			_ShouldBeHighlighted = true;
+		}
+
+		public void Doc_DirtyStateChanged( object sender, EventArgs e )
+		{
+			Document doc = (Document)sender;
+
+			// delegate to view object
+			View.HandleDirtyStateChanged( sender, e );
 		}
 		#endregion
 

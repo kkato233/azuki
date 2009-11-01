@@ -1,6 +1,7 @@
 == 1.5.0 (2009-  -  ) ==
- * add: rectangler selection by both mouse and keyboard
+ * add: rectangler selection feature by both mouse and keyboard
  * add: horizontal ruler can be used by AzukiControl.ShowsHRuler
+ * add: added AzukiControl.ShowsDirtBar property to display special area indicating whether each line is modified or not
  * add: now copied special (line, rectangle) text data can be paste in Visual Studio (and vice-versa)
  * add: added AzukiControl.UsesTabForIndent property
  * add: enhanced KeywordHighlighter; now keyword matching can be case insensitive (ignore case option)

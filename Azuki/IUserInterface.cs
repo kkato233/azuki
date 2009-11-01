@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2009-09-13
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Drawing;
@@ -532,6 +532,11 @@ namespace Sgry.Azuki
 		/// Occurs soon after the document's caret was moved.
 		/// </summary>
 		event EventHandler CaretMoved;
+
+		/// <summary>
+		/// Invokes CaretMoved event.
+		/// </summary>
+		void InvokeCaretMoved();
 		#endregion
 
 		#region Scroll

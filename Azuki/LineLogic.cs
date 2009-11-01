@@ -1,7 +1,7 @@
 // file: LineLogic.cs
 // brief: Logics to manipulate line/column in a string.
 // author: YAMAMOTO Suguru
-// update: 2009-10-31
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Collections;
@@ -343,6 +343,19 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
+		public static bool IsMultiLine( string text )
+		{
+			int lineHead = 0;
+
+			lineHead = NextLineHead( text, lineHead );
+			if( lineHead != -1 )
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		public static int CountLine( string text )
 		{
 			int count = 0;

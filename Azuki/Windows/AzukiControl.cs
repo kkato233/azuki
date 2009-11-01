@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-10-21
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1339,7 +1339,11 @@ namespace Sgry.Azuki.Windows
 		/// Occurs soon after the document's caret was moved.
 		/// </summary>
 		public event EventHandler CaretMoved;
-		internal void InvokeCaretMoved()
+
+		/// <summary>
+		/// Invokes CaretMoved event.
+		/// </summary>
+		public void InvokeCaretMoved()
 		{
 			if( CaretMoved != null )
 			{

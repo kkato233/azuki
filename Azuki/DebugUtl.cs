@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-10-25
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.IO;
@@ -64,13 +64,16 @@ namespace Sgry
 		/// <summary>
 		/// Gets system performance counter value in millisecond.
 		/// </summary>
-		public static double GetCounterMsec()
+		public static double PC
 		{
-			long count;
-			long freq;
-			QueryPerformanceCounter( out count );
-			QueryPerformanceFrequency( out freq );
-			return count / (double)freq * 1000;
+			get
+			{
+				long count;
+				long freq;
+				QueryPerformanceCounter( out count );
+				QueryPerformanceFrequency( out freq );
+				return count / (double)freq * 1000;
+			}
 		}
 
 		[DllImport(kernel32_dll)]
@@ -121,7 +124,7 @@ namespace Sgry
 #		if !PocketPC
 		public const string LogDateHeader = "[yyyy-MM-dd hh:mm:ss.fff] ";
 #		else
-		public const string LogDateHeader = "mm.ss ";
+		public const string LogDateHeader = "hh:mm:ss ";
 #		endif
 		#endregion
 
@@ -178,7 +181,14 @@ namespace Sgry
 		public TextWriter SecondOutput
 		{
 			get{ return _SecondOutput; }
-			set{ _SecondOutput = value; }
+			set
+			{
+				if( value == null )
+				{
+					value = TextWriter.Null;
+				}
+				_SecondOutput = value;
+			}
 		}
 
 		/// <summary>
@@ -373,7 +383,7 @@ namespace Sgry
 		public void WriteLineI( string format, params object[] p )
 		{
 			WriteLine( format, p );
-			_IndentStr.Append( "  " );
+			Indent();
 		}
 
 		/// <summary>
@@ -381,8 +391,24 @@ namespace Sgry
 		/// </summary>
 		public void WriteLineU( string format, params object[] p )
 		{
-			_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
+			Unindent();
 			WriteLine( format, p );
+		}
+
+		/// <summary>
+		/// Increases indentation of log message.
+		/// </summary>
+		public void Indent()
+		{
+			_IndentStr.Append( "  " );
+		}
+
+		/// <summary>
+		/// Decreases indentation of log message.
+		/// </summary>
+		public void Unindent()
+		{
+			_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
 		}
 		#endregion
 	}

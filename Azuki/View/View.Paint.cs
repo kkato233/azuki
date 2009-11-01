@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-10-25
+// update: 2009-11-01
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -184,47 +184,76 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Draws dirt bar.
+		/// </summary>
+		protected void DrawDirtBar( int lineTopY, int logicalLineIndex )
+		{
+			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0 );
+			LineDirtyState dirtyState;
+
+			dirtyState = Document.GetLineDirtyState( logicalLineIndex );
+			if( dirtyState == LineDirtyState.Cleaned )
+			{
+				_Gra.BackColor = ColorScheme.CleanedLineBar;
+			}
+			else if( dirtyState == LineDirtyState.Dirty )
+			{
+				_Gra.BackColor = ColorScheme.DirtyLineBar;
+			}
+			else
+			{
+				_Gra.BackColor = ColorScheme.LineNumberBack;
+			}
+			_Gra.FillRectangle( XofDirtBar, lineTopY, DirtBarWidth, LineSpacing );
+		}
+
+		/// <summary>
 		/// Draws line number area at specified line.
 		/// </summary>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
-		/// <param name="lineNumber">line number to be drawn or minus value if you want to draw only background.</param>
-		protected void DrawLineNumber( int lineTopY, int lineNumber )
+		/// <param name="lineNumber">line number to be drawn.</param>
+		/// <param name="drawsText">specify true if line number text should be drawn.</param>
+		protected void DrawLineNumber( int lineTopY, int lineNumber, bool drawsText )
 		{
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( XofLineNumberArea, lineTopY );
 			
 			// fill line number area
-			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
+			if( ShowLineNumber )
+			{
+				_Gra.BackColor = ColorScheme.LineNumberBack;
+				_Gra.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
+			}
+
+			// fill dirt bar
+			if( ShowsDirtBar )
+			{
+				DrawDirtBar( lineTopY, lineNumber-1 );
+			}
 			
 			// fill left margin area
-			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
-if( Document.GetLineDirtyState(lineNumber-1) != LineDirtyState.Clean )
-{
-string todo=@"仮実装。
-・コンテンツ変更時の描画更新方法
-・そもそものグラフィック表示の方法";
-	if( Document.GetLineDirtyState(lineNumber-1) == LineDirtyState.Dirty )
-		_Gra.BackColor = Color.Red;
-	else
-		_Gra.BackColor = Color.Green;
-	_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
-}
+			if( 0 < LeftMargin )
+			{
+				_Gra.BackColor = ColorScheme.BackColor;
+				_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
+			}
 			
 			// draw line number text
-			if( 0 < lineNumber )
+			if( ShowLineNumber && drawsText )
 			{
 				string lineNumText = lineNumber.ToString();
-				pos.X = XofLeftMargin - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
+				pos.X = XofDirtBar - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
 				_Gra.ForeColor = ColorScheme.LineNumberFore;
 				_Gra.DrawText( lineNumText, ref pos, ColorScheme.LineNumberFore );
 			}
 
 			// draw margin line between the line number area and text area
-			pos.X = XofLeftMargin - 1;
-			_Gra.ForeColor = ColorScheme.LineNumberFore;
-			_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing+1 );
+			if( ShowLineNumber || ShowsDirtBar )
+			{
+				pos.X = XofLeftMargin - 1;
+				_Gra.ForeColor = ColorScheme.LineNumberFore;
+				_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing );
+			}
 		}
 
 		/// <summary>
@@ -251,7 +280,7 @@ string todo=@"仮実装。
 			// calculate first line to be drawn
 			leftMostRulerIndex = ScrollPosX / HRulerUnitWidth;
 			leftMostLineX = XofTextArea + (leftMostRulerIndex * HRulerUnitWidth) - ScrollPosX;
-			if( leftMostLineX < XofTextArea )
+			while( leftMostLineX < clipRect.Left )
 			{
 				leftMostRulerIndex++;
 				leftMostLineX += HRulerUnitWidth;
@@ -261,7 +290,7 @@ string todo=@"仮実装。
 			_Gra.FontInfo = _HRulerFont;
 			lineX = leftMostLineX;
 			rulerIndex = leftMostRulerIndex;
-			while( lineX < VisibleSize.Width + TabWidthInPx )
+			while( lineX < clipRect.Right )
 			{
 				// draw ruler line
 				if( (rulerIndex % 10) == 0 )
@@ -271,7 +300,7 @@ string todo=@"仮実装。
 
 					// draw column text
 					columnNumberText = (rulerIndex / 10).ToString();
-					pos.X = lineX - _Gra.MeasureText( columnNumberText ).Width;
+					pos.X = lineX;
 					_Gra.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
 				}
 				else if( (rulerIndex % 5) == 0 )
@@ -293,7 +322,7 @@ string todo=@"仮実装。
 
 			// draw bottom border line
 			_Gra.DrawLine(
-					XofLeftMargin, YofHRuler + HRulerHeight - 1,
+					XofLeftMargin-1, YofHRuler + HRulerHeight - 1,
 					VisibleSize.Width, YofHRuler + HRulerHeight - 1
 				);
 
@@ -335,7 +364,10 @@ string todo=@"仮実装。
 		{
 			// fill area above the line-number area [copied from DrawLineNumber]
 			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( XofLineNumberArea, YofTopMargin, _LineNumAreaWidth, TopMargin );
+			_Gra.FillRectangle(
+					XofLineNumberArea, YofTopMargin,
+					XofTextArea-XofLineNumberArea, TopMargin
+				);
 			
 			// fill left margin area [copied from DrawLineNumber]
 			_Gra.BackColor = ColorScheme.BackColor;

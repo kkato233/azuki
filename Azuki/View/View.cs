@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-10-25
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Sgry.Azuki
 		const int DefaultTabWidth = 8;
 		const int MinimumFontSize = 1;
 		const int LineNumberAreaPadding = 2;
-		static readonly int[] _LineNumberSamples = new int[]{
+		static readonly int[] _LineNumberSamples = new int[] {
 			9999,
 			99999,
 			999999,
@@ -45,6 +45,7 @@ namespace Sgry.Azuki
 		int _TabWidthInPx;
 		int _LCharWidth;
 		int _XCharWidth;
+		int _DirtBarWidth;
 		int _HRulerHeight;	// height of the largest lines of the horizontal ruler
 		int _HRulerY_5;		// height of the middle lines of the horizontal ruler
 		int _HRulerY_1;		// height of the smallest lines of the horizontal ruler
@@ -61,7 +62,8 @@ namespace Sgry.Azuki
 			| DrawingOption.DrawsFullWidthSpace
 			| DrawingOption.DrawsEol
 			| DrawingOption.HighlightCurrentLine
-			| DrawingOption.ShowsLineNumber;
+			| DrawingOption.ShowsLineNumber
+			| DrawingOption.ShowsDirtBar;
 		#endregion
 
 		#region Init / Dispose
@@ -88,6 +90,7 @@ namespace Sgry.Azuki
 			// inherit other parameters
 			this._ColorScheme = other._ColorScheme;
 			this._DrawingOption = other._DrawingOption;
+			//DO_NOT//this._DirtBarWidth = other._DirtBarWidth;
 			//DO_NOT//this._Gra = other._Gra;
 			//DO_NOT//this._HRulerFont = other._HRulerFont;
 			//DO_NOT//this._LCharWidth = other._LCharWidth;
@@ -180,7 +183,7 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value == null )
-					throw new ArgumentNullException( "View.Font was set to null." );
+					throw new ArgumentNullException( "View.FontInfo was set to null." );
 
 				// apply font
 				_Font = value;
@@ -222,6 +225,7 @@ namespace Sgry.Azuki
 			}
 			_LineNumAreaWidth
 				= _Gra.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + _SpaceWidth;
+			_DirtBarWidth = Math.Max( 3, _SpaceWidth >> 1 );
 
 			// update metrics related with horizontal ruler
 			_HRulerHeight = (int)( _LineHeight / GoldenRatio ) + 2;
@@ -343,6 +347,30 @@ namespace Sgry.Azuki
 					DrawingOption |= DrawingOption.ShowsHRuler;
 				else
 					DrawingOption &= ~DrawingOption.ShowsHRuler;
+
+				_UI.UpdateCaretGraphic();
+				Invalidate();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show 'dirt bar' or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets whether to show 'dirt bar' or not.
+		/// The 'dirt bar'
+		/// </para>
+		/// </remarks>
+		public bool ShowsDirtBar
+		{
+			get{ return (DrawingOption & DrawingOption.ShowsDirtBar) != 0; }
+			set
+			{
+				if( value )
+					DrawingOption |= DrawingOption.ShowsDirtBar;
+				else
+					DrawingOption &= ~DrawingOption.ShowsDirtBar;
 
 				_UI.UpdateCaretGraphic();
 				Invalidate();
@@ -553,6 +581,20 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets width of the dirt bar in pixel.
+		/// </summary>
+		public int DirtBarWidth
+		{
+			get
+			{
+				if( ShowsDirtBar )
+					return _DirtBarWidth;
+				else
+					return 0;
+			}
+		}
+
+		/// <summary>
 		/// Gets height of the horizontal ruler.
 		/// </summary>
 		public int HRulerHeight
@@ -631,6 +673,15 @@ namespace Sgry.Azuki
 		{
 			pt.X = (pt.X - ScrollPosX) + XofTextArea;
 			pt.Y = (pt.Y - FirstVisibleLine * LineSpacing) + YofTextArea;
+		}
+
+		/// <summary>
+		/// Converts a coordinate in virtual space to a coordinate in client area.
+		/// </summary>
+		public void VirtualToScreen( ref Rectangle rect )
+		{
+			rect.X = (rect.X - ScrollPosX) + XofTextArea;
+			rect.Y = (rect.Y - FirstVisibleLine * LineSpacing) + YofTextArea;
 		}
 
 		/// <summary>
@@ -1047,6 +1098,23 @@ namespace Sgry.Azuki
 		internal abstract void HandleSelectionChanged( object sender, SelectionChangedEventArgs e );
 
 		/// <summary>
+		/// This method will be called when the 'dirty' state of document was changed.
+		/// </summary>
+		internal virtual void HandleDirtyStateChanged( object sender, EventArgs e )
+		{
+			// if dirty flag has been cleared, redraw entire dirt bar
+			if( Document.IsDirty == false )
+			{
+				Rectangle rect = new Rectangle();
+				rect.X = XofDirtBar;
+				rect.Y = YofTextArea;
+				rect.Width = DirtBarWidth;
+				rect.Height = VisibleSize.Height;
+				Invalidate( rect );
+			}
+		}
+
+		/// <summary>
 		/// This method will be called when the content was changed.
 		/// </summary>
 		internal virtual void HandleContentChanged( object sender, ContentChangedEventArgs e )
@@ -1084,14 +1152,33 @@ namespace Sgry.Azuki
 			get{ return 0; }
 		}
 
-		internal int XofLeftMargin
+		internal int XofDirtBar
 		{
 			get{ return XofLineNumberArea + LineNumAreaWidth; }
 		}
 
+		internal int XofLeftMargin
+		{
+			get
+			{
+				int value = XofDirtBar + DirtBarWidth;
+				if( 0 < value )
+					return value + 1;
+				else
+					return value;
+			}
+		}
+
 		internal int XofTextArea
 		{
-			get{ return XofLeftMargin + LeftMargin; }
+			get
+			{
+				int value = XofLeftMargin + LeftMargin;
+				if( LeftMargin <= 0 )
+					return value + 1;
+				else
+					return value;
+			}
 		}
 
 		internal int YofHRuler

@@ -1,6 +1,7 @@
 == 1.5.0 (2009-  -  ) ==
  * add: 矩形（箱形）選択が可能に（マウス、キーボードのどちらでも）
- * add: AzukiControl.ShowsHRuler で水平ルーラーを表示可能に
+ * add: 水平ルーラーを AzukiControl.ShowsHRuler で表示可能に
+ * add: 変更行かどうかを表す領域を AzukiControl.ShowsDirtBar プロパティで表示可能に
  * add: 特殊（行、矩形）な形式でコピーしたデータを Visual Studio にペースト可能に（逆も可能に）
  * add: AzukiControl.UsesTabForIndent プロパティを追加
  * add: KeywordHighlighter で大文字小文字の区別なしでのマッチングを可能に

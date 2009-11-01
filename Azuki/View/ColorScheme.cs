@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2009-10-21
+// update: 2009-11-01
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -86,9 +86,11 @@ namespace Sgry.Azuki
 		void SetDefault()
 		{
 			Color bgcolor = Color.FromArgb( 0xff, 0xfa, 0xf0 );
-			Color azuki = Color.FromArgb( 0x92, 0x62, 0x57 ); // azuki iro
+			Color azuki = Color.FromArgb( 0x92, 0x62, 0x57 ); // azuki iro (japanese)
 			Color shin_bashi = Color.FromArgb( 0x74, 0xa9, 0xd6 ); // shin-bashi iro (japanese)
 			Color hana_asagi = Color.FromArgb( 0x1b, 0x77, 0x92 ); // hana-asagi iro (japanese)
+			Color waka_midori = Color.FromArgb( 0xa8, 0xef, 0xaf ); // waka-midori iro (japanese)
+			Color himawari = Color.FromArgb( 0xff, 0xf1, 0x0f ); // himawari iro (japanese)
 			Color sax_blue = Color.FromArgb( 0x46, 0x48, 0xb8 );
 			
 			SetColor( CharClass.Normal, Color.Black, bgcolor );
@@ -133,6 +135,8 @@ namespace Sgry.Azuki
 			this.HighlightColor = azuki;
 			this.LineNumberFore = hana_asagi;
 			this.LineNumberBack = Color.FromArgb( 0xef, 0xef, 0xff );
+			this.DirtyLineBar = himawari;
+			this.CleanedLineBar = waka_midori;
 		}
 		#endregion
 
@@ -194,6 +198,16 @@ namespace Sgry.Azuki
 		/// Background color of the line number text.
 		/// </summary>
 		public Color LineNumberBack;
+
+		/// <summary>
+		/// Color of the dirt bar at left of a modified line.
+		/// </summary>
+		public Color DirtyLineBar;
+
+		/// <summary>
+		/// Color of the dirt bar at left of a modified but saved (cleaned) line.
+		/// </summary>
+		public Color CleanedLineBar;
 		#endregion
 	}
 }

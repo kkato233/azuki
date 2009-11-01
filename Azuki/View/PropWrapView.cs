@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-10-21
+// update: 2009-11-01
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -271,8 +271,9 @@ namespace Sgry.Azuki
 		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Document doc = base.Document;
+			bool isMultiLine;
 			int prevLineCount;
-			Point oldCaretPos;
+			Point oldCaretVirPos, oldCaretScreenPos;
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
 
@@ -292,17 +293,23 @@ namespace Sgry.Azuki
 #			endif
 
 			// get position of the word replacement occured
-			oldCaretPos = GetVirPosFromIndex( e.Index );
+			oldCaretVirPos = GetVirPosFromIndex( e.Index );
+
+			// invalidate indicator graphic on horizontal ruler
+			oldCaretScreenPos = oldCaretVirPos;
+			VirtualToScreen( ref oldCaretScreenPos );
+			InvalidateHRuler( oldCaretScreenPos );
 
 			// invalidate the part at right of the old selection
-			invalidRect1.X = oldCaretPos.X -(ScrollPosX - XofTextArea);
-			invalidRect1.Y = oldCaretPos.Y -(FirstVisibleLine * LineSpacing);
+			invalidRect1.X = oldCaretVirPos.X;
+			invalidRect1.Y = oldCaretVirPos.Y;
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
 
 			// invalidate all lines below caret
 			// if old text or new text contains multiple lines
-			if( prevLineCount != PLHI.Count || 1 < LineLogic.CountLine(e.NewText) )
+			isMultiLine = LineLogic.IsMultiLine( e.NewText );
+			if( prevLineCount != PLHI.Count || isMultiLine )
 			{
 				//NO_NEED//invalidRect2.X = 0;
 				invalidRect2.Y = invalidRect1.Bottom;
@@ -323,20 +330,40 @@ namespace Sgry.Azuki
 				logLineEndPos = GetVirPosFromIndex( logLineEnd );
 
 				// make a rectangle that covers the logical line area
-				invalidRect2.X = 0;
+				//NO_NEED//invalidRect2.X = 0;
 				invalidRect2.Y = invalidRect1.Bottom;
 				invalidRect2.Width = VisibleSize.Width;
-				invalidRect2.Height = logLineEndPos.Y + LineSpacing - invalidRect2.Top;
+				invalidRect2.Height = (logLineEndPos.Y + LineSpacing) - invalidRect2.Top;
 			}
 
 			// invalidate the range
+			VirtualToScreen( ref invalidRect1 );
+			invalidRect2.Y += YofTextArea;
 			Invalidate( invalidRect1 );
 			if( 0 < invalidRect2.Height )
 			{
+				//--- multiple logical lines are affected ---
 				Invalidate( invalidRect2 );
 			}
+			else
+			{
+				//--- only one logical line is affected ---
+				// update dirt bar
+				int y;
+				int logLineIndex = Document.GetLineIndexFromCharIndex( e.Index );
+				int logLineHeadIndex = Document.GetLineHeadIndex( logLineIndex );
+				int topY = this.GetVirPosFromIndex( logLineHeadIndex ).Y;
+				topY += YofTextArea;
+				int bottomY = Math.Max( invalidRect1.Bottom, invalidRect2.Bottom );
 
-			base.HandleContentChanged( sender, e );
+				// overdraw dirt bar
+				for( y=topY; y<bottomY; y+=LineSpacing )
+				{
+					DrawDirtBar( y, logLineIndex );
+				}
+			}
+
+			//DO_NOT//base.HandleContentChanged( sender, e );
 		}
 		#endregion
 
@@ -564,7 +591,7 @@ namespace Sgry.Azuki
 #			endif
 
 #			if DRAW_SLOWLY
-			_Gra.ForeColor = Color.Red;
+			_Gra.ForeColor = Color.Fuchsia;
 			_Gra.DrawRectangle( clipRect.X, clipRect.Y, clipRect.Width-1, clipRect.Height-1 );
 			_Gra.DrawLine( clipRect.X, clipRect.Y, clipRect.X+clipRect.Width-1, clipRect.Y+clipRect.Height-1 );
 			_Gra.DrawLine( clipRect.X+clipRect.Width-1, clipRect.Y, clipRect.X, clipRect.Y+clipRect.Height-1 );
@@ -645,23 +672,23 @@ namespace Sgry.Azuki
 				// given clip rect covers line number area.
 				// redraw line nubmer and shrink clip rect
 				// to avoid overwriting line number by text content
+				bool drawsText;
+				int logicalLineIndex;
 
-				// get logical line index from given given line head index
-				int logLineIndex;
-				int lineNumber;
-				logLineIndex = Document.GetLineIndexFromCharIndex( lineHead );
-				if( Document.GetLineHeadIndex(logLineIndex) == lineHead )
+				// get logical line index from given line head index
+				logicalLineIndex = Document.GetLineIndexFromCharIndex( lineHead );
+				if( Document.GetLineHeadIndex(logicalLineIndex) == lineHead )
 				{
-					lineNumber = logLineIndex + 1;
+					drawsText = true;
 				}
 				else
 				{
 					// physical line head index is different from logical line head index.
-					// this means this physical line was a wrapped line so do not draw foregorund.
-					lineNumber = -1;
+					// this means this physical line was a wrapped line so do not draw foregorund text.
+					drawsText = false;
 				}
 
-				DrawLineNumber( pos.Y, lineNumber );
+				DrawLineNumber( pos.Y, logicalLineIndex+1, drawsText );
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}

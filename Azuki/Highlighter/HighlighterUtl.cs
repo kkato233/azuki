@@ -213,7 +213,7 @@ namespace Sgry.Azuki.Highlighter
 			if( pair.closer == null )
 			{
 				// if closer is not specified, the line end is the end position
-				return lineEndIndex;
+				return Math.Min( lineEndIndex, endIndex );
 			}
 
 			// find closer

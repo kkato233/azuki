@@ -1,7 +1,7 @@
 ﻿// file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2009-10-17
+// update: 2009-10-31
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace Sgry.Azuki.Highlighter
 	class XmlHighlighter : IHighlighter
 	{
 		#region Fields
-		static readonly string DefaultWordCharSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+		static readonly string DefaultWordCharSet = null;
 		List<Enclosure> _Enclosures = new List<Enclosure>();
 		#endregion
 
@@ -74,6 +74,12 @@ namespace Sgry.Azuki.Highlighter
 
 			char nextCh;
 			int index, nextIndex;
+
+			// if there are no characters to be highlighted, do nothing
+			if( dirtyBegin == doc.Length )
+			{
+				return;
+			}
 
 			// get index to start highlighting
 			dirtyBegin = HighlighterUtl.FindLast( doc, "<", dirtyBegin );
@@ -235,6 +241,7 @@ namespace Sgry.Azuki.Highlighter
 		{
 			Enclosure pair;
 			int closePos;
+			int highlightEndIndex;
 
 			// get pair which begins from this position
 			pair = HighlighterUtl.StartsWith( doc, pairs, startIndex );
@@ -259,10 +266,17 @@ namespace Sgry.Azuki.Highlighter
 				return startIndex;
 			}
 
-			// highlight enclosed part
-			for( int i = 0; i < closePos + pair.closer.Length - startIndex; i++ )
+			// calculate end index of the enclosed part
+			highlightEndIndex = Math.Min( endIndex, closePos + pair.closer.Length );
+			if( doc.Length <= highlightEndIndex )
 			{
-				doc.SetCharClass( startIndex+i, pair.klass );
+				highlightEndIndex = doc.Length - 1;
+			}
+
+			// highlight enclosed part
+			for( int i=startIndex; i<highlightEndIndex; i++ )
+			{
+				doc.SetCharClass( i, pair.klass );
 			}
 			return closePos + pair.closer.Length;
 		}

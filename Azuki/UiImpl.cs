@@ -34,7 +34,7 @@ namespace Sgry.Azuki
 		AutoIndentHook _AutoIndentHook = null;
 		char _FirstSurrogateChar = '\0';
 		bool _IsOverwriteMode = false;
-		bool _UsesTabForIndent = false;
+		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
 
 		Point _MouseDownVirPos = new Point( -1, 0 ); // this X coordinate also be used as a flag to determine whether the mouse button is down or not
@@ -337,7 +337,7 @@ namespace Sgry.Azuki
 				{
 					str = doc.EolCode;
 				}
-				else if( ch == '\t' && _UsesTabForIndent )
+				else if( ch == '\t' && _UsesTabForIndent == false )
 				{
 					StringBuilder buf = new StringBuilder( 32 );
 					Point caretPos;

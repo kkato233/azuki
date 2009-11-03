@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2009-11-03
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -20,6 +20,7 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public abstract void Paint( Rectangle clipRect );
 
+		#region Drawing graphical units of view
 		/// <summary>
 		/// Paints a token including special characters.
 		/// </summary>
@@ -265,17 +266,27 @@ namespace Sgry.Azuki
 			string columnNumberText;
 			int lineX, rulerIndex;
 			int leftMostLineX, leftMostRulerIndex;
-			Rectangle subClipRect = clipRect;
+			int indexDiff;
 
 			if( ShowsHRuler == false || YofTopMargin < clipRect.Y )
 				return;
 
-			_Gra.SetClipRect( subClipRect );
+			_Gra.SetClipRect( clipRect );
 
 			// fill ruler area
 			_Gra.ForeColor = ColorScheme.LineNumberFore;
 			_Gra.BackColor = ColorScheme.LineNumberBack;
 			_Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
+
+			// if clipping rectangle covers left of text area,
+			// reset clipping rect that does not covers left of text area
+			if( clipRect.X < XofLeftMargin )
+			{
+				clipRect.Width -= XofLeftMargin - clipRect.X;
+				clipRect.X = XofLeftMargin;
+				_Gra.RemoveClipRect();
+				_Gra.SetClipRect( clipRect );
+			}
 
 			// calculate first line to be drawn
 			leftMostRulerIndex = ScrollPosX / HRulerUnitWidth;
@@ -284,6 +295,14 @@ namespace Sgry.Azuki
 			{
 				leftMostRulerIndex++;
 				leftMostLineX += HRulerUnitWidth;
+			}
+
+			// align first line index to largest multiple of 10 to ensure number text will not be cut off
+			indexDiff = (leftMostRulerIndex % 10);
+			if( 1 <= indexDiff && indexDiff <= 5 )
+			{
+				leftMostRulerIndex -= indexDiff;
+				leftMostLineX -= indexDiff * HRulerUnitWidth;
 			}
 
 			// draw lines on the ruler
@@ -330,28 +349,71 @@ namespace Sgry.Azuki
 			_Gra.BackColor = ColorScheme.ForeColor;
 			if( HRulerIndicatorType == HRulerIndicatorType.Position )
 			{
+				int indicatorWidth = 2;
+
+				// calculate indicator region
 				Point caretPos = GetVirPosFromIndex( Document.CaretIndex );
 				VirtualToScreen( ref caretPos );
-				_Gra.FillRectangle( caretPos.X, YofHRuler, 2, HRulerHeight );
+				if( caretPos.X < XofTextArea )
+				{
+					indicatorWidth -= XofTextArea - caretPos.X;
+					caretPos.X = XofTextArea;
+				}
+
+				// draw indicator
+				if( 0 < indicatorWidth )
+				{
+					_Gra.FillRectangle( caretPos.X, YofHRuler, indicatorWidth, HRulerHeight );
+				}
+
+				// remember lastly drawn ruler bar position
+				Document.ViewParam.PrevHRulerVirX = caretPos.X - XofTextArea + ScrollPosX;
 			}
 			else if( HRulerIndicatorType == HRulerIndicatorType.CharCount )
 			{
-				int indicatorX;
+				int indicatorX, indicatorWidth;
 				int caretLineIndex, caretColumnIndex;
 
+				// calculate indicator region
 				GetLineColumnIndexFromCharIndex( Document.CaretIndex, out caretLineIndex, out caretColumnIndex );
+				indicatorWidth = HRulerUnitWidth - 1;
 				indicatorX = leftMostLineX + (caretColumnIndex - leftMostRulerIndex) * HRulerUnitWidth;
-				_Gra.FillRectangle(
-						indicatorX + 1, YofHRuler,
-						HRulerUnitWidth-1, HRulerHeight
-					);
+				if( indicatorX < XofTextArea )
+				{
+					indicatorWidth -= XofTextArea - indicatorX;
+					indicatorX = XofTextArea;
+				}
+				
+				// draw indicator
+				if( 0 < indicatorWidth )
+				{
+					_Gra.FillRectangle( indicatorX+1, YofHRuler, indicatorWidth, HRulerHeight-1 );
+				}
+
+				// remember lastly filled ruler segmentr position
+				Document.ViewParam.PrevHRulerVirX = indicatorX - XofTextArea + ScrollPosX;
 			}
 			else// if( HRulerIndicatorType == HRulerIndicatorType.Segment )
 			{
+				// calculate indicator region
+				int indicatorWidth = HRulerUnitWidth - 1;
 				Point indicatorPos = GetVirPosFromIndex( Document.CaretIndex );
 				indicatorPos.X -= (indicatorPos.X % HRulerUnitWidth);
 				VirtualToScreen( ref indicatorPos );
-				_Gra.FillRectangle( indicatorPos.X+1, YofHRuler, HRulerUnitWidth-1, HRulerHeight );
+				if( indicatorPos.X < XofTextArea )
+				{
+					indicatorWidth -= XofTextArea - indicatorPos.X;
+					indicatorPos.X = XofTextArea;
+				}
+
+				// draw indicator
+				if( 0 < indicatorWidth )
+				{
+					_Gra.FillRectangle( indicatorPos.X+1, YofHRuler, indicatorWidth, HRulerHeight-1 );
+				}
+
+				// remember lastly filled ruler segmentr position
+				Document.ViewParam.PrevHRulerVirX = indicatorPos.X - XofTextArea + ScrollPosX;
 			}
 
 			_Gra.RemoveClipRect();
@@ -408,7 +470,113 @@ namespace Sgry.Azuki
 				pos.X += width;
 			}
 		}
+		#endregion
 
+		#region Special updating logic
+		protected void UpdateHRuler()
+		{
+			if( ShowsHRuler == false )
+				return;
+
+			Rectangle updateRect_old;
+			Rectangle udpateRect_new;
+
+			if( HRulerIndicatorType == HRulerIndicatorType.Position )
+			{
+				// get virtual position of the new caret
+				Point newCaretScreenPos = GetVirPosFromIndex( Document.CaretIndex );
+				VirtualToScreen( ref newCaretScreenPos );
+
+				// get previous screen position of the caret
+				int oldCaretX = Document.ViewParam.PrevHRulerVirX + XofTextArea - ScrollPosX;
+				if( oldCaretX == newCaretScreenPos.X )
+				{
+					return; // horizontal poisition of the caret not changed
+				}
+
+				// calculate indicator rectangle for old caret position
+				updateRect_old = new Rectangle(
+						oldCaretX, YofHRuler, 2, HRulerHeight
+					);
+
+				// calculate indicator rectangle for new caret position
+				udpateRect_new = new Rectangle(
+						newCaretScreenPos.X, YofHRuler, 2, HRulerHeight
+					);
+			}
+			else if( HRulerIndicatorType == HRulerIndicatorType.CharCount )
+			{
+				int dummy;
+				int newCaretColumnIndex;
+				int oldSegmentX, newSegmentX;
+
+				// calculate new segment of horizontal ruler
+				GetLineColumnIndexFromCharIndex(
+						Document.CaretIndex, out dummy, out newCaretColumnIndex
+					);
+				newSegmentX = (newCaretColumnIndex * HRulerUnitWidth) + XofTextArea - ScrollPosX;
+
+				// calculate previous segment of horizontal ruler
+				oldSegmentX = Document.ViewParam.PrevHRulerVirX + XofTextArea - ScrollPosX;
+				if( oldSegmentX == newSegmentX )
+				{
+					return; // horizontal poisition of the caret not changed
+				}
+
+				// calculate indicator rectangle for old caret position
+				updateRect_old = new Rectangle(
+						oldSegmentX, YofHRuler, HRulerUnitWidth, HRulerHeight
+					);
+
+				// calculate indicator rectangle for new caret position
+				udpateRect_new = new Rectangle(
+						newSegmentX, YofHRuler, HRulerUnitWidth, HRulerHeight
+					);
+			}
+			else// if( HRulerIndicatorType == HRulerIndicatorType.Segment )
+			{
+				int oldSegmentX, newSegmentX;
+
+				// get virtual position of the new caret
+				Point newCaretScreenPos = GetVirPosFromIndex( Document.CaretIndex );
+				VirtualToScreen( ref newCaretScreenPos );
+
+				// calculate new segment of horizontal rulse
+				int leftMostRulerIndex = ScrollPosX / HRulerUnitWidth;
+				int leftMostLineX = XofTextArea + (leftMostRulerIndex * HRulerUnitWidth) - ScrollPosX;
+				newSegmentX = leftMostLineX;
+				while( newSegmentX+HRulerUnitWidth <= newCaretScreenPos.X )
+				{
+					newSegmentX += HRulerUnitWidth;
+				}
+
+				// calculate previous segment of horizontal ruler
+				oldSegmentX = Document.ViewParam.PrevHRulerVirX + XofTextArea - ScrollPosX;
+				if( oldSegmentX == newSegmentX )
+				{
+					return; // segment was not changed
+				}
+
+				// calculate invalid rectangle
+				updateRect_old = new Rectangle(
+						oldSegmentX, YofHRuler, HRulerUnitWidth, HRulerHeight
+					);
+				udpateRect_new = new Rectangle(
+						newSegmentX, YofHRuler, HRulerUnitWidth, HRulerHeight
+					);
+			}
+
+			// not invalidate but DRAW old and new indicator here
+			// (because all invalid rectangles will be combined,
+			// invalidating area in horizontal ruler will make
+			// very large invalid rectangle and has bad effect on performance,
+			// especially on mobile devices.)
+			DrawHRuler( updateRect_old );
+			DrawHRuler( udpateRect_new );
+		}
+		#endregion
+
+		#region Measuring paint text token
 		/// <summary>
 		/// Calculates x-coordinate of the right end of given token drawed at specified position with specified tab-width.
 		/// </summary>
@@ -552,6 +720,7 @@ Debug.Assert( drawableLength == i );
 
 			return false;
 		}
+		#endregion
 
 		#region Utilities
 		/// <summary>

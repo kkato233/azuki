@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2009-11-03
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -204,8 +204,8 @@ namespace Sgry.Azuki
 				if( e.ByContentChanged )
 					return;
 
-				// invalidate indicator graphic on horizontal ruler
-				InvalidateHRuler( e.OldCaret );
+				// update indicator graphic on horizontal ruler
+				UpdateHRuler();
 
 				// if the anchor moved, firstly invalidate old selection area
 				// because invalidation logic below does not expect the anchor's move.
@@ -462,8 +462,8 @@ namespace Sgry.Azuki
 			oldCaretPos = GetVirPosFromIndex( e.Index );
 			VirtualToScreen( ref oldCaretPos );
 
-			// invalidate indicator graphic on horizontal ruler
-			InvalidateHRuler( oldCaretPos );
+			// update indicator graphic on horizontal ruler
+			UpdateHRuler();
 
 			// invalidate the part at right of the old selection
 			invalidRect1.X = oldCaretPos.X;
@@ -612,101 +612,6 @@ namespace Sgry.Azuki
 				Invalidate( middle );
 			if( 0 < lower.Height )
 				Invalidate( lower );
-		}
-
-		protected void InvalidateHRuler( int oldCaretIndex )
-		{
-			Point oldCaretPos = GetVirPosFromIndex( oldCaretIndex );
-			VirtualToScreen( ref oldCaretPos );
-			InvalidateHRuler( oldCaretPos );
-		}
-
-		protected void InvalidateHRuler( Point oldCaretScreenPos )
-		{
-			Rectangle invalidRect_old;
-			Rectangle invalidRect_new;
-			Point newCaretScreenPos;
-
-			if( ShowsHRuler )
-			{
-				// invalidate indicator graphic on horizontal ruler
-				newCaretScreenPos = GetVirPosFromIndex( Document.CaretIndex );
-				VirtualToScreen( ref newCaretScreenPos );
-
-				if( HRulerIndicatorType == HRulerIndicatorType.Position )
-				{
-					// if horizontal poisition of the caret not changed, do nothing
-					if( oldCaretScreenPos.X == newCaretScreenPos.X )
-					{
-						return;
-					}
-
-					// calculate indicator rectangle for old caret position
-					invalidRect_old = new Rectangle(
-							oldCaretScreenPos.X, YofHRuler, 3, HRulerHeight
-						);
-
-					// calculate indicator rectangle for new caret position
-					invalidRect_new = new Rectangle(
-							newCaretScreenPos.X, YofHRuler, 3, HRulerHeight
-						);
-				}
-				else if( HRulerIndicatorType == HRulerIndicatorType.CharCount )
-				{
-					int dummy;
-					Point virOldCaretPos;
-					int oldCaretColumnIndex, newCaretColumnIndex;
-					Point pos = new Point();
-
-					// calculate old / new caret column index
-					virOldCaretPos = oldCaretScreenPos;
-					ScreenToVirtual( ref virOldCaretPos );
-					GetLineColumnIndexFromCharIndex(
-							GetIndexFromVirPos(virOldCaretPos), out dummy, out oldCaretColumnIndex
-						);
-					GetLineColumnIndexFromCharIndex(
-							Document.CaretIndex, out dummy, out newCaretColumnIndex
-						);
-
-					// if column index was not changed, do nothing
-					if( oldCaretColumnIndex == newCaretColumnIndex )
-					{
-						return;
-					}
-
-					// calculate indicator rectangle for old caret position
-					pos.X = oldCaretColumnIndex * HRulerUnitWidth;
-					VirtualToScreen( ref pos );
-					invalidRect_old = new Rectangle(
-							pos.X, YofHRuler, HRulerUnitWidth, HRulerHeight
-						);
-
-					// calculate indicator rectangle for new caret position
-					pos.X = newCaretColumnIndex * HRulerUnitWidth;
-					VirtualToScreen( ref pos );
-					invalidRect_new = new Rectangle(
-							pos.X, YofHRuler, HRulerUnitWidth, HRulerHeight
-						);
-				}
-				else// if( HRulerIndicatorType == HRulerIndicatorType.Segment )
-				{
-					// calculate indicator rectangle for old caret position
-					invalidRect_old = new Rectangle(
-							oldCaretScreenPos.X - HRulerUnitWidth, YofHRuler,
-							HRulerUnitWidth*2, HRulerHeight
-						);
-
-					// calculate indicator rectangle for new caret position
-					invalidRect_new = new Rectangle(
-							newCaretScreenPos.X - HRulerUnitWidth, YofHRuler,
-							HRulerUnitWidth*2, HRulerHeight
-						);
-				}
-
-				// invalidate old and new indicator
-				Invalidate( invalidRect_old );
-				Invalidate( invalidRect_new );
-			}
 		}
 		#endregion
 

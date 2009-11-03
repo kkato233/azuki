@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2009-11-03
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -920,9 +920,17 @@ namespace Sgry.Azuki
 				vDelta = caretPos.Y - threshRect.Top;
 			}
 
-			// return offset
+			// scroll the view
 			Scroll( vDelta / LineSpacing );
 			HScroll( hDelta );
+
+			// update horizontal ruler graphic.
+			// because indicator graphic may have been scrolled out partially (drawn partially),
+			// just scrolling horizontal ruler area may make uncompeltely drawn indicator
+			if( ShowsHRuler && 0 < hDelta )
+			{
+				UpdateHRuler();
+			}
 		}
 
 		/// <summary>
@@ -990,7 +998,7 @@ namespace Sgry.Azuki
 
 			// make clipping rectangle
 			clipRect.X = XofTextArea;
-			//NO_NEED//clipRect.Y = YofTextArea;
+			clipRect.Y = 0;
 			clipRect.Width = _VisibleSize.Width - XofTextArea;
 			clipRect.Height = _VisibleSize.Height;
 

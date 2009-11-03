@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2009-11-03
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -273,7 +273,7 @@ namespace Sgry.Azuki
 			Document doc = base.Document;
 			bool isMultiLine;
 			int prevLineCount;
-			Point oldCaretVirPos, oldCaretScreenPos;
+			Point oldCaretVirPos;
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
 
@@ -295,10 +295,8 @@ namespace Sgry.Azuki
 			// get position of the word replacement occured
 			oldCaretVirPos = GetVirPosFromIndex( e.Index );
 
-			// invalidate indicator graphic on horizontal ruler
-			oldCaretScreenPos = oldCaretVirPos;
-			VirtualToScreen( ref oldCaretScreenPos );
-			InvalidateHRuler( oldCaretScreenPos );
+			// update indicator graphic on horizontal ruler
+			UpdateHRuler();
 
 			// invalidate the part at right of the old selection
 			invalidRect1.X = oldCaretVirPos.X;

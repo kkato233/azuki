@@ -1,7 +1,7 @@
 ﻿// file: ViewParam.cs
 // brief: View parameters associated with each document.
 // author: YAMAMOTO Suguru
-// update: 2009-06-10
+// update: 2009-11-03
 //=========================================================
 using System;
 
@@ -27,6 +27,7 @@ namespace Sgry.Azuki
 
 		// for PropView
 		int _PrevCaretLine, _PrevAnchorLine;
+		int _PrevHRulerVirX;
 
 		// for PropWrapView
 		SplitArray<int> _PLHI = new SplitArray<int>( 128, 128 );
@@ -104,6 +105,12 @@ namespace Sgry.Azuki
 		{
 			get{ return _PrevCaretLine; }
 			set{ _PrevCaretLine = value; }
+		}
+
+		public int PrevHRulerVirX
+		{
+			get{ return _PrevHRulerVirX; }
+			set{ _PrevHRulerVirX = value; }
 		}
 		#endregion
 

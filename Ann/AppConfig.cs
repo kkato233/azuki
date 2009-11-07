@@ -1,4 +1,4 @@
-﻿// 2009-10-21
+﻿// 2009-11-03
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,6 +30,7 @@ namespace Sgry.Ann
 		public static ViewType ViewType = ViewType.Proportional;
 		public static bool UsesTabForIndent = true;
 		public static bool ConvertsFullWidthSpaceToSpace = true;
+		public static HRulerIndicatorType HRulerIndicatorType = HRulerIndicatorType.Segment;
 		public static Ini Ini = new Ini();
 
 		/// <summary>
@@ -66,6 +67,7 @@ namespace Sgry.Ann
 				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
 				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
+				AppConfig.HRulerIndicatorType	= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
 			}
 			catch
 			{}
@@ -97,6 +99,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
 				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );
+				Ini.Set( "Default", "HRulerIndicatorType",	AppConfig.HRulerIndicatorType );
 
 				Ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );
 			}

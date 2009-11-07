@@ -9,7 +9,7 @@
  * add: by AzukiControl.TopMargin property, drawing margin at top of the view can be now customizable
  * add: by AzukiControl.LeftMargin property, drawing margin at left of the view can be now customizable
  * add: added AzukiControl.DrawsEofMark property for drawing EOF position
- * add: added AzukiControl.LinePadding
+ * add: added AzukiControl.LinePadding for customizing padding from bottom of a line to top of the next line
  * add: added AzukiControl.LineSpacing
  * add: supported group UNDO (groups actions between call of Document.BeginUndo and call of Document.EndUndo)
  * add: added overloads for Document.FindNext and Document.FindPrev
@@ -29,6 +29,7 @@
  * add: [Ann] now Ann can open UTF-16 encoded text without BOM code
  * mod: [Ann] changed layout of the text search panel
  * mod: [Ann] now F3 is bound to "Find next", Shift+F3 is bound to "Find previous"
+ * fix: [Ann] Ann freezes when opening a file whose size is exactly 1 byte
 
 == 1.4.3 (2009-09-21) ==
  * fix: in particular condition, pressing tab key inserts nothing if "converting input tab to spaces" feature is enabled

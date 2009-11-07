@@ -9,7 +9,7 @@
  * add: AzukiControl.TopMargin で上端の描画マージンを設定可能に
  * add: AzukiControl.LeftMargin で左端の描画マージンを設定可能に
  * add: AzukiControl.DrawsEofMark プロパティで EOF 位置を描画できるように
- * add: AzukiControl.LinePadding を追加
+ * add: AzukiControl.LinePadding で行間隔を指定可能に
  * add: AzukiControl.LineSpacing を追加
  * add: グループ UNDO をサポート（Document.BeginUndo の呼び出しから Document.EndUndo の呼び出しまでをグループ化）
  * add: Document.FindNext と Document.FindPrev のオーバーロードを追加
@@ -29,6 +29,7 @@
  * add: [Ann] BOM コードの無い UTF-16 エンコードされたテキストファイルを開けるように
  * mod: [Ann] テキスト検索のGUIレイアウトを変更
  * mod: [Ann] F3 と Shift+F3 で「次へ検索」と「前へ検索」を実行できるように
+ * fix: [Ann] 1 バイトのファイルを開くと Ann がフリーズする問題を修正
 
 == 1.4.3 (2009-09-21) ==
  * fix: タブをスペースに変換する機能が有効で特定条件を満たすと、タブキーを押しても何も起こらない問題を修正

@@ -1,4 +1,4 @@
-// 2009-11-03
+// 2009-11-07
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -314,15 +314,8 @@ namespace Sgry.Ann
 				// read
 				while( !file.EndOfStream )
 				{
-					readCount = file.Read( buf, 0, buf.Length-1 );
-					buf[ readCount ] = '\0';
-					unsafe
-					{
-						fixed( char* p = buf )
-						{
-							doc.Replace( new String(p), doc.Length, doc.Length );
-						}
-					}
+					readCount = file.Read( buf, 0, buf.Length );
+					doc.Replace( new String(buf, 0, readCount), doc.Length, doc.Length );
 				}
 			}
 

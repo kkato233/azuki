@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2009-11-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -605,6 +605,34 @@ namespace Sgry.Azuki.Windows
 				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
 				UpdateScrollBarRange();
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show 'dirt bar' or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets whether to show 'dirt bar' or not.
+		/// The dirt bar is graphically a thin bar at right end of the line number area
+		/// that indicates the dirty state of each text line.
+		/// The state of line is one of the following states.
+		/// </para>
+		/// <list>
+		///		<item>LineDirtyState.Clean: the line is not modified yet.</item>
+		///		<item>LineDirtyState.Dirty: the line is modified and not saved.</item>
+		///		<item>LineDirtyState.Cleaned: the line is modified but saved.</item>
+		/// </list>
+		/// <para>
+		/// Color of each line dirty state can be customized by setting
+		/// ColorScheme.DirtyLineBar, ColorScheme.CleanedLineBar.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.LineDirtyState">LineDirtyState enum</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.GetLineDirtyState">Document.GetLineDirtyState method</seealso>
+		public bool ShowsDirtBar
+		{
+			get{ return View.ShowsDirtBar; }
+			set{ View.ShowsDirtBar = value; }
 		}
 
 		/// <summary>

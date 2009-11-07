@@ -1,4 +1,4 @@
-// 2009-09-21
+// 2009-11-07
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -282,6 +282,7 @@ namespace Sgry.Ann
 			_Azuki_Pattern.HighlightsCurrentLine = false;
 			_Azuki_Pattern.ShowsHScrollBar = false;
 			_Azuki_Pattern.ShowsLineNumber = false;
+			_Azuki_Pattern.ShowsDirtBar = false;
 			_Azuki_Pattern.AcceptsTab = false;
 			_Azuki_Pattern.AcceptsReturn = false;
 			_Azuki_Pattern.BorderStyle = BorderStyle.Fixed3D;

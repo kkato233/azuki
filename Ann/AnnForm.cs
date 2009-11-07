@@ -136,6 +136,9 @@ namespace Sgry.Ann
 
 			// apply wrap-line mode
 			_MI_View_WrapLines.Checked = (_Azuki.ViewType == ViewType.WrappedProportional ? true : false);
+
+			// update tab panel
+			_TabPanel.Invalidate();
 		}
 		#endregion
 

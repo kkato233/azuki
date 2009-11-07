@@ -208,7 +208,7 @@ namespace Sgry.Azuki
 				UpdateHRuler();
 
 				// if the anchor moved, firstly invalidate old selection area
-				// because invalidation logic below does not expect the anchor's move.
+				// because invalidation logic bellow does not expect the anchor's move.
 				if( e.OldAnchor != anchor )
 				{
 					if( e.OldAnchor < e.OldCaret )

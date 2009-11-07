@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-03
+// update: 2009-11-07
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -35,20 +35,6 @@ namespace Sgry.Azuki
 		{
 		}
 		#endregion
-
-		internal override void HandleDocumentChanged( Document prevDocument )
-		{
-			// update physical line head indexes if needed
-			if( Document.ViewParam.LastModifiedTime != Document.LastModifiedTime
-				|| Document.ViewParam.LastFontHashCode != FontInfo.GetHashCode()
-				|| Document.ViewParam.LastTextAreaWidth != TextAreaWidth )
-			{
-				DebugUtl.Assert( 0 < PLHI.Count );
-				UpdatePLHI( 0, "", Document.Text );
-			}
-
-			base.HandleDocumentChanged( prevDocument );
-		}
 
 		#region Properties
 		/// <summary>
@@ -267,7 +253,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Appearance Invalidating and Updating (these logic are copy to PropView's one)
+		#region Event Handlers
 		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Document doc = base.Document;
@@ -303,6 +289,7 @@ namespace Sgry.Azuki
 			invalidRect1.Y = oldCaretVirPos.Y;
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
+			VirtualToScreen( ref invalidRect1 );
 
 			// invalidate all lines below caret
 			// if old text or new text contains multiple lines
@@ -326,6 +313,7 @@ namespace Sgry.Azuki
 				logLine = doc.GetLineIndexFromCharIndex( e.Index );
 				logLineEnd = doc.GetLineHeadIndex( logLine ) + doc.GetLineLength( logLine );
 				logLineEndPos = GetVirPosFromIndex( logLineEnd );
+				VirtualToScreen( ref logLineEndPos );
 
 				// make a rectangle that covers the logical line area
 				//NO_NEED//invalidRect2.X = 0;
@@ -335,18 +323,15 @@ namespace Sgry.Azuki
 			}
 
 			// invalidate the range
-			VirtualToScreen( ref invalidRect1 );
-			invalidRect2.Y += YofTextArea;
 			Invalidate( invalidRect1 );
 			if( 0 < invalidRect2.Height )
 			{
 				//--- multiple logical lines are affected ---
 				Invalidate( invalidRect2 );
 			}
-			else
+
+			// update dirt bar
 			{
-				//--- only one logical line is affected ---
-				// update dirt bar
 				int y;
 				int logLineIndex = Document.GetLineIndexFromCharIndex( e.Index );
 				int logLineHeadIndex = Document.GetLineHeadIndex( logLineIndex );
@@ -362,6 +347,20 @@ namespace Sgry.Azuki
 			}
 
 			//DO_NOT//base.HandleContentChanged( sender, e );
+		}
+
+		internal override void HandleDocumentChanged( Document prevDocument )
+		{
+			// update physical line head indexes if needed
+			if( Document.ViewParam.LastModifiedTime != Document.LastModifiedTime
+				|| Document.ViewParam.LastFontHashCode != FontInfo.GetHashCode()
+				|| Document.ViewParam.LastTextAreaWidth != TextAreaWidth )
+			{
+				DebugUtl.Assert( 0 < PLHI.Count );
+				UpdatePLHI( 0, "", Document.Text );
+			}
+
+			base.HandleDocumentChanged( prevDocument );
 		}
 		#endregion
 

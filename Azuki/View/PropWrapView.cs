@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-07
+// update: 2009-11-10
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -333,14 +333,15 @@ namespace Sgry.Azuki
 			// update dirt bar
 			{
 				int y;
+				Point top = new Point();
 				int logLineIndex = Document.GetLineIndexFromCharIndex( e.Index );
 				int logLineHeadIndex = Document.GetLineHeadIndex( logLineIndex );
-				int topY = this.GetVirPosFromIndex( logLineHeadIndex ).Y;
-				topY += YofTextArea;
+				top = this.GetVirPosFromIndex( logLineHeadIndex );
+				VirtualToScreen( ref top );
 				int bottomY = Math.Max( invalidRect1.Bottom, invalidRect2.Bottom );
 
 				// overdraw dirt bar
-				for( y=topY; y<bottomY; y+=LineSpacing )
+				for( y=top.Y; y<bottomY; y+=LineSpacing )
 				{
 					DrawDirtBar( y, logLineIndex );
 				}

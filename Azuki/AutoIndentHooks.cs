@@ -93,7 +93,7 @@ namespace Sgry.Azuki
 		public static readonly AutoIndentHook CHook = delegate( IUserInterface ui, char ch )
 		{
 			Document doc = ui.Document;
-			StringBuilder buf = new StringBuilder();
+			StringBuilder indentChars = new StringBuilder( 64 );
 			int lineHead, lineEnd;
 			int newCaretIndex;
 			int selBegin, selEnd;
@@ -120,7 +120,7 @@ namespace Sgry.Azuki
 				int firstNonWsCharIndex;
 				bool extraPaddingNeeded = false;
 
-				buf.Append( doc.EolCode );
+				indentChars.Append( doc.EolCode );
 
 				// if the line is empty, do nothing
 				if( lineHead == lineEnd )
@@ -132,7 +132,7 @@ namespace Sgry.Azuki
 				for( i=lineHead; i<selBegin; i++ )
 				{
 					if( doc[i] == ' ' || doc[i] == '\t' )
-						buf.Append( doc[i] );
+						indentChars.Append( doc[i] );
 					else
 						break;
 				}
@@ -157,8 +157,8 @@ namespace Sgry.Azuki
 				}
 
 				// replace selection
-				newCaretIndex = Math.Min( doc.AnchorIndex, selBegin ) + buf.Length;
-				doc.Replace( buf.ToString(), selBegin, selEnd );
+				newCaretIndex = Math.Min( doc.AnchorIndex, selBegin ) + indentChars.Length;
+				doc.Replace( indentChars.ToString(), selBegin, selEnd );
 
 				// if there is a '{' without pair before caret
 				// and is no '}' after caret, add indentation
@@ -180,6 +180,9 @@ namespace Sgry.Azuki
 			// user hit '}'?
 			else if( ch == '}' )
 			{
+				int pairIndex, pairLineHead, pairLineEnd;
+				int pairLineIndex;
+
 				// ensure this line contains only white spaces
 				for( int i=lineHead; i<lineEnd; i++ )
 				{
@@ -193,16 +196,28 @@ namespace Sgry.Azuki
 					}
 				}
 
-				// check whether a paired open bracket exists or not
-				int pairIndex = Utl.FindPairedBracket_Backward( doc, selBegin, 0, '}', '{' );
+				// find the paired open bracket
+				pairIndex = Utl.FindPairedBracket_Backward( doc, selBegin, 0, '}', '{' );
 				if( pairIndex == -1 )
 				{
 					return false; // no pair exists. nothing to do
 				}
 				
-				// replace current selection and one before char
-				// into close curly bracket
-				doc.Replace( "}", selBegin-1, selEnd );
+				// get indent char of the line where the pair exists
+				pairLineIndex = ui.GetLineIndexFromCharIndex( pairIndex );
+				pairLineHead = ui.GetLineHeadIndex( pairLineIndex );
+				pairLineEnd = pairLineHead + ui.GetLineLength( pairLineIndex );
+				for( int i=pairLineHead; i<pairLineEnd; i++ )
+				{
+					if( doc[i] == ' ' || doc[i] == '\t' )
+						indentChars.Append( doc[i] );
+					else
+						break;
+				}
+				
+				// replace indent chars of current line
+				indentChars.Append( '}' );
+				doc.Replace( indentChars.ToString(), lineHead, selBegin );
 				
 				return true;
 			}

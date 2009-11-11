@@ -1,7 +1,7 @@
 ﻿// file: AutoIndentLogic.cs
 // brief: Logic around auto-indentation.
 // author: YAMAMOTO Suguru
-// update: 2009-09-05
+// update: 2009-11-11
 //=========================================================
 using System;
 using System.Text;
@@ -118,6 +118,7 @@ namespace Sgry.Azuki
 			{
 				int i;
 				int firstNonWsCharIndex;
+				bool extraPaddingNeeded = false;
 
 				buf.Append( doc.EolCode );
 
@@ -146,14 +147,22 @@ namespace Sgry.Azuki
 						break;
 				}
 
+				// determine whether extra padding is needed or not
+				// (because replacement changes line end index
+				// determination after replacement will be much harder)
+				if( Utl.FindPairedBracket_Backward(doc, selBegin, lineHead, '}', '{') != -1
+					&& Utl.IndexOf(doc, '}', selBegin, lineEnd) == -1 )
+				{
+					extraPaddingNeeded = true;
+				}
+
 				// replace selection
 				newCaretIndex = Math.Min( doc.AnchorIndex, selBegin ) + buf.Length;
 				doc.Replace( buf.ToString(), selBegin, selEnd );
 
 				// if there is a '{' without pair before caret
 				// and is no '}' after caret, add indentation
-				if( Utl.FindPairedBracket_Backward(doc, selBegin, lineHead, '}', '{') != -1
-					&& Utl.IndexOf(doc, '}', selBegin, lineEnd) == -1 )
+				if( extraPaddingNeeded )
 				{
 					// make indentation characters
 					string extraPadding;
@@ -180,7 +189,7 @@ namespace Sgry.Azuki
 					}
 					else if( doc[i] != ' ' && doc[i] != '\t' )
 					{
-						return false; // this line contains non white space char
+						return false; // this line contains a non white space char
 					}
 				}
 

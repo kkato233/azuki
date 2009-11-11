@@ -531,6 +531,8 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets length of the logical line.
 		/// </summary>
+		/// <param name="lineIndex">Index of the line of which to get the length.</param>
+		/// <returns>Length of the specified line in character count.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public int GetLineLength( int lineIndex )
 		{

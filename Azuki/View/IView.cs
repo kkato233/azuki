@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-11-07
+// update: 2009-11-11
 //=========================================================
 using System;
 using System.Drawing;
@@ -261,6 +261,14 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		int GetLineHeadIndexFromCharIndex( int charIndex );
+
+		/// <summary>
+		/// Calculates physical line index from char-index.
+		/// </summary>
+		/// <param name="charIndex">The index of the line which contains the char at this parameter will be calculated.</param>
+		/// <returns>The index of the line which contains the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		int GetLineIndexFromCharIndex( int charIndex );
 
 		/// <summary>
 		/// Calculates physical line/column index from char-index.

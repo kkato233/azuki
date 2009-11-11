@@ -758,7 +758,7 @@ namespace Sgry.Azuki
 		/// Generates appropriate padding characters
 		/// that fills the gap between the target position and actual line-end position.
 		/// </summary>
-		internal static string GetNeededPaddingChars( IUserInterface ui, Point targetPos, bool alignTabStop )
+		internal static string GetNeededPaddingChars( IUserInterface ui, Point targetVirPos, bool alignTabStop )
 		{
 			StringBuilder paddingChars;
 			int targetIndex;
@@ -769,20 +769,20 @@ namespace Sgry.Azuki
 
 			// calculate the position of the nearest character in line
 			// (this will be at end of the line)
-			targetIndex = ui.View.GetIndexFromVirPos( targetPos );
+			targetIndex = ui.View.GetIndexFromVirPos( targetVirPos );
 			lineLastCharPos = ui.View.GetVirPosFromIndex( targetIndex );
-			if( targetPos.X <= lineLastCharPos.X + ui.View.SpaceWidthInPx )
+			if( targetVirPos.X <= lineLastCharPos.X + ui.View.SpaceWidthInPx )
 			{
 				return ""; // no padding is needed
 			}
 
 			// calculate right most tab stop at left of the target position
-			rightMostTabStopX = targetPos.X - (targetPos.X % ui.View.TabWidthInPx);
+			rightMostTabStopX = targetVirPos.X - (targetVirPos.X % ui.View.TabWidthInPx);
 			if( alignTabStop )
 			{
 				// to align position to tab stop,
 				// set target position to the right most tab stop.
-				targetPos.X = rightMostTabStopX;
+				targetVirPos.X = rightMostTabStopX;
 			}
 
 			// calculate how many tabs are needed
@@ -790,17 +790,17 @@ namespace Sgry.Azuki
 			{
 				int availableRightMostTabStopX
 					= lineLastCharPos.X - (lineLastCharPos.X % ui.View.TabWidthInPx);
-				neededTabCount = (targetPos.X - availableRightMostTabStopX) / ui.View.TabWidthInPx;
+				neededTabCount = (targetVirPos.X - availableRightMostTabStopX) / ui.View.TabWidthInPx;
 			}
 
 			// calculate how many spaces are needed
 			if( 0 < neededTabCount )
 			{
-				neededSpaceCount = (targetPos.X - rightMostTabStopX) / ui.View.SpaceWidthInPx;
+				neededSpaceCount = (targetVirPos.X - rightMostTabStopX) / ui.View.SpaceWidthInPx;
 			}
 			else
 			{
-				neededSpaceCount = (targetPos.X - lineLastCharPos.X) / ui.View.SpaceWidthInPx;
+				neededSpaceCount = (targetVirPos.X - lineLastCharPos.X) / ui.View.SpaceWidthInPx;
 			}
 
 			// pad tabs

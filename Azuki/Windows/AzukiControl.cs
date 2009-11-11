@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-07
+// update: 2009-11-11
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1219,14 +1219,27 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		/// <returns>Currently selected text.</returns>
 		/// <remarks>
+		/// <para>
 		/// This method gets currently selected text.
 		/// If current selection is rectangle selection,
 		/// return value will be a text that are consisted with selected partial lines (rows)
 		/// joined with CR-LF.
+		/// </para>
 		/// </remarks>
 		public string GetSelectedText()
 		{
 			return _Impl.GetSelectedText();
+		}
+
+		/// <summary>
+		/// Gets length of the specified line.
+		/// </summary>
+		/// <param name="lineIndex">Index of the line of which to get the length.</param>
+		/// <returns>Length of the specified line in character count.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		public int GetLineLength( int lineIndex )
+		{
+			return Document.GetLineLength( lineIndex );
 		}
 
 		/// <summary>
@@ -1341,6 +1354,17 @@ namespace Sgry.Azuki.Windows
 		public int GetLineHeadIndexFromCharIndex( int charIndex )
 		{
 			return View.GetLineHeadIndexFromCharIndex( charIndex );
+		}
+
+		/// <summary>
+		/// Calculates physical line index from char-index.
+		/// </summary>
+		/// <param name="charIndex">The index of the line which contains the char at this parameter will be calculated.</param>
+		/// <returns>The index of the line which contains the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		public int GetLineIndexFromCharIndex( int charIndex )
+		{
+			return View.GetLineIndexFromCharIndex( charIndex );
 		}
 
 		/// <summary>

@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-11-03
+// update: 2009-11-11
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -705,6 +705,21 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetLineHeadIndexFromCharIndex( int charIndex );
+
+		/// <summary>
+		/// Calculates physical line index from char-index.
+		/// </summary>
+		/// <param name="charIndex">The index of the line which contains the char at this parameter will be calculated.</param>
+		/// <returns>The index of the line which contains the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
+		public int GetLineIndexFromCharIndex( int charIndex )
+		{
+			int lineIndex, columnIndex;
+
+			GetLineColumnIndexFromCharIndex( charIndex, out lineIndex, out columnIndex );
+
+			return lineIndex;
+		}
 
 		/// <summary>
 		/// Calculates physical line/column index from char-index.

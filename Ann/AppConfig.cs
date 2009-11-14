@@ -1,4 +1,4 @@
-﻿// 2009-11-03
+﻿// 2009-11-14
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -25,8 +25,11 @@ namespace Sgry.Ann
 		public static bool HighlightsCurrentLine = true;
 		public static bool ShowsLineNumber = true;
 		public static bool ShowsHRuler = false;
+		public static bool ShowsDirtBar = true;
 		public static int TabWidth = 8;
 		public static int LinePadding = 1;
+		public static int LeftMargin = 1;
+		public static int TopMargin = 1;
 		public static ViewType ViewType = ViewType.Proportional;
 		public static bool UsesTabForIndent = true;
 		public static bool ConvertsFullWidthSpaceToSpace = true;
@@ -62,8 +65,11 @@ namespace Sgry.Ann
 				AppConfig.HighlightsCurrentLine	= Ini.Get( "Default", "HighlightsCurrentLine", true );
 				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
 				AppConfig.ShowsHRuler			= Ini.Get( "Default", "ShowsHRuler", false );
+				AppConfig.ShowsDirtBar			= Ini.Get( "Default", "ShowsDirtBar", false );
 				AppConfig.TabWidth				= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
 				AppConfig.LinePadding			= Ini.GetInt( "Default", "LinePadding", 1, 100, 1 );
+				AppConfig.LeftMargin			= Ini.GetInt( "Default", "LeftMargin", 0, 100, 1 );
+				AppConfig.TopMargin				= Ini.GetInt( "Default", "TopMargin", 0, 100, 1 );
 				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
 				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
@@ -94,8 +100,11 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "HighlightsCurrentLine",AppConfig.HighlightsCurrentLine );
 				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
 				Ini.Set( "Default", "ShowsHRuler",			AppConfig.ShowsHRuler );
+				Ini.Set( "Default", "ShowsDirtBar",			AppConfig.ShowsDirtBar );
 				Ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
 				Ini.Set( "Default", "LinePadding",			AppConfig.LinePadding );
+				Ini.Set( "Default", "LeftMargin",			AppConfig.LeftMargin );
+				Ini.Set( "Default", "TopMargin",			AppConfig.TopMargin );
 				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
 				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );

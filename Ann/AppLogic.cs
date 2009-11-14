@@ -725,8 +725,11 @@ namespace Sgry.Ann
 			MainForm.Azuki.HighlightsCurrentLine= AppConfig.HighlightsCurrentLine;
 			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
 			MainForm.Azuki.ShowsHRuler			= AppConfig.ShowsHRuler;
+			MainForm.Azuki.ShowsDirtBar			= AppConfig.ShowsDirtBar;
 			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
 			MainForm.Azuki.LinePadding			= AppConfig.LinePadding;
+			MainForm.Azuki.LeftMargin			= AppConfig.LeftMargin;
+			MainForm.Azuki.TopMargin			= AppConfig.TopMargin;
 			MainForm.Azuki.ViewType				= AppConfig.ViewType;
 			MainForm.Azuki.UsesTabForIndent		= AppConfig.UsesTabForIndent;
 			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
@@ -755,8 +758,11 @@ namespace Sgry.Ann
 			AppConfig.HighlightsCurrentLine	= MainForm.Azuki.HighlightsCurrentLine;
 			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
 			AppConfig.ShowsHRuler			= MainForm.Azuki.ShowsHRuler;
+			AppConfig.ShowsDirtBar			= MainForm.Azuki.ShowsDirtBar;
 			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
 			AppConfig.LinePadding			= MainForm.Azuki.LinePadding;
+			AppConfig.LeftMargin			= MainForm.Azuki.LeftMargin;
+			AppConfig.TopMargin				= MainForm.Azuki.TopMargin;
 			AppConfig.ViewType				= MainForm.Azuki.ViewType;
 			AppConfig.UsesTabForIndent		= MainForm.Azuki.UsesTabForIndent;
 			AppConfig.ConvertsFullWidthSpaceToSpace = MainForm.Azuki.ConvertsFullWidthSpaceToSpace;

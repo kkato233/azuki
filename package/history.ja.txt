@@ -19,7 +19,8 @@
  * mod: AzukiControl.GetIndexFromScreenPos に与えられた位置が不正な場合に最も近い有効な点を使って計算するように
  * mod: AutoIndentHook の引数仕様を変更
  * mod: AzukiControl と IUserInterface の ConvertsTabToSpaces を非推奨に
- * mod: ZoomIn と ZoomOut の実行後にテキストエリアの幅を調整するように
+ * mod: ZoomIn、ZoomOut の実行後にテキストエリアの幅を調整するように
+ * fix: ZoomIn、ZoomOut の実行後にキャレットが非表示になる問題を修正
  * fix: 閉じカッコ「}」を空白文字だけの行で入力したときに C 系言語用自動インデントが正しくインデント解除を行うように
  * add: [Ann] 簡易タブインタフェースをサポート
  * add: [Ann] 終了時のウィンドウサイズを記憶するように

@@ -1075,6 +1075,8 @@ namespace Sgry.Azuki
 			// reset text area to sustain total width of view
 			// because changing font size also changes width of line number area,
 			TextAreaWidth += oldTextAreaX - XofTextArea;
+
+			_UI.UpdateCaretGraphic();
 		}
 
 		/// <summary>
@@ -1098,6 +1100,8 @@ namespace Sgry.Azuki
 			// reset text area to sustain total width of view
 			// because changing font size also changes width of line number area,
 			TextAreaWidth += oldTextAreaX - XofTextArea;
+
+			_UI.UpdateCaretGraphic();
 		}
 		#endregion
 

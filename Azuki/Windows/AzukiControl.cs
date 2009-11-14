@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-11
+// update: 2009-11-14
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1448,7 +1448,7 @@ namespace Sgry.Azuki.Windows
 
 			// calculate horizontal range and page size
 			hMax = View.TextAreaWidth;
-			hPageSize = View.VisibleSize.Width;
+			hPageSize = View.VisibleTextAreaSize.Width;
 
 			// update the range of vertical scrollbar
 			WinApi.SetScrollRange( Handle, false, 0, vMax, vPageSize );
@@ -1458,6 +1458,11 @@ namespace Sgry.Azuki.Windows
 				WinApi.SetScrollRange( Handle, true, 0, 0, hPageSize ); // bar will be hidden
 			else
 				WinApi.SetScrollRange( Handle, true, 0, hMax, hPageSize );
+
+			// then, update scroll position and caret graphic
+			WinApi.SetScrollPos( Handle, false, _Impl.View.FirstVisibleLine );
+			WinApi.SetScrollPos( Handle, true, _Impl.View.ScrollPosX );
+			UpdateCaretGraphic();
 		}
 		#endregion
 
@@ -1588,7 +1593,7 @@ namespace Sgry.Azuki.Windows
 				newPos -= scrollUnit;
 			else if( scrollType == WinApi.SB_LINEDOWN )
 				newPos += scrollUnit;
-			if( scrollType == WinApi.SB_PAGEUP )
+			else if( scrollType == WinApi.SB_PAGEUP )
 				newPos -= (Width - _ScrollBarWidth);
 			else if( scrollType == WinApi.SB_PAGEDOWN )
 				newPos += (Width - _ScrollBarWidth);
@@ -1715,6 +1720,7 @@ namespace Sgry.Azuki.Windows
 			base.OnResize( e );
 
 			_Impl.View.HandleSizeChanged( ClientSize );
+			UpdateScrollBarRange();
 			Invalidate();
 		}
 		#endregion

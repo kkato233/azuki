@@ -14,7 +14,8 @@
  * add: supported group UNDO (groups actions between call of Document.BeginUndo and call of Document.EndUndo)
  * add: added overloads for Document.FindNext and Document.FindPrev
  * add: now supports some of the OpenType fonts which were not supported by GDI+
- * mod: now switching to line-wrapping mode always resets horizontal scroll position
+ * add: improved behavior of horizontal scroll bar in non-line-wrapping mode
+ * add: improved the scroll position after switching line-wrapping mode
  * mod: Azuki records selection state with UNDO action and restores the state when the UNDO action executed
  * mod: AzukiControl.GetIndexFromScreenPos uses nearest valid position if given position is invalid
  * mod: changed argument of AutoIndentHook.
@@ -33,7 +34,7 @@
 == 1.4.4 (2009-11-14) ==
  * fix: using built-in Ruby highlighter always causes an exception
  * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls
- * fix: in not line-wrapping mode, underline to highlight current line was not always drawn to right end
+ * fix: in non-line-wrapping mode, underline to highlight current line was not always drawn to right end
  * fix: now AzukiControl ignores key events if an outer event handler set true for Handled property of KeyEventArgs (KeyPressEvent)
  * fix: [Ann] Ann freezes when opening a file whose size is exactly 1 byte
  * fix: [Ann] tagged as version 1.3.4

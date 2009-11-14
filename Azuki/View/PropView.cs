@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-11-03
+// update: 2009-11-14
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -38,6 +38,18 @@ namespace Sgry.Azuki
 			if( Document != null )
 			{
 				Document.SetSelection( Document.CaretIndex, Document.CaretIndex );
+
+				// scroll to caret.
+				// because text graphic was not drawn yet,
+				// maximum line length is unknown.
+				// so ScrollToCaret does not work properly.
+				Point pos = GetVirPosFromIndex( Document.CaretIndex );
+				int newValue = pos.X - (VisibleTextAreaSize.Width / 2);
+				if( 0 < newValue )
+				{
+					ScrollPosX = newValue;
+					_UI.UpdateScrollBarRange();
+				}
 			}
 		}
 		#endregion
@@ -811,11 +823,26 @@ namespace Sgry.Azuki
 
 			// if this line is wider than the width of virtual space,
 			// calculate full width of this line and make it the width of virtual space.
-			if( TextAreaWidth - (VisibleSize.Width >> 1) < (pos.X + ScrollPosX) )
+			Point virPos = pos;
+			ScreenToVirtual( ref virPos );
+			if( TextAreaWidth - TabWidthInPx < virPos.X )
 			{
-				token = Document.GetTextInRange( lineHead, lineEnd );
-				int lineWidth = MeasureTokenEndX( token, 0 );
-				TextAreaWidth = lineWidth + (VisibleSize.Width >> 1);
+				string lineContent;
+				int lineWidth, newWidth;
+
+				// calculate full length of this line, in pixel
+				lineContent = Document.GetTextInRange( lineHead, lineEnd );
+				lineWidth = MeasureTokenEndX( lineContent, 0 );
+
+				// calculate new text area width
+				newWidth = lineWidth;
+				while( newWidth < lineWidth+512 )
+				{
+					newWidth += 1024;
+				}
+
+				// apply
+				TextAreaWidth = newWidth;
 				_UI.UpdateScrollBarRange();
 			}
 

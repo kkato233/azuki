@@ -31,7 +31,7 @@ namespace Sgry.Azuki
 			2000000000
 		};
 		protected IUserInterface _UI;
-		int _TextAreaWidth = 1024;
+		int _TextAreaWidth = 4096;
 		int _MinimumTextAreaWidth = 300;
 		Size _VisibleSize = new Size( 300, 300 );
 		protected IGraphics _Gra = null;
@@ -175,6 +175,20 @@ namespace Sgry.Azuki
 		{
 			get{ return _VisibleSize; }
 			set{ _VisibleSize = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets size of the currently visible size of the text area (line number area is not included).
+		/// </summary>
+		public Size VisibleTextAreaSize
+		{
+			get
+			{
+				Size size = _VisibleSize;
+				size.Width -= XofTextArea;
+				size.Height -= YofTextArea;
+				return size;
+			}
 		}
 
 		/// <summary>
@@ -996,22 +1010,38 @@ namespace Sgry.Azuki
 		{
 			int deltaInPx;
 			Rectangle clipRect = new Rectangle();
+			int rightLimit;
 
 			if( columnDelta == 0 )
 				return;
 
+			// calculate the x-coord of right most scroll position
+			rightLimit = TextAreaWidth - VisibleTextAreaSize.Width;
+			if( rightLimit <= 0 )
+			{
+				return; // virtual text area is narrower than visible area. no need to scroll
+			}
+
 			// calculate scroll distance
 			if( ScrollPosX + columnDelta < 0 )
 			{
+				//--- scrolling to left of the text area ---
+				// do nothing if already at left most position
 				if( ScrollPosX == 0 )
 					return;
+				
+				// scroll to left most position
 				deltaInPx = -ScrollPosX;
 			}
-			else if( TextAreaWidth <= ScrollPosX+columnDelta )
+			else if( rightLimit <= ScrollPosX+columnDelta )
 			{
-				if( TextAreaWidth == ScrollPosX+columnDelta )
+				//--- scrolling to right of the text area ---
+				// do nothing if already at right most position
+				if( rightLimit == ScrollPosX+columnDelta )
 					return;
-				deltaInPx = (TextAreaWidth - ScrollPosX);
+
+				// scroll to right most position
+				deltaInPx = (rightLimit - ScrollPosX);
 			}
 			else
 			{

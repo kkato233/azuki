@@ -14,7 +14,8 @@
  * add: グループ UNDO をサポート（Document.BeginUndo の呼び出しから Document.EndUndo の呼び出しまでをグループ化）
  * add: Document.FindNext と Document.FindPrev のオーバーロードを追加
  * add: GDI+ がサポートしない OpenType フォントなどにも対応
- * mod: 折り返しモードに切り替えたときに水平スクロール位置を常にリセットするように
+ * add: 非折り返しモードでの水平スクロール関連の挙動を改善
+ * add: 折り返しするかどうかを切り替えた直後のスクロール位置を改善
  * mod: UNDO 時の選択状態を記憶するようにし、UNDO 実行時にその状態を復元するように
  * mod: AzukiControl.GetIndexFromScreenPos に与えられた位置が不正な場合に最も近い有効な点を使って計算するように
  * mod: AutoIndentHook の引数仕様を変更

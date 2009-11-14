@@ -1,4 +1,4 @@
-// 2009-10-10
+// 2009-11-14
 using System;
 using System.Windows.Forms;
 using Sgry.Azuki;
@@ -48,7 +48,6 @@ namespace Sgry.Ann
 			{
 				azuki.ViewType = ViewType.Proportional;
 			}
-			azuki.ScrollToCaret();
 			app.MainForm.UpdateUI(); // update check state of menu item
 		};
 

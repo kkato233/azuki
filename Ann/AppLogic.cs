@@ -1,4 +1,4 @@
-// 2009-11-07
+// 2009-11-14
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -843,7 +843,10 @@ namespace Sgry.Ann
 
 		void Azuki_Resize( object sender, EventArgs e )
 		{
-			MainForm.Azuki.ViewWidth = MainForm.Azuki.ClientSize.Width;
+			if( MainForm.Azuki.ViewType == ViewType.WrappedProportional )
+			{
+				MainForm.Azuki.ViewWidth = MainForm.Azuki.ClientSize.Width;
+			}
 		}
 		#endregion
 

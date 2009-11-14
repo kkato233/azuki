@@ -1,4 +1,4 @@
-// 2009-10-10
+// 2009-11-14
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -306,7 +306,6 @@ namespace Sgry.Ann
 			// 
 			_Azuki.Dock = DockStyle.Fill;
 			_Azuki.TabWidth = 8;
-			_Azuki.ViewWidth = 235;
 			_Azuki.BorderStyle = BorderStyle.None;
 			_Azuki.KeyDown += HandleKeyAction;
 			_Azuki.GotFocus += delegate {

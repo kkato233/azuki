@@ -14,6 +14,7 @@
  * add: supported group UNDO (groups actions between call of Document.BeginUndo and call of Document.EndUndo)
  * add: added overloads for Document.FindNext and Document.FindPrev
  * add: now supports some of the OpenType fonts which were not supported by GDI+
+ * mod: now switching to line-wrapping mode always resets horizontal scroll position
  * mod: Azuki records selection state with UNDO action and restores the state when the UNDO action executed
  * mod: AzukiControl.GetIndexFromScreenPos uses nearest valid position if given position is invalid
  * mod: changed argument of AutoIndentHook.

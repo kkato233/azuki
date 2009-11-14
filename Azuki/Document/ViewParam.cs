@@ -1,7 +1,7 @@
 ﻿// file: ViewParam.cs
 // brief: View parameters associated with each document.
 // author: YAMAMOTO Suguru
-// update: 2009-11-03
+// update: 2009-11-14
 //=========================================================
 using System;
 
@@ -22,7 +22,7 @@ namespace Sgry.Azuki
 		const int MinLineNumber = 1000;
 		int _FirstVisibleLine = 0;
 		int _ScrollPosX = 0;
-		int _DesiredColumn = 0;
+		int _DesiredColumnX = 0;
 		int _MaxLineNumber = 9999;
 
 		// for PropView
@@ -48,12 +48,12 @@ namespace Sgry.Azuki
 
 		#region View common properties
 		/// <summary>
-		/// Gets or sets current "desired column."
+		/// Gets or sets current X-coordinate of the "desired column."
 		/// </summary>
-		public int DesiredColumn
+		public int DesiredColumnX
 		{
-			get{ return _DesiredColumn; }
-			set{ _DesiredColumn = value; }
+			get{ return _DesiredColumnX; }
+			set{ _DesiredColumnX = value; }
 		}
 
 		/// <summary>

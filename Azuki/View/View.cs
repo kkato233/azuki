@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-11-11
+// update: 2009-11-14
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -108,10 +108,13 @@ namespace Sgry.Azuki
 			if( other.FontInfo != null )
 				this.FontInfo = other.FontInfo;
 
-			// finally, re-calculate graphic metrics
+			// re-calculate graphic metrics
 			// (because there is a metric which needs a reference to Document to be calculated
 			// but it cannnot be set Document before setting Font by structural reason)
 			UpdateMetrics();
+
+			// update virtual x-coord of desired column and scroll to caret
+			SetDesiredColumn();
 		}
 
 #		if DEBUG
@@ -622,26 +625,30 @@ namespace Sgry.Azuki
 		/// Sets column index of the current caret position to "desired column" value.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// When the caret moves up or down,
 		/// Azuki tries to set next caret's column index to this value.
 		/// Note that "desired column" is associated with each document
 		/// so this value may change when Document property was set to another document.
+		/// </para>
 		/// </remarks>
 		public void SetDesiredColumn()
 		{
-			Document.ViewParam.DesiredColumn = GetVirPosFromIndex( Document.CaretIndex ).X;
+			Document.ViewParam.DesiredColumnX = GetVirPosFromIndex( Document.CaretIndex ).X;
 		}
 
 		/// <summary>
 		/// Gets current "desired column" value.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// When the caret moves up or down,
 		/// Azuki tries to set next caret's column index to this value.
+		/// </para>
 		/// </remarks>
 		public int GetDesiredColumn()
 		{
-			return Document.ViewParam.DesiredColumn;
+			return Document.ViewParam.DesiredColumnX;
 		}
 		#endregion
 

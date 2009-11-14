@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-10
+// update: 2009-11-14
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -25,6 +25,7 @@ namespace Sgry.Azuki
 		internal PropWrapView( IUserInterface ui )
 			: base( ui )
 		{
+			Document.ViewParam.ScrollPosX = 0;
 		}
 
 		/// <summary>
@@ -33,6 +34,7 @@ namespace Sgry.Azuki
 		internal PropWrapView( View other )
 			: base( other )
 		{
+			Document.ViewParam.ScrollPosX = 0;
 		}
 		#endregion
 

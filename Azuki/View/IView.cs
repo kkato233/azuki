@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-11-11
+// update: 2009-11-14
 //=========================================================
 using System;
 using System.Drawing;
@@ -502,6 +502,14 @@ namespace Sgry.Azuki
 		Size VisibleSize
 		{
 			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets size of the currently visible size of the text area (line number area is not included).
+		/// </summary>
+		Size VisibleTextAreaSize
+		{
+			get;
 		}
 		#endregion
 	}

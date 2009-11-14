@@ -19,9 +19,6 @@
  * mod: changed argument of AutoIndentHook.
  * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsoleted
  * mod: after executing ZoomIn or ZoomOut, width of text area will be adjusted
- * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls
- * fix: in not line-wrapping mode, underline to highlight current line was not always drawn to right end
- * fix: now AzukiControl ignores key events if an outer event handler set true for Handled property of KeyEventArgs (KeyPressEvent)
  * fix: on input of close curly bracket '}', auto-indentation logic for C styled language properly decrement the line containing only white spaces
  * add: [Ann] now Ann has simple tab interface
  * add: [Ann] now Ann remembers last window size
@@ -30,7 +27,14 @@
  * add: [Ann] now Ann can open UTF-16 encoded text without BOM code
  * mod: [Ann] changed layout of the text search panel
  * mod: [Ann] now F3 is bound to "Find next", Shift+F3 is bound to "Find previous"
+
+== 1.4.4 (2009-11-14) ==
+ * fix: using built-in Ruby highlighter always causes an exception
+ * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls
+ * fix: in not line-wrapping mode, underline to highlight current line was not always drawn to right end
+ * fix: now AzukiControl ignores key events if an outer event handler set true for Handled property of KeyEventArgs (KeyPressEvent)
  * fix: [Ann] Ann freezes when opening a file whose size is exactly 1 byte
+ * fix: [Ann] tagged as version 1.3.4
 
 == 1.4.3 (2009-09-21) ==
  * fix: in particular condition, pressing tab key inserts nothing if "converting input tab to spaces" feature is enabled

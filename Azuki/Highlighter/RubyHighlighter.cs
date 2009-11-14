@@ -1,7 +1,7 @@
 ﻿// file: RubyHighlighter.cs
 // brief: Ruby highlighter.
 // author: YAMAMOTO Suguru
-// update: 2008-11-03
+// update: 2008-11-14
 //=========================================================
 using System;
 using Color = System.Drawing.Color;
@@ -19,7 +19,7 @@ namespace Sgry.Azuki.Highlighter
 		public RubyHighlighter()
 		{
 			AddKeywordSet( new string[] {
-				"alias", "and", "BEGIN", "begin", "break", "case", "class",
+				"alias", "and", "begin", "BEGIN", "break", "case", "class",
 				"def", "defined", "do", "else", "elsif", "end", "END", "ensure",
 				"false", "for", "if", "in", "module", "next", "nil", "not",
 				"or", "redo", "rescue", "retry", "return", "self", "super",

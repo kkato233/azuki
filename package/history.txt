@@ -30,6 +30,7 @@
  * add: [Ann] now Ann can open UTF-16 encoded text without BOM code
  * mod: [Ann] changed layout of the text search panel
  * mod: [Ann] now F3 is bound to "Find next", Shift+F3 is bound to "Find previous"
+ * mod: [Ann] now Ann shows revision version number of Ann and Azuki in "About" dialog
 
 == 1.4.4 (2009-11-14) ==
  * fix: using built-in Ruby highlighter always causes an exception

@@ -99,6 +99,8 @@ namespace Sgry.Azuki
 			//DO_NOT//this._SpaceWidth = other._SpaceWidth;
 			this._TabWidth = other._TabWidth;
 			this._LinePadding = other._LinePadding;
+			this._LeftMargin = other._LeftMargin;
+			this._TopMargin = other.TopMargin;
 			//DO_NOT//this._TabWidthInPx = other._TabWidthInPx;
 			this._TextAreaWidth = other._TextAreaWidth;
 			//DO_NOT//this._UI = other._UI;

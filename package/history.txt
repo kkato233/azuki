@@ -1,5 +1,5 @@
 == 1.5.0 (2009-  -  ) ==
- * add: rectangler selection feature by both mouse and keyboard
+ * add: rectangular selection feature by both mouse and keyboard
  * add: horizontal ruler can be used by AzukiControl.ShowsHRuler
  * add: added AzukiControl.ShowsDirtBar property to display special area indicating whether each line is modified or not
  * add: now copied special (line, rectangle) text data can be paste in Visual Studio (and vice-versa)
@@ -19,7 +19,7 @@
  * mod: Azuki records selection state with UNDO action and restores the state when the UNDO action executed
  * mod: AzukiControl.GetIndexFromScreenPos uses nearest valid position if given position is invalid
  * mod: changed argument of AutoIndentHook.
- * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsoleted
+ * mod: ConvertsTabToSpaces property of both AzukiControl and IUserInterface is now obsolete
  * mod: now width of text area will be adjusted after executing ZoomIn or ZoomOut
  * fix: caret graphic becomes invisible after executing ZoomIn or ZoomOut
  * fix: on input of close curly bracket '}', auto-indentation logic for C styled language properly decrement the line containing only white spaces
@@ -41,7 +41,7 @@
 
 == 1.4.3 (2009-09-21) ==
  * fix: in particular condition, pressing tab key inserts nothing if "converting input tab to spaces" feature is enabled
- * fix: caret movement stops inproper position when pressing Ctrl+Left on paticular condition (ex. pressing Ctrl+Left when caret is at right of "5ii")
+ * fix: caret movement stops improper position when pressing Ctrl+Left on particular condition (ex. pressing Ctrl+Left when caret is at right of "5ii")
  * fix: [Ann] file will be improperly saved in case of that the file will be shorten (this problem exists only in Ann 1.3.2)
  * fix: [Ann] tagged as version 1.3.3
 
@@ -92,7 +92,7 @@
 == 1.3.3 (2009-06-13) ==
  * fix: fixed a problem that pressing backspace key at the char just after a surrogate pair breaks the surrogate pair
  * fix: fixed a degrade problem made in 1.3.2 (line management data will be corrupted)
- * fix: fixed a problem that selection range cannot be shurinked to left of a surrogate pair if we select the surrogate pair from left to right
+ * fix: fixed a problem that selection range cannot be shrunk to left of a surrogate pair if we select the surrogate pair from left to right
 
 == 1.3.2 (2009-05-01) ==
  * fix: fixed a problem that document will be corrupted if user UNDOes just after inputting a surrogate pair by IME
@@ -111,7 +111,7 @@
 
 == 1.3.0 (2009-02-03) ==
  * add: added text search feature
- * add: now Azuki.dll in binary distrubution is digitally signed
+ * add: now Azuki.dll in binary distribution is digitally signed
  * mod: changed zoom ratio (for Ctrl+Wheel feature) from 0.8 to 0.9
  * mod: removed DummyHighlighter class
  * fix: fixed minor problem that Azuki with no highlighter object redraws entire graphics area when content changed
@@ -120,7 +120,7 @@
  * add: [Ann] now the document which was modified and not was saved will be temporarily activated on asking whether to discard the modification or not
 
 == 1.2.4 (2008-12-28) ==
- * fix: registering multiple pairs that one pair's start/end pattern contains another pair's start/end parttern to built-in highlighters may cause invalid highlighting result
+ * fix: registering multiple pairs that one pair's start/end pattern contains another pair's start/end pattern to built-in highlighters may cause invalid highlighting result
  * fix: using same type of built-in highlighter for multiple document may cause invalid highlighting result
  * fix: [Ann] using same type of built-in highlighter for multiple document may cause invalid highlighting result
 
@@ -137,7 +137,7 @@
  * fix: [Ann] (Compact Framework version) "Save" top level menu item now works properly
 
 == 1.2.2 (2008-11-24) ==
- * fix: if a token which is used to begin enclosing comment exists in line comment, Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document inproperly
+ * fix: if a token which is used to begin enclosing comment exists in line comment, Highlighters based on KeywordHighlighter detects it on re-highlighting and highlights document improperly
  * add: [Ann] added New command in File menu
  * add: [Ann] now Ann opens drag & dropped files
  * fix: [Ann] set auto-indent mode according to selected file mode
@@ -188,7 +188,7 @@
  * add: syntax highlighter support
  * add: multiple-document support
  * add: number of lines scrolled by mouse wheel is now determined by OS setting
- * add: PageDown / PageUp suppoort
+ * add: PageDown / PageUp support
  * fix: in overwrite mode and caret is on a tab, caret width is always tab width
  * fix: now setting AzukiControl.Text property automatically calls ScrollToCaret
 
@@ -197,7 +197,7 @@
  * fix: current line highlight does not disappear when selection begins if vertically scrolled
 
 == 0.9.2 (2008-06-08) ==
- * add: color of the EOL graphics can be specified sperately
+ * add: color of the EOL graphics can be specified separately
  * add: added overload method of Azuki.SetKeyBind for ease of use
  * add: added feature to show/hide horizontal scroll bar
  * add: improve auto-indentation logic
@@ -206,13 +206,13 @@
  * fix: joining non-empty final line to previous line break line wrapping data
  * fix: pressing Ctrl+Shift+Left could not select back to previous line
  * fix: lines were not properly wrapped when only EOL graphic cross the right edge
- * fix: when scrolling up under Windows Mobile, 1 px graphic noise appears at line number area
+ * fix: when scrolling up under Windows Mobile, 1px graphic noise appears at line number area
  * fix: auto-indentation does not work if caret is not at the end of a line
- * fix: exception occured when double clicking EOF position
+ * fix: exception occurred when double clicking EOF position
 
 == 0.9.1 (2008-06-04) ==
  * fix: fixed that scroll bar range may not be updated when AzukiControl.Text property was changed
- * fix: graphical noize appeard when chars were added/removed from final line (only in wrapping mode)
+ * fix: graphical noise appeared when chars were added/removed from final line (only in wrapping mode)
  * mod: changed method name from AzukiControl.ClearUndo to ClearHistory
 
 == 0.9.0 (2008-06-01) ==

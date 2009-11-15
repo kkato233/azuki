@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-14
+// update: 2009-11-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1432,6 +1432,9 @@ namespace Sgry.Azuki.Windows
 			int vMax, hMax;
 			int vPageSize, hPageSize;
 			int visibleLineCount;
+
+			if( Document == null )
+				return;
 
 			// calculate vertical range and page size
 			visibleLineCount = View.VisibleSize.Height / View.LineSpacing;

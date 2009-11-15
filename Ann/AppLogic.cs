@@ -1,4 +1,4 @@
-// 2009-11-14
+// 2009-11-15
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -242,6 +242,65 @@ namespace Sgry.Ann
 				_MainForm.UpdateUI();
 				_MainForm.Azuki.Invalidate();
 			}
+		}
+
+		/// <summary>
+		/// Sets EOL code for input and unify existing EOL code to the one if user choses so.
+		/// </summary>
+		public void SetEolCode( string eolCode )
+		{
+			DialogResult reply;
+
+			if( eolCode != "\r\n" && eolCode != "\r" && eolCode != "\n" )
+				throw new ArgumentException( "EOL code must be one of the CR+LF, CR, LF.", "eolCode" );
+
+			// if newly specified EOL code is same as currently set one, do nothing
+			if( MainForm.Azuki.Document.EolCode == eolCode )
+			{
+				return;
+			}
+
+			// set input EOL code
+			MainForm.Azuki.Document.EolCode = eolCode;
+
+			// ask user whether to unify currently existing all EOL codes to the new one
+			reply = AskUserToUnifyExistingEolOrNot( eolCode );
+			if( reply == DialogResult.Yes )
+			{
+				// unify EOL code
+				int lineHead, lineEnd;
+				Document doc = ActiveDocument;
+
+				lineHead = 0;
+				doc.BeginUndo();
+				for( int lineIndex=0; lineIndex+1<doc.LineCount; lineIndex++ )
+				{
+					int eolBegin;
+
+					// set eol beginning index as one character before the line end
+					lineEnd = doc.GetLineHeadIndex( lineIndex+1 );
+					eolBegin = lineEnd - 1;
+					
+					// if the line is terminated with a CR+LF, set eol beginning index back one more
+					if( lineHead < lineEnd-2 )
+					{
+						string ch = doc.GetTextInRange( lineEnd-2, lineEnd );
+						if( ch == "\r\n" )
+						{
+							eolBegin--;
+						}
+					}
+					
+					// replace the line terminator
+					doc.Replace( eolCode, eolBegin, lineEnd );
+
+					// go to next line
+					lineHead = lineEnd + (lineEnd-eolBegin - eolCode.Length);
+				}
+				doc.EndUndo();
+			}
+
+			MainForm.UpdateUI();
 		}
 		#endregion
 
@@ -588,6 +647,27 @@ namespace Sgry.Ann
 					"Ann",
 					MessageBoxButtons.YesNoCancel,
 					MessageBoxIcon.Exclamation,
+					MessageBoxDefaultButton.Button2
+				);
+		}
+
+		public DialogResult AskUserToUnifyExistingEolOrNot( string newEolCode )
+		{
+			string eolCodeName;
+
+			switch( newEolCode )
+			{
+				case "\r\n":	eolCodeName = "CR+LF";	break;
+				case "\n":		eolCodeName = "LF";		break;
+				case "\r":		eolCodeName = "CR";		break;
+				default:		throw new ArgumentException("EOL code must be one of CR+LF, LF, CR.", "newEolCode");
+			}
+
+			return MessageBox.Show(
+					"Do you also want to change all existing line end code to "+eolCodeName+"?",
+					"Ann",
+					MessageBoxButtons.YesNo,
+					MessageBoxIcon.Question,
 					MessageBoxDefaultButton.Button2
 				);
 		}

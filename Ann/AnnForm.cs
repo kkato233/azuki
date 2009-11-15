@@ -1,4 +1,4 @@
-// 2009-11-14
+// 2009-11-15
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -135,7 +135,29 @@ namespace Sgry.Ann
 				= _MI_Edit_Paste.Enabled = !readOnly;
 
 			// apply wrap-line mode
-			_MI_View_WrapLines.Checked = (_Azuki.ViewType == ViewType.WrappedProportional ? true : false);
+			_MI_View_WrapLines.Checked
+				= (_Azuki.ViewType == ViewType.WrappedProportional)
+				? true : false;
+
+			// update radio check of EOL code menu items
+			if( _Azuki.Document.EolCode == "\r\n" )
+			{
+				_MI_Edit_EolCode_CRLF.Checked = true;
+				_MI_Edit_EolCode_LF.Checked = false;
+				_MI_Edit_EolCode_CR.Checked = false;
+			}
+			else if( _Azuki.Document.EolCode == "\n" )
+			{
+				_MI_Edit_EolCode_CRLF.Checked = false;
+				_MI_Edit_EolCode_LF.Checked = true;
+				_MI_Edit_EolCode_CR.Checked = false;
+			}
+			else
+			{
+				_MI_Edit_EolCode_CRLF.Checked = false;
+				_MI_Edit_EolCode_LF.Checked = false;
+				_MI_Edit_EolCode_CR.Checked = true;
+			}
 
 			// update tab panel
 			_TabPanel.Invalidate();
@@ -194,6 +216,9 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Edit_FindNext ]	= Actions.FindNext;
 			_MenuMap[ _MI_Edit_FindPrev ]	= Actions.FindPrev;
 			_MenuMap[ _MI_Edit_SelectAll ]	= Actions.SelectAll;
+			_MenuMap[ _MI_Edit_EolCode_CRLF ]	= Actions.SetEolCodeToCRLF;
+			_MenuMap[ _MI_Edit_EolCode_LF ]		= Actions.SetEolCodeToLF;
+			_MenuMap[ _MI_Edit_EolCode_CR ]		= Actions.SetEolCodeToCR;
 			
 			_MenuMap[ _MI_View_ShowSpecialChar ]	= Actions.SelectSpecialCharVisibility;
 			_MenuMap[ _MI_View_WrapLines ]			= Actions.ToggleWrapLines;
@@ -381,6 +406,11 @@ namespace Sgry.Ann
 			_MI_Edit.MenuItems.Add( _MI_Edit_FindPrev );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Sep2 );
 			_MI_Edit.MenuItems.Add( _MI_Edit_SelectAll );
+			_MI_Edit.MenuItems.Add( _MI_Edit_Sep3 );
+			_MI_Edit.MenuItems.Add( _MI_Edit_EolCode );
+			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CRLF );
+			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_LF );
+			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CR );
 
 			_MI_View.MenuItems.Add( _MI_View_ShowSpecialChar );
 			_MI_View.MenuItems.Add( _MI_View_WrapLines );
@@ -425,6 +455,11 @@ namespace Sgry.Ann
 			_MI_Edit_FindPrev.Text = "Find &previous";
 			_MI_Edit_Sep2.Text = "-";
 			_MI_Edit_SelectAll.Text = "Select A&ll";
+			_MI_Edit_Sep3.Text = "-";
+			_MI_Edit_EolCode.Text = "Set &line end code";
+			_MI_Edit_EolCode_CRLF.Text = "&CR+LF";
+			_MI_Edit_EolCode_LF.Text = "&LF";
+			_MI_Edit_EolCode_CR.Text = "C&R";
 			_MI_View.Text = "&View";
 			_MI_View_ShowSpecialChar.Text = "Show &Special Chars...";
 			_MI_View_WrapLines.Text = "&Wrap lines";
@@ -445,6 +480,13 @@ namespace Sgry.Ann
 			_MI_Help_MemoryUsage.Text = "Show &memory usage...";
 			_MI_Help_About.Text = "&About...";
 
+			// other menu settings
+#			if !PocketPC
+			_MI_Edit_EolCode_CRLF.RadioCheck = true;
+			_MI_Edit_EolCode_LF.RadioCheck = true;
+			_MI_Edit_EolCode_CR.RadioCheck = true;
+#			endif
+
 			// bind menu actions
 			EventHandler menuActionHandler = this.HandleMenuAction;
 			foreach( MenuItem mi in _MainMenu.MenuItems )
@@ -453,6 +495,10 @@ namespace Sgry.Ann
 				{
 					foreach( MenuItem mi3 in mi2.MenuItems )
 					{
+						foreach( MenuItem mi4 in mi3.MenuItems )
+						{
+							mi4.Click += menuActionHandler;
+						}
 						mi3.Click += menuActionHandler;
 					}
 					mi2.Click += menuActionHandler;
@@ -528,6 +574,11 @@ namespace Sgry.Ann
 		MenuItem _MI_Edit_FindPrev	= new MenuItem();
 		MenuItem _MI_Edit_Sep2		= new MenuItem();
 		MenuItem _MI_Edit_SelectAll	= new MenuItem();
+		MenuItem _MI_Edit_Sep3		= new MenuItem();
+		MenuItem _MI_Edit_EolCode		= new MenuItem();
+		MenuItem _MI_Edit_EolCode_CRLF	= new MenuItem();
+		MenuItem _MI_Edit_EolCode_LF	= new MenuItem();
+		MenuItem _MI_Edit_EolCode_CR	= new MenuItem();
 		MenuItem _MI_View					= new MenuItem();
 		MenuItem _MI_View_ShowSpecialChar	= new MenuItem();
 		MenuItem _MI_View_WrapLines			= new MenuItem();

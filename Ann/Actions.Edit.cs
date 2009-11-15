@@ -1,4 +1,4 @@
-// 2009-07-05
+// 2009-11-15
 using System;
 using System.Windows.Forms;
 
@@ -85,6 +85,36 @@ namespace Sgry.Ann
 			= delegate( AppLogic app )
 		{
 			app.MainForm.Azuki.SelectAll();
+		};
+
+		/// <summary>
+		/// Sets EOL code for input to CR+LF
+		/// and unify existing EOL code to CR+LF if user choses so.
+		/// </summary>
+		public static AnnAction SetEolCodeToCRLF
+			= delegate( AppLogic app )
+		{
+			app.SetEolCode( "\r\n" );
+		};
+
+		/// <summary>
+		/// Sets EOL code for input to LF
+		/// and unify existing EOL code to LF if user choses so.
+		/// </summary>
+		public static AnnAction SetEolCodeToLF
+			= delegate( AppLogic app )
+		{
+			app.SetEolCode( "\n" );
+		};
+
+		/// <summary>
+		/// Sets EOL code for input to CR
+		/// and unify existing EOL code to CR if user choses so.
+		/// </summary>
+		public static AnnAction SetEolCodeToCR
+			= delegate( AppLogic app )
+		{
+			app.SetEolCode( "\r" );
 		};
 	}
 }

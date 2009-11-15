@@ -454,7 +454,7 @@ namespace Sgry.Ann
 			_MI_Edit_FindNext.Text = "Find &next";
 			_MI_Edit_FindPrev.Text = "Find &previous";
 			_MI_Edit_Sep2.Text = "-";
-			_MI_Edit_SelectAll.Text = "Select A&ll";
+			_MI_Edit_SelectAll.Text = "Select &All";
 			_MI_Edit_Sep3.Text = "-";
 			_MI_Edit_EolCode.Text = "Set &line end code";
 			_MI_Edit_EolCode_CRLF.Text = "&CR+LF";

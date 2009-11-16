@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-11-01
+// update: 2009-11-16
 //=========================================================
 using System;
 using System.IO;
@@ -113,7 +113,8 @@ namespace Sgry
 	{
 		#region Fields
 		const long MaxLogFileSize = 8 * 1024 * 1024;
-		StringBuilder _Buffer = null;
+		StringBuilder _Buffer = new StringBuilder( 4096 );
+		bool _Realtime = true;
 		bool _WriteProcessID = false;
 		bool _WriteThreadID = false;
 		string _LogFilePath = null;
@@ -159,20 +160,8 @@ namespace Sgry
 		/// </summary>
 		public bool Realtime
 		{
-			get{ return (_Buffer == null); }
-			set
-			{
-				if( value == true )
-				{
-					// nullify memory buffer in realtime mode
-					_Buffer = null;
-				}
-				else if( _Buffer == null )
-				{
-					// realtime mode was disabled so prepare memory buffer
-					_Buffer = new StringBuilder( 4096 );
-				}
-			}
+			get{ return _Realtime; }
+			set{ _Realtime = value; }
 		}
 
 		/// <summary>
@@ -240,8 +229,8 @@ namespace Sgry
 				{
 					FileStream file;
 
-					// if in realtime mode or buffer is empty, do nothing
-					if( _Buffer == null || _Buffer.Length <= 0 )
+					// if buffer is empty, do nothing
+					if( _Buffer.Length <= 0 )
 					{
 						return;
 					}
@@ -282,31 +271,8 @@ namespace Sgry
 			{
 				try
 				{
-					// open log
-					if( Realtime )
-					{
-						// back up log if it is so large
-						if( File.Exists(LogFilePath) )
-						{
-							if( MaxLogFileSize < new FileInfo(LogFilePath).Length )
-							{
-								File.Delete( OldLogFilePath );
-								File.Move( LogFilePath, OldLogFilePath );
-							}
-						}
-
-						// open file
-						writer = new StreamWriter(
-								File.Open(LogFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite),
-								Encoding.UTF8
-							);
-					}
-					else
-					{
-						writer = new StringWriter( _Buffer );
-					}
-
 					// write header
+					writer = new StringWriter( _Buffer );
 					if( _HeaderNotWritten )
 					{
 						int pid;
@@ -345,6 +311,12 @@ namespace Sgry
 					if( SecondOutput != null )
 					{
 						SecondOutput.Write( String.Format(format, p) );
+					}
+
+					// flush
+					if( Realtime )
+					{
+						Flush();
 					}
 				}
 				catch( IOException )

@@ -1461,7 +1461,7 @@ namespace Sgry.Azuki.Windows
 			WinApi.SetScrollRange( Handle, false, 0, vMax, vPageSize );
 			
 			// update the range of horizontal scrollbar
-			if( ShowsHScrollBar == false )
+			if( ShowsHScrollBar == false || ViewType == ViewType.WrappedProportional )
 				WinApi.SetScrollRange( Handle, true, 0, 0, hPageSize ); // bar will be hidden
 			else
 				WinApi.SetScrollRange( Handle, true, 0, hMax, hPageSize );

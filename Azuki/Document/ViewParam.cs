@@ -107,6 +107,9 @@ namespace Sgry.Azuki
 			set{ _PrevCaretLine = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets lastly drawn horizontal ruler bar position.
+		/// </summary>
 		public int PrevHRulerVirX
 		{
 			get{ return _PrevHRulerVirX; }

@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-11-14
+// update: 2009-11-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1156,6 +1156,9 @@ namespace Sgry.Azuki
 		{
 			// adjust for new document
 			UpdateLineNumberWidth();
+
+			// reset desired column to current caret position
+			SetDesiredColumn();
 		}
 
 		/// <summary>

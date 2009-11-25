@@ -39,10 +39,10 @@ namespace Sgry.Azuki
 			{
 				Document.SetSelection( Document.CaretIndex, Document.CaretIndex );
 
-				// scroll to caret.
-				// because text graphic was not drawn yet,
-				// maximum line length is unknown.
-				// so ScrollToCaret does not work properly.
+				// scroll to caret manually.
+				// (because text graphic was not drawn yet,
+				// maximum line length is unknown
+				// so ScrollToCaret does not work properly)
 				Point pos = GetVirPosFromIndex( Document.CaretIndex );
 				int newValue = pos.X - (VisibleTextAreaSize.Width / 2);
 				if( 0 < newValue )

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-15
+// update: 2009-11-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1452,6 +1452,10 @@ namespace Sgry.Azuki.Windows
 			// calculate horizontal range and page size
 			hMax = View.TextAreaWidth;
 			hPageSize = View.VisibleTextAreaSize.Width;
+			if( hPageSize < 0 )
+			{
+				hPageSize = 0;
+			}
 
 			// update the range of vertical scrollbar
 			WinApi.SetScrollRange( Handle, false, 0, vMax, vPageSize );

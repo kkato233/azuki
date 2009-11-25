@@ -124,7 +124,17 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public Document Document
 		{
-			get{ return _Impl.Document; }
+			get
+			{
+				if( _Impl == null )
+				{
+					return null;
+				}
+				else
+				{
+					return _Impl.Document;
+				}
+			}
 			set
 			{
 				if( value == null )
@@ -804,7 +814,7 @@ namespace Sgry.Azuki.Windows
 			Invoke( _invalidateProc2, new object[]{rect} );
 		}
 		#endregion
-		
+
 		#region IUserInterface - Behavior
 		/// <summary>
 		/// Gets or sets whether this document is read-only or not.
@@ -1469,7 +1479,6 @@ namespace Sgry.Azuki.Windows
 			// then, update scroll position and caret graphic
 			WinApi.SetScrollPos( Handle, false, _Impl.View.FirstVisibleLine );
 			WinApi.SetScrollPos( Handle, true, _Impl.View.ScrollPosX );
-			UpdateCaretGraphic();
 		}
 		#endregion
 

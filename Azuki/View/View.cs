@@ -114,9 +114,6 @@ namespace Sgry.Azuki
 			// (because there is a metric which needs a reference to Document to be calculated
 			// but it cannnot be set Document before setting Font by structural reason)
 			UpdateMetrics();
-
-			// update virtual x-coord of desired column and scroll to caret
-			SetDesiredColumn();
 		}
 
 #		if DEBUG
@@ -909,17 +906,14 @@ namespace Sgry.Azuki
 			// shrink the rectangle if some lines must be visible
 			if( UserPref.AutoScrollNearWindowBorder )
 			{
-				if( (this is PropWrapView) == false )
-				{
-					threshRect.X += _SpaceWidth;
-					threshRect.Width -= _SpaceWidth << 1;
-				}
+				threshRect.X += _SpaceWidth;
+				threshRect.Width -= _SpaceWidth << 1;
 				if( 0 < FirstVisibleLine )
 				{
 					threshRect.Y += LineSpacing;
 					threshRect.Height -= LineSpacing;
 				}
-				threshRect.Height -= (LineSpacing >> 1); // (*1.5)
+				threshRect.Height -= (LineSpacing >> 1);
 			}
 
 			// calculate caret position
@@ -1156,6 +1150,12 @@ namespace Sgry.Azuki
 		{
 			// adjust for new document
 			UpdateLineNumberWidth();
+
+			// re-calculate line index of caret and anchor
+			Document.ViewParam.PrevCaretLine
+				= GetLineIndexFromCharIndex( Document.CaretIndex );
+			Document.ViewParam.PrevAnchorLine
+				= GetLineIndexFromCharIndex( Document.AnchorIndex );
 
 			// reset desired column to current caret position
 			SetDesiredColumn();

@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-18
+// update: 2009-11-25
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -55,7 +55,9 @@ namespace Sgry.Azuki
 			set
 			{
 				// ignore if negative integer given.
-				// (this case may occur when minimizing window)
+				// (This case may occur when minimizing window.
+				// Note that lower boundary check will be done in
+				// base.TextAreaWidth so there is no need to check it here.)
 				if( value < 0 )
 				{
 					return;
@@ -71,6 +73,16 @@ namespace Sgry.Azuki
 					PLHI.Clear();
 					PLHI.Add( 0 );
 					UpdatePLHI( 0, "", text );
+
+					// re-calculate line index of caret and anchor
+					Document.ViewParam.PrevCaretLine
+						= GetLineIndexFromCharIndex( Document.CaretIndex );
+					Document.ViewParam.PrevAnchorLine
+						= GetLineIndexFromCharIndex( Document.AnchorIndex );
+
+					// update desired column
+					// (must be done after UpdatePLHI)
+					SetDesiredColumn();
 				}
 			}
 		}

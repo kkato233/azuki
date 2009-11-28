@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-25
+// update: 2009-11-28
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -177,7 +177,7 @@ namespace Sgry.Azuki.Windows
 		/// View type determine how to render text content.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(ViewType.Proportional)]
 		[Description("Specify how to draw text content. Wrapped proportional view shows text wrapped within the width specified as ViewWidth property. Proportional view do not wrap text but draws faster.")]
 #		endif
@@ -263,6 +263,10 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets whether Azuki is in rectangle selection mode or not.
 		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
 		public bool IsRectSelectMode
 		{
 			get{ return _Impl.IsRectSelectMode; }
@@ -333,7 +337,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(1)]
 		[Description("Specify margin at top of the text area in pixel.")]
 #		endif
@@ -353,7 +357,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">A negative number was set.</exception>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(1)]
 		[Description("Specify margin at left of the text area in pixel.")]
 #		endif
@@ -372,7 +376,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets type of the indicator on the horizontal ruler.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(HRulerIndicatorType.Segment)]
 		[Description("Specify type of the indicator on the horizontal ruler.")]
 #		endif
@@ -517,6 +521,9 @@ namespace Sgry.Azuki.Windows
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.ViewParam">Document.ViewParam</seealso>
 		/// <seealso cref="Sgry.Azuki.ViewParam.FirstVisibleLine">ViewParam.FirstVisibleLine</seealso>
+#		if !PocketPC
+		[Browsable(false)]
+#		endif
 		public int FirstVisibleLine
 		{
 			get{ return Document.ViewParam.FirstVisibleLine; }
@@ -552,8 +559,9 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show line number or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(true)]
+		[Description("Set true to show line number area.")]
 #		endif
 		public bool ShowsLineNumber
 		{
@@ -572,8 +580,9 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show horizontal ruler or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(false)]
+		[Description("Set true to show horizontal ruler.")]
 #		endif
 		public bool ShowsHRuler
 		{
@@ -594,7 +603,7 @@ namespace Sgry.Azuki.Windows
 #		if !PocketPC
 		[Category("Appearance")]
 		[DefaultValue(true)]
-		[Description("If true, horizontal scrollbar will appear.")]
+		[Description("Set true to show horizontal scroll bar.")]
 #		endif
 		public bool ShowsHScrollBar
 		{
@@ -639,6 +648,11 @@ namespace Sgry.Azuki.Windows
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.LineDirtyState">LineDirtyState enum</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.GetLineDirtyState">Document.GetLineDirtyState method</seealso>
+#		if !PocketPC
+		[Category("Appearance")]
+		[DefaultValue(true)]
+		[Description("Set true to show a thin bar at right end of the line number area which indicates the dirty state of each text line.")]
+#		endif
 		public bool ShowsDirtBar
 		{
 			get{ return View.ShowsDirtBar; }
@@ -649,7 +663,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether the current line would be drawn with underline or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(true)]
 #		endif
 		public bool HighlightsCurrentLine
@@ -662,7 +676,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show half-width space with special graphic or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(false)]
 #		endif
 		public bool DrawsSpace
@@ -675,7 +689,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show full-width space with special graphic or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(true)]
 #		endif
 		public bool DrawsFullWidthSpace
@@ -688,7 +702,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show tab character with special graphic or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(true)]
 #		endif
 		public bool DrawsTab
@@ -701,7 +715,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show EOF mark or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(false)]
 #		endif
 		public bool DrawsEofMark
@@ -714,7 +728,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets whether to show EOL code with special graphic or not.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(true)]
 #		endif
 		public bool DrawsEolCode
@@ -727,7 +741,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets tab width in count of space characters.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(4)]
 #		endif
 		public int TabWidth
@@ -751,7 +765,7 @@ namespace Sgry.Azuki.Windows
 		/// Gets or sets size of padding between lines in pixel.
 		/// </summary>
 #		if !PocketPC
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[DefaultValue(1)]
 		[Description("Height of padding between lines.")]
 #		endif
@@ -777,7 +791,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 #		if !PocketPC
 		[Browsable(true)]
-		[Category("Drawing")]
+		[Category("Appearance")]
 		[Description("Width of the text content area. In proportional view, highlight line will be drawn in this width and this will be automatically expanded to enough width to show the input text. In wrapped-proportional view, text will be wrapped in this width.")]
 #		endif
 		public int ViewWidth
@@ -1539,6 +1553,10 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets version of Azuki.dll.
 		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
 		public Version Version
 		{
 			get

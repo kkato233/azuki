@@ -1,4 +1,4 @@
-// 2009-11-15
+// 2009-11-28
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -789,7 +789,7 @@ namespace Sgry.Ann
 			AppConfig.Load();
 
 			// apply config
-			MainForm.Azuki.Font					= AppConfig.FontInfo;
+			MainForm.Azuki.FontInfo				= AppConfig.FontInfo;
 			MainForm.ClientSize					= AppConfig.WindowSize;
 			if( AppConfig.WindowMaximized )
 			{

@@ -74,6 +74,10 @@
     <Compile Include="DrawingOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="DrawingOptionForm.Full.cs">
+      <DependentUpon>DrawingOptionForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="EncodingAnalyzer.cs" />
     <Compile Include="FileType.cs" />
     <Compile Include="Ini.cs" />

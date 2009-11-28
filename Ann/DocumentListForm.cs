@@ -1,4 +1,4 @@
-// 2008-12-07
+// 2009-11-28
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -167,7 +167,7 @@ namespace Sgry.Ann
 			MinimizeBox = false;
 			Controls.Add( _ListView );
 			Name = "DocumentListForm";
-			Text = "DocumentListForm";
+			Text = "Ann - Document List";
 			ResumeLayout( false );
 		}
 		#endregion

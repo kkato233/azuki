@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2009-10-18
+// update: 2009-11-28
 //=========================================================
 using System;
 using System.Text;
@@ -172,21 +172,37 @@ namespace Sgry.Azuki
 	/// </summary>
 	public class FontInfo
 	{
+		string _Name;
+		int _Size;
+		FontStyle _Style;
+
 		#region Properties
 		/// <summary>
 		/// Font face name of this font.
 		/// </summary>
-		public string Name;
+		public string Name
+		{
+			get{ return _Name; }
+			set{ _Name = value; }
+		}
 
 		/// <summary>
 		/// Size of this font in pt (point).
 		/// </summary>
-		public int Size;
+		public int Size
+		{
+			get{ return _Size; }
+			set{ _Size = value; }
+		}
 
 		/// <summary>
 		/// Style of this font.
 		/// </summary>
-		public FontStyle Style;
+		public FontStyle Style
+		{
+			get{ return _Style; }
+			set{ _Style = value; }
+		}
 		#endregion
 
 		#region Init / Dispose
@@ -195,9 +211,19 @@ namespace Sgry.Azuki
 		/// </summary>
 		public FontInfo( string name, int size, FontStyle style )
 		{
-			Name = name;
-			Size = size;
-			Style = style;
+			_Name = name;
+			_Size = size;
+			_Style = style;
+		}
+
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public FontInfo( FontInfo fontInfo )
+		{
+			_Name = fontInfo.Name;
+			_Size = fontInfo.Size;
+			_Style = fontInfo.Style;
 		}
 
 		/// <summary>
@@ -207,25 +233,62 @@ namespace Sgry.Azuki
 		{
 #			if !PocketPC
 			if( font.OriginalFontName != null )
-				Name = font.OriginalFontName;
+				_Name = font.OriginalFontName;
 			else
-				Name = font.Name;
+				_Name = font.Name;
 #			else
-			Name = font.Name;
+			_Name = font.Name;
 #			endif
 
-			Size = (int)font.Size;
-			Style = font.Style;
+			_Size = (int)font.Size;
+			_Style = font.Style;
 		}
 		#endregion
 
 		#region Utilities
 		/// <summary>
+		/// Gets user readable text of this font information.
+		/// </summary>
+		public override string ToString()
+		{
+			return String.Format( "\"{0}\", {1}, {2}", _Name, _Size, _Style );
+		}
+
+		/// <summary>
 		/// Creates new instance of System.Drawing.Font with same information.
 		/// </summary>
+		/// <exception cref="System.ArgumentException">Failed to create System.Font object.</exception>
 		public Font ToFont()
 		{
-			return new Font( Name, Size, Style );
+			try
+			{
+				return new Font( Name, Size, Style );
+			}
+			catch( ArgumentException ex )
+			{
+				// ArgumentException will be thrown
+				// if the font specified the name does not support
+				// specified font style.
+				// try to find available font style for the font.
+				FontStyle[] styles = new FontStyle[5];
+				styles[0] = FontStyle.Regular;
+				styles[1] = FontStyle.Bold;
+				styles[2] = FontStyle.Italic;
+				styles[3] = FontStyle.Underline;
+				styles[4] = FontStyle.Strikeout;
+				foreach( FontStyle s in styles )
+				{
+					try
+					{
+						return new Font( Name, Size, s );
+					}
+					catch
+					{}
+				}
+
+				// there is nothing Azuki can do...
+				throw ex;
+			}
 		}
 
 		/// <summary>

@@ -448,6 +448,30 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets or sets raw font information to be used for displaying text.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+#		endif
+		public FontInfo FontInfo
+		{
+			get{ return View.FontInfo; }
+			set
+			{
+				if( value == null )
+					throw new ArgumentException( "invalid operation; AzukiControl.Font was set to null." );
+
+				try
+				{
+					base.Font = value.ToFont();
+				}
+				catch
+				{}
+				View.FontInfo = new FontInfo( value.Name, value.Size, value.Style );
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets graphical style of border of this control.
 		/// </summary>
 #		if !PocketPC

@@ -24,6 +24,7 @@
  * fix: caret graphic becomes invisible after executing ZoomIn or ZoomOut
  * fix: on input of close curly bracket '}', auto-indentation logic for C styled language properly decrement the line containing only white spaces
  * add: [Ann] now Ann has simple tab interface
+ * add: [Ann] now Ann can change text font in drawing option dialog
  * add: [Ann] now Ann remembers last window size
  * add: [Ann] now Ann remembers drawing options
  * add: [Ann] now Ann opens a file in appropriate mode chosen by file extension

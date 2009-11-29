@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-28
+// update: 2009-11-29
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -125,7 +125,7 @@ namespace Sgry.Azuki
 
 			// set value for when the columnIndex is 0
 			pos.X = 0;
-			pos.Y = lineIndex * LineSpacing;
+			pos.Y = (lineIndex * LineSpacing) + (LinePadding >> 1);
 
 			// if the location is not the head of the line, calculate x-coord.
 			if( 0 < columnIndex )
@@ -300,7 +300,7 @@ namespace Sgry.Azuki
 
 			// invalidate the part at right of the old selection
 			invalidRect1.X = oldCaretVirPos.X;
-			invalidRect1.Y = oldCaretVirPos.Y;
+			invalidRect1.Y = oldCaretVirPos.Y - (LinePadding >> 1);
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
 			VirtualToScreen( ref invalidRect1 );
@@ -322,18 +322,20 @@ namespace Sgry.Azuki
 				int logLine;
 				int logLineEnd;
 				Point logLineEndPos;
+				int logLineBottom;
 
 				// get position of the char at the end of the logical line
 				logLine = doc.GetLineIndexFromCharIndex( e.Index );
 				logLineEnd = doc.GetLineHeadIndex( logLine ) + doc.GetLineLength( logLine );
 				logLineEndPos = GetVirPosFromIndex( logLineEnd );
 				VirtualToScreen( ref logLineEndPos );
+				logLineBottom = logLineEndPos.Y - (LinePadding >> 1);
 
 				// make a rectangle that covers the logical line area
 				//NO_NEED//invalidRect2.X = 0;
 				invalidRect2.Y = invalidRect1.Bottom;
 				invalidRect2.Width = VisibleSize.Width;
-				invalidRect2.Height = (logLineEndPos.Y + LineSpacing) - invalidRect2.Top;
+				invalidRect2.Height = (logLineBottom + LineSpacing) - invalidRect2.Top;
 			}
 
 			// invalidate the range
@@ -372,6 +374,8 @@ namespace Sgry.Azuki
 				}
 
 				// overdraw dirt bar
+				top.Y -= (LinePadding >> 1);
+				bottom.Y -= (LinePadding >> 1);
 				for( int y=top.Y; y<bottom.Y; y+=LineSpacing )
 				{
 					DrawDirtBar( y, logLineIndex );

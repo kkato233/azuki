@@ -1275,7 +1275,7 @@ namespace Sgry.Azuki
 
 		internal int EolCodeWithInPx
 		{
-			get{ return (_LineHeight >> 1); }
+			get{ return (_LineHeight >> 1) + (_LineHeight >> 2); }
 		}
 		#endregion
 	}

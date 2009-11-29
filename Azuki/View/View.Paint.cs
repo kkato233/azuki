@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-11-03
+// update: 2009-11-29
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -28,11 +28,16 @@ namespace Sgry.Azuki
 		{
 			Debug.Assert( token != null, "given token is null." );
 			Debug.Assert( 0 < token.Length, "given token is empty." );
+			Point textPos = tokenPos;
+			Color fore, back;
+
+			// calculate top coordinate of text
+			textPos.Y += (LinePadding >> 1);
+
 #			if DRAW_SLOWLY
 			if(!Windows.WinApi.IsKeyDownAsync(System.Windows.Forms.Keys.ControlKey))
 			{ _Gra.BackColor=Color.Red; _Gra.FillRectangle(tokenPos.X, tokenPos.Y, 2, LineHeight); DebugUtl.Sleep(400); }
 #			endif
-			Color fore, back;
 
 			// get fore/back color for the class
 			Utl.ColorFromCharClass( ColorScheme, klass, inSelection, out fore, out back );
@@ -51,7 +56,7 @@ namespace Sgry.Azuki
 					_Gra.ForeColor = ColorScheme.WhiteSpaceColor;
 					_Gra.DrawRectangle(
 							tokenPos.X + (_SpaceWidth >> 1) - 1,
-							tokenPos.Y + (_LineHeight >> 1),
+							textPos.Y + (_LineHeight >> 1),
 							1,
 							1
 						);
@@ -66,8 +71,8 @@ namespace Sgry.Azuki
 				// calc desired foreground graphic position
 				graLeft = tokenPos.X + 2;
 				graWidth = _FullSpaceWidth - 5;
-				graTop = (tokenPos.Y + _LineHeight / 2) - (graWidth / 2);
-				graBottom = (tokenPos.Y + _LineHeight / 2) + (graWidth / 2);
+				graTop = (textPos.Y + _LineHeight / 2) - (graWidth / 2);
+				graBottom = (textPos.Y + _LineHeight / 2) + (graWidth / 2);
 
 				// draw background
 				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, _FullSpaceWidth, LineSpacing );
@@ -85,13 +90,13 @@ namespace Sgry.Azuki
 			{
 				int bgLeft, bgRight;
 				int fgLeft, fgRight;
-				int fgTop = tokenPos.Y + (_LineHeight * 1 / 3);
-				int fgBottom = tokenPos.Y + (_LineHeight * 2 / 3);
+				int fgTop = textPos.Y + (_LineHeight * 1 / 3);
+				int fgBottom = textPos.Y + (_LineHeight * 2 / 3);
 
 				// calc next tab stop (calc in virtual space and convert it to screen coordinate)
-				Point p = tokenPos;
-				ScreenToVirtual( ref p );
-				bgRight = Utl.CalcNextTabStop( p.X, TabWidthInPx );
+				Point tokenVirPos = tokenPos;
+				ScreenToVirtual( ref tokenVirPos );
+				bgRight = Utl.CalcNextTabStop( tokenVirPos.X, TabWidthInPx );
 				bgRight -= ScrollPosX - XofTextArea;
 				
 				// calc desired foreground graphic position
@@ -114,20 +119,22 @@ namespace Sgry.Azuki
 			// EOL-Code
 			else if( LineLogic.IsEolChar(token, 0) )
 			{
+				int width;
+
 				// before to draw background,
 				// change bgcolor to normal if it's not selected
 				if( inSelection == false )
 					_Gra.BackColor = ColorScheme.BackColor;
 
 				// draw background
-				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, _LineHeight>>1, LineSpacing );
+				width = EolCodeWithInPx;
+				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, width, LineSpacing );
 
 				if( DrawsEolCode == false )
 					return;
 
 				// calc metric
-				int width = EolCodeWithInPx;
-				int y_middle = tokenPos.Y + width;
+				int y_middle = tokenPos.Y + (LineSpacing >> 1);
 				int x_middle = tokenPos.X + (width >> 1); // width/2
 				int halfSpaceWidth = (_SpaceWidth >> 1); // _SpaceWidth/2
 				int left = tokenPos.X + 1;
@@ -161,7 +168,7 @@ namespace Sgry.Azuki
 
 			// draw normal visible text
 			_Gra.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
-			_Gra.DrawText( token, ref tokenPos, fore );
+			_Gra.DrawText( token, ref textPos, fore );
 		}
 
 		/// <summary>
@@ -177,7 +184,7 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 
 			// calculate position to underline
-			int bottom = lineTopY + _LineHeight;
+			int bottom = lineTopY + _LineHeight + (_LinePadding >> 1);
 
 			// draw underline
 			_Gra.ForeColor = color;
@@ -189,7 +196,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected void DrawDirtBar( int lineTopY, int logicalLineIndex )
 		{
-			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0 );
+			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0, "((lineTopY-YofTextArea) % LineSpacing) is not 0 but " + (lineTopY-YofTextArea) % LineSpacing );
 			LineDirtyState dirtyState;
 
 			dirtyState = Document.GetLineDirtyState( logicalLineIndex );
@@ -242,10 +249,18 @@ namespace Sgry.Azuki
 			// draw line number text
 			if( ShowLineNumber && drawsText )
 			{
-				string lineNumText = lineNumber.ToString();
+				string lineNumText;
+				Point textPos;
+
+				// calculate text position
+				lineNumText = lineNumber.ToString();
 				pos.X = XofDirtBar - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
+				textPos = pos;
+				textPos.Y += (LinePadding >> 1);
+
+				// draw text
 				_Gra.ForeColor = ColorScheme.LineNumberFore;
-				_Gra.DrawText( lineNumText, ref pos, ColorScheme.LineNumberFore );
+				_Gra.DrawText( lineNumText, ref textPos, ColorScheme.LineNumberFore );
 			}
 
 			// draw margin line between the line number area and text area
@@ -450,23 +465,40 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected void DrawEofMark( ref Point pos )
 		{
+			Point textPos;
+
 			_Gra.BackColor = ColorScheme.BackColor;
 			if( UserPref.UseTextForEofMark )
 			{
+				int margin = (_SpaceWidth >> 2);
+
+				// fill background
 				int width = _Gra.MeasureText( "[EOF]" ).Width;
-				_Gra.FillRectangle( pos.X, pos.Y, width+2, LineSpacing );
-				pos.X += 2;
-				_Gra.DrawText( "[EOF]", ref pos, ColorScheme.EofColor );
+				_Gra.FillRectangle( pos.X, pos.Y, width+margin, LineSpacing );
+
+				// calculate text position
+				pos.X += margin;
+				textPos = pos;
+				textPos.Y += (LinePadding >> 1);
+
+				// draw text
+				_Gra.DrawText( "[EOF]", ref textPos, ColorScheme.EofColor );
 				pos.X += width;
 			}
 			else
 			{
 				int width = LineHeight - (LineHeight >> 2);
+
+				// fill background
 				_Gra.FillRectangle( pos.X, pos.Y, width, LineSpacing );
+
+				// draw graphic
+				textPos = pos;
+				textPos.Y += (LinePadding >> 1);
 				_Gra.ForeColor = ColorScheme.EofColor;
-				_Gra.DrawLine( pos.X+2, pos.Y+2, pos.X+2, pos.Y + LineHeight - 3 );
-				_Gra.DrawLine( pos.X+2, pos.Y+2, pos.X + width - 3, pos.Y+2 );
-				_Gra.DrawLine( pos.X+2, pos.Y + LineHeight - 3, pos.X + width - 3, pos.Y+2 );
+				_Gra.DrawLine( pos.X+2, textPos.Y+2, pos.X+2, textPos.Y + LineHeight - 3 );
+				_Gra.DrawLine( pos.X+2, textPos.Y+2, pos.X + width - 3, textPos.Y+2 );
+				_Gra.DrawLine( pos.X+2, textPos.Y + LineHeight - 3, pos.X + width - 3, textPos.Y+2 );
 				pos.X += width;
 			}
 		}

@@ -1,7 +1,7 @@
 ﻿// file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-11-14
+// update: 2009-11-29
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -93,7 +93,7 @@ namespace Sgry.Azuki
 
 			// set value for when the columnIndex is 0
 			pos.X = 0;
-			pos.Y = lineIndex * LineSpacing;
+			pos.Y = (lineIndex * LineSpacing) + (LinePadding >> 1);
 
 			// if the location is not the head of the line, calculate x-coord.
 			if( 0 < columnIndex )
@@ -243,7 +243,7 @@ namespace Sgry.Azuki
 					if( HighlightsCurrentLine
 						&& prevCaretLine != caretLine )
 					{
-						HandleSelectionChanged_UpdateCaretHighlight( prevCaretLine, caretLine );
+						HandleSelectionChanged_UpdateCurrentLineHighlight( prevCaretLine, caretLine );
 					}
 				}
 				// or, does the change release selection?
@@ -261,14 +261,7 @@ namespace Sgry.Azuki
 
 						GetLineColumnIndexFromCharIndex( e.OldCaret, out oldCaretLine, out oldCaretColumn );
 						oldCaretLineY = YofLine( oldCaretLine );
-						Invalidate(
-								new Rectangle(
-										XofTextArea,
-										oldCaretLineY + LineHeight,
-										VisibleSize.Width - XofTextArea,
-										1
-									)
-							);
+						DrawUnderLine( oldCaretLineY, ColorScheme.BackColor );
 					}
 
 					// if the change occured in a line?
@@ -306,7 +299,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void HandleSelectionChanged_UpdateCaretHighlight( int oldCaretLine, int newCaretLine )
+		void HandleSelectionChanged_UpdateCurrentLineHighlight( int oldCaretLine, int newCaretLine )
 		{
 			int prevAnchorLine = Document.ViewParam.PrevAnchorLine;
 			int prevCaretLine = Document.ViewParam.PrevCaretLine;
@@ -315,9 +308,7 @@ namespace Sgry.Azuki
 			if( prevCaretLine == prevAnchorLine && FirstVisibleLine <= prevCaretLine )
 			{
 				int y = YofLine( prevCaretLine );
-				Invalidate(
-						new Rectangle(XofTextArea, y+LineHeight, VisibleSize.Width-XofTextArea, 1)
-					);
+				DrawUnderLine( y, ColorScheme.BackColor );
 			}
 			
 			// draw new underline if it is visible
@@ -343,6 +334,8 @@ namespace Sgry.Azuki
 			lastEnd = e.OldRectSelectRanges[ e.OldRectSelectRanges.Length - 1 ];
 			firstBeginPos = this.GetVirPosFromIndex( firstBegin );
 			lastEndPos = this.GetVirPosFromIndex( lastEnd );
+			firstBeginPos.Y -= (LinePadding >> 1);
+			lastEndPos.Y -= (LinePadding >> 1);
 
 			// convert it to physical screen coordinate
 			VirtualToScreen( ref firstBeginPos );
@@ -479,7 +472,7 @@ namespace Sgry.Azuki
 
 			// invalidate the part at right of the old selection
 			invalidRect1.X = oldCaretPos.X;
-			invalidRect1.Y = oldCaretPos.Y;
+			invalidRect1.Y = oldCaretPos.Y - (LinePadding >> 1);
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
 

@@ -1,4 +1,4 @@
-// 2009-11-28
+// 2009-12-03
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -271,14 +271,15 @@ namespace Sgry.Ann
 				int lineHead, lineEnd;
 				Document doc = ActiveDocument;
 
-				lineHead = 0;
 				doc.BeginUndo();
 				for( int lineIndex=0; lineIndex+1<doc.LineCount; lineIndex++ )
 				{
 					int eolBegin;
 
-					// set eol beginning index as one character before the line end
+					lineHead = doc.GetLineHeadIndex( lineIndex );
 					lineEnd = doc.GetLineHeadIndex( lineIndex+1 );
+
+					// set eol beginning index as one character before the line end
 					eolBegin = lineEnd - 1;
 					
 					// if the line is terminated with a CR+LF, set eol beginning index back one more
@@ -293,9 +294,6 @@ namespace Sgry.Ann
 					
 					// replace the line terminator
 					doc.Replace( eolCode, eolBegin, lineEnd );
-
-					// go to next line
-					lineHead = lineEnd + (lineEnd-eolBegin - eolCode.Length);
 				}
 				doc.EndUndo();
 			}

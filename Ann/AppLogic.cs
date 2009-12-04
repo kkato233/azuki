@@ -1,4 +1,4 @@
-// 2009-12-03
+// 2009-12-05
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -245,7 +245,8 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
-		/// Sets EOL code for input and unify existing EOL code to the one if user choses so.
+		/// Sets EOL code for input
+		/// and unify existing EOL code to the one if user choses so.
 		/// </summary>
 		public void SetEolCode( string eolCode )
 		{
@@ -267,35 +268,19 @@ namespace Sgry.Ann
 			reply = AskUserToUnifyExistingEolOrNot( eolCode );
 			if( reply == DialogResult.Yes )
 			{
-				// unify EOL code
-				int lineHead, lineEnd;
+				//--- unify EOL code ---
 				Document doc = ActiveDocument;
+				StringBuilder newContent = new StringBuilder( doc.Length*2 );
 
-				doc.BeginUndo();
-				for( int lineIndex=0; lineIndex+1<doc.LineCount; lineIndex++ )
+				// make copy of lines and set EOL to specified one
+				for( int i=0; i<doc.LineCount; i++ )
 				{
-					int eolBegin;
-
-					lineHead = doc.GetLineHeadIndex( lineIndex );
-					lineEnd = doc.GetLineHeadIndex( lineIndex+1 );
-
-					// set eol beginning index as one character before the line end
-					eolBegin = lineEnd - 1;
-					
-					// if the line is terminated with a CR+LF, set eol beginning index back one more
-					if( lineHead < lineEnd-2 )
-					{
-						string ch = doc.GetTextInRange( lineEnd-2, lineEnd );
-						if( ch == "\r\n" )
-						{
-							eolBegin--;
-						}
-					}
-					
-					// replace the line terminator
-					doc.Replace( eolCode, eolBegin, lineEnd );
+					newContent.Append( doc.GetLineContent(i) );
+					newContent.Append( eolCode );
 				}
-				doc.EndUndo();
+
+				// then replace whole content
+				doc.Replace( newContent.ToString(), 0, doc.Length );
 			}
 
 			MainForm.UpdateUI();

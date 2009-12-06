@@ -1,4 +1,4 @@
-== 1.5.0 (2009-  -  ) ==
+== 1.5.0 (2009-12-06) ==
  * add: rectangular selection feature by both mouse and keyboard
  * add: horizontal ruler can be used by AzukiControl.ShowsHRuler
  * add: added AzukiControl.ShowsDirtBar property to display special area indicating whether each line is modified or not
@@ -34,6 +34,7 @@
  * mod: [Ann] now F3 is bound to "Find next", Shift+F3 is bound to "Find previous"
  * mod: [Ann] now mnemonic of "Select all" menu item is A, not L
  * mod: [Ann] now Ann shows revision version number of Ann and Azuki in "About" dialog
+ * fix: [Ann] tagged as version 1.4.0
 
 == 1.4.5 (2009-12-06) ==
  * fix: in ReadOnly mode, pressing BackSpace key deletes selected text

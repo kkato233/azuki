@@ -38,8 +38,8 @@
     <Preliminary>False</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>API Reference</RootNamespaceTitle>
-    <HelpTitle>Azuki 1.4 Documentation</HelpTitle>
-    <HtmlHelpName>azuki-1.4-doc</HtmlHelpName>
+    <HelpTitle>Azuki 1.5 Documentation</HelpTitle>
+    <HtmlHelpName>azuki-1.5-doc</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref>http://azuki.sourceforge.jp/</CopyrightHref>
     <CopyrightText />

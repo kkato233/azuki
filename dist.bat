@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set version=
+set version=%1
 set sevenzip=a
 set msbuild_opt=-nologo -v:m -t:Build -clp:ForceNoAlign;ShowCommandLine
 
@@ -25,7 +25,9 @@ if "%sevenzip%" == "a" (
 )
 
 :: ask for version
-set /p version="Please input version string (ex: 1.2.0):"
+if "%version%" == "" (
+	set /p version="Please input version string (ex: 1.2.0):"
+)
 
 
 :PHASE1

@@ -35,6 +35,10 @@
  * mod: [Ann] now mnemonic of "Select all" menu item is A, not L
  * mod: [Ann] now Ann shows revision version number of Ann and Azuki in "About" dialog
 
+== 1.4.5 (2009-12-06) ==
+ * fix: in ReadOnly mode, pressing BackSpace key deletes selected text
+ * fix: [Ann] tagged as version 1.3.5
+
 == 1.4.4 (2009-11-14) ==
  * fix: using built-in Ruby highlighter always causes an exception
  * fix: in line-wrapping mode, inserting character at near right end of the view now does not scrolls

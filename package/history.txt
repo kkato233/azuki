@@ -1,3 +1,6 @@
+== 1.5.1 (2009-  -  ) ==
+ * fix: dragging on left margin area does not select text
+
 == 1.5.0 (2009-12-12) ==
  * add: rectangular selection feature by both mouse and keyboard
  * add: horizontal ruler can be used by AzukiControl.ShowsHRuler

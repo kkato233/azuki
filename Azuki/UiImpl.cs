@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2009-12-20
 //=========================================================
 using System;
 using System.Text;
@@ -37,7 +37,9 @@ namespace Sgry.Azuki
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
 
-		Point _MouseDownVirPos = new Point( -1, 0 ); // this X coordinate also be used as a flag to determine whether the mouse button is down or not
+		// X coordinate of this also be used as a flag to determine
+		// whether the mouse button is down or not.
+		Point _MouseDownVirPos = new Point( Int32.MinValue, 0 );
 		bool _MouseDragging = false;
 		bool _IsRectSelectMode = false;
 
@@ -577,7 +579,7 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
-			_MouseDownVirPos.X = -1;
+			_MouseDownVirPos.X = Int32.MinValue;
 			_MouseDragging = false;
 			_IsRectSelectMode = false;
 		}
@@ -613,7 +615,7 @@ namespace Sgry.Azuki
 			int xOffset, yOffset;
 
 			// if mouse button was not down, ignore
-			if( _MouseDownVirPos.X < 0 )
+			if( _MouseDownVirPos.X == Int32.MinValue )
 				return;
 
 			// make sure that these coordinates are positive value

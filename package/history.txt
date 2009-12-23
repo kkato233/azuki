@@ -1,5 +1,5 @@
 == 1.5.1 (2009-  -  ) ==
- * fix: dragging on left margin area does not select text
+ * fix: now dragging on left margin area correctly selects text
 
 == 1.5.0 (2009-12-12) ==
  * add: rectangular selection feature by both mouse and keyboard
@@ -38,6 +38,9 @@
  * mod: [Ann] now mnemonic of "Select all" menu item is A, not L
  * mod: [Ann] now Ann shows revision version number of Ann and Azuki in "About" dialog
  * fix: [Ann] tagged as version 1.4.0
+
+== 1.4.6 (2009-  -  ) ==
+ * fix: graphic will not be redrawn correctly if selection anchor was changed by API
 
 == 1.4.5 (2009-12-06) ==
  * fix: in ReadOnly mode, pressing BackSpace key deletes selected text

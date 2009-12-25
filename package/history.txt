@@ -42,6 +42,7 @@
 == 1.4.6 (2009-  -  ) ==
  * fix: graphic will not be redrawn correctly if selection anchor was changed by API
  * fix: after losting focus while dragging text with mouse, Azuki looses track of the state of the button
+ * fix: selecting 'Bottom' in a menu appeared by clicking vertical scrollbar may not scrolls window properly
 
 == 1.4.5 (2009-12-06) ==
  * fix: in ReadOnly mode, pressing BackSpace key deletes selected text

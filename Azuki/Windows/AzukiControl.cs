@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-12-23
+// update: 2009-12-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1631,7 +1631,7 @@ namespace Sgry.Azuki.Windows
 			else if( scrollType == WinApi.SB_TOP )
 				newPos = 0;
 			else if( scrollType == WinApi.SB_BOTTOM )
-				newPos = Document.LineCount - 1;
+				newPos = View.LineCount - 1;
 			else if( scrollType == WinApi.SB_THUMBPOSITION
 				|| scrollType == WinApi.SB_THUMBTRACK )
 				newPos = WinApi.GetScrollTrackPos( Handle, false );

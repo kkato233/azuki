@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-12-20
+// update: 2009-12-23
 //=========================================================
 using System;
 using System.Text;
@@ -542,6 +542,20 @@ namespace Sgry.Azuki
 			_View.Paint( clipRect );
 		}
 
+		public void HandleLostFocus()
+		{
+			_MouseDownVirPos.X = Int32.MinValue;
+			_MouseDragging = false;
+			_IsRectSelectMode = false;
+		}
+
+		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
+		{
+			_MouseDownVirPos.X = Int32.MinValue;
+			_MouseDragging = false;
+			_IsRectSelectMode = false;
+		}
+
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
 			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
@@ -577,12 +591,6 @@ namespace Sgry.Azuki
 			}
 		}
 
-		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
-		{
-			_MouseDownVirPos.X = Int32.MinValue;
-			_MouseDragging = false;
-			_IsRectSelectMode = false;
-		}
 
 		internal void HandleDoubleClick( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{

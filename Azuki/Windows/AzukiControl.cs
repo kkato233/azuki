@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-11-28
+// update: 2009-12-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1700,6 +1700,7 @@ namespace Sgry.Azuki.Windows
 			base.OnLostFocus( e );
 
 			WinApi.HideCaret( Handle );
+			_Impl.HandleLostFocus();
 		}
 
 		/// <summary>

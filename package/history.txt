@@ -1,5 +1,6 @@
-== 1.5.1 (2009-  -  ) ==
+== 1.5.1 (2010-  -  ) ==
  * fix: now dragging on left margin area correctly selects text
+ * fix: [Ann] tab graphic would not be not redrawn under certain condition
 
 == 1.5.0 (2009-12-12) ==
  * add: rectangular selection feature by both mouse and keyboard

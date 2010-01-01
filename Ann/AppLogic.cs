@@ -1,4 +1,4 @@
-// 2009-12-05
+// 2010-01-01
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -905,8 +905,8 @@ namespace Sgry.Ann
 			}
 			else if( e.Button == MouseButtons.Middle )
 			{
-				MainForm.TabPanel.Invalidate();
 				CloseDocument( item );
+				MainForm.TabPanel.Invalidate();
 			}
 		}
 

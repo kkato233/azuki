@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2009-12-25
+// update: 2010-01-02
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -37,6 +37,9 @@ namespace Sgry.Azuki.Windows
 		bool _UseCtrlTabToMoveFocus = true;
 		int _WheelPos = 0;
 		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
+#		if !PocketPC
+		bool _LastAltWasForRectSelect = false;
+#		endif
 		
 		InvalidateProc1 _invalidateProc1 = null;
 		InvalidateProc2 _invalidateProc2 = null;
@@ -2057,6 +2060,26 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Pre-processes window messages to override
+		/// system default behavior.
+		/// </summary>
+		public override bool PreProcessMessage( ref Message msg )
+		{
+			if( WinApi.WM_KEYFIRST <= msg.Msg && msg.Msg <= WinApi.WM_KEYLAST )
+			{
+				if( msg.Msg == WinApi.WM_SYSKEYUP
+					&& msg.WParam.ToInt32() == (int)Keys.Menu
+					&& _LastAltWasForRectSelect )
+				{
+					_LastAltWasForRectSelect = false;
+					return true;
+				}
+			}
+
+			return base.PreProcessMessage( ref msg );
+		}
+
+		/// <summary>
 		/// This overrides focusing strategy.
 		/// </summary>
 		protected override bool ProcessDialogKey( Keys keyData )
@@ -2191,6 +2214,13 @@ namespace Sgry.Azuki.Windows
 						if( alt )
 						{
 							this.Cursor = Cursors.Arrow;
+
+							// set flag to prevent opening menu
+							// by Alt key for rectangular selection mode
+							if( IsRectSelectMode )
+							{
+								_LastAltWasForRectSelect = true;
+							}
 						}
 #						endif
 					}

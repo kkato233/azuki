@@ -1453,6 +1453,22 @@ namespace Sgry.Azuki.Windows
 				CaretMoved( this, EventArgs.Empty );
 			}
 		}
+
+		/// <summary>
+		/// Occures soon after rectangular selection mode was changed.
+		/// </summary>
+		public event EventHandler IsRectSelectModeChanged;
+
+		/// <summary>
+		/// Invokes IsRectSelectModeChanged event.
+		/// </summary>
+		public void InvokeIsRectSelectModeChanged()
+		{
+			if( IsRectSelectModeChanged != null )
+			{
+				IsRectSelectModeChanged( this, EventArgs.Empty );
+			}
+		}
 		#endregion
 
 		#region IUserInterface - Scroll

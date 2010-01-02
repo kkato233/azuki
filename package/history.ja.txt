@@ -1,4 +1,5 @@
 == 1.5.1 (2010-  -  ) ==
+ * add: AzukiControl に IsRectSelectModeChanged イベントを追加
  * fix: WPF アプリケーションで WindowsFormsHost を使って Azuki を使用する場合、Alt+マウスでの箱形選択後にメニューが表示されてしまう問題を修正
  * fix: 左マージン領域をマウスでドラッグしてもテキスト選択ができない問題を修正
  * fix: [Ann] タブのグラフィックが再描画されないことがある問題を修正

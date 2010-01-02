@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-12-23
+// update: 2009-01-02
 //=========================================================
 using System;
 using System.Text;
@@ -221,7 +221,11 @@ namespace Sgry.Azuki
 		public bool IsRectSelectMode
 		{
 			get{ return _IsRectSelectMode; }
-			set{ _IsRectSelectMode = value; }
+			set
+			{
+				_IsRectSelectMode = value;
+				_UI.InvokeIsRectSelectModeChanged();
+			}
 		}
 		#endregion
 
@@ -546,14 +550,14 @@ namespace Sgry.Azuki
 		{
 			_MouseDownVirPos.X = Int32.MinValue;
 			_MouseDragging = false;
-			_IsRectSelectMode = false;
+			IsRectSelectMode = false;
 		}
 
 		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
 			_MouseDownVirPos.X = Int32.MinValue;
 			_MouseDragging = false;
-			_IsRectSelectMode = false;
+			IsRectSelectMode = false;
 		}
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
@@ -577,7 +581,7 @@ namespace Sgry.Azuki
 				}
 				else if( alt )
 				{
-					_IsRectSelectMode = true;
+					IsRectSelectMode = true;
 					int index = View.GetIndexFromVirPos( pos );
 					Document.SetSelection( index, index );
 				}
@@ -656,7 +660,7 @@ namespace Sgry.Azuki
 				}
 
 				// expand selection to there
-				if( _IsRectSelectMode )
+				if( IsRectSelectMode )
 				{
 					//--- rectangle selection ---
 					Point anchorPos = _MouseDownVirPos;

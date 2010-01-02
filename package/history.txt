@@ -1,4 +1,5 @@
 == 1.5.1 (2010-  -  ) ==
+ * add: added IsRectSelectModeChanged event for AzukiControl
  * fix: menu is activated after rectangular selection by alt+mouse if using AzukiControl in WPF application through WindowsFormsHost window
  * fix: now dragging on left margin area correctly selects text
  * fix: [Ann] tab graphic would not be not redrawn under certain condition

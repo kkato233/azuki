@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2009-11-11
+// update: 2010-01-02
 //=========================================================
 using System;
 using System.Drawing;
@@ -553,6 +553,16 @@ namespace Sgry.Azuki
 		/// Invokes CaretMoved event.
 		/// </summary>
 		void InvokeCaretMoved();
+
+		/// <summary>
+		/// Occures soon after rectangular selection mode was changed.
+		/// </summary>
+		event EventHandler IsRectSelectModeChanged;
+
+		/// <summary>
+		/// Invokes IsRectSelectModeChanged event.
+		/// </summary>
+		void InvokeIsRectSelectModeChanged();
 		#endregion
 
 		#region Scroll

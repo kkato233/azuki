@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2009-12-23
+// update: 2010-01-02
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -689,7 +689,11 @@ namespace Sgry.Azuki
 
 			// fill area below of the text
 			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
+			_Gra.FillRectangle( XofTextArea, pos.Y, VisibleSize.Width-XofTextArea, VisibleSize.Height-pos.Y );
+			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
+			{
+				DrawLeftOfLine( y, -1, false );
+			}
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic can be drawn outside of the clipping rect
@@ -861,7 +865,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw line number
-			DrawLineNumber( pos.Y, lineIndex+1, true );
+			DrawLeftOfLine( pos.Y, lineIndex+1, true );
 		}
 		#endregion
 	}

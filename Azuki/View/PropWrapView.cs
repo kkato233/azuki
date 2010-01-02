@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2009-11-29
+// update: 2010-01-02
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -655,6 +655,10 @@ namespace Sgry.Azuki
 			// fill area below of the text
 			_Gra.BackColor = ColorScheme.BackColor;
 			_Gra.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
+			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
+			{
+				DrawLeftOfLine( y, -1, false );
+			}
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic is never limited to clipping rect
@@ -721,7 +725,7 @@ namespace Sgry.Azuki
 					drawsText = false;
 				}
 
-				DrawLineNumber( pos.Y, logicalLineIndex+1, drawsText );
+				DrawLeftOfLine( pos.Y, logicalLineIndex+1, drawsText );
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}

@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2009-11-29
+// update: 2010-01-02
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -199,7 +199,13 @@ namespace Sgry.Azuki
 			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0, "((lineTopY-YofTextArea) % LineSpacing) is not 0 but " + (lineTopY-YofTextArea) % LineSpacing );
 			LineDirtyState dirtyState;
 
-			dirtyState = Document.GetLineDirtyState( logicalLineIndex );
+			// get dirty state of the line
+			if( 0 <= logicalLineIndex && logicalLineIndex < Document.LineCount )
+				dirtyState = Document.GetLineDirtyState( logicalLineIndex );
+			else
+				dirtyState = LineDirtyState.Clean;
+
+			// choose color
 			if( dirtyState == LineDirtyState.Cleaned )
 			{
 				_Gra.BackColor = ColorScheme.CleanedLineBar;
@@ -212,6 +218,8 @@ namespace Sgry.Azuki
 			{
 				_Gra.BackColor = ColorScheme.LineNumberBack;
 			}
+
+			// fill
 			_Gra.FillRectangle( XofDirtBar, lineTopY, DirtBarWidth, LineSpacing );
 		}
 
@@ -221,7 +229,7 @@ namespace Sgry.Azuki
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="lineNumber">line number to be drawn.</param>
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>
-		protected void DrawLineNumber( int lineTopY, int lineNumber, bool drawsText )
+		protected void DrawLeftOfLine( int lineTopY, int lineNumber, bool drawsText )
 		{
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( XofLineNumberArea, lineTopY );

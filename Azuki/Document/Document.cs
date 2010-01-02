@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2010-01-02
 //=========================================================
 using System;
 using System.Collections;
@@ -1798,6 +1798,25 @@ namespace Sgry.Azuki
 		public char this[ int index ]
 		{
 			get{ return _Buffer[index]; }
+		}
+
+		/// <summary>
+		/// Determines whether text can be divided by given index or not.
+		/// </summary>
+		public static bool IsDividableIndex( string text, int index )
+		{
+			if( 0 < index && text[index-1] == '\r'
+				&& index < text.Length && text[index] == '\n' )
+			{
+				return false;
+			}
+			if( 0 < index && IsHighSurrogate(text[index-1])
+				&& index < text.Length && IsLowSurrogate(text[index]) )
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>

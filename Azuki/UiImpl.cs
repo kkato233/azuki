@@ -562,6 +562,8 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
+			bool onLineNumberArea = false;
+
 			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
 			if( pos.X < 0 || pos.Y < 0 )
 			{
@@ -574,27 +576,29 @@ namespace Sgry.Azuki
 
 			if( buttonIndex == 0 ) // left click
 			{
+				int index;
+
+				// calculate index of clicked character
+				index = View.GetIndexFromVirPos( pos );
+
+				// set selection
 				if( shift )
 				{
-					int index = View.GetIndexFromVirPos( pos );
 					Document.SetSelection( Document.AnchorIndex, index );
 				}
 				else if( alt )
 				{
 					IsRectSelectMode = true;
-					int index = View.GetIndexFromVirPos( pos );
 					Document.SetSelection( index, index );
 				}
 				else
 				{
-					int index = View.GetIndexFromVirPos( pos );
 					Document.SetSelection( index, index );
 				}
 				View.SetDesiredColumn();
 				View.ScrollToCaret();
 			}
 		}
-
 
 		internal void HandleDoubleClick( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{

@@ -1215,17 +1215,26 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Utilities
+		#region Coordinates of Graphical Parts
+		/// <summary>
+		/// Gets X coordinate in client area of line number area.
+		/// </summary>
 		internal int XofLineNumberArea
 		{
 			get{ return 0; }
 		}
 
+		/// <summary>
+		/// Gets X coordinate in client area of dirt bar area.
+		/// </summary>
 		internal int XofDirtBar
 		{
 			get{ return XofLineNumberArea + LineNumAreaWidth; }
 		}
 
+		/// <summary>
+		/// Gets X coordinate in client area of left margin.
+		/// </summary>
 		internal int XofLeftMargin
 		{
 			get
@@ -1238,6 +1247,9 @@ namespace Sgry.Azuki
 			}
 		}
 
+		/// <summary>
+		/// Gets X coordinate in client area of text area.
+		/// </summary>
 		internal int XofTextArea
 		{
 			get
@@ -1250,21 +1262,32 @@ namespace Sgry.Azuki
 			}
 		}
 
+		/// <summary>
+		/// Gets Y coordinate in client area of horizontal ruler.
+		/// </summary>
 		internal int YofHRuler
 		{
 			get{ return 0; }
 		}
 
+		/// <summary>
+		/// Gets Y coordinate in client area of top margin.
+		/// </summary>
 		internal int YofTopMargin
 		{
 			get{ return YofHRuler + HRulerHeight; }
 		}
 
+		/// <summary>
+		/// Gets Y coordinate in client area of text area.
+		/// </summary>
 		internal int YofTextArea
 		{
 			get{ return YofTopMargin + TopMargin; }
 		}
+		#endregion
 
+		#region Utilities
 		/// <summary>
 		/// Gets Y coordinate in client area of specified line.
 		/// </summary>
@@ -1273,7 +1296,7 @@ namespace Sgry.Azuki
 			return (  (lineIndex - FirstVisibleLine) * LineSpacing  ) + YofTextArea;
 		}
 
-		internal int EolCodeWithInPx
+		internal int EolCodeWidthInPx
 		{
 			get{ return (_LineHeight >> 1) + (_LineHeight >> 2); }
 		}

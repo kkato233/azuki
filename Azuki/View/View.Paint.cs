@@ -127,7 +127,7 @@ namespace Sgry.Azuki
 					_Gra.BackColor = ColorScheme.BackColor;
 
 				// draw background
-				width = EolCodeWithInPx;
+				width = EolCodeWidthInPx;
 				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, width, LineSpacing );
 
 				if( DrawsEolCode == false )
@@ -682,12 +682,12 @@ Debug.Assert( drawableLength == i );
 					}
 
 					// check whether this EOL code can be drawn or not
-					if( rightLimitX <= x + EolCodeWithInPx )
+					if( rightLimitX <= x + EolCodeWidthInPx )
 					{
 						// this EOL code hit the right limit.
 						return x;
 					}
-					x += EolCodeWithInPx;
+					x += EolCodeWidthInPx;
 
 					// treat this EOL code
 					drawableLength++;

@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-01-02
+// update: 2010-01-04
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -347,42 +347,47 @@ namespace Sgry.Azuki
 			}
 
 			// update dirt bar
-			{
-				int logLineIndex, logLineHeadIndex, logLineEndIndex;
-				Point top, bottom;
-
-				// calculate beginning and ending index of the modified logical line
-				logLineIndex = Document.GetLineIndexFromCharIndex( e.Index );
-				logLineHeadIndex = Document.GetLineHeadIndex( logLineIndex );
-				if( logLineIndex+1 < Document.LineCount )
-				{
-					logLineEndIndex = Document.GetLineHeadIndex( logLineIndex+1 );
-				}
-				else
-				{
-					logLineEndIndex = doc.Length;
-				}
-
-				// get the screen position of both beginning and ending character
-				top = this.GetVirPosFromIndex( logLineHeadIndex );
-				bottom = this.GetVirPosFromIndex( logLineEndIndex );
-				VirtualToScreen( ref top );
-				VirtualToScreen( ref bottom );
-				if( top.Y < YofTextArea )
-				{
-					top.Y = YofTextArea;
-				}
-
-				// overdraw dirt bar
-				top.Y -= (LinePadding >> 1);
-				bottom.Y -= (LinePadding >> 1);
-				for( int y=top.Y; y<bottom.Y; y+=LineSpacing )
-				{
-					DrawDirtBar( y, logLineIndex );
-				}
-			}
-
+			UpdateDirtBar( doc.GetLineIndexFromCharIndex(e.Index) );
+			
 			//DO_NOT//base.HandleContentChanged( sender, e );
+		}
+
+		/// <summary>
+		/// Update dirt bar area.
+		/// </summary>
+		/// <param name="logLineIndex">dirt bar area for the line indicated by this index will be updated.</param>
+		void UpdateDirtBar( int logLineIndex )
+		{
+			int logLineHeadIndex, logLineEndIndex;
+			Point top, bottom;
+			Document doc = this.Document;
+
+			// calculate beginning and ending index of the modified logical line
+			logLineHeadIndex = doc.GetLineHeadIndex( logLineIndex );
+			logLineEndIndex = logLineHeadIndex + doc.GetLineLength( logLineIndex );
+
+			// get the screen position of both beginning and ending character
+			top = this.GetVirPosFromIndex( logLineHeadIndex );
+			bottom = this.GetVirPosFromIndex( logLineEndIndex );
+			VirtualToScreen( ref top );
+			VirtualToScreen( ref bottom );
+			if( top.Y < YofTextArea )
+			{
+				Debug.Fail( "screen position of index "+logLineHeadIndex+" is invalid; pos:("+top.X+", "+top.Y+") but YofTextArea:"+YofTextArea );
+				top.Y = YofTextArea;
+			}
+			bottom.Y += LineSpacing;
+
+			// adjust drawing position for line padding
+			// (move it up, a half of line height)
+			top.Y -= (LinePadding >> 1);
+			bottom.Y -= (LinePadding >> 1);
+
+			// overdraw dirt bar
+			for( int y=top.Y; y<bottom.Y; y+=LineSpacing )
+			{
+				DrawDirtBar( y, logLineIndex );
+			}
 		}
 
 		internal override void HandleDocumentChanged( Document prevDocument )

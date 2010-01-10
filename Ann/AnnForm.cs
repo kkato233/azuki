@@ -1,4 +1,4 @@
-// 2009-11-15
+// 2010-01-10
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -40,6 +40,7 @@ namespace Sgry.Ann
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
 #			endif
+			this.Icon = Resource.AppIcon;
 			_SearchPanel.SetFont( this.Font );
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
 		}

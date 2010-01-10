@@ -8,8 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Sgry.Ann</RootNamespace>
     <AssemblyName>Ann</AssemblyName>
-    <StartupObject>
-    </StartupObject>
+    <ApplicationIcon>Resources\Ann.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +49,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="TabPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -83,6 +87,16 @@
     <Compile Include="EncodingAnalyzer.cs" />
     <Compile Include="FileType.cs" />
     <Compile Include="Ini.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Ann.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

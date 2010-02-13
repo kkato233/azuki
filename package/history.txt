@@ -1,9 +1,11 @@
 == 1.5.1 (2010-  -  ) ==
  * add: added IsRectSelectModeChanged event for AzukiControl
  * mod: now Azuki draws line number area and dirt bar area for (non-existing) lines beyond EOF
- * fix: menu is activated after rectangular selection by alt+mouse if using AzukiControl in WPF application through WindowsFormsHost window
+ * fix: in WPF application, menu is activated after rectangular selection by alt+mouse if using AzukiControl through WindowsFormsHost window
+ * fix: now AzukiControl can be used with DockPanel Suite
  * fix: now dragging on left margin area correctly selects text
  * fix: in line-wrapping mode, DirtBar area for final line will not be redrawn after editing
+ * fix: [Ann] created application icon
  * fix: [Ann] tab graphic would not be not redrawn under certain condition
 
 == 1.5.0 (2009-12-12) ==

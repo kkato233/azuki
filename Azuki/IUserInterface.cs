@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-01-02
+// update: 2010-02-13
 //=========================================================
 using System;
 using System.Drawing;
@@ -100,6 +100,14 @@ namespace Sgry.Azuki
 		/// Font to be used for displaying text.
 		/// </summary>
 		Font Font
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Font information to be used for displaying text.
+		/// </summary>
+		FontInfo FontInfo
 		{
 			get; set;
 		}

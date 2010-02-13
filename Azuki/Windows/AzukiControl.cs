@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-01-02
+// update: 2010-02-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -66,35 +66,56 @@ namespace Sgry.Azuki.Windows
 				throw new PlatformNotSupportedException( "Not supported platform", ex );
 			}
 
-			// rewrite window procedure at first
-			// (force to create window by accessing Handle property)
-			IntPtr dummy = this.Handle;
-			dummy.ToInt32(); // (suppress warning to unreferenced variable)
-			RewriteWndProc();
-			
 			// generate core implementation
 			_Impl = new UiImpl( this );
+			Document = new Document();
+			ViewType = ViewType.Proportional; // (setting ViewType installs document event handlers)
 
-#			if !PocketPC
-			base.Cursor = Cursors.IBeam;
-#			endif
+			// setup default keybind
+			ResetKeyBind();
+		}
+
+		/// <summary>
+		/// Disposes resources used by this AzukiControl.
+		/// </summary>
+		protected override void Dispose( bool disposing )
+		{
+			base.Dispose( disposing );
+			if( _Impl != null )
+			{
+				_Impl.Dispose();
+				_Impl = null;
+			}
+		}
+
+		/// <summary>
+		/// Invokes HandleCreated event.
+		/// </summary>
+		protected override void OnHandleCreated( EventArgs e )
+		{
+			base.OnHandleCreated( e );
+
+			if( _Impl.View != null )
+			{
+				_Impl.View.HandleGraphicContextChanged();
+			}
+
+			// rewrite window procedure at first
+			RewriteWndProc();
 
 			// set default value for each scroll bar
 			// (setting scroll bar range forces the window to have style of WS_VSCROLL/WS_HSCROLL)
 			WinApi.SetScrollRange( Handle, false, 0, 1, 1 );
 			WinApi.SetScrollRange( Handle, true, 0, 1, 1 );
 			
+#			if !PocketPC
+			base.Cursor = Cursors.IBeam;
+#			endif
 			this.Font = base.Font;
-			WinApi.CreateCaret( Handle, _CaretSize );
-			WinApi.SetCaretPos( 0, 0 );
 			this.BorderStyle = _BorderStyle;
 
-			// setup document event handler
-			Document = new Document();
-			ViewType = ViewType.Proportional; // (setting ViewType installs document event handlers)
-
-			// setup default keybind
-			ResetKeyBind();
+			WinApi.CreateCaret( Handle, _CaretSize );
+			WinApi.SetCaretPos( 0, 0 );
 
 			// calculate scrollbar width
 			using( ScrollBar sb = new VScrollBar() )
@@ -109,8 +130,6 @@ namespace Sgry.Azuki.Windows
 		protected override void OnHandleDestroyed( EventArgs e )
 		{
 			base.OnHandleDestroyed( e );
-
-			_Impl.Dispose();
 
 			// destroy caret
 			WinApi.DestroyCaret();
@@ -172,7 +191,13 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public IView View
 		{
-			get{ return _Impl.View; }
+			get
+			{
+				if( _Impl == null )
+					return null;
+
+				return _Impl.View;
+			}
 		}
 
 		/// <summary>
@@ -439,14 +464,17 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public override Font Font
 		{
-			get{ return View.FontInfo; }
+			get{ return base.Font; }
 			set
 			{
 				if( value == null )
 					throw new ArgumentException( "invalid operation; AzukiControl.Font was set to null." );
 
 				base.Font = value;
-				View.FontInfo = new FontInfo( value );
+				if( View != null )
+				{
+					View.FontInfo = new FontInfo( value );
+				}
 			}
 		}
 
@@ -839,9 +867,12 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public new void Invalidate()
 		{
-			if( _invalidateProc1 == null )
-				_invalidateProc1 = base.Invalidate;
-			Invoke( _invalidateProc1 );
+			if( Handle != IntPtr.Zero )
+			{
+				if( _invalidateProc1 == null )
+					_invalidateProc1 = base.Invalidate;
+				Invoke( _invalidateProc1 );
+			}
 		}
 
 		/// <summary>
@@ -850,9 +881,12 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public new void Invalidate( Rectangle rect )
 		{
-			if( _invalidateProc2 == null )
-				_invalidateProc2 = base.Invalidate;
-			Invoke( _invalidateProc2, new object[]{rect} );
+			if( Handle != IntPtr.Zero )
+			{
+				if( _invalidateProc2 == null )
+					_invalidateProc2 = base.Invalidate;
+				Invoke( _invalidateProc2, new object[]{rect} );
+			}
 		}
 		#endregion
 
@@ -1706,6 +1740,10 @@ namespace Sgry.Azuki.Windows
 		protected override void OnGotFocus( EventArgs e )
 		{
 			base.OnGotFocus( e );
+			if( _Impl == null )
+			{
+				return;
+			}
 
 			WinApi.CreateCaret( Handle, _CaretSize );
 			UpdateCaretGraphic();
@@ -1717,6 +1755,10 @@ namespace Sgry.Azuki.Windows
 		protected override void OnLostFocus( EventArgs e )
 		{
 			base.OnLostFocus( e );
+			if( _Impl == null )
+			{
+				return;
+			}
 
 			WinApi.HideCaret( Handle );
 			_Impl.HandleLostFocus();
@@ -1732,6 +1774,10 @@ namespace Sgry.Azuki.Windows
 			{
 				return;
 			}
+			if( _Impl == null )
+			{
+				return;
+			}
 
 			_Impl.HandleKeyDown( (uint)e.KeyData );
 		}
@@ -1743,6 +1789,10 @@ namespace Sgry.Azuki.Windows
 		{
 			base.OnKeyPress( e );
 			if( e.Handled )
+			{
+				return;
+			}
+			if( _Impl == null )
 			{
 				return;
 			}
@@ -1796,8 +1846,15 @@ namespace Sgry.Azuki.Windows
 		protected override void OnResize( EventArgs e )
 		{
 			base.OnResize( e );
+			if( _Impl == null )
+			{
+				return;
+			}
 
-			_Impl.View.HandleSizeChanged( ClientSize );
+			if( _Impl.View != null )
+			{
+				_Impl.View.HandleSizeChanged( ClientSize );
+			}
 			UpdateScrollBarRange();
 			Invalidate();
 		}
@@ -2346,11 +2403,8 @@ namespace Sgry.Azuki.Windows
 		void RewriteWndProc()
 		{
 			const int GWL_WNDPROC = -4;
-			
-			if( _OriginalWndProcObj == IntPtr.Zero )
-			{
-				_OriginalWndProcObj = WinApi.GetWindowLong( Handle, GWL_WNDPROC );
-			}
+
+			_OriginalWndProcObj = WinApi.GetWindowLong( Handle, GWL_WNDPROC );
 			if( _CustomWndProcObj == null )
 			{
 				_CustomWndProcObj = new WinApi.WNDPROC( this.CustomWndProc );

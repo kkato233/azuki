@@ -1,12 +1,13 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2009-11-16
+// update: 2010-02-07
 //=========================================================
 using System;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Assembly = System.Reflection.Assembly;
 
@@ -56,10 +57,46 @@ namespace Sgry
 		#endregion
 
 		#region Diagnostics
+		/// <summary>
+		/// Stops current thread for specified time.
+		/// </summary>
 		public static void Sleep( int millisecs )
 		{
 			Thread.CurrentThread.Join( millisecs );
 		}
+
+#		if !PocketPC
+		public static string GetStackTrace()
+		{
+			const int TraceBackCount = 5;
+			StringBuilder buf = new StringBuilder( 256 );
+			StringBuilder indent = new StringBuilder( 32 );
+
+			for( int i=2; i<TraceBackCount; i++ )
+			{
+				// get method information
+				StackFrame frame = new StackFrame( i );
+				MethodBase method = frame.GetMethod();
+
+				// format stack trace message
+				buf.Append( indent.ToString() );
+				buf.Append( method.ReflectedType.FullName + "." + method.Name );
+				if( 0 < frame.GetFileLineNumber() )
+				{
+					buf.Append(
+						frame.GetFileName() + " ("
+						+ frame.GetFileLineNumber() + ", "
+						+ frame.GetFileColumnNumber() + ")"
+					);
+				}
+				buf.Append( "\r\n" );
+
+				indent.Append( " " );
+			}
+
+			return buf.ToString();
+		}
+#		endif
 
 		/// <summary>
 		/// Gets system performance counter value in millisecond.

@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2009-01-02
+// update: 2010-02-07
 //=========================================================
 using System;
 using System.Text;
@@ -20,15 +20,17 @@ namespace Sgry.Azuki
 	class UiImpl : IDisposable
 	{
 		#region Fields
+		const int HighlightInterval1 = 250;
 #		if PocketPC
-		const int HighlightInterval = 500;
+		const int HighlightInterval2 = 500;
 #		else
-		const int HighlightInterval = 350;
+		const int HighlightInterval2 = 350;
 #		endif
 		IUserInterface _UI;
 		View _View = null;
 		Document _Document = null;
 		ViewType _ViewType = ViewType.Proportional;
+		bool _IsDisposed = false;
 
 		IDictionary< uint, ActionProc > _KeyMap = new Dictionary< uint, ActionProc >( 32 );
 		AutoIndentHook _AutoIndentHook = null;
@@ -63,21 +65,36 @@ namespace Sgry.Azuki
 #		if DEBUG
 		~UiImpl()
 		{
-			Debug.Assert( _View == null, ""+GetType()+"("+GetHashCode()+") was destroyed but not disposed." );
+			// dispose highlighter
+			if( _HighlighterThread != null )
+			{
+				bool timedOut = !( _HighlighterThread.Join(1000) );
+				if( timedOut )
+				{
+					_HighlighterThread.Abort();
+				}
+				_HighlighterThread = null;
+			}
 		}
 #		endif
 
 		public void Dispose()
 		{
-			_HighlighterThread.Abort();
-			_HighlighterThread = null;
-
 			// uninstall document event handlers
-			UninstallDocumentEventHandlers( Document );
+			if( Document != null )
+			{
+				UninstallDocumentEventHandlers( Document );
+			}
 
 			// dispose view
-			_View.Dispose();
-			_View = null;
+			if( _View != null )
+			{
+				_View.Dispose();
+				_View = null;
+			}
+
+			// set disposed flag on
+			_IsDisposed = true;
 		}
 		#endregion
 
@@ -87,6 +104,7 @@ namespace Sgry.Azuki
 			get{ return _Document; }
 			set
 			{
+				Debug.Assert( _IsDisposed == false );
 				if( value == null )
 					throw new ArgumentNullException();
 
@@ -121,7 +139,7 @@ namespace Sgry.Azuki
 		{
 			get{ return _View; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets type of the view.
 		/// View type determines how to render text content.
@@ -131,6 +149,7 @@ namespace Sgry.Azuki
 			get{ return _ViewType; }
 			set
 			{
+				Debug.Assert( _IsDisposed == false );
 				View oldView = View;
 
 				// switch to new view object
@@ -147,7 +166,10 @@ namespace Sgry.Azuki
 				_ViewType = value;
 
 				// dispose old view object
-				oldView.Dispose();
+				if( oldView != null )
+				{
+					oldView.Dispose();
+				}
 
 				// re-install event handlers
 				// (AzukiControl's event handler MUST be called AFTER view's one)
@@ -180,6 +202,7 @@ namespace Sgry.Azuki
 			get{ return _IsOverwriteMode; }
 			set
 			{
+				Debug.Assert( _IsDisposed == false );
 				_IsOverwriteMode = value;
 				_UI.UpdateCaretGraphic();
 			}
@@ -191,7 +214,11 @@ namespace Sgry.Azuki
 		public bool UsesTabForIndent
 		{
 			get{ return _UsesTabForIndent; }
-			set{ _UsesTabForIndent = value; }
+			set
+			{
+				Debug.Assert( _IsDisposed == false );
+				_UsesTabForIndent = value;
+			}
 		}
 
 		/// <summary>
@@ -201,7 +228,11 @@ namespace Sgry.Azuki
 		public bool ConvertsFullWidthSpaceToSpace
 		{
 			get{ return _ConvertsFullWidthSpaceToSpace; }
-			set{ _ConvertsFullWidthSpaceToSpace = value; }
+			set
+			{
+				Debug.Assert( _IsDisposed == false );
+				_ConvertsFullWidthSpaceToSpace = value;
+			}
 		}
 
 		/// <summary>
@@ -212,7 +243,11 @@ namespace Sgry.Azuki
 		public AutoIndentHook AutoIndentHook
 		{
 			get{ return _AutoIndentHook; }
-			set{ _AutoIndentHook = value; }
+			set
+			{
+				Debug.Assert( _IsDisposed == false );
+				_AutoIndentHook = value;
+			}
 		}
 
 		/// <summary>
@@ -223,6 +258,7 @@ namespace Sgry.Azuki
 			get{ return _IsRectSelectMode; }
 			set
 			{
+				Debug.Assert( _IsDisposed == false );
 				_IsRectSelectMode = value;
 				_UI.InvokeIsRectSelectModeChanged();
 			}
@@ -232,6 +268,7 @@ namespace Sgry.Azuki
 		#region Key Handling
 		public ActionProc GetKeyBind( uint keyCode )
 		{
+			Debug.Assert( _IsDisposed == false );
 			ActionProc proc;
 
 			if( _KeyMap.TryGetValue(keyCode, out proc) == true )
@@ -246,6 +283,8 @@ namespace Sgry.Azuki
 
 		public void SetKeyBind( uint keyCode, ActionProc action )
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			// remove specified key code from dictionary anyway
 			_KeyMap.Remove( keyCode );
 
@@ -258,11 +297,13 @@ namespace Sgry.Azuki
 
 		internal bool IsKeyBindDefined( uint keyCode )
 		{
+			Debug.Assert( _IsDisposed == false );
 			return _KeyMap.ContainsKey( keyCode );
 		}
 
 		public void ClearKeyBind()
 		{
+			Debug.Assert( _IsDisposed == false );
 			_KeyMap.Clear();
 		}
 
@@ -271,6 +312,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void HandleKeyDown( uint keyData )
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			ActionProc action = GetKeyBind( keyData );
 			if( action != null )
 			{
@@ -283,6 +326,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal void HandleKeyPress( char ch )
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			string str = null;
 			int newCaretIndex;
 			Document doc = Document;
@@ -423,6 +468,7 @@ namespace Sgry.Azuki
 			}
 			set
 			{
+				Debug.Assert( _IsDisposed == false );
 				if( Document == null )
 					return;
 				
@@ -439,17 +485,21 @@ namespace Sgry.Azuki
 			int dirtyBegin, dirtyEnd;
 			Document doc;
 
-			while( true )
+			while( _IsDisposed == false )
 			{
-				// wait while the flag is down
+				// wait while the content is untouched
 				while( _ShouldBeHighlighted == false )
 				{
-					Thread.Sleep( HighlightInterval );
+					Thread.Sleep( HighlightInterval1 );
+					if( _IsDisposed )
+					{
+						return; // quit ASAP
+					}
 				}
 				_ShouldBeHighlighted = false;
 
 				// wait a moment and check if the flag is still up
-				Thread.Sleep( HighlightInterval );
+				Thread.Sleep( HighlightInterval2 );
 				if( _ShouldBeHighlighted != false || _UI.Document == null )
 				{
 					// flag was set up while this thread are sleeping.
@@ -514,6 +564,8 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public string GetSelectedText()
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			if( Document.RectSelectRanges != null )
 			{
 				StringBuilder text = new StringBuilder();
@@ -543,11 +595,17 @@ namespace Sgry.Azuki
 		#region UI Event
 		public void HandlePaint( Rectangle clipRect )
 		{
+			if( _IsDisposed )
+				return;
+
 			_View.Paint( clipRect );
 		}
 
 		public void HandleLostFocus()
 		{
+			if( _IsDisposed )
+				return;
+
 			_MouseDownVirPos.X = Int32.MinValue;
 			_MouseDragging = false;
 			IsRectSelectMode = false;
@@ -555,6 +613,9 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
+			if( _IsDisposed )
+				return;
+
 			_MouseDownVirPos.X = Int32.MinValue;
 			_MouseDragging = false;
 			IsRectSelectMode = false;
@@ -562,7 +623,8 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
-			bool onLineNumberArea = false;
+			if( _IsDisposed )
+				return;
 
 			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
 			if( pos.X < 0 || pos.Y < 0 )
@@ -602,6 +664,9 @@ namespace Sgry.Azuki
 
 		internal void HandleDoubleClick( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
+			if( _IsDisposed )
+				return;
+
 			int index;
 			int begin, end;
 
@@ -628,6 +693,9 @@ namespace Sgry.Azuki
 
 		internal void HandleMouseMove( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
 		{
+			if( _IsDisposed )
+				return;
+
 			int xOffset, yOffset;
 
 			// if mouse button was not down, ignore
@@ -691,6 +759,7 @@ namespace Sgry.Azuki
 		#region Event Handlers
 		void InstallDocumentEventHandlers( Document doc )
 		{
+			Debug.Assert( _IsDisposed == false );
 			doc.SelectionChanged += Doc_SelectionChanged;
 			doc.ContentChanged += Doc_ContentChanged;
 			doc.DirtyStateChanged += Doc_DirtyStateChanged;
@@ -698,6 +767,7 @@ namespace Sgry.Azuki
 
 		void UninstallDocumentEventHandlers( Document doc )
 		{
+			Debug.Assert( _IsDisposed == false );
 			doc.SelectionChanged -= Doc_SelectionChanged;
 			doc.ContentChanged -= Doc_ContentChanged;
 			doc.DirtyStateChanged -= Doc_DirtyStateChanged;
@@ -705,6 +775,8 @@ namespace Sgry.Azuki
 
 		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			// delegate to view object
 			View.HandleSelectionChanged( sender, e );
 
@@ -717,6 +789,8 @@ namespace Sgry.Azuki
 
 		public void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			// delegate to view object
 			View.HandleContentChanged( sender, e );
 
@@ -740,6 +814,8 @@ namespace Sgry.Azuki
 
 		public void Doc_DirtyStateChanged( object sender, EventArgs e )
 		{
+			Debug.Assert( _IsDisposed == false );
+
 			Document doc = (Document)sender;
 
 			// delegate to view object

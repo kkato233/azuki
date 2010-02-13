@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2009-11-25
+// update: 2010-02-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -73,8 +73,8 @@ namespace Sgry.Azuki
 		/// <param name="ui">Implementation of the platform dependent UI module.</param>
 		internal View( IUserInterface ui )
 		{
+			Debug.Assert( ui != null );
 			_UI = ui;
-			_Gra = ui.GetIGraphics();
 		}
 
 		/// <summary>
@@ -83,37 +83,42 @@ namespace Sgry.Azuki
 		/// <param name="other">another view object to inherit settings</param>
 		internal View( View other )
 		{
+			Debug.Assert( other != null );
+
 			// inherit reference to the UI module
 			this._UI = other._UI;
 			this._Gra = _UI.GetIGraphics();
 
 			// inherit other parameters
-			this._ColorScheme = other._ColorScheme;
-			this._DrawingOption = other._DrawingOption;
-			//DO_NOT//this._DirtBarWidth = other._DirtBarWidth;
-			//DO_NOT//this._Gra = other._Gra;
-			//DO_NOT//this._HRulerFont = other._HRulerFont;
-			//DO_NOT//this._LCharWidth = other._LCharWidth;
-			//DO_NOT//this._LineHeight = other._LineHeight;
-			//DO_NOT//this._LineNumAreaWidth = other._LineNumAreaWidth;
-			//DO_NOT//this._SpaceWidth = other._SpaceWidth;
-			this._TabWidth = other._TabWidth;
-			this._LinePadding = other._LinePadding;
-			this._LeftMargin = other._LeftMargin;
-			this._TopMargin = other.TopMargin;
-			//DO_NOT//this._TabWidthInPx = other._TabWidthInPx;
-			this._TextAreaWidth = other._TextAreaWidth;
-			//DO_NOT//this._UI = other._UI;
-			this._VisibleSize = other._VisibleSize;
+			if( other != null )
+			{
+				this._ColorScheme = other._ColorScheme;
+				this._DrawingOption = other._DrawingOption;
+				//DO_NOT//this._DirtBarWidth = other._DirtBarWidth;
+				//DO_NOT//this._Gra = other._Gra;
+				//DO_NOT//this._HRulerFont = other._HRulerFont;
+				//DO_NOT//this._LCharWidth = other._LCharWidth;
+				//DO_NOT//this._LineHeight = other._LineHeight;
+				//DO_NOT//this._LineNumAreaWidth = other._LineNumAreaWidth;
+				//DO_NOT//this._SpaceWidth = other._SpaceWidth;
+				this._TabWidth = other._TabWidth;
+				this._LinePadding = other._LinePadding;
+				this._LeftMargin = other._LeftMargin;
+				this._TopMargin = other.TopMargin;
+				//DO_NOT//this._TabWidthInPx = other._TabWidthInPx;
+				this._TextAreaWidth = other._TextAreaWidth;
+				//DO_NOT//this._UI = other._UI;
+				this._VisibleSize = other._VisibleSize;
 
-			// set Font through property
-			if( other.FontInfo != null )
-				this.FontInfo = other.FontInfo;
+				// set Font through property
+				if( other.FontInfo != null )
+					this.FontInfo = other.FontInfo;
 
-			// re-calculate graphic metrics
-			// (because there is a metric which needs a reference to Document to be calculated
-			// but it cannnot be set Document before setting Font by structural reason)
-			UpdateMetrics();
+				// re-calculate graphic metrics
+				// (because there is a metric which needs a reference to Document to be calculated
+				// but it cannnot be set Document before setting Font by structural reason)
+				UpdateMetrics();
+			}
 		}
 
 #		if DEBUG
@@ -1097,6 +1102,7 @@ namespace Sgry.Azuki
 
 			// apply new font size
 			FontInfo = new FontInfo( FontInfo.Name, newSize, FontInfo.Style );
+			_UI.FontInfo = FontInfo;
 
 			// reset text area to sustain total width of view
 			// because changing font size also changes width of line number area,
@@ -1122,6 +1128,7 @@ namespace Sgry.Azuki
 
 			// apply new font size
 			FontInfo = new FontInfo( FontInfo.Name, newSize, FontInfo.Style );
+			_UI.FontInfo = FontInfo;
 
 			// reset text area to sustain total width of view
 			// because changing font size also changes width of line number area,
@@ -1189,6 +1196,16 @@ namespace Sgry.Azuki
 		internal virtual void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			UpdateLineNumberWidth();
+		}
+
+		internal void HandleGraphicContextChanged()
+		{
+			if( _Gra != null )
+			{
+				_Gra.Dispose();
+			}
+			_Gra = _UI.GetIGraphics();
+			_Gra.FontInfo = this.FontInfo;
 		}
 
 		/// <summary>

@@ -404,59 +404,6 @@ namespace Sgry.Ann
 			return doc;
 		}
 
-		void LoadFileContentToDocument( Document doc, string filePath, Encoding encoding, bool withBom )
-		{
-			StreamReader file = null;
-			char[] buf = null;
-			int readCount = 0;
-
-			// make the content empty
-			doc.Replace( "", 0, doc.Length );
-
-			// analyze encoding
-			if( encoding == null )
-			{
-				Utl.AnalyzeEncoding( filePath, out encoding, out withBom );
-			}
-			doc.Encoding = encoding;
-			doc.WithBom = withBom;
-
-			// load file content
-			using( file = new StreamReader(filePath, encoding) )
-			{
-				// expand internal buffer size before loading file
-				// (estimating needed buffer size by a half of byte-count of file)
-				doc.Capacity = (int)( file.BaseStream.Length / 2 );
-
-				// prepare load buffer
-				// (if the file is larger than 1MB, separate by 10 and load for each)
-				if( file.BaseStream.Length < 1024*1024 )
-				{
-					buf = new char[ file.BaseStream.Length ];
-				}
-				else
-				{
-					buf = new char[ (file.BaseStream.Length+10) / 10 ];
-				}
-
-				// read
-				while( !file.EndOfStream )
-				{
-					readCount = file.Read( buf, 0, buf.Length );
-					doc.Replace( new String(buf, 0, readCount), doc.Length, doc.Length );
-				}
-			}
-
-			// set document properties
-			doc.ClearHistory();
-			doc.FilePath = filePath;
-			doc.LastSavedTime = File.GetLastWriteTime( filePath );
-			if( (new FileInfo(filePath).Attributes & FileAttributes.ReadOnly) != 0 )
-			{
-				doc.IsReadOnly = true;
-			}
-		}
-
 		/// <summary>
 		/// Open existing file.
 		/// </summary>
@@ -739,39 +686,57 @@ namespace Sgry.Ann
 			}
 		}
 
-		void AlertException( Exception ex )
+		void LoadFileContentToDocument( Document doc, string filePath, Encoding encoding, bool withBom )
 		{
-			Alert( ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
-		}
+			StreamReader file = null;
+			char[] buf = null;
+			int readCount = 0;
 
-		public DialogResult AlertDiscardModification( Document doc )
-		{
-			return Alert(
-					doc.DisplayName + " is modified but not saved. Save changes?",
-					MessageBoxButtons.YesNoCancel,
-					MessageBoxIcon.Exclamation,
-					MessageBoxDefaultButton.Button2
-				);
-		}
+			// make the content empty
+			doc.Replace( "", 0, doc.Length );
 
-		public DialogResult AskUserToUnifyExistingEolOrNot( string newEolCode )
-		{
-			string eolCodeName;
-
-			switch( newEolCode )
+			// analyze encoding
+			if( encoding == null )
 			{
-				case "\r\n":	eolCodeName = "CR+LF";	break;
-				case "\n":		eolCodeName = "LF";		break;
-				case "\r":		eolCodeName = "CR";		break;
-				default:		throw new ArgumentException("EOL code must be one of CR+LF, LF, CR.", "newEolCode");
+				Utl.AnalyzeEncoding( filePath, out encoding, out withBom );
+			}
+			doc.Encoding = encoding;
+			doc.WithBom = withBom;
+
+			// load file content
+			using( file = new StreamReader(filePath, encoding) )
+			{
+				// expand internal buffer size before loading file
+				// (estimating needed buffer size by a half of byte-count of file)
+				doc.Capacity = (int)( file.BaseStream.Length / 2 );
+
+				// prepare load buffer
+				// (if the file is larger than 1MB, separate by 10 and load for each)
+				if( file.BaseStream.Length < 1024*1024 )
+				{
+					buf = new char[ file.BaseStream.Length ];
+				}
+				else
+				{
+					buf = new char[ (file.BaseStream.Length+10) / 10 ];
+				}
+
+				// read
+				while( !file.EndOfStream )
+				{
+					readCount = file.Read( buf, 0, buf.Length );
+					doc.Replace( new String(buf, 0, readCount), doc.Length, doc.Length );
+				}
 			}
 
-			return Alert(
-					"Do you also want to change all existing line end code to "+eolCodeName+"?",
-					MessageBoxButtons.YesNo,
-					MessageBoxIcon.Question,
-					MessageBoxDefaultButton.Button2
-				);
+			// set document properties
+			doc.ClearHistory();
+			doc.FilePath = filePath;
+			doc.LastSavedTime = File.GetLastWriteTime( filePath );
+			if( (new FileInfo(filePath).Attributes & FileAttributes.ReadOnly) != 0 )
+			{
+				doc.IsReadOnly = true;
+			}
 		}
 		#endregion
 
@@ -1120,6 +1085,41 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
+		void AlertException( Exception ex )
+		{
+			Alert( ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+		}
+
+		public DialogResult AlertDiscardModification( Document doc )
+		{
+			return Alert(
+					doc.DisplayName + " is modified but not saved. Save changes?",
+					MessageBoxButtons.YesNoCancel,
+					MessageBoxIcon.Exclamation,
+					MessageBoxDefaultButton.Button2
+				);
+		}
+
+		public DialogResult AskUserToUnifyExistingEolOrNot( string newEolCode )
+		{
+			string eolCodeName;
+
+			switch( newEolCode )
+			{
+				case "\r\n":	eolCodeName = "CR+LF";	break;
+				case "\n":		eolCodeName = "LF";		break;
+				case "\r":		eolCodeName = "CR";		break;
+				default:		throw new ArgumentException("EOL code must be one of CR+LF, LF, CR.", "newEolCode");
+			}
+
+			return Alert(
+					"Do you also want to change all existing line end code to "+eolCodeName+"?",
+					MessageBoxButtons.YesNo,
+					MessageBoxIcon.Question,
+					MessageBoxDefaultButton.Button2
+				);
+		}
+
 		DialogResult Alert( string text, MessageBoxButtons buttons, MessageBoxIcon icon )
 		{
 			return Alert( text, buttons, icon, MessageBoxDefaultButton.Button1 );

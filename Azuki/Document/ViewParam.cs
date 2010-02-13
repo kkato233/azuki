@@ -137,8 +137,8 @@ namespace Sgry.Azuki
 
 		public DateTime LastModifiedTime
 		{
-			get { return _LastModifiedTime; }
-			set { _LastModifiedTime = value; }
+			get{ return _LastModifiedTime; }
+			set{ _LastModifiedTime = value; }
 		}
 		#endregion
 	}

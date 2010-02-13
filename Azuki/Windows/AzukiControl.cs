@@ -867,7 +867,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public new void Invalidate()
 		{
-			if( Handle != IntPtr.Zero )
+			if( IsHandleCreated )
 			{
 				if( _invalidateProc1 == null )
 					_invalidateProc1 = base.Invalidate;
@@ -881,7 +881,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public new void Invalidate( Rectangle rect )
 		{
-			if( Handle != IntPtr.Zero )
+			if( IsHandleCreated )
 			{
 				if( _invalidateProc2 == null )
 					_invalidateProc2 = base.Invalidate;

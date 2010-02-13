@@ -1,4 +1,4 @@
-// 2010-01-01
+// 2010-02-13
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -431,6 +431,10 @@ namespace Sgry.Ann
 				MainForm.Azuki.ScrollToCaret();
 			}
 			catch( IOException ex )
+			{
+				AlertException( ex );
+			}
+			catch( UnauthorizedAccessException ex )
 			{
 				AlertException( ex );
 			}

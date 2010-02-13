@@ -7,6 +7,7 @@
  * fix: in line-wrapping mode, DirtBar area for final line will not be redrawn after editing
  * fix: [Ann] created application icon
  * fix: [Ann] tab graphic would not be not redrawn under certain condition
+ * fix: [Ann] giving directory path as command line argument causes exception
 
 == 1.5.0 (2009-12-12) ==
  * add: rectangular selection feature by both mouse and keyboard

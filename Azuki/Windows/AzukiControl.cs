@@ -95,7 +95,7 @@ namespace Sgry.Azuki.Windows
 		{
 			base.OnHandleCreated( e );
 
-			if( _Impl.View != null )
+			if( _Impl != null && _Impl.View != null )
 			{
 				_Impl.View.HandleGraphicContextChanged();
 			}

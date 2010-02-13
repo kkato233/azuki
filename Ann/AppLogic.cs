@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Sgry.Azuki;
@@ -10,10 +11,11 @@ using Sgry.Azuki.Windows;
 using Debug = System.Diagnostics.Debug;
 using AzukiDocument = Sgry.Azuki.Document;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
+using Assembly = System.Reflection.Assembly;
 
 namespace Sgry.Ann
 {
-	class AppLogic
+	class AppLogic : IDisposable
 	{
 		#region Fields
 		const string OpenFileFilter =
@@ -35,18 +37,59 @@ namespace Sgry.Ann
 			+ "|VB script(*.vbs)|*.vbs"
 			+ "|Batch file(*.bat)|*.bat";
 
+		static string _AppInstanceMutexName = null;
+		static string _IpcFilePath = null;
+
 		AnnForm _MainForm = null;
 		List<Document> _DAD_Documents = new List<Document>(); // Dont Access Directly
 		Document _DAD_ActiveDocument = null; // Dont Access Directly
 		int _UntitledFileCount = 1;
 		string _InitOpenFilePath = null;
 		SearchContext _SearchContext = new SearchContext();
+		Thread _MonitorThread;
+		bool _MonitorThreadCanContinue;
+		PseudoPipe _IpcPipe = new PseudoPipe();
 		#endregion
 
 		#region Init / Dispose
 		public AppLogic( string initOpenFilePath )
 		{
 			_InitOpenFilePath = initOpenFilePath;
+			_MonitorThreadCanContinue = true;
+			_MonitorThread = new Thread( MonitorThreadProc );
+			_MonitorThread.Start();
+		}
+
+		~AppLogic()
+		{
+			Dispose();
+		}
+
+		public void Dispose()
+		{
+			_MonitorThreadCanContinue = false;
+			if( _MonitorThread != null )
+			{
+				if( _MonitorThread.Join(1000) == false )
+				{
+					_MonitorThread.Abort();
+				}
+				_MonitorThread = null;
+			}
+
+			if( _IpcPipe != null )
+			{
+				_IpcPipe.Dispose();
+				_IpcPipe = null;
+			}
+
+			try
+			{
+				if( File.Exists(IpcFilePath) )
+					File.Delete( IpcFilePath );
+			}
+			catch
+			{}
 		}
 		#endregion
 
@@ -112,6 +155,36 @@ namespace Sgry.Ann
 				// update UI
 				MainForm.UpdateUI();
 				MainForm.TabPanel.Invalidate();
+			}
+		}
+
+		public static string AppInstanceMutexName
+		{
+			get
+			{
+				if( _AppInstanceMutexName == null )
+				{
+					Assembly exe = Assembly.GetExecutingAssembly();
+					string exePath = exe.GetModules()[0].FullyQualifiedName;
+					exePath = exePath.Replace( '\\', '.' );
+					_AppInstanceMutexName = "Sgry.Ann." + exePath;
+				}
+				return _AppInstanceMutexName;
+			}
+		}
+
+		public static string IpcFilePath
+		{
+			get
+			{
+				if( _IpcFilePath == null )
+				{
+					Assembly exe = Assembly.GetExecutingAssembly();
+					string exePath = exe.GetModules()[0].FullyQualifiedName;
+					string exeDirPath = Path.GetDirectoryName( exePath );
+					_IpcFilePath = Path.Combine( exeDirPath, "Ann.ipc" );
+				}
+				return _IpcFilePath;
 			}
 		}
 		#endregion
@@ -404,14 +477,14 @@ namespace Sgry.Ann
 				}
 
 				// open the file
-				OpenDocument( dialog.FileName, null, false );
+				OpenDocument( dialog.FileName );
 			}
 		}
 
 		/// <summary>
 		/// Open existing file.
 		/// </summary>
-		public void OpenDocument( string filePath, Encoding encoding, bool withBom )
+		public void OpenDocument( string filePath )
 		{
 			Document doc;
 
@@ -850,7 +923,7 @@ namespace Sgry.Ann
 
 			// try to open initial document
 			prevActiveDoc = ActiveDocument;
-			OpenDocument( _InitOpenFilePath, null, false );
+			OpenDocument( _InitOpenFilePath );
 
 			// close default empty document if successfully opened
 			if( prevActiveDoc != ActiveDocument )
@@ -919,6 +992,50 @@ namespace Sgry.Ann
 			if( MainForm.Azuki.ViewType == ViewType.WrappedProportional )
 			{
 				MainForm.Azuki.ViewWidth = MainForm.Azuki.ClientSize.Width;
+			}
+		}
+		#endregion
+
+		#region Monitoring
+		void MonitorThreadProc()
+		{
+			DateTime timestamp = DateTime.MinValue;
+
+			_IpcPipe.Create( IpcFilePath );
+
+			while( _MonitorThreadCanContinue )
+			{
+				Thread.CurrentThread.Join( 250 );
+
+				// if IPC file was updated, parse it
+				if( timestamp < _IpcPipe.GetLastWriteTime() )
+				{
+					// parse and do actions
+					ParseIpcFile();
+
+					// remember new timestamp
+					timestamp = File.GetLastWriteTime( IpcFilePath );
+				}
+			}
+		}
+
+		void ParseIpcFile()
+		{
+			string[] tokens;
+
+			// read lines and parse them
+			foreach( string line in _IpcPipe.ReadLines(1000) )
+			{
+				// parse this line
+				tokens = line.Split( ',' );
+				if( tokens[0] == "Activate" )
+				{
+					_MainForm.Activate();
+				}
+				else if( tokens[0] == "OpenDocument" && 1 < tokens.Length )
+				{
+					OpenDocument( tokens[1] );
+				}
 			}
 		}
 		#endregion

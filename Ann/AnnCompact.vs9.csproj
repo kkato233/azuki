@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MyMutex.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Actions.File.cs" />
     <Compile Include="Actions.Edit.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="DocumentListForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="PseudoPipe.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

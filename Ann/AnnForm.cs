@@ -1,4 +1,4 @@
-// 2010-01-10
+// 2010-02-13
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -291,7 +291,7 @@ namespace Sgry.Ann
 				if( !Directory.Exists(filePath) )
 				{
 					// load the file
-					_App.OpenDocument( filePath, null, false );
+					_App.OpenDocument( filePath );
 				}
 			}
 		}

@@ -134,8 +134,11 @@ namespace Sgry.Azuki
 		public virtual void Dispose()
 		{
 			// dispose graphic resources
-			_Gra.Dispose();
-			_Gra = null;
+			if( _Gra != null )
+			{
+				_Gra.Dispose();
+				_Gra = null;
+			}
 		}
 		#endregion
 

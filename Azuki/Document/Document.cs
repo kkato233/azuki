@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-01-02
+// update: 2010-02-13
 //=========================================================
 using System;
 using System.Collections;
@@ -1111,7 +1111,7 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public SearchResult FindNext( string value, int startIndex, bool matchCase )
 		{
-			return FindNext( value, startIndex, _Buffer.Count, true );
+			return FindNext( value, startIndex, _Buffer.Count, matchCase );
 		}
 
 		/// <summary>

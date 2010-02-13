@@ -3,6 +3,7 @@
  * mod: now Azuki draws line number area and dirt bar area for (non-existing) lines beyond EOF
  * fix: in WPF application, menu is activated after rectangular selection by alt+mouse if using AzukiControl through WindowsFormsHost window
  * fix: now AzukiControl can be used with DockPanel Suite
+ * fix: FindNext(string, int, bool matchCase) method always ignores 'matchCase' parameter
  * fix: now dragging on left margin area correctly selects text
  * fix: in line-wrapping mode, DirtBar area for final line will not be redrawn after editing
  * fix: improved drawing logic of horizontal ruler to avoid drawing numbers on long column lines 

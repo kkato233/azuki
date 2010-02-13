@@ -11,6 +11,7 @@
  * add: [Ann] created application icon
  * add: [Ann] now multiple instances cannot be launched
  * add: [Ann] now Ann can detect modification of files by other programs
+ * fix: [Ann] one extra EOL code is inserted on unifying EOL code of document
  * fix: [Ann] tab graphic would not be not redrawn under certain condition
  * fix: [Ann] giving directory path as command line argument causes exception
 

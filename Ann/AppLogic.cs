@@ -349,10 +349,14 @@ namespace Sgry.Ann
 				StringBuilder newContent = new StringBuilder( doc.Length*2 );
 
 				// make copy of lines and set EOL to specified one
-				for( int i=0; i<doc.LineCount; i++ )
+				for( int i=0; i<doc.LineCount-1; i++ )
 				{
 					newContent.Append( doc.GetLineContent(i) );
 					newContent.Append( eolCode );
+				}
+				if( 0 < doc.LineCount )
+				{
+					newContent.Append( doc.GetLineContent(doc.LineCount - 1) );
 				}
 
 				// then replace whole content

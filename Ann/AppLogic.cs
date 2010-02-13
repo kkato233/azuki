@@ -736,6 +736,7 @@ namespace Sgry.Ann
 			// set document properties
 			doc.ClearHistory();
 			doc.FilePath = filePath;
+			doc.EolCode = Utl.AnalyzeEolCode( doc );
 			doc.LastSavedTime = File.GetLastWriteTime( filePath );
 			if( (new FileInfo(filePath).Attributes & FileAttributes.ReadOnly) != 0 )
 			{
@@ -1173,6 +1174,29 @@ namespace Sgry.Ann
 					encoding = Encoding.Default;
 					withBom = false;
 				}
+			}
+
+			public static string AnalyzeEolCode( Document doc )
+			{
+				for( int i=0; i<doc.Length-1; i++ )
+				{
+					if( doc[i] == '\r' )
+					{
+						if( doc[i+1] == '\n' )
+						{
+							return "\r\n";
+						}
+						else
+						{
+							return "\r";
+						}
+					}
+					else if( doc[i] == '\n' )
+					{
+						return "\n";
+					}
+				}
+				return "\r\n";
 			}
 		}
 		#endregion

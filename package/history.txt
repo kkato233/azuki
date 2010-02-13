@@ -5,6 +5,7 @@
  * fix: now AzukiControl can be used with DockPanel Suite
  * fix: now dragging on left margin area correctly selects text
  * fix: in line-wrapping mode, DirtBar area for final line will not be redrawn after editing
+ * fix: improved drawing logic of horizontal ruler to avoid drawing numbers on long column lines 
  * fix: [Ann] created application icon
  * fix: [Ann] tab graphic would not be not redrawn under certain condition
  * fix: [Ann] giving directory path as command line argument causes exception

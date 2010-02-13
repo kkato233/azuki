@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-01-02
+// update: 2010-01-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -285,7 +285,6 @@ namespace Sgry.Azuki
 		/// </summary>
 		protected void DrawHRuler( Rectangle clipRect )
 		{
-			Point pos = new Point( 0, YofHRuler );
 			string columnNumberText;
 			int lineX, rulerIndex;
 			int leftMostLineX, leftMostRulerIndex;
@@ -337,12 +336,14 @@ namespace Sgry.Azuki
 				// draw ruler line
 				if( (rulerIndex % 10) == 0 )
 				{
+					Point pos;
+
 					// draw largest line
 					_Gra.DrawLine( lineX, YofHRuler, lineX, YofHRuler+HRulerHeight );
 
 					// draw column text
 					columnNumberText = (rulerIndex / 10).ToString();
-					pos.X = lineX;
+					pos = new Point( lineX+2, YofHRuler );
 					_Gra.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
 				}
 				else if( (rulerIndex % 5) == 0 )

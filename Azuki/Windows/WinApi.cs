@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2010-01-02
+// update: 2010-02-13
 //=========================================================
 using System;
 using System.Text;
@@ -455,7 +455,7 @@ namespace Sgry.Azuki.Windows
 			lf.charSet = 1; // DEFAULT_CHARSET
 			lf.outPrecision = 0; // OUT_DEFAULT_PRECIS
 			lf.clipPrecision = 0; // CLIP_DEFAULT_PRECIS
-			lf.quality = 5; // CLEARTYPE_QUALITY
+			lf.quality = 0; // DEFAULT_QUALITY
 			lf.pitchAndFamily = 0; // DEFAULT_PITCH
 
 			// set font name

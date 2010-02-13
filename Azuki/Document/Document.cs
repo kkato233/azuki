@@ -878,6 +878,7 @@ namespace Sgry.Azuki
 		public void ClearHistory()
 		{
 			_History.Clear();
+			_IsDirty = false;
 			for( int i=0; i<_LDS.Count; i++ )
 			{
 				_LDS[i] = LineDirtyState.Clean;

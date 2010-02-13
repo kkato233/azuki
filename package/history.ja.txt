@@ -4,6 +4,7 @@
  * fix: WPF アプリケーションで WindowsFormsHost を使って Azuki を使用する場合、Alt+マウスでの箱形選択後にメニューが表示されてしまう問題を修正
  * fix: DockPanel Suite で使えるように
  * fix: FindNext(string, int, bool matchCase) メソッドが matchCase 引数を無視していた問題を修正
+ * fix: Document.ClearHistory を実行しても Document.IsDirty プロパティがリセットされない問題を修正
  * fix: 左マージン領域をマウスでドラッグしてもテキスト選択ができない問題を修正
  * fix: 折り返しモードで最終行を更新したときに DirtBar （変更状態表示領域）が正常に再描画されない問題を修正
  * fix: 水平ルーラーの長い線と桁番号が重ならないように描画ロジックを改善

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Sgry.Azuki;
+using Sgry.Azuki.Highlighter;
 using Sgry.Azuki.Windows;
 using Debug = System.Diagnostics.Debug;
 using AzukiDocument = Sgry.Azuki.Document;
@@ -49,6 +50,7 @@ namespace Sgry.Ann
 		Thread _MonitorThread;
 		bool _MonitorThreadCanContinue;
 		PseudoPipe _IpcPipe = new PseudoPipe();
+		bool _AskingUserToReloadOrNot = false;
 		#endregion
 
 		#region Init / Dispose
@@ -106,6 +108,7 @@ namespace Sgry.Ann
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Closed += MainForm_Closed;
+				_MainForm.Activated += MainForm_Activated;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 				_MainForm.TabPanel.Items = Documents;
@@ -384,9 +387,6 @@ namespace Sgry.Ann
 		Document CreateDocumentFromFile( string filePath, Encoding encoding, bool withBom )
 		{
 			Document doc;
-			StreamReader file = null;
-			char[] buf = null;
-			int readCount = 0;
 
 			// if specified file was already opened, just return the document
 			foreach( Document d in Documents )
@@ -399,7 +399,20 @@ namespace Sgry.Ann
 
 			// create new document
 			doc = new Document();
+			LoadFileContentToDocument( doc, filePath, encoding, withBom );
 			
+			return doc;
+		}
+
+		void LoadFileContentToDocument( Document doc, string filePath, Encoding encoding, bool withBom )
+		{
+			StreamReader file = null;
+			char[] buf = null;
+			int readCount = 0;
+
+			// make the content empty
+			doc.Replace( "", 0, doc.Length );
+
 			// analyze encoding
 			if( encoding == null )
 			{
@@ -436,14 +449,12 @@ namespace Sgry.Ann
 
 			// set document properties
 			doc.ClearHistory();
-			doc.IsDirty = false;
 			doc.FilePath = filePath;
+			doc.LastSavedTime = File.GetLastWriteTime( filePath );
 			if( (new FileInfo(filePath).Attributes & FileAttributes.ReadOnly) != 0 )
 			{
 				doc.IsReadOnly = true;
 			}
-
-			return doc;
 		}
 
 		/// <summary>
@@ -577,13 +588,14 @@ namespace Sgry.Ann
 				}
 
 				// write file bytes
-				using( file = File.OpenWrite(doc.FilePath) )
+				using( file = File.Open(doc.FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite) )
 				{
 					file.SetLength( 0 );
 					file.Write( bomBytes, 0, bomBytes.Length );
 					file.Write( contentBytes, 0, contentBytes.Length );
 				}
 				doc.IsDirty = false;
+				doc.LastSavedTime = File.GetLastWriteTime( doc.FilePath );
 			}
 			catch( UnauthorizedAccessException ex )
 			{
@@ -661,6 +673,44 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
+		/// Reloads a document.
+		/// </summary>
+		public void ReloadDocument( Document doc )
+		{
+			ReloadDocument( doc, null, false );
+		}
+
+		/// <summary>
+		/// Reloads document.
+		/// </summary>
+		/// <exception cref="System.IO.IOException">I/O error was occurred.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">The associated file of the document does not exist.</exception>
+		/// <exception cref="System.IO.UnauthorizedAccessException">Reading the file associated with this document was not permitted.</exception>
+		public void ReloadDocument( Document doc, Encoding encoding, bool withBom )
+		{
+			IHighlighter highlighter;
+			int line, column;
+
+			// remember caret position
+			doc.GetCaretIndex( out line, out column );
+
+			// detach highlighter temporarily
+			highlighter = doc.Highlighter;
+			doc.Highlighter = null;
+
+			// reload content
+			LoadFileContentToDocument( doc, doc.FilePath, encoding, withBom );
+
+			// attach the highlighter again
+			doc.Highlighter = highlighter;
+
+			// restore caret position and scroll to it
+			doc.SetCaretIndex( line, column );
+
+			_MainForm.UpdateUI();
+		}
+
+		/// <summary>
 		/// Closes a document.
 		/// </summary>
 		public void CloseDocument( Document doc )
@@ -691,20 +741,13 @@ namespace Sgry.Ann
 
 		void AlertException( Exception ex )
 		{
-			MessageBox.Show(
-					ex.Message,
-					"Ann",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Exclamation,
-					MessageBoxDefaultButton.Button1
-				);
+			Alert( ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
 		}
 
 		public DialogResult AlertDiscardModification( Document doc )
 		{
-			return MessageBox.Show(
+			return Alert(
 					doc.DisplayName + " is modified but not saved. Save changes?",
-					"Ann",
 					MessageBoxButtons.YesNoCancel,
 					MessageBoxIcon.Exclamation,
 					MessageBoxDefaultButton.Button2
@@ -723,9 +766,8 @@ namespace Sgry.Ann
 				default:		throw new ArgumentException("EOL code must be one of CR+LF, LF, CR.", "newEolCode");
 			}
 
-			return MessageBox.Show(
+			return Alert(
 					"Do you also want to change all existing line end code to "+eolCodeName+"?",
-					"Ann",
 					MessageBoxButtons.YesNo,
 					MessageBoxIcon.Question,
 					MessageBoxDefaultButton.Button2
@@ -974,6 +1016,43 @@ namespace Sgry.Ann
 			SaveConfig();
 		}
 
+		void MainForm_Activated( object sender, EventArgs e )
+		{
+			if( _AskingUserToReloadOrNot )
+				return;
+
+			_AskingUserToReloadOrNot = true;
+			foreach( Document doc in Documents )
+			{
+				DialogResult result;
+
+				if( File.Exists(doc.FilePath)
+					&& doc.LastSavedTime != File.GetLastWriteTime(doc.FilePath) )
+				{
+					// activate the document
+					ActiveDocument = doc;
+
+					// ask user whether to reload it or not
+					result = Alert(
+						""+doc.FilePath+" was updated by other program. Do you want to reload?",
+						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information
+					);
+					if( result == DialogResult.No )
+					{
+						continue;
+					}
+					else if( result == DialogResult.Cancel )
+					{
+						break;
+					}
+
+					// reload it
+					ReloadDocument( doc );
+				}
+			}
+			_AskingUserToReloadOrNot = false;
+		}
+
 		void TabPanel_TabSelected( MouseEventArgs e, Document item )
 		{
 			if( e.Button == MouseButtons.Left )
@@ -1041,6 +1120,20 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
+		DialogResult Alert( string text, MessageBoxButtons buttons, MessageBoxIcon icon )
+		{
+			return Alert( text, buttons, icon, MessageBoxDefaultButton.Button1 );
+		}
+
+		DialogResult Alert( string text, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton )
+		{
+#			if !PocketPC
+			return MessageBox.Show( _MainForm, text, "Ann", buttons, icon, defaultButton );
+#			else
+			return MessageBox.Show( text, "Ann", buttons, icon, defaultButton );
+#			endif
+		}
+
 		static class Utl
 		{
 			public static void AnalyzeEncoding( string filePath, out Encoding encoding, out bool withBom )

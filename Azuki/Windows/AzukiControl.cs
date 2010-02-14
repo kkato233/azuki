@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-02-13
+// update: 2010-02-14
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -39,6 +39,8 @@ namespace Sgry.Azuki.Windows
 		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
 #		if !PocketPC
 		bool _LastAltWasForRectSelect = false;
+#		else
+		bool _IsHandleCreated = false;
 #		endif
 		
 		InvalidateProc1 _invalidateProc1 = null;
@@ -100,6 +102,11 @@ namespace Sgry.Azuki.Windows
 				_Impl.View.HandleGraphicContextChanged();
 			}
 
+#			if PocketPC
+			// remember that handle is associated
+			_IsHandleCreated = true;
+#			endif
+
 			// rewrite window procedure at first
 			RewriteWndProc();
 
@@ -130,6 +137,11 @@ namespace Sgry.Azuki.Windows
 		protected override void OnHandleDestroyed( EventArgs e )
 		{
 			base.OnHandleDestroyed( e );
+
+#			if PocketPC
+			// remember that no handle is associated now
+			_IsHandleCreated = false;
+#			endif
 
 			// destroy caret
 			WinApi.DestroyCaret();
@@ -2191,6 +2203,19 @@ namespace Sgry.Azuki.Windows
 
 			return false;
 		}
+
+#		if PocketPC
+		/// <summary>
+		/// Gets a value indicating whether the control has a handle associated with it.
+		/// </summary>
+		public bool IsHandleCreated
+		{
+			get
+			{
+				return this._IsHandleCreated;
+			}
+		}
+#		endif
 		#endregion
 
 		#region Custom Window Procedure (handling v/h scroll and paint event etc.)

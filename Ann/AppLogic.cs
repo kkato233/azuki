@@ -1,4 +1,4 @@
-// 2010-02-13
+// 2010-02-14
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1005,7 +1005,7 @@ namespace Sgry.Ann
 					// ask user whether to reload it or not
 					result = Alert(
 						""+doc.FilePath+" was updated by other program. Do you want to reload?",
-						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information
+						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk
 					);
 					if( result == DialogResult.No )
 					{

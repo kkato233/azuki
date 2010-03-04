@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-02-14
+// update: 2010-03-04
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -809,7 +809,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 #		if !PocketPC
 		[Category("Appearance")]
-		[DefaultValue(4)]
+		[DefaultValue(8)]
 #		endif
 		public int TabWidth
 		{

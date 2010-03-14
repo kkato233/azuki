@@ -1,4 +1,4 @@
-﻿// 2009-11-28
+﻿// 2010-03-14
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -179,10 +179,20 @@ namespace Sgry.Ann
 			InvokeOptionChanged();
 		}
 
+		void _Num_FontSize_GotFocus( object sender, EventArgs e )
+		{
+			_Num_FontSize.Select( 0, 100 );
+		}
+
 		void _Num_TabWidth_ValueChanged( object sender, EventArgs e )
 		{
 			TabWidth = (int)_Num_TabWidth.Value;
 			InvokeOptionChanged();
+		}
+
+		void _Num_TabWidth_GotFocus( object sender, EventArgs e )
+		{
+			_Num_TabWidth.Select( 0, 100 );
 		}
 
 		void _Button_OK_Click( object sender, EventArgs e )
@@ -217,6 +227,7 @@ namespace Sgry.Ann
 			// install event handlers
 			_Combo_Fonts.TextChanged += _Combo_Fonts_TextChanged;
 			_Num_FontSize.ValueChanged += _Num_FontSize_ValueChanged;
+			_Num_FontSize.GotFocus += _Num_FontSize_GotFocus;
 			_Check_DrawsSpace.Click += _CheckBox_CheckedChanged;
 			_Check_DrawsTab.Click += _CheckBox_CheckedChanged;
 			_Check_DrawsFullWidthSpace.Click += _CheckBox_CheckedChanged;
@@ -226,6 +237,7 @@ namespace Sgry.Ann
 			_Check_ShowsHRuler.Click += _CheckBox_CheckedChanged;
 			_Check_ShowsDirtBar.Click += _CheckBox_CheckedChanged;
 			_Num_TabWidth.ValueChanged += _Num_TabWidth_ValueChanged;
+			_Num_TabWidth.GotFocus += _Num_TabWidth_GotFocus;
 			_Button_OK.Click += _Button_OK_Click;
 			_Button_Cancel.Click += _Button_Cancel_Click;
 		}

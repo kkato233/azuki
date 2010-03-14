@@ -1,4 +1,4 @@
-// 2010-02-14
+// 2010-03-14
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -656,6 +656,8 @@ namespace Sgry.Ann
 			doc.Highlighter = highlighter;
 
 			// restore caret position and scroll to it
+			line = Math.Min( line, doc.LineCount-1 );
+			column = Math.Min( column, doc.GetLineLength(line) );
 			doc.SetCaretIndex( line, column );
 
 			_MainForm.UpdateUI();

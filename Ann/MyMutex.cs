@@ -11,8 +11,8 @@ namespace Sgry.Ann
 	/// <remarks>
 	/// <para>
 	/// CF.NET has no named mutex but WinCE or Windows Mobile has it.
-	/// This class realize named mutex by P/Invoke on CF.NET,
-	/// and realize named mutex by standard Mutex object on Full .NET.
+	/// This class realizes named mutex by P/Invoke on CF.NET,
+	/// and realizes named mutex by standard Mutex object on Full .NET.
 	/// </para>
 	/// </remarks>
 	class MyMutex : IDisposable

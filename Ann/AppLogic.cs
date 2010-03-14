@@ -9,10 +9,10 @@ using System.Windows.Forms;
 using Sgry.Azuki;
 using Sgry.Azuki.Highlighter;
 using Sgry.Azuki.Windows;
+using Assembly = System.Reflection.Assembly;
+using CancelEventArgs = System.ComponentModel.CancelEventArgs;
 using Debug = System.Diagnostics.Debug;
 using AzukiDocument = Sgry.Azuki.Document;
-using CancelEventArgs = System.ComponentModel.CancelEventArgs;
-using Assembly = System.Reflection.Assembly;
 
 namespace Sgry.Ann
 {
@@ -108,7 +108,6 @@ namespace Sgry.Ann
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Closed += MainForm_Closed;
-				_MainForm.Activated += MainForm_Activated;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 				_MainForm.TabPanel.Items = Documents;
@@ -988,7 +987,7 @@ namespace Sgry.Ann
 			SaveConfig();
 		}
 
-		void MainForm_Activated( object sender, EventArgs e )
+		internal void MainForm_DelayedActivated()
 		{
 			if( _AskingUserToReloadOrNot )
 				return;

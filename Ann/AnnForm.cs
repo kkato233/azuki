@@ -1,4 +1,4 @@
-// 2010-02-13
+// 2010-03-14
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace Sgry.Ann
 		AppLogic _App;
 		Dictionary<MenuItem, AnnAction> _MenuMap = new Dictionary<MenuItem,AnnAction>();
 		Dictionary<Keys, AnnAction>	_KeyMap = new Dictionary<Keys, AnnAction>();
+		Timer _TimerForDelayedActivatedEvent = new Timer();
 		#endregion
 
 		#region Init / Dispose
@@ -43,6 +44,8 @@ namespace Sgry.Ann
 			this.Icon = Resource.AppIcon;
 			_SearchPanel.SetFont( this.Font );
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
+			_TimerForDelayedActivatedEvent.Interval = 100;
+			_TimerForDelayedActivatedEvent.Tick += Form_DelayedActivated;
 		}
 		#endregion
 
@@ -320,6 +323,18 @@ namespace Sgry.Ann
 			}
 		}
 #		endif
+
+		protected override void OnActivated( EventArgs e )
+		{
+			base.OnActivated( e );
+			_TimerForDelayedActivatedEvent.Start();
+		}
+
+		void Form_DelayedActivated( object sender, EventArgs e )
+		{
+			_App.MainForm_DelayedActivated();
+			_TimerForDelayedActivatedEvent.Stop();
+		}
 		#endregion
 
 		#region UI Component Initialization

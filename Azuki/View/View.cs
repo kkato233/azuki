@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-02-13
+// update: 2010-03-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1239,7 +1239,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets X coordinate in client area of line number area.
 		/// </summary>
-		internal int XofLineNumberArea
+		public int XofLineNumberArea
 		{
 			get{ return 0; }
 		}
@@ -1247,7 +1247,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets X coordinate in client area of dirt bar area.
 		/// </summary>
-		internal int XofDirtBar
+		public int XofDirtBar
 		{
 			get{ return XofLineNumberArea + LineNumAreaWidth; }
 		}
@@ -1255,7 +1255,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets X coordinate in client area of left margin.
 		/// </summary>
-		internal int XofLeftMargin
+		public int XofLeftMargin
 		{
 			get
 			{
@@ -1270,7 +1270,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets X coordinate in client area of text area.
 		/// </summary>
-		internal int XofTextArea
+		public int XofTextArea
 		{
 			get
 			{
@@ -1285,7 +1285,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets Y coordinate in client area of horizontal ruler.
 		/// </summary>
-		internal int YofHRuler
+		public int YofHRuler
 		{
 			get{ return 0; }
 		}
@@ -1293,7 +1293,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets Y coordinate in client area of top margin.
 		/// </summary>
-		internal int YofTopMargin
+		public int YofTopMargin
 		{
 			get{ return YofHRuler + HRulerHeight; }
 		}
@@ -1301,7 +1301,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets Y coordinate in client area of text area.
 		/// </summary>
-		internal int YofTextArea
+		public int YofTextArea
 		{
 			get{ return YofTopMargin + TopMargin; }
 		}

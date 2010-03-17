@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-02-07
+// update: 2010-03-17
 //=========================================================
 using System;
 using System.Text;
@@ -606,9 +606,7 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
-			_MouseDownVirPos.X = Int32.MinValue;
-			_MouseDragging = false;
-			IsRectSelectMode = false;
+			ClearDragState();
 		}
 
 		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
@@ -616,9 +614,7 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
-			_MouseDownVirPos.X = Int32.MinValue;
-			_MouseDragging = false;
-			IsRectSelectMode = false;
+			ClearDragState();
 		}
 
 		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
@@ -626,10 +622,18 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
+			bool onLineNumberArea = false;
+
 			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
 			if( pos.X < 0 || pos.Y < 0 )
 			{
 				return;
+			}
+
+			// check whether the mouse position is on the line number area or not
+			if( pos.X < View.XofLeftMargin )
+			{
+				onLineNumberArea = true;
 			}
 
 			// remember mouse down screen position and convert it to virtual view's coordinate
@@ -644,7 +648,15 @@ namespace Sgry.Azuki
 				index = View.GetIndexFromVirPos( pos );
 
 				// set selection
-				if( shift )
+				if( onLineNumberArea )
+				{
+					if( !shift )
+					{
+						Document.LineSelectionAnchor = -1;
+					}
+					SelectLines( index );
+				}
+				else if( shift )
 				{
 					Document.SetSelection( Document.AnchorIndex, index );
 				}
@@ -697,6 +709,7 @@ namespace Sgry.Azuki
 				return;
 
 			int xOffset, yOffset;
+			bool onLineNumberArea = false;
 
 			// if mouse button was not down, ignore
 			if( _MouseDownVirPos.X == Int32.MinValue )
@@ -706,6 +719,12 @@ namespace Sgry.Azuki
 			pos.X = Math.Max( 0, pos.X );
 			pos.Y = Math.Max( 0, pos.Y );
 			View.ScreenToVirtual( ref pos );
+
+			// check whether the mouse position is on the line number area or not
+			if( pos.X < View.XofLeftMargin )
+			{
+				onLineNumberArea = true;
+			}
 
 			// if it was slight movement, ignore
 			if( _MouseDragging == false )
@@ -741,6 +760,10 @@ namespace Sgry.Azuki
 						);
 					Document.SetSelection_Impl( Document.AnchorIndex, curPosIndex, false );
 				}
+				else if( onLineNumberArea )
+				{
+					SelectLines( curPosIndex );
+				}
 				else
 				{
 					//--- normal selection ---
@@ -753,6 +776,13 @@ namespace Sgry.Azuki
 				View.SetDesiredColumn();
 				View.ScrollToCaret();
 			}
+		}
+
+		void ClearDragState()
+		{
+			_MouseDownVirPos.X = Int32.MinValue;
+			_MouseDragging = false;
+			IsRectSelectMode = false;
 		}
 		#endregion
 
@@ -942,6 +972,70 @@ namespace Sgry.Azuki
 			}
 
 			return rect;
+		}
+
+		void SelectLines( int toIndex )
+		{
+			int anchor, caret;
+			int toLineIndex;
+			Document doc = this.Document;
+			int lineSelectionAnchor;
+
+			// get line index of selection starting line and destination line
+			toLineIndex = View.GetLineIndexFromCharIndex( toIndex );
+			if( doc.LineSelectionAnchor < 0 )
+			{
+				//-- no line selection exists --
+				// select between head of the line and end of the line
+				anchor = View.GetLineHeadIndex( toLineIndex );
+				if( toLineIndex+1 < View.LineCount )
+				{
+					caret = View.GetLineHeadIndex( toLineIndex + 1 );
+				}
+				else
+				{
+					caret = doc.Length;
+				}
+				lineSelectionAnchor = toIndex;
+			}
+			else if( doc.LineSelectionAnchor <= toIndex )
+			{
+				//-- selecting to the line (or after) where selection started --
+				// select between head of the starting line and the end of the destination line
+				anchor = View.GetLineHeadIndexFromCharIndex( doc.LineSelectionAnchor );
+				if( toLineIndex+1 < View.LineCount )
+				{
+					caret = View.GetLineHeadIndex( toLineIndex + 1 );
+				}
+				else
+				{
+					caret = doc.Length;
+				}
+				lineSelectionAnchor = doc.LineSelectionAnchor;
+			}
+			else// if( toIndex < doc.LineSelectionAnchor )
+			{
+				//-- selecting to foregoing lines where selection started --
+				// select between head of the destination line and end of the starting line
+				int anchorLineIndex;
+
+				caret = View.GetLineHeadIndex( toLineIndex );
+				anchorLineIndex = View.GetLineIndexFromCharIndex( doc.LineSelectionAnchor );
+				if( anchorLineIndex+1 < doc.LineCount )
+				{
+					anchor = View.GetLineHeadIndex( anchorLineIndex + 1 );
+				}
+				else
+				{
+					anchor = doc.Length;
+				}
+				lineSelectionAnchor = doc.LineSelectionAnchor;
+			}
+
+			// apply new selection
+			// (and restore LineSelectionAnchor property because SetSelection clears it)
+			doc.SetSelection( anchor, caret );
+			doc.LineSelectionAnchor = lineSelectionAnchor;
 		}
 		#endregion
 	}

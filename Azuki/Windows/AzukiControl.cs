@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-03-04
+// update: 2010-03-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -2303,10 +2303,19 @@ namespace Sgry.Azuki.Windows
 					else if( message == WinApi.WM_MOUSEMOVE )
 					{
 						_Impl.HandleMouseMove( buttonIndex, pos, shift, ctrl, alt, win );
+#						if !PocketPC
+						if( pos.X < View.XofLeftMargin )
+						{
+							this.Cursor = Cursors.Arrow;
+						}
+						else
+						{
+							this.Cursor = Cursors.IBeam;
+						}
+#						endif
 					}
 					else if( message == WinApi.WM_LBUTTONDOWN || message == WinApi.WM_RBUTTONDOWN )
 					{
-						this.Focus();
 						_Impl.HandleMouseDown( buttonIndex, pos, shift, ctrl, alt, win );
 #						if !PocketPC
 						if( alt )

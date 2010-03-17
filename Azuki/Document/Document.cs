@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-02-13
+// update: 2010-03-17
 //=========================================================
 using System;
 using System.Collections;
@@ -35,6 +35,7 @@ namespace Sgry.Azuki
 		IHighlighter _Highlighter = null;
 		ViewParam _ViewParam = new ViewParam();
 		DateTime _LastModifiedTime = DateTime.Now;
+		int _LineSelectionAnchor = -1;
 		int[] _RectSelectRanges = null;
 		object _Tag = null;
 		static readonly char[] _PairBracketTable = new char[]{
@@ -338,16 +339,17 @@ namespace Sgry.Azuki
 			SetSelection_Impl( anchor, caret, true );
 		}
 
-		internal void SetSelection_Impl( int anchor, int caret, bool clearRectSelect )
+		internal void SetSelection_Impl( int anchor, int caret, bool clearsSpecialSelection )
 		{
 			int oldAnchor, oldCaret;
 			int[] oldRectSelectRanges = null;
 
 			// clear rectangle selection if specified
 			oldRectSelectRanges = _RectSelectRanges;
-			if( clearRectSelect )
+			if( clearsSpecialSelection )
 			{
 				_RectSelectRanges = null;
+				LineSelectionAnchor = -1;
 			}
 
 			// if given parameters change nothing, do nothing
@@ -411,8 +413,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// (This property is basically for internal use.
-		/// I do not recomment to use this from outside of Azuki.)
+		/// (This property is basically for internal use only
+		/// so using this is not recommended.)
 		/// </para>
 		/// <para>
 		/// The value of this method is an array of text indexes
@@ -426,6 +428,15 @@ namespace Sgry.Azuki
 		{
 			get{ return _RectSelectRanges; }
 			set{ _RectSelectRanges = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the char-index where the line selection has been started; or -1 if line selection is not executing.
+		/// </summary>
+		internal int LineSelectionAnchor
+		{
+			get{ return _LineSelectionAnchor; }
+			set{ _LineSelectionAnchor = value; }
 		}
 		#endregion
 

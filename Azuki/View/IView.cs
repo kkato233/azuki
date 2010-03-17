@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2009-11-14
+// update: 2010-03-15
 //=========================================================
 using System;
 using System.Drawing;
@@ -508,6 +508,64 @@ namespace Sgry.Azuki
 		/// Gets or sets size of the currently visible size of the text area (line number area is not included).
 		/// </summary>
 		Size VisibleTextAreaSize
+		{
+			get;
+		}
+		#endregion
+
+		#region Coordinates of Graphical Parts
+		/// <summary>
+		/// Gets X coordinate in client area of line number area.
+		/// </summary>
+		int XofLineNumberArea
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets X coordinate in client area of dirt bar area.
+		/// </summary>
+		int XofDirtBar
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets X coordinate in client area of left margin.
+		/// </summary>
+		int XofLeftMargin
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets X coordinate in client area of text area.
+		/// </summary>
+		int XofTextArea
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets Y coordinate in client area of horizontal ruler.
+		/// </summary>
+		int YofHRuler
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets Y coordinate in client area of top margin.
+		/// </summary>
+		int YofTopMargin
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets Y coordinate in client area of text area.
+		/// </summary>
+		int YofTextArea
 		{
 			get;
 		}

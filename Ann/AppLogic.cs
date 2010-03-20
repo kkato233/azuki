@@ -1,4 +1,4 @@
-// 2010-03-14
+// 2010-03-20
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1024,17 +1024,26 @@ namespace Sgry.Ann
 
 		internal void MainForm_DelayedActivated()
 		{
-			if( _AskingUserToReloadOrNot )
-				return;
+			List<Document> docsToBeReloaded;
 
-			_AskingUserToReloadOrNot = true;
-			foreach( Document doc in Documents )
+			if( InterlockedSetFlag(ref _AskingUserToReloadOrNot, true) )
 			{
-				DialogResult result;
-
-				if( File.Exists(doc.FilePath)
-					&& doc.LastSavedTime != File.GetLastWriteTime(doc.FilePath) )
+				// list up documents to be reloaded
+				docsToBeReloaded = new List<Document>( Documents.Count );
+				foreach( Document doc in Documents )
 				{
+					if( File.Exists(doc.FilePath)
+						&& doc.LastSavedTime != File.GetLastWriteTime(doc.FilePath) )
+					{
+						docsToBeReloaded.Add( doc );
+					}
+				}
+
+				// ask user to reload each document
+				foreach( Document doc in docsToBeReloaded )
+				{
+					DialogResult result;
+
 					// activate the document
 					ActiveDocument = doc;
 
@@ -1055,8 +1064,19 @@ namespace Sgry.Ann
 					// reload it
 					ReloadDocument( doc );
 				}
+
+				_AskingUserToReloadOrNot = false;
 			}
-			_AskingUserToReloadOrNot = false;
+		}
+
+		bool InterlockedSetFlag( ref bool flag, bool newValue )
+		{
+			lock( this )
+			{
+				bool prevValue = flag;
+				flag = newValue;
+				return prevValue;
+			}
 		}
 
 		void TabPanel_TabSelected( MouseEventArgs e, Document item )

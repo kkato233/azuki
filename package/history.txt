@@ -7,6 +7,7 @@
  * add: now Azuki accepts text input from IME at once, not one character by one character
  * mod: now Azuki draws line number area and dirt bar area for (non-existing) lines beyond EOF
  * mod: now Azuki does not break line on pressing Enter key with Shift, Ctrl or Windows
+ * mod: now AzukiControl.ConvertsTabToSpaces property is not attributed as obsoleted
  * mod: now Azuki respects system setting of font rendering method (enabling anti-alias or not, etc.)
  * fix: in WPF application, menu is activated after rectangular selection by alt+mouse if using AzukiControl through WindowsFormsHost window
  * fix: now AzukiControl can be used with DockPanel Suite

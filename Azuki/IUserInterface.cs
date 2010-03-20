@@ -253,16 +253,12 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property is replaced with
+		/// This property is a synonym of
 		/// <see cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent</see>
-		/// property and is now obsoleted.
-		/// Use
-		/// <see cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent</see>
-		/// property instead.
+		/// property.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent</seealso>
-		[Obsolete("Please use UsesTabForIndent property instead.", false)]
 		bool ConvertsTabToSpaces
 		{
 			get; set;

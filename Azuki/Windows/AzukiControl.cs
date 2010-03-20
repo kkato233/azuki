@@ -965,12 +965,9 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property is replaced with
+		/// This property is a synonym of
 		/// <see cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
-		/// property and is now obsoleted.
-		/// Use
-		/// <see cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
-		/// property instead.
+		/// property.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</seealso>
@@ -979,7 +976,6 @@ namespace Sgry.Azuki.Windows
 		[DefaultValue(false)]
 		[Description("If false, tab characters are used for indentation, instead of space characters.")]
 #		endif
-		[Obsolete("Please use UsesTabForIndent property instead.", false)]
 		public bool ConvertsTabToSpaces
 		{
 			get{ return !UsesTabForIndent; }

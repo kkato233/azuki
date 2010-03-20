@@ -2377,6 +2377,37 @@ namespace Sgry.Azuki.Windows
 						HandleWheelEvent( -(linesPerWheel * scrollCount) );
 					}
 				}
+				else if( message == WinApi.WM_IME_CHAR )
+				{
+					if( IsOverwriteMode == false )
+						return IntPtr.Zero;
+				}
+				else if( message == WinApi.WM_IME_COMPOSITION )
+				{
+					if( IsOverwriteMode == false
+						&& (lParam.ToInt32() & WinApi.GCS_RESULTSTR) != 0 )
+					{
+						string text;
+
+						unsafe
+						{
+							IntPtr ime;
+							int len;
+
+							ime = WinApi.ImmGetContext( Handle );
+							len = WinApi.ImmGetCompositionStringW( ime, WinApi.GCS_RESULTSTR, null, 0 );
+							fixed( char* buf = new char[len+1] )
+							{
+								WinApi.ImmGetCompositionStringW( ime, WinApi.GCS_RESULTSTR, (void*)buf, (uint)len );
+								buf[len] = '\0';
+								text = new String( buf );
+							}
+							WinApi.ImmReleaseContext( Handle, ime );
+						}
+
+						_Impl.HandleTextInput( text );
+					}
+				}
 				else if( message == WinApi.WM_IME_STARTCOMPOSITION )
 				{
 					// move IMM window to caret position

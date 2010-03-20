@@ -4,6 +4,7 @@
  * add: added an action to insert new line below the caret (implemented as Actions.BreakNextLine, default key-bind is Ctrl+Shift+Enter)
  * add: added IsRectSelectModeChanged event for AzukiControl
  * add: added IView.GetLineLength method for retrieving length of a physical line
+ * add: now Azuki accepts text input from IME at once, not one character by one character
  * mod: now Azuki draws line number area and dirt bar area for (non-existing) lines beyond EOF
  * mod: now Azuki does not break line on pressing Enter key with Shift, Ctrl or Windows
  * mod: now Azuki respects system setting of font rendering method (enabling anti-alias or not, etc.)

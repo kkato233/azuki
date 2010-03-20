@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-03-17
+// update: 2010-03-20
 //=========================================================
 using System;
 using System.Text;
@@ -34,7 +34,6 @@ namespace Sgry.Azuki
 
 		IDictionary< uint, ActionProc > _KeyMap = new Dictionary< uint, ActionProc >( 32 );
 		AutoIndentHook _AutoIndentHook = null;
-		char _FirstSurrogateChar = '\0';
 		bool _IsOverwriteMode = false;
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
@@ -326,22 +325,35 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal void HandleKeyPress( char ch )
 		{
-			Debug.Assert( _IsDisposed == false );
+			HandleTextInput( ch.ToString() );
+		}
 
-			string str = null;
+		/// <summary>
+		/// Handles text input event.
+		/// </summary>
+		/// <exception cref="System.InvalidOperationException">This object is already disposed.</exception>
+		/// <exception cref="System.ArgumentNullException">Parameter 'text' is null.</exception>
+		internal void HandleTextInput( string text )
+		{
+			if( _IsDisposed )
+				throw new InvalidOperationException( "This "+this.GetType().Name+" object is already disposed." );
+			if( text == null )
+				throw new ArgumentNullException( "text" );
+
 			int newCaretIndex;
 			Document doc = Document;
 			int selBegin, selEnd;
+			StringBuilder input = new StringBuilder( Math.Max(64, text.Length) );
+
+			// just notify and return if in read only mode
+			if( doc.IsReadOnly )
+			{
+				Plat.Inst.MessageBeep();
+				return;
+			}
 
 			try
 			{
-				// just notify and return if in read only mode
-				if( doc.IsReadOnly )
-				{
-					Plat.Inst.MessageBeep();
-					return;
-				}
-
 				// begin grouping UNDO action
 				doc.BeginUndo();
 
@@ -351,79 +363,63 @@ namespace Sgry.Azuki
 					UiImpl.DeleteRectSelectText( doc );
 				}
 
-				// try to use hook delegate
-				if( _AutoIndentHook != null
-					&& _AutoIndentHook(_UI, ch) == true )
+				// handle input characters
+				foreach( char ch in text )
 				{
-					goto update;
-				}
-
-				// handle surrogate pairs
-				if( Char.IsSurrogate(ch) )
-				{
-					if( _FirstSurrogateChar == '\0' )
+					// try to use hook delegate
+					if( _AutoIndentHook != null
+						&& _AutoIndentHook(_UI, ch) == true )
 					{
-						// this is first char of a surrogate pair. remember it.
-						_FirstSurrogateChar = ch;
-						return;
+						// if this char was handled by the hook, do nothing for this char.
+						continue;
+					}
+
+					// execute built-in hook logic
+					if( LineLogic.IsEolChar(ch) )
+					{
+						// change all EOL code in the text should changed to the
+						input.Append( doc.EolCode );
+					}
+					else if( ch == '\t' && _UsesTabForIndent == false )
+					{
+						Point caretPos;
+						Point nextTabStopPos;
+						
+						// get x-coord of caret index
+						doc.GetSelection( out selBegin, out selEnd );
+						caretPos = View.GetVirPosFromIndex( selBegin );
+
+						// calc next tab stop
+						// ([*] When distance of the caret and next tab stop is narrower than a space width,
+						// no padding chars will be made and 'nothing will happen.'
+						// To avoid such case, here we add an extra space width
+						// before calculating next tab stop.)
+						nextTabStopPos = caretPos;
+						nextTabStopPos.X += View.SpaceWidthInPx - 1; // [*]
+						nextTabStopPos.X += View.TabWidthInPx;
+						nextTabStopPos.X -= (nextTabStopPos.X % View.TabWidthInPx);
+
+						// make padding spaces
+						int spaceCount = (nextTabStopPos.X - caretPos.X) / View.SpaceWidthInPx;
+						for( int i=0; i<spaceCount; i++ )
+						{
+							input.Append( ' ' );
+						}
+					}
+					else if( ch == '\x3000' && ConvertsFullWidthSpaceToSpace )
+					{
+						input.Append( '\x0020' );
+					}
+					else
+					{
+						// remember this character
+						input.Append( ch );
 					}
 				}
-				else
-				{
-					// Azuki accepts surrogate pairs only if it was continuously inserted.
-					// so we clear the history
-					_FirstSurrogateChar = '\0';
-				}
 
-				// make string to be inserted
+				// calculate new caret position
 				doc.GetSelection( out selBegin, out selEnd );
-				if( _FirstSurrogateChar != '\0' )
-				{
-					// this is a second char of a surrogate pair.
-					// compose the surrogate pair
-					str = "" + _FirstSurrogateChar + ch;
-					_FirstSurrogateChar = '\0';
-				}
-				else if( LineLogic.IsEolChar(ch) )
-				{
-					str = doc.EolCode;
-				}
-				else if( ch == '\t' && _UsesTabForIndent == false )
-				{
-					StringBuilder buf = new StringBuilder( 32 );
-					Point caretPos;
-					Point nextTabStopPos;
-					
-					// get x-coord of caret index
-					caretPos = View.GetVirPosFromIndex( selBegin );
-
-					// calc next tab stop
-					// ([*] When distance of the caret and next tab stop is narrower than a space width,
-					// no padding chars will be made and 'nothing will happen.'
-					// To avoid such case, here we add an extra space width
-					// before calculating next tab stop.)
-					nextTabStopPos = caretPos;
-					nextTabStopPos.X += View.SpaceWidthInPx - 1; // [*]
-					nextTabStopPos.X += View.TabWidthInPx;
-					nextTabStopPos.X -= (nextTabStopPos.X % View.TabWidthInPx);
-
-					// make padding spaces
-					int spaceCount = (nextTabStopPos.X - caretPos.X) / View.SpaceWidthInPx;
-					str = String.Empty;
-					for( int i=0; i<spaceCount; i++ )
-					{
-						str += ' ';
-					}
-				}
-				else if( ch == '\x3000' && ConvertsFullWidthSpaceToSpace )
-				{
-					str = "\x0020";
-				}
-				else
-				{
-					str = ch.ToString();
-				}
-				newCaretIndex = selBegin + str.Length;
+				newCaretIndex = selBegin + input.Length;
 
 				// calc replacement target range
 				if( IsOverwriteMode
@@ -434,10 +430,9 @@ namespace Sgry.Azuki
 				}
 
 				// replace selection to input char
-				doc.Replace( str, selBegin, selEnd );
+				doc.Replace( input.ToString(), selBegin, selEnd );
 				doc.SetSelection( newCaretIndex, newCaretIndex );
 
-			update:
 				// set desired column
 				_View.SetDesiredColumn();
 
@@ -448,6 +443,7 @@ namespace Sgry.Azuki
 			finally
 			{
 				doc.EndUndo();
+				input.Length = 0;
 			}
 		}
 		#endregion

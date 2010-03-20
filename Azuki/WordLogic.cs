@@ -1,7 +1,7 @@
 ﻿// file: WordLogic.cs
 // brief: Word detection logic for well Japanese handling
 // author: YAMAMOTO Suguru
-// update: 2009-09-21
+// update: 2010-03-20
 //=========================================================
 using System;
 using System.Text;
@@ -519,6 +519,8 @@ namespace Sgry.Azuki
 				return true;
 			if( 0x3001 <= ch && ch <= 0x303f )
 				return true; // CJK punctuation marks
+			if( ch == 0x30fb )
+				return true; // Katakana middle dot
 			if( 0xff01 <= ch && ch <= 0xff0f )
 				return true; // "Full width" forms (1)
 			if( 0xff1a <= ch && ch <= 0xff20 )
@@ -573,6 +575,8 @@ namespace Sgry.Azuki
 		{
 			char ch = text[index];
 
+			if( ch == 0x30fb )
+				return false; // Katakana middle dot is punctuation mark
 			if( 0x30a0 <= ch && ch <= 0x30ff )
 				return true;
 			

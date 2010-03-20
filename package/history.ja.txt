@@ -8,6 +8,7 @@
  * mod: ファイル終端以降の（存在しない）行についても行番号領域を描画するように
  * mod: Shift、Ctrl、Windows キーと同時の Enter キー入力では改行しないように
  * mod: AzukiControl.ConvertsTabToSpaces プロパティを Obsolete 指定しないように
+ * mod: 「・」(U+30fb) をカタカナではなく記号文字として扱うように
  * mod: システムで指定されているフォント描画方法に従うように（アンチエイリアスを有効にするか、など）
  * fix: WPF アプリケーションで WindowsFormsHost を使って Azuki を使用する場合、Alt+マウスでの箱形選択後にメニューが表示されてしまう問題を修正
  * fix: DockPanel Suite で使えるように

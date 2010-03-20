@@ -1202,6 +1202,30 @@ namespace Sgry.Azuki.Windows
 		{
 			Actions.Delete( this );
 		}
+
+		/// <summary>
+		/// Processes specified text as an input by user.
+		/// </summary>
+		/// <param name="text">The string to be processed.</param>
+		/// <exception cref="System.InvalidOperationException">This object is already disposed.</exception>
+		/// <exception cref="System.ArgumentNullException">Parameter 'text' is null.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method processes specified text as an input by user.
+		/// Because this method is the implementation of user input,
+		/// some special pre-processes will be done.
+		/// The example of pre-processes are next:
+		/// </para>
+		/// <list type="bullet">
+		///		<item>If Document.ReadOnly property is true, this method will do nothing.</item>
+		///		<item>This method applies AutoIndentHook for each characters in the text.</item>
+		///		<item>This method applies built-in hook processes such as converting tab to spaces.</item>
+		/// </list>
+		/// </remarks>
+		public void HandleTextInput( string text )
+		{
+			_Impl.HandleTextInput( text );
+		}
 		#endregion
 
 		#region IUserInterface - Selection
@@ -1815,13 +1839,13 @@ namespace Sgry.Azuki.Windows
 			// (Ctrl+I as an a HT(HorizontalTab), Ctrl+M as a LF(LineFeed) for example).
 			// These behavior should not be expected by editor component users
 			// and thus such char event is ignored here
-			if( (e.KeyChar == '\t' && WinApi.IsKeyDownAsync(Keys.I))
-				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.M))
-				|| (e.KeyChar == '\n' && WinApi.IsKeyDownAsync(Keys.J))
-				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.ShiftKey))
-				|| (e.KeyChar == '\n' && WinApi.IsKeyDownAsync(Keys.ControlKey))
-				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.LWin))
-				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.RWin)) )
+			if( (e.KeyChar == '\t' && WinApi.IsKeyDown(Keys.I))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDown(Keys.M))
+				|| (e.KeyChar == '\n' && WinApi.IsKeyDown(Keys.J))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDown(Keys.ShiftKey))
+				|| (e.KeyChar == '\n' && WinApi.IsKeyDown(Keys.ControlKey))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDown(Keys.LWin))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDown(Keys.RWin)) )
 			{
 				return;
 			}

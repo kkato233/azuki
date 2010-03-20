@@ -555,9 +555,11 @@ namespace Sgry.Azuki
 		{
 			Document doc = ui.Document;
 			IView view = ui.View;
-			string eol = doc.EolCode;
 			int caretLine;
 			int insIndex;
+
+			if( doc.IsReadOnly )
+				return;
 
 			// get index of the head of current line
 			caretLine = view.GetLineIndexFromCharIndex( doc.CaretIndex );
@@ -566,19 +568,18 @@ namespace Sgry.Azuki
 			if( 0 < caretLine )
 			{
 				//-- insertion point is end of previous line --
-				insIndex = view.GetLineHeadIndex( caretLine-1 ) + view.GetLineLength( 
-caretLine-1 );
-				doc.Replace( eol, insIndex, insIndex );
-				doc.SetSelection( insIndex + eol.Length, insIndex + eol.Length );
+				insIndex = view.GetLineHeadIndex( caretLine-1 )
+					+ view.GetLineLength( caretLine-1 );
 			}
 			else
 			{
 				//-- insertion point is head of current line --
 				insIndex = view.GetLineHeadIndex( caretLine );
-				doc.Replace( eol, insIndex, insIndex );
-				doc.SetSelection( insIndex, insIndex );
 			}
 
+			// insert an EOL code
+			doc.SetSelection( insIndex, insIndex );
+			ui.HandleTextInput( "\n" );
 			ui.ScrollToCaret();
 		}
 
@@ -593,14 +594,17 @@ caretLine-1 );
 			int caretLine, caretLineHeadIndex;
 			int insIndex;
 
+			if( doc.IsReadOnly )
+				return;
+
 			// get index of the end of current line
 			caretLine = view.GetLineIndexFromCharIndex( doc.CaretIndex );
 			caretLineHeadIndex = view.GetLineHeadIndexFromCharIndex( doc.CaretIndex );
 			insIndex = caretLineHeadIndex + view.GetLineLength( caretLine );
 
-			// insert EOL code
-			ui.Document.Replace( eol, insIndex, insIndex );
-			ui.Document.SetSelection( insIndex + eol.Length, insIndex + eol.Length );
+			// insert an EOL code
+			doc.SetSelection( insIndex, insIndex );
+			ui.HandleTextInput( "\n" );
 			ui.ScrollToCaret();
 		}
 

@@ -345,10 +345,16 @@ namespace Sgry.Azuki
 			int selBegin, selEnd;
 			StringBuilder input = new StringBuilder( Math.Max(64, text.Length) );
 
-			// just notify and return if in read only mode
+			// if in read only mode, just notify and return 
 			if( doc.IsReadOnly )
 			{
 				Plat.Inst.MessageBeep();
+				return;
+			}
+
+			// ignore if input is an empty text
+			if( text.Length == 0 )
+			{
 				return;
 			}
 

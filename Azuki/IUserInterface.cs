@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-02-13
+// update: 2010-03-20
 //=========================================================
 using System;
 using System.Drawing;
@@ -388,6 +388,27 @@ namespace Sgry.Azuki
 		/// Executes delete action.
 		/// </summary>
 		void Delete();
+
+		/// <summary>
+		/// Processes specified text as an input by user.
+		/// </summary>
+		/// <param name="text">The string to be processed.</param>
+		/// <exception cref="System.InvalidOperationException">This object is already disposed.</exception>
+		/// <exception cref="System.ArgumentNullException">Parameter 'text' is null.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method processes specified text as an input by user.
+		/// Because this method is the implementation of user input,
+		/// some special pre-processes will be done.
+		/// The example of pre-processes are next:
+		/// </para>
+		/// <list type="bullet">
+		///		<item>If Document.ReadOnly property is true, this method will do nothing.</item>
+		///		<item>This method applies AutoIndentHook for each characters in the text.</item>
+		///		<item>This method applies built-in hook processes such as converting tab to spaces.</item>
+		/// </list>
+		/// </remarks>
+		void HandleTextInput( string text );
 		#endregion
 
 		#region Selection

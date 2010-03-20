@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-01-04
+// update: 2010-03-20
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -371,10 +371,9 @@ namespace Sgry.Azuki
 			bottom = this.GetVirPosFromIndex( logLineEndIndex );
 			VirtualToScreen( ref top );
 			VirtualToScreen( ref bottom );
-			if( top.Y < YofTextArea )
+			if( bottom.Y < YofTextArea )
 			{
-				Debug.Fail( "screen position of index "+logLineHeadIndex+" is invalid; pos:("+top.X+", "+top.Y+") but YofTextArea:"+YofTextArea );
-				top.Y = YofTextArea;
+				return;
 			}
 			bottom.Y += LineSpacing;
 

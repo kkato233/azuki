@@ -408,7 +408,7 @@ namespace Sgry.Azuki.Windows
 				fixed( int* pExtents = extents )
 				fixed( int* pFitLength = &fitLength )
 					bOk = GetTextExtentExPointW( hdc, text, textLen, maxWidth, pFitLength, pExtents, &size );
-				Debug.Assert( bOk != 0, "failed to calculate text width" );
+				Debug.Assert( bOk != 0, "failed to calculate text width (LE:"+WinApi.GetLastError()+")" );
 				return new Size( size.width, size.height );
 			}
 		}

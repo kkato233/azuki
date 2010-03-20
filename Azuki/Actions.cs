@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-09-21
+// update: 2010-03-20
 //=========================================================
 using System;
 using System.Drawing;
@@ -546,6 +546,62 @@ namespace Sgry.Azuki
 		public static void Refresh( IUserInterface ui )
 		{
 			ui.Invalidate();
+		}
+
+		/// <summary>
+		/// Inserts a new line above the cursor.
+		/// </summary>
+		public static void BreakPreviousLine( IUserInterface ui )
+		{
+			Document doc = ui.Document;
+			IView view = ui.View;
+			string eol = doc.EolCode;
+			int caretLine;
+			int insIndex;
+
+			// get index of the head of current line
+			caretLine = view.GetLineIndexFromCharIndex( doc.CaretIndex );
+
+			// calculate index of the insertion point
+			if( 0 < caretLine )
+			{
+				//-- insertion point is end of previous line --
+				insIndex = view.GetLineHeadIndex( caretLine-1 ) + view.GetLineLength( 
+caretLine-1 );
+				doc.Replace( eol, insIndex, insIndex );
+				doc.SetSelection( insIndex + eol.Length, insIndex + eol.Length );
+			}
+			else
+			{
+				//-- insertion point is head of current line --
+				insIndex = view.GetLineHeadIndex( caretLine );
+				doc.Replace( eol, insIndex, insIndex );
+				doc.SetSelection( insIndex, insIndex );
+			}
+
+			ui.ScrollToCaret();
+		}
+
+		/// <summary>
+		/// Inserts a new line below the cursor.
+		/// </summary>
+		public static void BreakNextLine( IUserInterface ui )
+		{
+			Document doc = ui.Document;
+			IView view = ui.View;
+			string eol = doc.EolCode;
+			int caretLine, caretLineHeadIndex;
+			int insIndex;
+
+			// get index of the end of current line
+			caretLine = view.GetLineIndexFromCharIndex( doc.CaretIndex );
+			caretLineHeadIndex = view.GetLineHeadIndexFromCharIndex( doc.CaretIndex );
+			insIndex = caretLineHeadIndex + view.GetLineLength( caretLine );
+
+			// insert EOL code
+			ui.Document.Replace( eol, insIndex, insIndex );
+			ui.Document.SetSelection( insIndex + eol.Length, insIndex + eol.Length );
+			ui.ScrollToCaret();
 		}
 
 		/// <summary>

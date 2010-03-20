@@ -283,6 +283,8 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.Z|Keys.Control, Actions.Undo );
 			SetKeyBind( Keys.Z|Keys.Control|Keys.Shift, Actions.Redo );
 			SetKeyBind( Keys.Y|Keys.Control, Actions.Redo );
+			SetKeyBind( Keys.Enter|Keys.Control, Actions.BreakPreviousLine );
+			SetKeyBind( Keys.Enter|Keys.Shift|Keys.Control, Actions.BreakNextLine );
 
 			// bind misc keys
 			SetKeyBind( (Keys)VK_OEM4|Keys.Control, Actions.GoToMatchedBracket );

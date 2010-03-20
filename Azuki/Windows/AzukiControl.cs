@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-03-15
+// update: 2010-03-20
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1815,7 +1815,11 @@ namespace Sgry.Azuki.Windows
 			// and thus such char event is ignored here
 			if( (e.KeyChar == '\t' && WinApi.IsKeyDownAsync(Keys.I))
 				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.M))
-				|| (e.KeyChar == '\n' && WinApi.IsKeyDownAsync(Keys.J)) )
+				|| (e.KeyChar == '\n' && WinApi.IsKeyDownAsync(Keys.J))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.ShiftKey))
+				|| (e.KeyChar == '\n' && WinApi.IsKeyDownAsync(Keys.ControlKey))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.LWin))
+				|| (e.KeyChar == '\r' && WinApi.IsKeyDownAsync(Keys.RWin)) )
 			{
 				return;
 			}

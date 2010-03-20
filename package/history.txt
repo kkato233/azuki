@@ -1,7 +1,8 @@
 == 1.5.1 (2010-  -  ) ==
- * add: added IsRectSelectModeChanged event for AzukiControl
  * add: clicking or dragging line number area now selects physical lines
+ * add: added IsRectSelectModeChanged event for AzukiControl
  * mod: now Azuki draws line number area and dirt bar area for (non-existing) lines beyond EOF
+ * mod: now Azuki does not break line on pressing Enter key with Shift, Control or Windows
  * mod: now Azuki respects system setting of font rendering method (enabling anti-alias or not, etc.)
  * fix: in WPF application, menu is activated after rectangular selection by alt+mouse if using AzukiControl through WindowsFormsHost window
  * fix: now AzukiControl can be used with DockPanel Suite

@@ -384,11 +384,10 @@ namespace Sgry.Ann
 		/// Opens a file with specified encoding and create a Document object.
 		/// Give null as 'encoding' parameter to detect encoding automatically.
 		/// </summary>
-		/// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
-		/// <exception cref="FileNotFoundException">The file cannot be found.</exception>
-		/// <exception cref="IOException">Other I/O error has occured.</exception>
+		/// <returns>A Document object or null if failed.</returns>
 		Document CreateDocumentFromFile( string filePath, Encoding encoding, bool withBom )
 		{
+			Debug.Assert( filePath != null );
 			Document doc;
 
 			// if specified file was already opened, just return the document
@@ -401,10 +400,30 @@ namespace Sgry.Ann
 			}
 
 			// create new document
-			doc = new Document();
-			LoadFileContentToDocument( doc, filePath, encoding, withBom );
+			try
+			{
+				doc = new Document();
+				LoadFileContentToDocument( doc, filePath, encoding, withBom );
+				return doc;
+			}
+			catch( NotSupportedException ex )
+			{
+				AlertException( ex );
+			}
+			catch( UnauthorizedAccessException ex )
+			{
+				AlertException( ex );
+			}
+			catch( IOException ex )
+			{
+				AlertException( ex );
+			}
+			catch( System.Security.SecurityException ex )
+			{
+				AlertException( ex );
+			}
 			
-			return doc;
+			return null;
 		}
 
 		/// <summary>
@@ -449,29 +468,24 @@ namespace Sgry.Ann
 		{
 			Document doc;
 
-			try
+			// load the file
+			doc = CreateDocumentFromFile( filePath, null, false );
+			if( doc == null )
 			{
-				// load the file
-				doc = CreateDocumentFromFile( filePath, null, false );
-				if( Documents.Contains(doc) == false )
-				{
-					AddDocument( doc );
-				}
+				return;
+			}
 
-				// activate it
-				ActiveDocument = doc;
-				SetFileType( doc, FileType.GetFileTypeByFileName(filePath) );
-				MainForm.Azuki.SetSelection( 0, 0 );
-				MainForm.Azuki.ScrollToCaret();
-			}
-			catch( IOException ex )
+			// add this file to document list unless it is loaded already
+			if( Documents.Contains(doc) == false )
 			{
-				AlertException( ex );
+				AddDocument( doc );
 			}
-			catch( UnauthorizedAccessException ex )
-			{
-				AlertException( ex );
-			}
+
+			// activate it
+			ActiveDocument = doc;
+			SetFileType( doc, FileType.GetFileTypeByFileName(filePath) );
+			MainForm.Azuki.SetSelection( 0, 0 );
+			MainForm.Azuki.ScrollToCaret();
 		}
 
 		/// <summary>
@@ -633,33 +647,51 @@ namespace Sgry.Ann
 		/// <summary>
 		/// Reloads document.
 		/// </summary>
-		/// <exception cref="System.IO.IOException">I/O error was occurred.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">The associated file of the document does not exist.</exception>
-		/// <exception cref="System.IO.UnauthorizedAccessException">Reading the file associated with this document was not permitted.</exception>
 		public void ReloadDocument( Document doc, Encoding encoding, bool withBom )
 		{
-			IHighlighter highlighter;
-			int line, column;
+			Debug.Assert( doc != null );
 
-			// remember caret position
-			doc.GetCaretIndex( out line, out column );
+			try
+			{
+				IHighlighter highlighter;
+				int line, column;
 
-			// detach highlighter temporarily
-			highlighter = doc.Highlighter;
-			doc.Highlighter = null;
+				// remember caret position
+				doc.GetCaretIndex( out line, out column );
 
-			// reload content
-			LoadFileContentToDocument( doc, doc.FilePath, encoding, withBom );
+				// detach highlighter temporarily
+				highlighter = doc.Highlighter;
+				doc.Highlighter = null;
 
-			// attach the highlighter again
-			doc.Highlighter = highlighter;
+				// reload content
+				LoadFileContentToDocument( doc, doc.FilePath, encoding, withBom );
 
-			// restore caret position and scroll to it
-			line = Math.Min( line, doc.LineCount-1 );
-			column = Math.Min( column, doc.GetLineLength(line) );
-			doc.SetCaretIndex( line, column );
+				// attach the highlighter again
+				doc.Highlighter = highlighter;
 
-			_MainForm.UpdateUI();
+				// restore caret position and scroll to it
+				line = Math.Min( line, doc.LineCount-1 );
+				column = Math.Min( column, doc.GetLineLength(line) );
+				doc.SetCaretIndex( line, column );
+
+				_MainForm.UpdateUI();
+			}
+			catch( NotSupportedException ex )
+			{
+				AlertException( ex );
+			}
+			catch( UnauthorizedAccessException ex )
+			{
+				AlertException( ex );
+			}
+			catch( IOException ex )
+			{
+				AlertException( ex );
+			}
+			catch( System.Security.SecurityException ex )
+			{
+				AlertException( ex );
+			}
 		}
 
 		/// <summary>
@@ -693,12 +725,12 @@ namespace Sgry.Ann
 
 		void LoadFileContentToDocument( Document doc, string filePath, Encoding encoding, bool withBom )
 		{
+			Debug.Assert( doc != null );
+			Debug.Assert( filePath != null );
+
 			StreamReader file = null;
 			char[] buf = null;
 			int readCount = 0;
-
-			// make the content empty
-			doc.Replace( "", 0, doc.Length );
 
 			// analyze encoding
 			if( encoding == null )
@@ -711,6 +743,9 @@ namespace Sgry.Ann
 			// load file content
 			using( file = new StreamReader(filePath, encoding) )
 			{
+				// make the document content empty first
+				doc.Replace( "", 0, doc.Length );
+
 				// expand internal buffer size before loading file
 				// (estimating needed buffer size by a half of byte-count of file)
 				doc.Capacity = (int)( file.BaseStream.Length / 2 );
@@ -1142,8 +1177,18 @@ namespace Sgry.Ann
 
 		static class Utl
 		{
+			/// <summary>
+			/// Analyzes encoding.
+			/// </summary>
+			/// <exception cref="System.UnauthorizedAccessException">Reading the file associated with this document was not permitted.</exception>
+			/// <exception cref="System.NotSupportedException">Specified format of the path is not supported.</exception>
+			/// <exception cref="System.IO.PathTooLongException">Specified file path is too long.</exception>
+			/// <exception cref="System.IO.FileNotFoundException">The associated file of the document does not exist.</exception>
+			/// <exception cref="System.IO.DirectoryNotFoundException">Specified path is pointing to a file which is in non-existing directory.</exception>
+			/// <exception cref="System.IO.IOException">Other I/O error was occurred.</exception>
 			public static void AnalyzeEncoding( string filePath, out Encoding encoding, out bool withBom )
 			{
+				Debug.Assert( filePath != null );
 				const int MaxSize = 50 * 1024;
 				Stream file = null;
 				byte[] data;

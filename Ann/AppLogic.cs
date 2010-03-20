@@ -408,19 +408,19 @@ namespace Sgry.Ann
 			}
 			catch( NotSupportedException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( UnauthorizedAccessException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( IOException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( System.Security.SecurityException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			
 			return null;
@@ -521,14 +521,14 @@ namespace Sgry.Ann
 				{
 					// case ex: opened file has been on a removable drive
 					// and the drive was ejected now
-					AlertException( ex );
+					Alert( ex );
 					return;
 				}
 				catch( UnauthorizedAccessException ex )
 				{
 					// case example: permission of parent directory was changed
 					// and current user lost right to create directory
-					AlertException( ex );
+					Alert( ex );
 					return;
 				}
 			}
@@ -565,12 +565,12 @@ namespace Sgry.Ann
 			{
 				// case example: target file is readonly.
 				// case example: target file was deleted and now there is a directory having same name
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( IOException ex )
 			{
 				// case example: another process is opening the file and does not allow to write
-				AlertException( ex );
+				Alert( ex );
 			}
 		}
 
@@ -678,19 +678,19 @@ namespace Sgry.Ann
 			}
 			catch( NotSupportedException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( UnauthorizedAccessException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( IOException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 			catch( System.Security.SecurityException ex )
 			{
-				AlertException( ex );
+				Alert( ex );
 			}
 		}
 
@@ -1146,11 +1146,6 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
-		void AlertException( Exception ex )
-		{
-			Alert( ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
-		}
-
 		public DialogResult AlertDiscardModification( Document doc )
 		{
 			return Alert(
@@ -1179,6 +1174,11 @@ namespace Sgry.Ann
 					MessageBoxIcon.Question,
 					MessageBoxDefaultButton.Button2
 				);
+		}
+
+		void Alert( Exception ex )
+		{
+			Alert( ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
 		}
 
 		DialogResult Alert( string text, MessageBoxButtons buttons, MessageBoxIcon icon )

@@ -519,6 +519,14 @@ namespace Sgry.Azuki
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Gets or sets whether to scroll beyond the last line of the document or not.
+		/// </summary>
+		bool ScrollsBeyondLastLine
+		{
+			get; set;
+		}
 		#endregion
 
 		#region Coordinates of Graphical Parts

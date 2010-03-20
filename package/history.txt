@@ -2,6 +2,7 @@
  * add: clicking or dragging line number area now selects physical lines
  * add: added an action to insert new line above the caret (implemented as Actions.BreakPreviousLine, default key-bind is Ctrl+Enter)
  * add: added an action to insert new line below the caret (implemented as Actions.BreakNextLine, default key-bind is Ctrl+Shift+Enter)
+ * add: now scrolling beyond final line can be prevented with AzukiControl.ScrollsBeyondLastLine property
  * add: added IsRectSelectModeChanged event for AzukiControl
  * add: added IView.GetLineLength method for retrieving length of a physical line
  * add: now Azuki accepts text input from IME at once, not one character by one character

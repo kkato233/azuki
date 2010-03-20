@@ -64,6 +64,7 @@ namespace Sgry.Azuki
 			| DrawingOption.HighlightCurrentLine
 			| DrawingOption.ShowsLineNumber
 			| DrawingOption.ShowsDirtBar;
+		bool _ScrollsBeyondLastLine = true;
 		#endregion
 
 		#region Init / Dispose
@@ -196,6 +197,15 @@ namespace Sgry.Azuki
 				size.Height -= YofTextArea;
 				return size;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to scroll beyond the last line of the document or not.
+		/// </summary>
+		public bool ScrollsBeyondLastLine
+		{
+			get{ return _ScrollsBeyondLastLine; }
+			set{ _ScrollsBeyondLastLine = value; }
 		}
 
 		/// <summary>
@@ -1016,18 +1026,33 @@ namespace Sgry.Azuki
 		{
 			int delta;
 			Rectangle clipRect;
+			int destLineIndex;
+			int maxLineIndex;
+			int visibleLineCount;
 
 			if( lineDelta == 0 )
 				return;
 
+			// calculate specified index of new FirstVisibleLine and biggest acceptable value of it
+			destLineIndex = FirstVisibleLine + lineDelta;
+			if( ScrollsBeyondLastLine )
+			{
+				maxLineIndex = LineCount - 1;
+			}
+			else
+			{
+				visibleLineCount = VisibleSize.Height / LineSpacing;
+				maxLineIndex = Math.Max( 0, LineCount-visibleLineCount+1 );
+			}
+
 			// calculate scroll distance
-			if( FirstVisibleLine + lineDelta < 0 )
+			if( destLineIndex < 0 )
 			{
 				delta = -FirstVisibleLine;
 			}
-			else if( LineCount-1 < FirstVisibleLine + lineDelta )
+			else if( maxLineIndex < destLineIndex )
 			{
-				delta = LineCount - 1 - FirstVisibleLine;
+				delta = maxLineIndex - FirstVisibleLine;
 			}
 			else
 			{

@@ -2,6 +2,7 @@
  * add: 行番号領域のクリック・ドラッグで行を選択できるように
  * add: 上に一行追加する機能を追加（Actions.BreakPreviousLine での実装, 標準キーバインドは Ctrl+Enter）
  * add: 下に一行追加する機能を追加（Actions.BreakNextLine での実装, 標準キーバインドは Ctrl+Shift+Enter）
+ * add: AzukiControl.ScrollsBeyondLastLine プロパティで、最終行より後ろへのスクロールを禁止可能に
  * add: AzukiControl に IsRectSelectModeChanged イベントを追加
  * add: 物理行の長さを取得する IView.GetLineLength メソッドを追加
  * add: IME による入力を、文字ごとではなく一括して受け付けるように

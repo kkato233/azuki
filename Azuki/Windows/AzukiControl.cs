@@ -820,6 +820,19 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
+		/// Gets or sets whether to scroll beyond the last line of the document or not.
+		/// </summary>
+#		if !PocketPC
+		[Category("Appearance")]
+		[DefaultValue(true)]
+#		endif
+		public bool ScrollsBeyondLastLine
+		{
+			get{ return View.ScrollsBeyondLastLine; }
+			set{ View.ScrollsBeyondLastLine = value; }
+		}
+
+		/// <summary>
 		/// Gets height of each lines in pixel.
 		/// </summary>
 #		if !PocketPC
@@ -1573,24 +1586,16 @@ namespace Sgry.Azuki.Windows
 
 			// calculate vertical range and page size
 			visibleLineCount = View.VisibleSize.Height / View.LineSpacing;
-			if( View.LineCount >> 3 <= visibleLineCount )
-			{
-				vPageSize = visibleLineCount;
-			}
-			else
-			{
-				vPageSize = View.LineCount >> 3;
-			}
+			vPageSize = Math.Max( 0, visibleLineCount-1 );
 			vMax = View.LineCount - 1;
-			vMax += vPageSize - 1;
+			if( ScrollsBeyondLastLine )
+			{
+				vMax += vPageSize - 1;
+			}
 
 			// calculate horizontal range and page size
 			hMax = View.TextAreaWidth;
-			hPageSize = View.VisibleTextAreaSize.Width;
-			if( hPageSize < 0 )
-			{
-				hPageSize = 0;
-			}
+			hPageSize = Math.Max( 0, View.VisibleTextAreaSize.Width );
 
 			// update the range of vertical scrollbar
 			WinApi.SetScrollRange( Handle, false, 0, vMax, vPageSize );

@@ -1,4 +1,4 @@
-﻿// 2010-03-14
+﻿// 2010-03-18
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -181,7 +181,9 @@ namespace Sgry.Ann
 
 		void _Num_FontSize_GotFocus( object sender, EventArgs e )
 		{
+#			if !PocketPC
 			_Num_FontSize.Select( 0, 100 );
+#			endif
 		}
 
 		void _Num_TabWidth_ValueChanged( object sender, EventArgs e )
@@ -192,7 +194,9 @@ namespace Sgry.Ann
 
 		void _Num_TabWidth_GotFocus( object sender, EventArgs e )
 		{
+#			if !PocketPC
 			_Num_TabWidth.Select( 0, 100 );
+#			endif
 		}
 
 		void _Button_OK_Click( object sender, EventArgs e )

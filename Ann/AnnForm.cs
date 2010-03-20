@@ -1,4 +1,4 @@
-// 2010-03-14
+// 2010-03-18
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -327,13 +327,13 @@ namespace Sgry.Ann
 		protected override void OnActivated( EventArgs e )
 		{
 			base.OnActivated( e );
-			_TimerForDelayedActivatedEvent.Start();
+			_TimerForDelayedActivatedEvent.Enabled = true;
 		}
 
 		void Form_DelayedActivated( object sender, EventArgs e )
 		{
 			_App.MainForm_DelayedActivated();
-			_TimerForDelayedActivatedEvent.Stop();
+			_TimerForDelayedActivatedEvent.Enabled = false;
 		}
 		#endregion
 

@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-03-15
+// update: 2010-03-20
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -263,6 +263,42 @@ namespace Sgry.Azuki
 			_MinimumTextAreaWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
 		}
 		#endregion
+
+		/// <summary>
+		/// Gets length of the pysical line.
+		/// </summary>
+		/// <param name="lineIndex">Index of the line of which to get the length.</param>
+		/// <returns>Length of the specified line in character count.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		public int GetLineLength( int lineIndex )
+		{
+			if( lineIndex < 0 || LineCount <= lineIndex )
+				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid line index was given (lineIndex:"+lineIndex+", this.LineCount:"+LineCount+")." );
+
+			Document doc = Document;
+			int lineHeadIndex, lineEndIndex;
+
+			lineHeadIndex = GetLineHeadIndex( lineIndex );
+			if( lineIndex+1 < LineCount )
+			{
+				lineEndIndex = GetLineHeadIndex( lineIndex + 1 );
+				if( 0 <= lineEndIndex-1 && doc.GetCharAt(lineEndIndex-1) == '\n'
+					&& 0 <= lineEndIndex-2 && doc.GetCharAt(lineEndIndex-2) == '\r' )
+				{
+					lineEndIndex -= 2; // CR+LF
+				}
+				else
+				{
+					lineEndIndex -= 1; // CR or LF
+				}
+			}
+			else
+			{
+				lineEndIndex = doc.Length;
+			}
+
+			return lineEndIndex - lineHeadIndex;
+		}
 
 		#region Drawing Options
 		/// <summary>

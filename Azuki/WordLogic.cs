@@ -517,8 +517,8 @@ namespace Sgry.Azuki
 				return true;
 			if( 0x7b <= ch && ch <= 0x7f )
 				return true;
-			if( 0x3001 <= ch && ch <= 0x303f )
-				return true; // CJK punctuation marks
+			if( 0x3001 <= ch && ch <= 0x303f && ch != 0x3005 )
+				return true; // CJK punctuation marks except Ideographic iteration mark
 			if( ch == 0x30fb )
 				return true; // Katakana middle dot
 			if( 0xff01 <= ch && ch <= 0xff0f )

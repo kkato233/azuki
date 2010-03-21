@@ -1,4 +1,4 @@
-== 1.5.1 (2010-  -  ) ==
+== 1.5.1 (2010-03-21) ==
  * add: clicking or dragging line number area now selects physical lines
  * add: added an action to insert new line above the caret (implemented as Actions.BreakPreviousLine, default key-bind is Ctrl+Enter)
  * add: added an action to insert new line below the caret (implemented as Actions.BreakNextLine, default key-bind is Ctrl+Shift+Enter)
@@ -26,6 +26,7 @@
  * fix: [Ann] one extra EOL code is inserted on unifying EOL code of document
  * fix: [Ann] tab graphic would not be not redrawn under certain condition
  * fix: [Ann] giving directory path as command line argument causes exception
+ * fix: [Ann] tagged as version 1.4.1
 
 == 1.5.0 (2009-12-12) ==
  * add: rectangular selection feature by both mouse and keyboard

@@ -3,6 +3,7 @@
  * fix: now line number area will properly be widen when a figure of maximum line number increases
  * fix: improved automatic range expansion function of horizontal scroll bar for very long line (only in non-line-wrapping mode)
  * fix: now Azuki properly updates line wrapping information when editing text at head of a line made by line wrapping
+ * fix: [Ann] tagged as version 1.4.2
 
 == 1.5.1 (2010-03-21) ==
  * add: clicking or dragging line number area now selects physical lines

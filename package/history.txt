@@ -1,5 +1,6 @@
 == 1.5.2 (2010-  -  ) ==
  * fix: fixed a degrade problem in 1.5.1 (AzukiControl cannot be focused by mouse click)
+ * fix: improved automatic range expansion function of horizontal scroll bar for very long line (only in non-line-wrapping mode)
 
 == 1.5.1 (2010-03-21) ==
  * add: clicking or dragging line number area now selects physical lines

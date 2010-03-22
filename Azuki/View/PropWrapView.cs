@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-03-22
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -85,6 +85,16 @@ namespace Sgry.Azuki
 					SetDesiredColumn();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Re-calculates and updates x-coordinate of the right end of the virtual text area.
+		/// </summary>
+		/// <param name="desiredX">X-coordinate of scroll destination desired.</param>
+		/// <returns>The largest X-coordinate which Azuki can scroll to.</returns>
+		protected override int ReCalcRightEndOfTextArea( int desiredX )
+		{
+			return TextAreaWidth - VisibleTextAreaSize.Width;
 		}
 		#endregion
 

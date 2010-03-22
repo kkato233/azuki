@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-03-22
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -175,6 +175,13 @@ namespace Sgry.Azuki
 				_TextAreaWidth = value;
 			}
 		}
+
+		/// <summary>
+		/// Re-calculates and updates x-coordinate of the right end of the virtual text area.
+		/// </summary>
+		/// <param name="desiredX">X-coordinate of scroll destination desired.</param>
+		/// <returns>The largest X-coordinate which Azuki can scroll to.</returns>
+		protected abstract int ReCalcRightEndOfTextArea( int desiredX );
 
 		/// <summary>
 		/// Gets or sets size of the currently visible area (line number area is included).
@@ -1076,19 +1083,21 @@ namespace Sgry.Azuki
 			int deltaInPx;
 			Rectangle clipRect = new Rectangle();
 			int rightLimit;
+			int desiredX;
 
 			if( columnDelta == 0 )
 				return;
 
 			// calculate the x-coord of right most scroll position
-			rightLimit = TextAreaWidth - VisibleTextAreaSize.Width;
+			desiredX = ScrollPosX + columnDelta;
+			rightLimit = ReCalcRightEndOfTextArea( desiredX );
 			if( rightLimit <= 0 )
 			{
 				return; // virtual text area is narrower than visible area. no need to scroll
 			}
 
 			// calculate scroll distance
-			if( ScrollPosX + columnDelta < 0 )
+			if( desiredX < 0 )
 			{
 				//--- scrolling to left of the text area ---
 				// do nothing if already at left most position
@@ -1098,7 +1107,7 @@ namespace Sgry.Azuki
 				// scroll to left most position
 				deltaInPx = -ScrollPosX;
 			}
-			else if( rightLimit <= ScrollPosX+columnDelta )
+			else if( rightLimit <= desiredX )
 			{
 				//--- scrolling to right of the text area ---
 				// do nothing if already at right most position

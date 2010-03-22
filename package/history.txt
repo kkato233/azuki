@@ -1,3 +1,6 @@
+== 1.5.2 (2010-  -  ) ==
+ * fix: fixed a degrade problem in 1.5.1 (AzukiControl cannot be focused by mouse click)
+
 == 1.5.1 (2010-03-21) ==
  * add: clicking or dragging line number area now selects physical lines
  * add: added an action to insert new line above the caret (implemented as Actions.BreakPreviousLine, default key-bind is Ctrl+Enter)

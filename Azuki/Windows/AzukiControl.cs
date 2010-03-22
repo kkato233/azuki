@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-03-22
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -2347,6 +2347,10 @@ namespace Sgry.Azuki.Windows
 					}
 					else if( message == WinApi.WM_LBUTTONDOWN || message == WinApi.WM_RBUTTONDOWN )
 					{
+						// set focus manually (this is needed to get focus by mouse click)
+						this.Focus();
+
+						// handle mouse down event
 						_Impl.HandleMouseDown( buttonIndex, pos, shift, ctrl, alt, win );
 #						if !PocketPC
 						if( alt )

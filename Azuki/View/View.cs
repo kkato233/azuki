@@ -1266,10 +1266,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// This method will be called when the content was changed.
 		/// </summary>
-		internal virtual void HandleContentChanged( object sender, ContentChangedEventArgs e )
-		{
-			UpdateLineNumberWidth();
-		}
+		internal abstract void HandleContentChanged( object sender, ContentChangedEventArgs e );
 
 		internal void HandleGraphicContextChanged()
 		{
@@ -1284,9 +1281,15 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Updates width of the line number area.
 		/// </summary>
-		void UpdateLineNumberWidth()
+		protected void UpdateLineNumberWidth()
 		{
 			DebugUtl.Assert( this.Document != null );
+
+			// if current width of line number area is appropriate, do nothing
+			if( Document.LineCount <= Document.ViewParam.MaxLineNumber )
+			{
+				return;
+			}
 
 			// find minimum value from samples for calculating width of line number area
 			for( int i=0; i<_LineNumberSamples.Length; i++ )

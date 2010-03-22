@@ -531,8 +531,11 @@ namespace Sgry.Azuki
 				Invalidate( invalidRect2 );
 			}
 
-			//DO_NOT//base.HandleContentChanged( sender, e );
+			// update left side of text area
 			DrawDirtBar( invalidRect1.Top, Document.GetLineIndexFromCharIndex(e.Index) );
+			UpdateLineNumberWidth();
+
+			//DO_NOT//base.HandleContentChanged( sender, e );
 		}
 
 		/// <summary>

@@ -356,9 +356,10 @@ namespace Sgry.Azuki
 				Invalidate( invalidRect2 );
 			}
 
-			// update dirt bar
+			// update left side of text area
 			UpdateDirtBar( doc.GetLineIndexFromCharIndex(e.Index) );
-			
+			UpdateLineNumberWidth();
+
 			//DO_NOT//base.HandleContentChanged( sender, e );
 		}
 

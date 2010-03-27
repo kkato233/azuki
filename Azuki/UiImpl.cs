@@ -717,16 +717,16 @@ namespace Sgry.Azuki
 			if( _MouseDownVirPos.X == Int32.MinValue )
 				return;
 
-			// make sure that these coordinates are positive value
-			pos.X = Math.Max( 0, pos.X );
-			pos.Y = Math.Max( 0, pos.Y );
-			View.ScreenToVirtual( ref pos );
-
 			// check whether the mouse position is on the line number area or not
 			if( pos.X < View.XofLeftMargin )
 			{
 				onLineNumberArea = true;
 			}
+
+			// make sure that these coordinates are positive value
+			pos.X = Math.Max( 0, pos.X );
+			pos.Y = Math.Max( 0, pos.Y );
+			View.ScreenToVirtual( ref pos );
 
 			// if it was slight movement, ignore
 			if( _MouseDragging == false )

@@ -1,5 +1,6 @@
 == 1.5.3 (2010-  -  ) ==
  * fix: in line-wrapping mode, dragging mouse on line number area toward document head may make selection range invalid
+ * fix: dragging mouse on text area near left border turns line selection mode on
 
 == 1.5.2 (2010-03-22) ==
  * fix: fixed a degrade problem in 1.5.1 (AzukiControl cannot be focused by mouse click)

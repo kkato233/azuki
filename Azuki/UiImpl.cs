@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-03-27
 //=========================================================
 using System;
 using System.Text;
@@ -1023,7 +1023,7 @@ namespace Sgry.Azuki
 
 				caret = View.GetLineHeadIndex( toLineIndex );
 				anchorLineIndex = View.GetLineIndexFromCharIndex( doc.LineSelectionAnchor );
-				if( anchorLineIndex+1 < doc.LineCount )
+				if( anchorLineIndex+1 < View.LineCount )
 				{
 					anchor = View.GetLineHeadIndex( anchorLineIndex + 1 );
 				}

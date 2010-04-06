@@ -1,4 +1,5 @@
 == 1.5.3 (2010-  -  ) ==
+ * fix: in line-wrapping mode, deleting a character at beginning of line corrupts line management data
  * fix: in line-wrapping mode, dragging mouse on line number area toward document head may make selection range invalid
  * fix: dragging mouse on text area near left border turns line selection mode on
  * fix: [Ann] many dialogs will appear when main window was activated if multiple files editing are update by other programs

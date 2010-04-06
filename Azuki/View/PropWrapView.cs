@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-03-22
+// update: 2010-04-06
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -533,7 +533,6 @@ namespace Sgry.Azuki
 				// and if the width of the character was narrower than the graphical 'gap'
 				// at right end of the previous line,
 				// the character must be inserted to previous line.
-				index--;
 				firstDirtyLineIndex--;
 				changedTargetPosition = true;
 			}

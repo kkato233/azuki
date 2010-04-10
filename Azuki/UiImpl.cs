@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-03-27
+// update: 2010-04-10
 //=========================================================
 using System;
 using System.Text;
@@ -42,7 +42,7 @@ namespace Sgry.Azuki
 		// whether the mouse button is down or not.
 		Point _MouseDownVirPos = new Point( Int32.MinValue, 0 );
 		bool _MouseDragging = false;
-		bool _IsRectSelectMode = false;
+		TextDataType _SelectionMode = TextDataType.Normal;
 
 		Thread _HighlighterThread;
 		bool _ShouldBeHighlighted = false;
@@ -250,15 +250,28 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets whether Azuki is in line selection mode or not.
+		/// </summary>
+		public bool IsLineSelectMode
+		{
+			get{ return (_SelectionMode == TextDataType.Line); }
+			set
+			{
+				Debug.Assert( _IsDisposed == false );
+				_SelectionMode = (value == true) ? TextDataType.Line : TextDataType.Normal;
+			}
+		}
+
+		/// <summary>
 		/// Gets whether Azuki is in rectangle selection mode or not.
 		/// </summary>
 		public bool IsRectSelectMode
 		{
-			get{ return _IsRectSelectMode; }
+			get{ return (_SelectionMode == TextDataType.Rectangle); }
 			set
 			{
 				Debug.Assert( _IsDisposed == false );
-				_IsRectSelectMode = value;
+				_SelectionMode = (value == true) ? TextDataType.Rectangle : TextDataType.Normal;
 				_UI.InvokeIsRectSelectModeChanged();
 			}
 		}
@@ -652,6 +665,7 @@ namespace Sgry.Azuki
 				// set selection
 				if( onLineNumberArea )
 				{
+					IsLineSelectMode = true;
 					if( !shift )
 					{
 						Document.LineSelectionAnchor = -1;
@@ -711,17 +725,10 @@ namespace Sgry.Azuki
 				return;
 
 			int xOffset, yOffset;
-			bool onLineNumberArea = false;
 
 			// if mouse button was not down, ignore
 			if( _MouseDownVirPos.X == Int32.MinValue )
 				return;
-
-			// check whether the mouse position is on the line number area or not
-			if( pos.X < View.XofLeftMargin )
-			{
-				onLineNumberArea = true;
-			}
 
 			// make sure that these coordinates are positive value
 			pos.X = Math.Max( 0, pos.X );
@@ -762,7 +769,7 @@ namespace Sgry.Azuki
 						);
 					Document.SetSelection_Impl( Document.AnchorIndex, curPosIndex, false );
 				}
-				else if( onLineNumberArea )
+				else if( IsLineSelectMode )
 				{
 					SelectLines( curPosIndex );
 				}
@@ -1036,7 +1043,7 @@ namespace Sgry.Azuki
 
 			// apply new selection
 			// (and restore LineSelectionAnchor property because SetSelection clears it)
-			doc.SetSelection( anchor, caret );
+			doc.SetSelection_Impl( anchor, caret, false );
 			doc.LineSelectionAnchor = lineSelectionAnchor;
 		}
 		#endregion

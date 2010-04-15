@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2009-11-28
+// update: 2010-04-15
 //=========================================================
 using System;
 using System.Text;
@@ -348,5 +348,23 @@ namespace Sgry.Azuki
 	        return (type != null);
 		}*/
 		#endregion
+	}
+
+	/// <summary>
+	/// Methods of Anti-Alias to be used for text rendering.
+	/// </summary>
+	public enum Antialias
+	{
+		/// <summary>Uses system default setting.</summary>
+		Default,
+
+		/// <summary>Applies no anti-alias process.</summary>
+		None,
+
+		/// <summary>Uses single color anti-alias.</summary>
+		Gray,
+
+		/// <summary>Uses sub-pixel rendering.</summary>
+		Subpixel
 	}
 }

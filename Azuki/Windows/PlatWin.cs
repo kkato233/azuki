@@ -2,7 +2,7 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2008-10-18
+// update: 2010-04-15
 //=========================================================
 using System;
 using System.Drawing;
@@ -335,6 +335,15 @@ namespace Sgry.Azuki.Windows
 					WinApi.LOGFONTW logicalFont;
 
 					WinApi.CreateLogFont( IntPtr.Zero, value, out logicalFont );
+					
+					// apply anti-alias method that user prefered
+					if( UserPref.Antialias == Antialias.None )
+						logicalFont.quality = 3; // NONANTIALIASED_QUALITY
+					else if( UserPref.Antialias == Antialias.Gray )
+						logicalFont.quality = 4; // ANTIALIASED_QUALITY
+					else if( UserPref.Antialias == Antialias.Subpixel )
+						logicalFont.quality = 5; // CLEARTYPE_QUALITY
+					
 					_Font = WinApi.CreateFontIndirectW( &logicalFont );
 				}
 			}

@@ -1,7 +1,8 @@
-== 1.5.4 (    -  -  ) ==
+== 1.5.4 (2010-04-17) ==
  * add: now anti-alias method applied to text rendering can be changed through UserPref.Antialias property
  * add: now color value literal used in HTML such as #E0C184 is treated as one word
  * fix: dragging mouse cursor from text area to line number area makes selection anchor invalid
+ * fix: [Ann] tagged as version 1.4.4
 
 == 1.5.3 (2010-04-06) ==
  * fix: in line-wrapping mode, deleting a character at beginning of line with BackSpace key corrupts line management data

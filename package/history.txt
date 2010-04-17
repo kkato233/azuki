@@ -1,5 +1,6 @@
 == 1.5.4 (    -  -  ) ==
  * add: now anti-alias method applied to text rendering can be changed through UserPref.Antialias property
+ * add: now color value literal used in HTML such as #E0C184 is treated as one word
  * fix: dragging mouse cursor from text area to line number area makes selection anchor invalid
 
 == 1.5.3 (2010-04-06) ==

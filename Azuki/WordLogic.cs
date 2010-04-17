@@ -1,7 +1,7 @@
 ﻿// file: WordLogic.cs
 // brief: Word detection logic for well Japanese handling
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-04-17
 //=========================================================
 using System;
 using System.Text;
@@ -472,6 +472,16 @@ namespace Sgry.Azuki
 				}
 			}
 
+			// include '#' of '#fff'
+			if( ch == '#'
+				&& index+1 < text.Count
+				&& ('0' <= text[index+1] && text[index+1] <= '9'
+					|| 'A' <= text[index+1] && text[index+1] <= 'Z'
+					|| 'a' <= text[index+1] && text[index+1] <= 'a') )
+			{
+				return true;
+			}
+
 			// include 'x' of '0x'
 			if( ch == 'x'
 				&& 1 <= index && text[index-1] == '0' )
@@ -491,6 +501,10 @@ namespace Sgry.Azuki
 					i--;
 					ch = text[i];
 					if( ch == 'x' && text[i-1] == '0' )
+					{
+						return true;
+					}
+					else if( ch == '#' )
 					{
 						return true;
 					}

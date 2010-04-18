@@ -1,7 +1,7 @@
 // file: LineLogic.cs
 // brief: Logics to manipulate line/column in a string.
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2010-04-18
 //=========================================================
 using System;
 using System.Collections;
@@ -202,8 +202,8 @@ namespace Sgry.Azuki
 			if( 0 < insertIndex && text[insertIndex-1] == '\r'
 				&& 0 < insertText.Length && insertText[0] == '\n' )
 			{
-				lhi.Delete( lineIndex, lineIndex+1 );
-				lms.Delete( lineIndex, lineIndex+1 );
+				lhi.RemoveAt( lineIndex );
+				lms.RemoveAt( lineIndex );
 				lineIndex--;
 			}
 
@@ -235,8 +235,8 @@ namespace Sgry.Azuki
 				&& insertIndex < text.Count && text[insertIndex] == '\n' )
 			{
 				int lastInsertedLine = lineIndex + insLineCount - 1;
-				lhi.Delete( lastInsertedLine, lastInsertedLine+1 );
-				lms.Delete( lastInsertedLine, lastInsertedLine+1 );
+				lhi.RemoveAt( lastInsertedLine );
+				lms.RemoveAt( lastInsertedLine );
 				lineIndex--;
 			}
 
@@ -294,8 +294,8 @@ namespace Sgry.Azuki
 				if( delEnd < text.Count && text[delEnd] == '\n' )
 				{
 					// if the deletion creates a new CR+LF, delete an entry of the CR
-					lhi.Delete( delToL, delToL+1 );
-					lms.Delete( delToL, delToL+1 );
+					lhi.RemoveAt( delToL );
+					lms.RemoveAt( delToL );
 					delToL--;
 				}
 				else if( text[delBegin] == '\n' )
@@ -318,8 +318,8 @@ namespace Sgry.Azuki
 			// if deletion decrease line count, delete entries
 			if( delFromL < delToL )
 			{
-				lhi.Delete( delFromL+1, delToL+1 );
-				lms.Delete( delFromL+1, delToL+1 );
+				lhi.RemoveRange( delFromL+1, delToL+1 );
+				lms.RemoveRange( delFromL+1, delToL+1 );
 			}
 
 			// mark the deletion target line as 'dirty'

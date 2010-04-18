@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-04-06
+// update: 2010-04-18
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -599,7 +599,7 @@ namespace Sgry.Azuki
 
 			// [phase 2] delete LHI of affected physical lines except first one
 			if( delBeginL < delEndL && delEndL <= PLHI.Count )
-				PLHI.Delete( delBeginL, delEndL );
+				PLHI.RemoveRange( delBeginL, delEndL );
 
 			// [phase 3] re-calculate physical line indexes
 			// (here we should divide the text in the range into small segments
@@ -649,7 +649,7 @@ namespace Sgry.Azuki
 			// then, remove extra last physical line index made as the result of phase 3
 			if( line != delBeginL && line < PLHI.Count )
 			{
-				PLHI.Delete( line-1, line );
+				PLHI.RemoveAt( line-1 );
 			}
 
 			// remember the condition of the calculation

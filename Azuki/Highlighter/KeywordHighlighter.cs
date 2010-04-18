@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-10-24
+// update: 2010-04-18
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -714,7 +714,7 @@ dirtyEnd = doc.Length;
 			// remove deleted pair indexes in removed range
 			if( epiIndex < _EPI.Count )
 			{
-				_EPI.Delete( epiIndex, _EPI.Count );
+				_EPI.RemoveRange( epiIndex, _EPI.Count );
 			}
 
 			// find pairs

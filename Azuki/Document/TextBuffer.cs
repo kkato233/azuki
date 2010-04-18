@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2009-04-13
+// update: 2010-04-18
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -122,10 +122,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Deletes elements at specified range [begin, end).
 		/// </summary>
-		public override void Delete( int begin, int end )
+		public override void RemoveRange( int begin, int end )
 		{
-			base.Delete( begin, end );
-			_Classes.Delete( begin, end );
+			base.RemoveRange( begin, end );
+			_Classes.RemoveRange( begin, end );
 		}
 
 		/// <summary>

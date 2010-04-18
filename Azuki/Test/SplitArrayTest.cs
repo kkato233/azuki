@@ -1,4 +1,4 @@
-// 2009-01-12
+// 2010-04-18
 #if TEST
 using System;
 using System.Collections;
@@ -41,15 +41,15 @@ namespace Sgry.Azuki.Test
 //chars.SetAt( 'Z', 6 ); // case 2
 //TestUtl.AssertEquals( chars[6] == 'Z' );
 
-			// Delete
-			Console.WriteLine( "test {0} - Delete()", ++test_num );
-			TestUtl.Do( Test_Delete );
+			// RemoveRange
+			Console.WriteLine( "test {0} - RemoveRange()", ++test_num );
+			TestUtl.Do( Test_RemoveRange );
 			
-			// GetRange
-			Console.WriteLine( "test {0} - GetRange()", ++test_num );
-			TestUtl.Do( Test_GetRange );
+			// CopyTo
+			Console.WriteLine( "test {0} - CopyTo()", ++test_num );
+			TestUtl.Do( Test_CopyTo );
 
-			// Convertion (ToArray, GetRange)
+			// Convertion (ToArray, CopyTo)
 			Console.WriteLine( "test {0} - Convertion()", ++test_num );
 			TestUtl.Do( Test_Convertion );
 
@@ -329,14 +329,14 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		static void Test_Delete()
+		static void Test_RemoveRange()
 		{
 			const string InitData = "hogepiyo";
 			SplitArray<char> chars = new SplitArray<char>( 5, 8 );
 
 			// case 2 (moving gap to buffer head)
 			chars.Add( InitData.ToCharArray() );
-			chars.Delete( 2, 3 );
+			chars.RemoveAt( 2 );
 			TestUtl.AssertEquals( 7, chars.Count );
 			TestUtl.AssertEquals( "hoepiyo", ToString(chars) );
 			try{ chars.GetAt(7); Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!"); }
@@ -345,7 +345,7 @@ namespace Sgry.Azuki.Test
 			// case 1 (moving gap to buffer end)
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			chars.Delete( 5, 7 );
+			chars.RemoveRange( 5, 7 );
 			TestUtl.AssertEquals( 6, chars.Count );
 			TestUtl.AssertEquals( "hogepo", ToString(chars) );
 			try{ chars.GetAt(6); Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!"); }
@@ -354,35 +354,35 @@ namespace Sgry.Azuki.Test
 			// before head to middle
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			try{ chars.Delete(-1, 2); Debug.Fail("Exception wasn't thrown as expected."); }
+			try{ chars.RemoveRange(-1, 2); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 			
 			// head to middle
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			chars.Delete( 0, 2 );
+			chars.RemoveRange( 0, 2 );
 			TestUtl.AssertEquals( "gepiyo", ToString(chars) );
 			
 			// middle to middle
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			chars.Delete( 2, 5 );
+			chars.RemoveRange( 2, 5 );
 			TestUtl.AssertEquals( "hoiyo", ToString(chars) );
 			
 			// middle to end
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			chars.Delete( 5, 8 );
+			chars.RemoveRange( 5, 8 );
 			TestUtl.AssertEquals( "hogep", ToString(chars) );
 			
 			// middle to after end
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			try{ chars.Delete(5, 9); Debug.Fail("Exception wasn't thrown as expected."); }
+			try{ chars.RemoveRange(5, 9); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 		}
 
-		static void Test_GetRange()
+		static void Test_CopyTo()
 		{
 			const string initBufContent = "123456";
 			SplitArray<char> sary = new SplitArray<char>( 5, 8 );
@@ -391,27 +391,27 @@ namespace Sgry.Azuki.Test
 
 			// before head to middle
 			buf = initBufContent.ToCharArray();
-			try{ sary.GetRange(-1, 5, ref buf); Debug.Fail("Exception wasn't thrown as expected."); }
+			try{ sary.CopyTo(-1, 5, buf); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 
 			// begin to middle
 			buf = initBufContent.ToCharArray();
-			sary.GetRange( 0, 5, ref buf );
+			sary.CopyTo( 0, 5, buf );
 			TestUtl.AssertEquals( "hogep6", new String(buf) );
 
 			// middle to middle
 			buf = initBufContent.ToCharArray();
-			sary.GetRange( 1, 5, ref buf );
+			sary.CopyTo( 1, 5, buf );
 			TestUtl.AssertEquals( "ogep56", new String(buf) );
 
 			// middle to end
 			buf = initBufContent.ToCharArray();
-			sary.GetRange( 5, 8, ref buf );
+			sary.CopyTo( 5, 8, buf );
 			TestUtl.AssertEquals( "iyo456", new String(buf) );
 
 			// end to after end
 			buf = initBufContent.ToCharArray();
-			try{ sary.GetRange(5, 9, ref buf); Debug.Fail("Exception wasn't thrown as expected."); }
+			try{ sary.CopyTo(5, 9, buf); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 		}
 
@@ -441,9 +441,9 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( "0003", ary[3] );
 			TestUtl.AssertEquals( "0004", ary[4] );
 
-			// GetRange<S>()
+			// CopyTo<S>()
 			ary = new string[4];
-			sary.GetRange<string>( 1, 3, ref ary, itos );
+			sary.CopyTo<string>( 1, 3, ary, itos );
 			TestUtl.AssertEquals( "0001", ary[0] );
 			TestUtl.AssertEquals( "0002", ary[1] );
 			TestUtl.AssertEquals( null, ary[2] );

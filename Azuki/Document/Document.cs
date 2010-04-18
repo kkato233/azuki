@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-03-17
+// update: 2010-04-18
 //=========================================================
 using System;
 using System.Collections;
@@ -450,9 +450,11 @@ namespace Sgry.Azuki
 		/// Gets or sets currently inputted text.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// Getting text content through this property
 		/// will copy all characters from internal buffer
 		/// to a string object and returns it.
+		/// </para>
 		/// </remarks>
 		public string Text
 		{
@@ -461,9 +463,7 @@ namespace Sgry.Azuki
 				if( _Buffer.Count == 0 )
 					return String.Empty;
 
-				char[] text = new char[ _Buffer.Count ];
-				_Buffer.GetRange( 0, _Buffer.Count, ref text );
-				return new String( text );
+				return new String( _Buffer.ToArray() );
 			}
 			set
 			{
@@ -580,7 +580,7 @@ namespace Sgry.Azuki
 			lineContent = new char[ end-begin ];
 
 			// copy line content
-			_Buffer.GetRange( begin, end, ref lineContent );
+			_Buffer.CopyTo( begin, end, lineContent );
 
 			return new String( lineContent );
 		}
@@ -606,7 +606,7 @@ namespace Sgry.Azuki
 			lineContent = new char[ end-begin ];
 			
 			// copy line content
-			_Buffer.GetRange( begin, end, ref lineContent );
+			_Buffer.CopyTo( begin, end, lineContent );
 
 			return new String( lineContent );
 		}
@@ -634,7 +634,7 @@ namespace Sgry.Azuki
 			
 			// retrieve a part of the content
 			char[] buf = new char[end - begin];
-			_Buffer.GetRange( begin, end, ref buf );
+			_Buffer.CopyTo( begin, end, buf );
 			return new String( buf );
 		}
 
@@ -741,7 +741,7 @@ namespace Sgry.Azuki
 			if( begin < end )
 			{
 				char[] oldChars = new char[ end-begin ];
-				_Buffer.GetRange( begin, end, ref oldChars );
+				_Buffer.CopyTo( begin, end, oldChars );
 				oldText = new String( oldChars );
 			}
 
@@ -754,7 +754,7 @@ namespace Sgry.Azuki
 			{
 				// manage line head indexes and delete content
 				LineLogic.LHI_Delete( _LHI, _LDS, _Buffer, begin, end );
-				_Buffer.Delete( begin, end );
+				_Buffer.RemoveRange( begin, end );
 
 				// manage caret/anchor index
 				if( begin < _CaretIndex )

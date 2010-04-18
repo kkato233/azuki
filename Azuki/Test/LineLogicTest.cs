@@ -1,4 +1,4 @@
-// 2009-10-31
+// 2010-04-18
 #if TEST
 using System;
 using System.Collections;
@@ -539,7 +539,7 @@ namespace Sgry.Azuki.Test
 			//--- delete range in line ---
 			// valid range
 			LineLogic.LHI_Delete( lhi, lms, text, 2, 5 );
-			text.Delete( 2, 5 );
+			text.RemoveRange( 2, 5 );
 			TestUtl.AssertEquals(  0, lhi[0] );
 			TestUtl.AssertEquals( 29, lhi[1] );
 			TestUtl.AssertEquals( 30, lhi[2] );
@@ -585,7 +585,7 @@ namespace Sgry.Azuki.Test
 			for( int i=0; i<lms.Count; i++ )
 				lms[i] = LineDirtyState.Clean;
 			LineLogic.LHI_Delete( lhi, lms, text, 32, 33 );
-			text.Delete( 32, 33 );
+			text.RemoveAt( 32 );
 			TestUtl.AssertEquals(  0, lhi[0] );
 			TestUtl.AssertEquals( 32, lhi[1] );
 			TestUtl.AssertEquals( 36, lhi[2] );
@@ -610,7 +610,7 @@ namespace Sgry.Azuki.Test
 			for( int i=0; i<lms.Count; i++ )
 				lms[i] = LineDirtyState.Clean;
 			LineLogic.LHI_Delete( lhi, lms, text, 22, 37 );
-			text.Delete( 22, 37 );
+			text.RemoveRange( 22, 37 );
 			TestUtl.AssertEquals(  0, lhi[0] );
 			TestUtl.AssertEquals( 36, lhi[1] );
 			TestUtl.AssertEquals( 37, lhi[2] );
@@ -627,7 +627,7 @@ namespace Sgry.Azuki.Test
 			for( int i=0; i<lms.Count; i++ )
 				lms[i] = LineDirtyState.Clean;
 			LineLogic.LHI_Delete( lhi, lms, text, 0, 55 );
-			text.Delete( 0, 55 );
+			text.RemoveRange( 0, 55 );
 			TestUtl.AssertEquals(  0, lhi[0] );
 			TestUtl.AssertEquals( 1, lhi.Count );
 			TestUtl.AssertEquals( LineDirtyState.Dirty, lms[0] );
@@ -647,7 +647,7 @@ namespace Sgry.Azuki.Test
 				for( int i=0; i<lms.Count; i++ )
 					lms[i] = LineDirtyState.Clean;
 				LineLogic.LHI_Delete( lhi, lms, text, 4, 5 );
-				text.Delete( 4, 5 );
+				text.RemoveRange( 4, 5 );
 				TestUtl.AssertEquals( 2, lhi.Count );
 				TestUtl.AssertEquals( 0, lhi[0] );
 				TestUtl.AssertEquals( 5, lhi[1] );
@@ -665,7 +665,7 @@ namespace Sgry.Azuki.Test
 				for( int i=0; i<lms.Count; i++ )
 					lms[i] = LineDirtyState.Clean;
 				LineLogic.LHI_Delete( lhi, lms, text, 4, 6 );
-				text.Delete( 4, 6 );
+				text.RemoveRange( 4, 6 );
 				TestUtl.AssertEquals( 2, lhi.Count );
 				TestUtl.AssertEquals( 0, lhi[0] );
 				TestUtl.AssertEquals( 4, lhi[1] );
@@ -683,7 +683,7 @@ namespace Sgry.Azuki.Test
 				for( int i=0; i<lms.Count; i++ )
 					lms[i] = LineDirtyState.Clean;
 				LineLogic.LHI_Delete( lhi, lms, text, 2, 4 );
-				text.Delete( 2, 4 );
+				text.RemoveRange( 2, 4 );
 				TestUtl.AssertEquals( 2, lhi.Count );
 				TestUtl.AssertEquals( 0, lhi[0] );
 				TestUtl.AssertEquals( 3, lhi[1] );
@@ -701,7 +701,7 @@ namespace Sgry.Azuki.Test
 				for( int i=0; i<lms.Count; i++ )
 					lms[i] = LineDirtyState.Clean;
 				LineLogic.LHI_Delete( lhi, lms, text, 1, 6 );
-				text.Delete( 1, 6 );
+				text.RemoveRange( 1, 6 );
 				TestUtl.AssertEquals( 2, lhi.Count );
 				TestUtl.AssertEquals( 0, lhi[0] );
 				TestUtl.AssertEquals( 2, lhi[1] );
@@ -738,7 +738,7 @@ namespace Sgry.Azuki.Test
 				for( int i=0; i<lms.Count; i++ )
 					lms[i] = LineDirtyState.Clean;
 				LineLogic.LHI_Delete( lhi, lms, text, 1, 2 );
-				text.Delete( 1, 2 );
+				text.RemoveRange( 1, 2 );
 				TestUtl.AssertEquals( 2, lhi.Count );
 				TestUtl.AssertEquals( 0, lhi[0] );
 				TestUtl.AssertEquals( 1, lhi[1] );

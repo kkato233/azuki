@@ -1,7 +1,7 @@
 // file: SplitArray.cs
 // brief: Data structure holding a 'gap' in it for efficient insert/delete operation.
 // author: YAMAMOTO Suguru
-// update: 2009-05-23
+// update: 2010-04-18
 //=========================================================
 //#define SPLIT_ARRAY_ENABLE_SANITY_CHECK
 //#define SPLIT_ARRAY_ENABLE_TRACE
@@ -16,7 +16,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// The array structure with 'gap' for efficient insertion/deletion.
 	/// </summary>
-	class SplitArray<T> : IEnumerable<T>
+	class SplitArray<T> : IEnumerable<T>, IList<T>
 	{
 		#region Fields
 		protected T[] _Data = null;
@@ -122,7 +122,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets elements in range [begin, end).
 		/// </summary>
-		public void GetRange<S>( int begin, int end, ref S[] outBuffer, Converter<T, S> converter )
+		public void CopyTo<S>( int begin, int end, S[] outBuffer, Converter<T, S> converter )
 		{
 			DebugUtl.Assert( 0 <= begin && begin <= _Count && begin < end, "argument out of range: requested data at invalid range ["+begin+", "+end+")." );
 
@@ -132,17 +132,42 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets elements in range [begin, end).
+		/// Copies items to other array object.
 		/// </summary>
-		public void GetRange( int begin, int end, ref T[] outBuffer )//, int bufferIndexTo )
+		public void CopyTo( T[] array )
 		{
-			const int bufferIndexTo = 0;
-			DebugUtl.Assert( begin < _Count && end <= _Count, "argument out of range: requested range is ["+begin+", "+end+") but _Count is "+_Count+"." );
-			DebugUtl.Assert( 0 <= begin && 0 <= end && begin < end, "invalid argument: invalid range ["+begin+", "+end+") was given." );
+			CopyTo( array, 0 );
+		}
+
+		/// <summary>
+		/// Copies items to other array object.
+		/// </summary>
+		public void CopyTo( T[] array, int arrayIndex )
+		{
+			CopyTo( 0, Count, array, arrayIndex );
+		}
+
+		/// <summary>
+		/// Copies items to other array object.
+		/// </summary>
+		public void CopyTo( int begin, int end, T[] array )
+		{
+			CopyTo( begin, end, array, 0 );
+		}
+
+		/// <summary>
+		/// Copies items to other array object.
+		/// </summary>
+		public void CopyTo( int begin, int end, T[] array, int arrayIndex )
+		{
+			DebugUtl.Assert( 0 <= begin && begin < end && end <= Count, "invalid range ["+begin+", "+end+") was given. (Count:"+Count+")" );
+			DebugUtl.Assert( array != null, "parameter 'array' must not be null." );
+			DebugUtl.Assert( 0 <= arrayIndex && arrayIndex < array.Length, "parameter 'arrayIndex' is out of range. (arrayIndex:"+arrayIndex+", array.Length:"+array.Length+")" );
+			DebugUtl.Assert( end - begin <= array.Length - arrayIndex, "size of the given array is not sufficient. (begin:"+begin+", end:"+end+", arrayIndex:"+arrayIndex+", array.Length:"+array.Length+")" );
 
 			int count = end - begin;
 			for( int i=0; i<count; i++ )
-				outBuffer[bufferIndexTo+i] = GetAt( begin + i );
+				array[ arrayIndex + i ] = GetAt( begin + i );
 		}
 
 		/// <summary>
@@ -332,9 +357,37 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Deletes elements at specified range [begin, end).
+		/// Removes an element.
 		/// </summary>
-		public virtual void Delete( int begin, int end )
+		public bool Remove( T item )
+		{
+			DebugUtl.Assert( item != null, "parameter 'item' must not be null." );
+
+			// find the item
+			int index = IndexOf( item );
+			if( index < 0 )
+			{
+				return false;
+			}
+
+			// remove the item
+			RemoveAt( index );
+			return true;
+		}
+
+		/// <summary>
+		/// Removes an element at specified range [index, index+1).
+		/// </summary>
+		public void RemoveAt( int index )
+		{
+			DebugUtl.Assert( 0 <= index && index < Count, "parameter 'index' is out of range. (index:"+index+", Count:"+Count+")" );
+			RemoveRange( index, index+1 );
+		}
+
+		/// <summary>
+		/// Removes elements at specified range [begin, end).
+		/// </summary>
+		public virtual void RemoveRange( int begin, int end )
 		{
 			// [case 1: Delete(4, 5)]
 			// A___BCDEFGHI (gappos:1, gaplen:3)
@@ -368,7 +421,7 @@ namespace Sgry.Azuki
 			
 			// update info
 			_Count -= deleteLen;
-			__dump__( String.Format("Delete({0}, {1})", begin, end) );
+			__dump__( String.Format("RemoveRange({0}, {1})", begin, end) );
 			__check_sanity__();
 		}
 
@@ -384,6 +437,37 @@ namespace Sgry.Azuki
 			__dump__( String.Format("Clear()") );
 			__set_insanity_data__( 0, _Data.Length );
 			__check_sanity__();
+		}
+
+		/// <summary>
+		/// Finds the specified item and returns found index, or -1 if not found.
+		/// </summary>
+		public int IndexOf( T item )
+		{
+			for( int i=0; i<Count; i++ )
+			{
+				if( this[i].Equals(item) )
+					return i;
+			}
+			return -1;
+		}
+
+		/// <summary>
+		/// Distinguishes whether specified item exists in this collection or not.
+		/// </summary>
+		public bool Contains( T item )
+		{
+			return ( 0 <= IndexOf(item) );
+		}
+		#endregion
+
+		#region Others
+		/// <summary>
+		/// (Returns false always.)
+		/// </summary>
+		public bool IsReadOnly
+		{
+			get{ return false; }
 		}
 		#endregion
 

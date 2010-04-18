@@ -1,4 +1,5 @@
 == 1.6.0 (    -  -  ) ==
+ * add: [Ann] now the Mode menu item corresponding to the active editing mode is checked
  * mod: [Ann] added "All files" to the list of the file type in save file dialog
 
 == 1.5.4 (2010-04-17) ==

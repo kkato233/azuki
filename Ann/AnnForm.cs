@@ -1,4 +1,4 @@
-// 2010-03-30
+// 2010-04-18
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -161,6 +161,36 @@ namespace Sgry.Ann
 				_MI_Edit_EolCode_CRLF.Checked = false;
 				_MI_Edit_EolCode_LF.Checked = false;
 				_MI_Edit_EolCode_CR.Checked = true;
+			}
+
+			// update radio check of file type menu
+			foreach( MenuItem mi in _MI_Mode.MenuItems )
+			{
+				mi.Checked = false;
+			}
+			switch( _App.ActiveDocument.FileType.Name )
+			{
+				case FileType.LatexFileTypeName:
+					_MI_Mode_Latex.Checked = true;
+					break;
+				case FileType.CppFileTypeName:
+					_MI_Mode_Cpp.Checked = true;
+					break;
+				case FileType.CSharpFileTypeName:
+					_MI_Mode_CSharp.Checked = true;
+					break;
+				case FileType.JavaFileTypeName:
+					_MI_Mode_Java.Checked = true;
+					break;
+				case FileType.RubyFileTypeName:
+					_MI_Mode_Ruby.Checked = true;
+					break;
+				case FileType.XmlFileTypeName:
+					_MI_Mode_XML.Checked = true;
+					break;
+				default:
+					_MI_Mode_Text.Checked = true;
+					break;
 			}
 
 			// update tab panel

@@ -1,4 +1,4 @@
-// 2010-03-30
+// 2010-04-18
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,10 +20,15 @@ namespace Sgry.Ann
 	{
 		#region Fields
 		const string OpenFileFilter =
-			"All files(*.*)|*.*|"
-			+ "Supported files|*.txt;*.log;*.ini;*.inf;*.tex;*.htm;*.html;*.css;*.js;*.xml;*.c;*.cpp;*.cxx;*.h;*.hpp;*.hxx;*.cs;*.java;*.py;*.rb;*.pl;*.vbs;*.bat|"
-			+ SaveFileFilter;
+			"All files(*.*)|*.*"
+			+ "|Supported files|*.txt;*.log;*.ini;*.inf;*.tex;*.htm;*.html;*.css;*.js;*.xml;*.c;*.cpp;*.cxx;*.h;*.hpp;*.hxx;*.cs;*.java;*.py;*.rb;*.pl;*.vbs;*.bat"
+			+ "|" + CommonFileFilter;
+
 		const string SaveFileFilter =
+			"All files(*.*)|*.*"
+			+ "|" + CommonFileFilter;
+
+		const string CommonFileFilter =
 			"Text file(*.txt, *.log, *.tex, ...)|*.txt;*.log;*.ini;*.inf;*.tex"
 			+ "|HTML file(*.htm, *.html)|*.htm;*.html"
 			+ "|CSS file(*.css)|*.css"

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-03-22
+// update: 2010-04-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1140,11 +1140,20 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
-		/// Clears all stacked edit histories.
+		/// Clears all stacked edit histories in currently active document.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method clears all editing histories for
+		/// UNDO or REDO action in currently active document.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.ClearHistory">IUserInterface.ClearHistory method</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory method</seealso>
 		public void ClearHistory()
 		{
 			Document.ClearHistory();
+			Invalidate();
 		}
 
 		/// <summary>

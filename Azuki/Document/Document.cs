@@ -884,8 +884,19 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Clears all stacked undo actions.
+		/// Clears all stacked edit histories.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method clears all editing histories for
+		/// UNDO or REDO action in this document.
+		/// </para>
+		/// <para>
+		/// Note that calling this method will not invalidate graphics.
+		/// To update graphic, use IUserInterface.ClearHistory or update manually.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.ClearHistory">IUserInterface.ClearHistory method</seealso>
 		public void ClearHistory()
 		{
 			_History.Clear();

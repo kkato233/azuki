@@ -340,8 +340,15 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Clears all stacked undo actions.
+		/// Clears all stacked edit histories in currently active document.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This method clears all editing histories for
+		/// UNDO or REDO action in currently active document.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ClearHistory">AzukiControl.ClearHistory method</seealso>
 		void ClearHistory();
 
 		/// <summary>

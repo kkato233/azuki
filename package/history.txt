@@ -2,6 +2,9 @@
  * add: [Ann] now the Mode menu item corresponding to the active editing mode is checked
  * mod: [Ann] added "All files" to the list of the file type in save file dialog
 
+== 1.5.5 (    -  -  ) ==
+ * fix: now calling AzukiControl.ClearHistory properly redraws DirtBar
+
 == 1.5.4 (2010-04-17) ==
  * add: now anti-alias method applied to text rendering can be changed through UserPref.Antialias property
  * add: now color value literal used in HTML such as #E0C184 is treated as one word

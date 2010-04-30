@@ -1859,6 +1859,30 @@ namespace Sgry.Azuki
 			return (0xdc00 <= ch && ch <= 0xdfff);
 		}
 
+		internal void DeleteRectSelectText()
+		{
+			int diff = 0;
+
+			for( int i=0; i<RectSelectRanges.Length; i+=2 )
+			{
+				// recalculate range of this row
+				RectSelectRanges[i] -= diff;
+				RectSelectRanges[i+1] -= diff;
+
+				// replace this row
+				Replace( String.Empty,
+						RectSelectRanges[i],
+						RectSelectRanges[i+1]
+					);
+
+				// go to next row
+				diff += RectSelectRanges[i+1] - RectSelectRanges[i];
+			}
+
+			// reset selection
+			SetSelection( RectSelectRanges[0], RectSelectRanges[0] );
+		}
+
 		internal class Utl
 		{
 			public static bool ShouldBeIgnoredGrammatically( Document doc, int index )

@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-04-10
+// update: 2010-04-30
 //=========================================================
 using System;
 using System.Text;
@@ -379,7 +379,7 @@ namespace Sgry.Azuki
 				// clear rectangle selection
 				if( doc.RectSelectRanges != null )
 				{
-					UiImpl.DeleteRectSelectText( doc );
+					doc.DeleteRectSelectText();
 				}
 
 				// handle input characters
@@ -863,30 +863,6 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilitites
-		internal static void DeleteRectSelectText( Document doc )
-		{
-			int diff = 0;
-
-			for( int i=0; i<doc.RectSelectRanges.Length; i+=2 )
-			{
-				// recalculate range of this row
-				doc.RectSelectRanges[i] -= diff;
-				doc.RectSelectRanges[i+1] -= diff;
-
-				// replace this row
-				doc.Replace( String.Empty,
-						doc.RectSelectRanges[i],
-						doc.RectSelectRanges[i+1]
-					);
-
-				// go to next row
-				diff += doc.RectSelectRanges[i+1] - doc.RectSelectRanges[i];
-			}
-
-			// reset selection
-			doc.SetSelection( doc.RectSelectRanges[0], doc.RectSelectRanges[0] );
-		}
-
 		/// <summary>
 		/// Generates appropriate padding characters
 		/// that fills the gap between the target position and actual line-end position.

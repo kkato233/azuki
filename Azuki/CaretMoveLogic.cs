@@ -55,26 +55,7 @@ namespace Sgry.Azuki
 			}
 
 			// set new selection
-			if( ui.IsRectSelectMode )
-			{
-				//--- case of rectangle selection ---
-				// calculate graphical position of both anchor and new caret
-				Point anchorPos = view.GetVirPosFromIndex( doc.AnchorIndex );
-				Point newCaretPos = view.GetVirPosFromIndex( nextIndex );
-				
-				// calculate ranges selected by the rectangle made with the two points
-				doc.RectSelectRanges = view.GetRectSelectRanges(
-						Document.Utl.MakeRectFromTwoPoints(anchorPos, newCaretPos)
-					);
-
-				// set selection
-				doc.SetSelection_Impl( doc.AnchorIndex, nextIndex, false );
-			}
-			else
-			{
-				//--- case of normal selection ---
-				doc.SetSelection( doc.AnchorIndex, nextIndex );
-			}
+			doc.SetSelection( doc.AnchorIndex, nextIndex, view );
 			view.ScrollToCaret();
 		}
 		#endregion

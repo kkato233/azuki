@@ -270,6 +270,8 @@ namespace Sgry.Azuki.Windows
 			SetKeyBind( Keys.Left|Keys.Alt, Actions.RectSelectToLeft );
 			SetKeyBind( Keys.Up|Keys.Alt, Actions.RectSelectToUp );
 			SetKeyBind( Keys.Down|Keys.Alt, Actions.RectSelectToDown );
+			SetKeyBind( Keys.Up|Keys.Alt|Keys.Shift, Actions.LineSelectToUp );
+			SetKeyBind( Keys.Down|Keys.Alt|Keys.Shift, Actions.LineSelectToDown );
 			SetKeyBind( Keys.A|Keys.Control, Actions.SelectAll );
 
 			// bind keys to edit document
@@ -1065,6 +1067,19 @@ namespace Sgry.Azuki.Windows
 		{
 			get{ return _AcceptsTab; }
 			set{ _AcceptsTab = value; }
+		}
+
+		/// <summary>
+		/// Gets whether Azuki is in line selection mode or not.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public bool IsLineSelectMode
+		{
+			get{ return (SelectionMode == TextDataType.Line); }
+			set{ SelectionMode = TextDataType.Line; }
 		}
 
 		/// <summary>

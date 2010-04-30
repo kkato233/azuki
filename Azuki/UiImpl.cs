@@ -639,11 +639,24 @@ namespace Sgry.Azuki
 				{
 					//--- line selection ---
 					_UI.SelectionMode = TextDataType.Line;
-					if( !shift )
+					if( shift )
 					{
-						Document.LineSelectionAnchor = -1;
+						//--- expanding line selection ---
+						// expand selection to one char next of clicked position
+						// (if caret is at head of a line,
+						// the line will not be selected by SetSelection.)
+						int newCaretIndex = index;
+						if( newCaretIndex+1 < Document.Length )
+						{
+							newCaretIndex++;
+						}
+						Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
 					}
-					SelectLines( index );
+					else
+					{
+						//--- setting line selection ---
+						Document.SetSelection( index, index, View );
+					}
 				}
 				else if( shift )
 				{
@@ -654,7 +667,7 @@ namespace Sgry.Azuki
 				{
 					//--- rectangle selection ---
 					_UI.SelectionMode = TextDataType.Rectangle;
-					Document.SetSelection( index, index );
+					Document.SetSelection( index, index, View );
 				}
 				else
 				{
@@ -739,15 +752,21 @@ namespace Sgry.Azuki
 				if( _UI.SelectionMode == TextDataType.Rectangle )
 				{
 					//--- rectangle selection ---
-					Point anchorPos = _MouseDownVirPos;
-					Document.RectSelectRanges = View.GetRectSelectRanges(
-							Document.Utl.MakeRectFromTwoPoints(anchorPos, pos)
-						);
-					Document.SetSelection_Impl( Document.AnchorIndex, curPosIndex, false );
+					// expand selection to the point
+					Document.SetSelection( Document.AnchorIndex, curPosIndex, View );
 				}
 				else if( _UI.SelectionMode == TextDataType.Line )
 				{
-					SelectLines( curPosIndex );
+					//--- line selection ---
+					// expand selection to one char next of clicked position
+					// (if caret is at head of a line,
+					// the line will not be selected by SetSelection.)
+					int newCaretIndex = curPosIndex;
+					if( newCaretIndex+1 < Document.Length )
+					{
+						newCaretIndex++;
+					}
+					Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
 				}
 				else
 				{
@@ -902,70 +921,6 @@ namespace Sgry.Azuki
 			}
 
 			return paddingChars.ToString();
-		}
-
-		void SelectLines( int toIndex )
-		{
-			int anchor, caret;
-			int toLineIndex;
-			Document doc = this.Document;
-			int lineSelectionAnchor;
-
-			// get line index of selection starting line and destination line
-			toLineIndex = View.GetLineIndexFromCharIndex( toIndex );
-			if( doc.LineSelectionAnchor < 0 )
-			{
-				//-- no line selection exists --
-				// select between head of the line and end of the line
-				anchor = View.GetLineHeadIndex( toLineIndex );
-				if( toLineIndex+1 < View.LineCount )
-				{
-					caret = View.GetLineHeadIndex( toLineIndex + 1 );
-				}
-				else
-				{
-					caret = doc.Length;
-				}
-				lineSelectionAnchor = toIndex;
-			}
-			else if( doc.LineSelectionAnchor <= toIndex )
-			{
-				//-- selecting to the line (or after) where selection started --
-				// select between head of the starting line and the end of the destination line
-				anchor = View.GetLineHeadIndexFromCharIndex( doc.LineSelectionAnchor );
-				if( toLineIndex+1 < View.LineCount )
-				{
-					caret = View.GetLineHeadIndex( toLineIndex + 1 );
-				}
-				else
-				{
-					caret = doc.Length;
-				}
-				lineSelectionAnchor = doc.LineSelectionAnchor;
-			}
-			else// if( toIndex < doc.LineSelectionAnchor )
-			{
-				//-- selecting to foregoing lines where selection started --
-				// select between head of the destination line and end of the starting line
-				int anchorLineIndex;
-
-				caret = View.GetLineHeadIndex( toLineIndex );
-				anchorLineIndex = View.GetLineIndexFromCharIndex( doc.LineSelectionAnchor );
-				if( anchorLineIndex+1 < View.LineCount )
-				{
-					anchor = View.GetLineHeadIndex( anchorLineIndex + 1 );
-				}
-				else
-				{
-					anchor = doc.Length;
-				}
-				lineSelectionAnchor = doc.LineSelectionAnchor;
-			}
-
-			// apply new selection
-			// (and restore LineSelectionAnchor property because SetSelection clears it)
-			doc.SetSelection_Impl( anchor, caret, false );
-			doc.LineSelectionAnchor = lineSelectionAnchor;
 		}
 		#endregion
 	}

@@ -1,4 +1,5 @@
 == 1.6.0 (    -  -  ) ==
+ * add: [Ann] now how to select text can be set by Document.SelectionMode property
  * add: [Ann] now the Mode menu item corresponding to the active editing mode is checked
  * mod: [Ann] added "All files" to the list of the file type in save file dialog
 

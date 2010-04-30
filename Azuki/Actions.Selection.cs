@@ -563,6 +563,34 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region LineSelectTo
+		/// <summary>
+		/// Expands line selection down.
+		/// </summary>
+		public static void LineSelectToDown( IUserInterface ui )
+		{
+			// force to enable line selection
+			ui.SelectionMode = TextDataType.Line;
+
+			// expand selection
+			SelectToDown( ui );
+			ui.View.SetDesiredColumn();
+		}
+
+		/// <summary>
+		/// Expands line selection up.
+		/// </summary>
+		public static void LineSelectToUp( IUserInterface ui )
+		{
+			// force to enable line selection
+			ui.SelectionMode = TextDataType.Line;
+
+			// expand selection
+			SelectToUp( ui );
+			ui.View.SetDesiredColumn();
+		}
+		#endregion
+
 		#region SelectAll
 		/// <summary>
 		/// Selects all text.

@@ -303,47 +303,6 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
-		/// Gets whether Azuki is in rectangle selection mode or not.
-		/// </summary>
-#		if !PocketPC
-		[Browsable(false)]
-		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-#		endif
-		public bool IsRectSelectMode
-		{
-			get{ return (SelectionMode == TextDataType.Rectangle); }
-			set{ SelectionMode = TextDataType.Rectangle; }
-		}
-
-		/// <summary>
-		/// Gets or sets how to select text.
-		/// </summary>
-#		if !PocketPC
-		[Browsable(false)]
-		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-#		endif
-		public TextDataType SelectionMode
-		{
-			get{ return Document.SelectionMode; }
-			set
-			{
-				Document.SelectionMode = value;
-
-#				if !PocketPC
-				// update mouse cursor graphic
-				if( SelectionMode == TextDataType.Rectangle )
-				{
-					Cursor = Cursors.Arrow;
-				}
-				else
-				{
-					Cursor = Cursors.IBeam;
-				}
-#				endif
-			}
-		}
-
-		/// <summary>
 		/// Gets an action which is already associated with given key.
 		/// If no action was associate with given key, returns null.
 		/// </summary>
@@ -1106,6 +1065,47 @@ namespace Sgry.Azuki.Windows
 		{
 			get{ return _AcceptsTab; }
 			set{ _AcceptsTab = value; }
+		}
+
+		/// <summary>
+		/// Gets whether Azuki is in rectangle selection mode or not.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public bool IsRectSelectMode
+		{
+			get{ return (SelectionMode == TextDataType.Rectangle); }
+			set{ SelectionMode = TextDataType.Rectangle; }
+		}
+
+		/// <summary>
+		/// Gets or sets how to select text.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public TextDataType SelectionMode
+		{
+			get{ return Document.SelectionMode; }
+			set
+			{
+				Document.SelectionMode = value;
+
+#				if !PocketPC
+				// update mouse cursor graphic
+				if( SelectionMode == TextDataType.Rectangle )
+				{
+					Cursor = Cursors.Arrow;
+				}
+				else
+				{
+					Cursor = Cursors.IBeam;
+				}
+#				endif
+			}
 		}
 		#endregion
 

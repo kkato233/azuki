@@ -953,7 +953,15 @@ namespace Sgry.Azuki
 		public TextDataType SelectionMode
 		{
 			get{ return _SelectionMode; }
-			set{ _SelectionMode = value; }
+			set
+			{
+				bool changed = (_SelectionMode != value);
+				_SelectionMode = value;
+				if( changed )
+				{
+					InvokeSelectionModeChanged();
+				}
+			}
 		}
 		#endregion
 
@@ -1791,6 +1799,18 @@ namespace Sgry.Azuki
 		{
 			if( DirtyStateChanged != null )
 				DirtyStateChanged( this, EventArgs.Empty );
+		}
+
+		/// <summary>
+		/// Occures soon after selection mode was changed.
+		/// </summary>
+		public event EventHandler SelectionModeChanged;
+		void InvokeSelectionModeChanged()
+		{
+			if( SelectionModeChanged != null )
+			{
+				SelectionModeChanged( this, EventArgs.Empty );
+			}
 		}
 		#endregion
 

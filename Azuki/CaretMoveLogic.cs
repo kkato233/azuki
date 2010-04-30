@@ -31,7 +31,7 @@ namespace Sgry.Azuki
 			{
 				// set new selection and scroll to caret
 				doc.SetSelection( nextIndex, nextIndex );
-				ui.IsRectSelectMode = false;
+				ui.SelectionMode = TextDataType.Normal;
 				view.ScrollToCaret();
 			}
 		}

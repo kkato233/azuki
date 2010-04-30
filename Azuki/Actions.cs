@@ -537,7 +537,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void ToggleRectSelectMode( IUserInterface ui )
 		{
-			ui.IsRectSelectMode = !ui.IsRectSelectMode;
+			if( ui.SelectionMode != TextDataType.Rectangle )
+				ui.SelectionMode = TextDataType.Rectangle;
+			else
+				ui.SelectionMode = TextDataType.Normal;
 		}
 
 		/// <summary>

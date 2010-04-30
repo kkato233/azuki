@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine (actions to change selection).
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-09-21
+// update: 2010-04-30
 //=========================================================
 using System;
 using System.Drawing;
@@ -298,7 +298,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Selection
+		#region SelectTo
 		/// <summary>
 		/// Expands selection to right.
 		/// </summary>
@@ -483,7 +483,9 @@ namespace Sgry.Azuki
 			// update desired column
 			ui.View.SetDesiredColumn();
 		}
+		#endregion
 
+		#region RectSelectTo
 		/// <summary>
 		/// Expands rectangle selection to right.
 		/// </summary>
@@ -497,7 +499,7 @@ namespace Sgry.Azuki
 		public static void RectSelectToRight( IUserInterface ui )
 		{
 			// force to enable rectangle selection
-			ui.IsRectSelectMode = true;
+			ui.SelectionMode = TextDataType.Rectangle;
 
 			// expand selection
 			SelectToRight( ui );
@@ -516,7 +518,7 @@ namespace Sgry.Azuki
 		public static void RectSelectToLeft( IUserInterface ui )
 		{
 			// force to enable rectangle selection
-			ui.IsRectSelectMode = true;
+			ui.SelectionMode = TextDataType.Rectangle;
 
 			// expand selection
 			SelectToLeft( ui );
@@ -535,7 +537,7 @@ namespace Sgry.Azuki
 		public static void RectSelectToDown( IUserInterface ui )
 		{
 			// force to enable rectangle selection
-			ui.IsRectSelectMode = true;
+			ui.SelectionMode = TextDataType.Rectangle;
 
 			// expand selection
 			SelectToDown( ui );
@@ -554,12 +556,14 @@ namespace Sgry.Azuki
 		public static void RectSelectToUp( IUserInterface ui )
 		{
 			// force to enable rectangle selection
-			ui.IsRectSelectMode = true;
+			ui.SelectionMode = TextDataType.Rectangle;
 
 			// expand selection
 			SelectToUp( ui );
 		}
+		#endregion
 
+		#region SelectAll
 		/// <summary>
 		/// Selects all text.
 		/// </summary>

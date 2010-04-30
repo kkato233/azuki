@@ -42,7 +42,6 @@ namespace Sgry.Azuki
 		// whether the mouse button is down or not.
 		Point _MouseDownVirPos = new Point( Int32.MinValue, 0 );
 		bool _MouseDragging = false;
-		TextDataType _SelectionMode = TextDataType.Normal;
 
 		Thread _HighlighterThread;
 		bool _ShouldBeHighlighted = false;
@@ -246,33 +245,6 @@ namespace Sgry.Azuki
 			{
 				Debug.Assert( _IsDisposed == false );
 				_AutoIndentHook = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets whether Azuki is in line selection mode or not.
-		/// </summary>
-		public bool IsLineSelectMode
-		{
-			get{ return (_SelectionMode == TextDataType.Line); }
-			set
-			{
-				Debug.Assert( _IsDisposed == false );
-				_SelectionMode = (value == true) ? TextDataType.Line : TextDataType.Normal;
-			}
-		}
-
-		/// <summary>
-		/// Gets whether Azuki is in rectangle selection mode or not.
-		/// </summary>
-		public bool IsRectSelectMode
-		{
-			get{ return (_SelectionMode == TextDataType.Rectangle); }
-			set
-			{
-				Debug.Assert( _IsDisposed == false );
-				_SelectionMode = (value == true) ? TextDataType.Rectangle : TextDataType.Normal;
-				_UI.InvokeIsRectSelectModeChanged();
 			}
 		}
 		#endregion
@@ -665,7 +637,8 @@ namespace Sgry.Azuki
 				// set selection
 				if( onLineNumberArea )
 				{
-					IsLineSelectMode = true;
+					//--- line selection ---
+					_UI.SelectionMode = TextDataType.Line;
 					if( !shift )
 					{
 						Document.LineSelectionAnchor = -1;
@@ -674,15 +647,18 @@ namespace Sgry.Azuki
 				}
 				else if( shift )
 				{
+					//--- expanding selection ---
 					Document.SetSelection( Document.AnchorIndex, index );
 				}
 				else if( alt )
 				{
-					IsRectSelectMode = true;
+					//--- rectangle selection ---
+					_UI.SelectionMode = TextDataType.Rectangle;
 					Document.SetSelection( index, index );
 				}
 				else
 				{
+					//--- setting caret ---
 					Document.SetSelection( index, index );
 				}
 				View.SetDesiredColumn();
@@ -760,7 +736,7 @@ namespace Sgry.Azuki
 				}
 
 				// expand selection to there
-				if( IsRectSelectMode )
+				if( _UI.SelectionMode == TextDataType.Rectangle )
 				{
 					//--- rectangle selection ---
 					Point anchorPos = _MouseDownVirPos;
@@ -769,7 +745,7 @@ namespace Sgry.Azuki
 						);
 					Document.SetSelection_Impl( Document.AnchorIndex, curPosIndex, false );
 				}
-				else if( IsLineSelectMode )
+				else if( _UI.SelectionMode == TextDataType.Line )
 				{
 					SelectLines( curPosIndex );
 				}
@@ -791,7 +767,7 @@ namespace Sgry.Azuki
 		{
 			_MouseDownVirPos.X = Int32.MinValue;
 			_MouseDragging = false;
-			IsRectSelectMode = false;
+			_UI.SelectionMode = TextDataType.Normal;
 		}
 		#endregion
 

@@ -39,6 +39,7 @@ namespace Sgry.Azuki
 		DateTime _LastModifiedTime = DateTime.Now;
 		int _LineSelectionAnchor = -1;
 		int[] _RectSelectRanges = null;
+		TextDataType _SelectionMode = TextDataType.Normal;
 		object _Tag = null;
 		static readonly char[] _PairBracketTable = new char[]{
 			'(', ')', '{', '}', '[', ']', '<', '>',
@@ -944,6 +945,15 @@ namespace Sgry.Azuki
 					throw new InvalidOperationException( "unsupported type of EOL code was set." );
 				_EolCode = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets how to select text.
+		/// </summary>
+		public TextDataType SelectionMode
+		{
+			get{ return _SelectionMode; }
+			set{ _SelectionMode = value; }
 		}
 		#endregion
 

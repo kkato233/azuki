@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-04-25
+// update: 2010-04-30
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -311,14 +311,27 @@ namespace Sgry.Azuki.Windows
 #		endif
 		public bool IsRectSelectMode
 		{
-			get{ return _Impl.IsRectSelectMode; }
+			get{ return (SelectionMode == TextDataType.Rectangle); }
+			set{ SelectionMode = TextDataType.Rectangle; }
+		}
+
+		/// <summary>
+		/// Gets or sets how to select text.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public TextDataType SelectionMode
+		{
+			get{ return Document.SelectionMode; }
 			set
 			{
-				_Impl.IsRectSelectMode = value;
+				Document.SelectionMode = value;
 
 #				if !PocketPC
 				// update mouse cursor graphic
-				if( _Impl.IsRectSelectMode )
+				if( SelectionMode == TextDataType.Rectangle )
 				{
 					Cursor = Cursors.Arrow;
 				}

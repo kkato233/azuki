@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-04-30
 //=========================================================
 using System;
 using System.Drawing;
@@ -320,6 +320,14 @@ namespace Sgry.Azuki
 		/// Gets whether Azuki is in rectangle selection mode or not.
 		/// </summary>
 		bool IsRectSelectMode
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets currently active selection mode.
+		/// </summary>
+		TextDataType SelectionMode
 		{
 			get; set;
 		}

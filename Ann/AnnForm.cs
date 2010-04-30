@@ -1,4 +1,4 @@
-// 2010-04-18
+// 2010-04-30
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -126,6 +126,15 @@ namespace Sgry.Ann
 			if( readOnly )
 			{
 				text.Append( ", R/O" );
+			}
+			switch ( doc.SelectionMode )
+			{
+				case TextDataType.Line:
+					text.Append( ", LINE-SEL" );
+					break;
+				case TextDataType.Rectangle:
+					text.Append( ", RECT-SEL" );
+					break;
 			}
 			text.Append( "]" );
 			this.Text = text.ToString();

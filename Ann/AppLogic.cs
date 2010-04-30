@@ -209,7 +209,13 @@ namespace Sgry.Ann
 				_UntitledFileCount++;
 			}
 			doc.DirtyStateChanged += Doc_DirtyStateChanged;
+			doc.SelectionModeChanged += Doc_SelectionModeChanged;
 			_DAD_Documents.Add( doc );
+		}
+
+		void Doc_SelectionModeChanged( object sender, EventArgs e )
+		{
+			MainForm.UpdateUI();
 		}
 
 		void Doc_DirtyStateChanged( object sender, EventArgs e )

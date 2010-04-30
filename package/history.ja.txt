@@ -1,9 +1,10 @@
 == 1.6.0 (    -  -  ) ==
  * add: キーボードで行選択を可能に
- * add: Document.SelectionMode で選択モードを設定可能に
- * add: Document.SetSelection で行選択を可能に
- * mod: Document.SetSelection で箱形選択を可能に
+ * add: Document.SelectionMode プロパティで選択モードを設定可能に
+ * add: Document.SetSelection メソッドで行選択を可能に
+ * mod: Document.SetSelection メソッドで箱形選択を可能に
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように
+ * add: [Ann] 現在の選択モードをタイトル文字列で表示するように
  * mod: [Ann] ファイル保存ダイアログの「ファイルの種類」フィルターに「All files」を追加
 
 == 1.5.5 (    -  -  ) ==

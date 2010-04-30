@@ -1,7 +1,7 @@
 // file: CaretMoveLogic.cs
 // brief: Implementation of caret movement.
 // author: YAMAMOTO Suguru
-// update: 2009-08-10
+// update: 2010-04-30
 //=========================================================
 using System;
 using System.Drawing;
@@ -64,7 +64,7 @@ namespace Sgry.Azuki
 				
 				// calculate ranges selected by the rectangle made with the two points
 				doc.RectSelectRanges = view.GetRectSelectRanges(
-						UiImpl.MakeRectFromTwoPoints(anchorPos, newCaretPos)
+						Document.Utl.MakeRectFromTwoPoints(anchorPos, newCaretPos)
 					);
 
 				// set selection

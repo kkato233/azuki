@@ -7,6 +7,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 using Color = System.Drawing.Color;
 using Regex = System.Text.RegularExpressions.Regex;
 using RegexOptions = System.Text.RegularExpressions.RegexOptions;
@@ -1941,6 +1943,37 @@ namespace Sgry.Azuki
 						}
 					}
 				}
+			}
+
+			public static Rectangle MakeRectFromTwoPoints( Point pt1, Point pt2 )
+			{
+				Rectangle rect = new Rectangle();
+
+				// set left and width
+				if( pt1.X < pt2.X )
+				{
+					rect.X = pt1.X;
+					rect.Width = pt2.X - pt1.X;
+				}
+				else
+				{
+					rect.X = pt2.X;
+					rect.Width = pt1.X - pt2.X;
+				}
+
+				// set top and height
+				if( pt1.Y < pt2.Y )
+				{
+					rect.Y = pt1.Y;
+					rect.Height = pt2.Y - pt1.Y;
+				}
+				else
+				{
+					rect.Y = pt2.Y;
+					rect.Height = pt1.Y - pt2.Y;
+				}
+
+				return rect;
 			}
 		}
 		#endregion

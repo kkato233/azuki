@@ -765,7 +765,7 @@ namespace Sgry.Azuki
 					//--- rectangle selection ---
 					Point anchorPos = _MouseDownVirPos;
 					Document.RectSelectRanges = View.GetRectSelectRanges(
-							MakeRectFromTwoPoints(anchorPos, pos)
+							Document.Utl.MakeRectFromTwoPoints(anchorPos, pos)
 						);
 					Document.SetSelection_Impl( Document.AnchorIndex, curPosIndex, false );
 				}
@@ -926,37 +926,6 @@ namespace Sgry.Azuki
 			}
 
 			return paddingChars.ToString();
-		}
-
-		internal static Rectangle MakeRectFromTwoPoints( Point pt1, Point pt2 )
-		{
-			Rectangle rect = new Rectangle();
-
-			// set left and width
-			if( pt1.X < pt2.X )
-			{
-				rect.X = pt1.X;
-				rect.Width = pt2.X - pt1.X;
-			}
-			else
-			{
-				rect.X = pt2.X;
-				rect.Width = pt1.X - pt2.X;
-			}
-
-			// set top and height
-			if( pt1.Y < pt2.Y )
-			{
-				rect.Y = pt1.Y;
-				rect.Height = pt2.Y - pt1.Y;
-			}
-			else
-			{
-				rect.Y = pt2.Y;
-				rect.Height = pt1.Y - pt2.Y;
-			}
-
-			return rect;
 		}
 
 		void SelectLines( int toIndex )

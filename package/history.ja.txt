@@ -3,6 +3,7 @@
  * add: Document.SelectionMode プロパティで選択モードを設定可能に
  * add: Document.SetSelection メソッドで行選択を可能に
  * mod: Document.SetSelection メソッドで箱形選択を可能に
+ * mod: AzukiControl.IsRectSelectModeChanged イベントを Obsolete 指定に（Document.SelectionModeChanged で置き換え）
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように
  * add: [Ann] 現在の選択モードをタイトル文字列で表示するように
  * mod: [Ann] ファイル保存ダイアログの「ファイルの種類」フィルターに「All files」を追加

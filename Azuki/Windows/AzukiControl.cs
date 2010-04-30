@@ -1575,11 +1575,13 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Occures soon after rectangular selection mode was changed.
 		/// </summary>
+		[Obsolete("Use SelectionModeChanged event instead.", false)]
 		public event EventHandler IsRectSelectModeChanged;
 
 		/// <summary>
 		/// Invokes IsRectSelectModeChanged event.
 		/// </summary>
+		[Obsolete("Use InvokeSelectionModeChanged method instead.", false)]
 		public void InvokeIsRectSelectModeChanged()
 		{
 			if( IsRectSelectModeChanged != null )

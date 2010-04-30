@@ -597,11 +597,13 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Occures soon after rectangular selection mode was changed.
 		/// </summary>
+		[Obsolete("Use Document.SelectionModeChanged event instead.", false)]
 		event EventHandler IsRectSelectModeChanged;
 
 		/// <summary>
 		/// Invokes IsRectSelectModeChanged event.
 		/// </summary>
+		[Obsolete("Use Document.InvokeSelectionModeChanged method instead.", false)]
 		void InvokeIsRectSelectModeChanged();
 		#endregion
 

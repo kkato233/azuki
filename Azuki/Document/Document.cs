@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-04-18
+// update: 2010-04-30
 //=========================================================
 using System;
 using System.Collections;
@@ -1810,6 +1810,7 @@ namespace Sgry.Azuki
 				int usage = 0;
 				usage += _Buffer.Capacity * ( sizeof(char) + sizeof(CharClass) );
 				usage += _LHI.Capacity * sizeof(int);
+				usage += _LDS.Capacity * sizeof(LineDirtyState);
 				usage += _History.MemoryUsage;
 				return usage;
 			}

@@ -1,4 +1,4 @@
-﻿// 2010-04-17
+﻿// 2010-04-30
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -34,6 +34,7 @@ namespace Sgry.Ann
 		public static bool UsesTabForIndent = true;
 		public static bool ConvertsFullWidthSpaceToSpace = true;
 		public static HRulerIndicatorType HRulerIndicatorType = HRulerIndicatorType.Segment;
+		public static bool ScrollsBeyondLastLine = true;
 		public static Ini Ini = new Ini();
 
 		/// <summary>
@@ -74,6 +75,7 @@ namespace Sgry.Ann
 				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
 				AppConfig.HRulerIndicatorType	= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
+				AppConfig.ScrollsBeyondLastLine	= Ini.Get( "Default", "ScrollsBeyondLastLine", true );
 				UserPref.Antialias				= Ini.Get( "Default", "Antialias", Antialias.Default );
 			}
 			catch
@@ -110,6 +112,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );
 				Ini.Set( "Default", "HRulerIndicatorType",	AppConfig.HRulerIndicatorType );
+				Ini.Set( "Default", "ScrollsBeyondLastLine",AppConfig.ScrollsBeyondLastLine );
 				Ini.Set( "Default", "Antialias",			UserPref.Antialias );
 
 				Ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );

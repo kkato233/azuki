@@ -1,4 +1,4 @@
-// 2010-04-18
+// 2010-04-30
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -927,6 +927,7 @@ namespace Sgry.Ann
 			MainForm.Azuki.UsesTabForIndent		= AppConfig.UsesTabForIndent;
 			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
 			MainForm.Azuki.HRulerIndicatorType	= AppConfig.HRulerIndicatorType;
+			MainForm.Azuki.ScrollsBeyondLastLine= AppConfig.ScrollsBeyondLastLine;
 
 			// update UI
 			MainForm.UpdateUI();
@@ -960,6 +961,7 @@ namespace Sgry.Ann
 			AppConfig.UsesTabForIndent		= MainForm.Azuki.UsesTabForIndent;
 			AppConfig.ConvertsFullWidthSpaceToSpace = MainForm.Azuki.ConvertsFullWidthSpaceToSpace;
 			AppConfig.HRulerIndicatorType	= MainForm.Azuki.HRulerIndicatorType;
+			AppConfig.ScrollsBeyondLastLine	= MainForm.Azuki.ScrollsBeyondLastLine;
 
 			// save to file
 			AppConfig.Save();

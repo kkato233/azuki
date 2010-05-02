@@ -1,7 +1,7 @@
 // file: CaretMoveLogic.cs
 // brief: Implementation of caret movement.
 // author: YAMAMOTO Suguru
-// update: 2010-04-30
+// update: 2010-05-02
 //=========================================================
 using System;
 using System.Drawing;
@@ -142,6 +142,21 @@ namespace Sgry.Azuki
 			}*/
 			newIndex = view.GetIndexFromVirPos( pt );
 
+			// In line selection mode,
+			// moving caret across the line which contains the anchor position
+			// should select the line and a line below.
+			// To select a line below, calculate index of the char at one more line below.
+			if( doc.SelectionMode == TextDataType.Line
+				&& Document.Utl.IsLineHead(doc, view, newIndex) )
+			{
+				Point pt2 = new Point( pt.X, pt.Y+view.LineSpacing );
+				int skippedNewIndex = view.GetIndexFromVirPos( pt2 );
+				if( skippedNewIndex == doc.AnchorIndex )
+				{
+					newIndex = skippedNewIndex;
+				}
+			}
+
 			return newIndex;
 		}
 
@@ -165,6 +180,21 @@ namespace Sgry.Azuki
 			if( newIndex < 0 )
 			{
 				return doc.CaretIndex; // don't move
+			}
+
+			// In line selection mode,
+			// moving caret across the line which contains the anchor position
+			// should select the line and a line above.
+			// To select a line above, calculate index of the char at one more line above.
+			if( doc.SelectionMode == TextDataType.Line
+				&& newIndex == doc.AnchorIndex
+				&& Document.Utl.IsLineHead(doc, view, newIndex) )
+			{
+				pt.Y -= view.LineSpacing;
+				if( 0 <= pt.Y )
+				{
+					newIndex = view.GetIndexFromVirPos( pt );
+				}
 			}
 
 			return newIndex;

@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-03-22
+// update: 2010-05-16
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -552,7 +552,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets tab width in count of space chars.
 		/// </summary>
-		public int TabWidth
+		public virtual int TabWidth
 		{
 			get{ return _TabWidth; }
 			set

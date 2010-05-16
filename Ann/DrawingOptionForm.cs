@@ -1,4 +1,4 @@
-﻿// 2010-03-18
+﻿// 2010-05-16
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -214,7 +214,7 @@ namespace Sgry.Ann
 
 		/// <summary>
 		/// Initialization logic that should not be done by visual designer
-		/// because v.d. sometimes erases parameters...
+		/// because visual designer sometimes erases parameters...
 		/// </summary>
 		void InitializeComponent2()
 		{

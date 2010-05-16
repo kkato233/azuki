@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-04-18
+// update: 2010-05-16
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -95,6 +95,26 @@ namespace Sgry.Azuki
 		protected override int ReCalcRightEndOfTextArea( int desiredX )
 		{
 			return TextAreaWidth - VisibleTextAreaSize.Width;
+		}
+		#endregion
+
+		#region Drawing Options
+		/// <summary>
+		/// Gets or sets tab width in count of space chars.
+		/// </summary>
+		public override int TabWidth
+		{
+			get{ return base.TabWidth; }
+			set
+			{
+				base.TabWidth = value;
+
+				// refresh PLHI
+				string text = Document.Text;
+				PLHI.Clear();
+				PLHI.Add( 0 );
+				UpdatePLHI( 0, "", text );
+			}
 		}
 		#endregion
 

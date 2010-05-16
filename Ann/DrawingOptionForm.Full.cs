@@ -1,4 +1,4 @@
-﻿// 2009-11-28
+﻿// 2010-05-16
 #if !PocketPC
 using System;
 using System.Drawing;
@@ -152,6 +152,7 @@ namespace Sgry.Ann
 			// _Num_TabWidth
 			// 
 			this._Num_TabWidth.Location = new System.Drawing.Point( 117, 279 );
+			this._Num_TabWidth.Minimum = 1;
 			this._Num_TabWidth.Name = "_Num_TabWidth";
 			this._Num_TabWidth.Size = new System.Drawing.Size( 62, 22 );
 			this._Num_TabWidth.TabIndex = 13;

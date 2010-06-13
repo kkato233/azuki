@@ -1,4 +1,4 @@
-// 2010-04-30
+// 2010-06-12
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1153,11 +1153,11 @@ namespace Sgry.Ann
 				tokens = line.Split( ',' );
 				if( tokens[0] == "Activate" )
 				{
-					_MainForm.Activate();
+					_MainForm.Invoke( new ThreadStart(_MainForm.Activate) );
 				}
 				else if( tokens[0] == "OpenDocument" && 1 < tokens.Length )
 				{
-					OpenDocument( tokens[1] );
+					_MainForm.Invoke( new Action<string>(OpenDocument), tokens[1] );
 				}
 			}
 		}

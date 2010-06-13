@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-05-16
+// update: 2010-06-13
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -693,7 +693,7 @@ namespace Sgry.Azuki
 			Point pos = new Point();
 
 			// prepare off-screen buffer
-#			if !DRAW_SLOWLY && !PocketPC
+#			if !DRAW_SLOWLY
 			_Gra.BeginPaint( clipRect );
 #			endif
 
@@ -736,7 +736,7 @@ namespace Sgry.Azuki
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic is never limited to clipping rect
-#			if !DRAW_SLOWLY && !PocketPC
+#			if !DRAW_SLOWLY
 			_Gra.EndPaint();
 #			endif
 

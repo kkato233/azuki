@@ -4,6 +4,7 @@
  * add: Document.SetSelection メソッドで行選択を可能に
  * mod: Document.SetSelection メソッドで箱形選択を可能に
  * mod: AzukiControl.IsRectSelectModeChanged イベントを Obsolete 指定に（Document.SelectionModeChanged で置き換え）
+ * mod: .NET Compact Framework 版でも描画時にダブルバッファリングを行うように
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように
  * add: [Ann] 現在の選択モードをタイトル文字列で表示するように
  * mod: [Ann] ファイル保存ダイアログの「ファイルの種類」フィルターに「All files」を追加
@@ -161,11 +162,11 @@
  * add: AzukiControl に BorderStyle プロパティを追加
  * add: AzukiControl に FirstVisibleLine プロパティを追加
  * add: 自動インデントが全角空白に対しても実行されるように
- * add: AzukiControl.UseCtrlTabToMoveFocusを.NET Compact Framework環境でも実装
+ * add: AzukiControl.UseCtrlTabToMoveFocus を .NET Compact Framework 環境でも実装
  * fix: Document.IsReadOnly の値にかかわらずプログラム的には Document オブジェクトを編集可能に
  * fix: KeywordHighlighter が「エスケープされたエスケープ文字」を正しく扱うように（C++ の '\\' といったトークンを正しくハイライト可能に）
  * fix: UNDO 記録用のメモリー領域をクリアしてもすぐに解放されない問題を修正
- * fix: AzukiControl.AcceptsTabが.NET Compact Framework環境でも動作するように
+ * fix: AzukiControl.AcceptsTab が .NET Compact Framework 環境でも動作するように
  * fix: メモリー使用量を削減
  * fix: ViewType 列挙子のスペルミスを修正（"propotional"としていた）
  * fix: CharType.Delimiter のスペルミスを修正（"delimitter"としていた）

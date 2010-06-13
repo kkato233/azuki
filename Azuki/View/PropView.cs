@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-06-12
+// update: 2010-06-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -675,7 +675,7 @@ namespace Sgry.Azuki
 			int longestLineLength = 0;
 
 			// prepare off-screen buffer
-#			if !DRAW_SLOWLY && !PocketPC
+#			if !DRAW_SLOWLY
 			_Gra.BeginPaint( clipRect );
 #			endif
 
@@ -720,7 +720,7 @@ namespace Sgry.Azuki
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic can be drawn outside of the clipping rect
-#			if !DRAW_SLOWLY && !PocketPC
+#			if !DRAW_SLOWLY
 			_Gra.EndPaint();
 #			endif
 

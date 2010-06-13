@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-04-30
+// update: 2010-05-16
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -41,6 +41,7 @@ namespace Sgry.Azuki.Windows
 		bool _LastAltWasForRectSelect = false;
 #		else
 		bool _IsHandleCreated = false;
+		int _ImeCompositionCharCount = 0; // count of chars already input by IME which must be ignored
 #		endif
 		
 		InvalidateProc1 _invalidateProc1 = null;
@@ -2445,6 +2446,16 @@ namespace Sgry.Azuki.Windows
 						HandleWheelEvent( -(linesPerWheel * scrollCount) );
 					}
 				}
+				else if( message == WinApi.WM_CHAR )
+				{
+#					if PocketPC
+					if( 0 < _ImeCompositionCharCount )
+					{
+						_ImeCompositionCharCount--;
+						return IntPtr.Zero;
+					}
+#					endif
+				}
 				else if( message == WinApi.WM_IME_CHAR )
 				{
 					if( IsOverwriteMode == false )
@@ -2474,12 +2485,25 @@ namespace Sgry.Azuki.Windows
 						}
 
 						_Impl.HandleTextInput( text );
+#						if PocketPC
+						_ImeCompositionCharCount = text.Length;
+#						endif
 					}
 				}
 				else if( message == WinApi.WM_IME_STARTCOMPOSITION )
 				{
+#					if PocketPC
+					_ImeCompositionCharCount = 0;
+#					endif
+
 					// move IMM window to caret position
 					WinApi.SetImeWindowFont( Handle, View.FontInfo );
+				}
+				else if( message == WinApi.WM_IME_ENDCOMPOSITION )
+				{
+#					if PocketPC
+					_ImeCompositionCharCount = 0;
+#					endif
 				}
 				else if( message == WinApi.WM_IME_REQUEST
 					&& wParam.ToInt64() == (long)WinApi.IMR_RECONVERTSTRING )

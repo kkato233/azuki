@@ -8,11 +8,12 @@
  * add: [Ann] now selection mode will be displayed in window title text
  * mod: [Ann] added "All files" to the list of the file type in save file dialog
 
-== 1.5.6 (    -  -  ) ==
+== 1.5.6 (2010-06-12) ==
  * fix: if a word of specific pattern such as "11aa" was starting the document, and if a user deleted or selected it, an exception occurs (bug since 1.2.0)
  * fix: graphic may not be properly refreshed under rare condition (bug since 1.3.0)
  * fix: on Windows Mobile, text input by IME is inserted twice (bug since 1.5.1)
  * fix: [Ann] opening a file (which is already opened file by a Ann.exe process) with a new Ann.exe process causes internal exception
+ * fix: [Ann] tagged as version 1.4.6
 
 == 1.5.5 (2010-05-16) ==
  * fix: now calling AzukiControl.ClearHistory properly redraws DirtBar

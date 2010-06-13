@@ -8,6 +8,7 @@ namespace Sgry.Azuki.Test
 	{
 		static int Main()
 		{
+			CaretMoveLogicTest.Test();
 			EditHistoryTest.Test();
 			SplitArrayTest.Test();
 			LineLogicTest.Test();

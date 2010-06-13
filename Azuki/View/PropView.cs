@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-03-22
+// update: 2010-06-12
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -592,8 +592,9 @@ namespace Sgry.Azuki
 
 			// calculate width and height of the invalid rect
 			textSelected = Document.GetTextInRange( begin, end );
-			rect.Width = MeasureTokenEndX( textSelected, 0 );
+			rect.Width = MeasureTokenEndX( textSelected, rect.X ) - rect.X;
 			rect.Height = LineSpacing;
+			Debug.Assert( 0 <= rect.Width );
 
 			// invalidate
 			rect.X -= (ScrollPosX - XofTextArea);

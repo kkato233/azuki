@@ -10,6 +10,7 @@
 
 == 1.5.6 (    -  -  ) ==
  * fix: if a word of specific pattern such as "11aa" was starting the document, and if a user deleted or selected it, an exception occurs (bug since 1.2.0)
+ * fix: graphic may not be properly refreshed under rare condition (bug since 1.3.0)
  * fix: on Windows Mobile, text input by IME is inserted twice (bug since 1.5.1)
  * fix: [Ann] opening a file (which is already opened file by a Ann.exe process) with a new Ann.exe process causes internal exception
 

@@ -1,7 +1,7 @@
 ﻿// file: WordLogic.cs
 // brief: Word detection logic for well Japanese handling
 // author: YAMAMOTO Suguru
-// update: 2010-04-17
+// update: 2010-05-16
 //=========================================================
 using System;
 using System.Text;
@@ -510,7 +510,7 @@ namespace Sgry.Azuki
 					}
 				}
 				while( limit < i
-					&& 'a' <= ch && ch <= 'f' || 'A' <= ch && ch <= 'F' || '0' <= ch && ch <= '9' );
+					&& ('a' <= ch && ch <= 'f' || 'A' <= ch && ch <= 'F' || '0' <= ch && ch <= '9') );
 			}
 
 			return false;

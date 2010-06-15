@@ -652,6 +652,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets a word at specified index.
 		/// </summary>
+		/// <param name="index">The word at this index will be retrieved.</param>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetWordAt( int index )
 		{
@@ -707,6 +708,12 @@ namespace Sgry.Azuki
 		/// <param name="lineIndex">Index of the line of which to get the length.</param>
 		/// <returns>Length of the specified line in character count.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method retrieves length of logical line.
+		/// Note that this method does not count EOL codes.
+		/// </para>
+		/// </remarks>
 		public int GetLineLength( int lineIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )

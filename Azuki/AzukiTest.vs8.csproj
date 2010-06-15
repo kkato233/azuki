@@ -72,6 +72,7 @@
     <Compile Include="Highlighter\JavaHighlighter.cs" />
     <Compile Include="Highlighter\XmlHighlighter.cs" />
     <Compile Include="Highlighter\RubyHighlighter.cs" />
+    <Compile Include="Test\CaretMoveLogicTest.cs" />
     <Compile Include="Test\DocumentTest.cs" />
     <Compile Include="Test\EditHistoryTest.cs" />
     <Compile Include="Test\LineLogicTest.cs" />

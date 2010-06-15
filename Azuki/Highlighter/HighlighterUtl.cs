@@ -130,14 +130,6 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Find previous token beginning position and return it's index.
-		/// </summary>
-		public static int FindPrevToken( Document doc, int index )
-		{
-			return WordLogic.PrevWordStartForMove( doc, index );
-		}
-
-		/// <summary>
 		/// Find token.
 		/// </summary>
 		public static int Find( Document doc, string token, int startIndex, int endIndex )

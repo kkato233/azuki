@@ -32,7 +32,7 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - GetTextInRange", testNum++);
 			TestUtl.Do( Test_GetTextInRange );
 
-			// GetTextInRange
+			// GetTextInRange (for surrogate pair)
 			Console.WriteLine("test {0} - GetTextInRange (surrogate pair)", testNum++);
 			TestUtl.Do( Test_GetTextInRange_SurrogatePair );
 

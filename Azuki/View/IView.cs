@@ -495,7 +495,7 @@ namespace Sgry.Azuki
 		/// each logical text lines will be wrapped at right end of the text area.
 		/// </para>
 		/// <para>
-		/// Note that text area does not contain line-number area.
+		/// Note that text area does not contain line-number area nor left margin.
 		/// </para>
 		/// </remarks>
 		int TextAreaWidth

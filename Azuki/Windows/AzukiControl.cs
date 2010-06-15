@@ -844,8 +844,21 @@ namespace Sgry.Azuki.Windows
 		}
 
 		/// <summary>
-		/// Sets width of the content area (including line number area).
+		/// Gets or sets width of the content area (including line number area).
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets width by pixel of the whole graphical area
+		/// containing line number area, dirt bar area, left border, and text area.
+		/// </para>
+		/// <para>
+		/// If you want to specify this property not by pixels but by number of characters,
+		/// you can use
+		/// <see cref="Sgry.Azuki.IView.HRulerUnitWidth">IView.HRulerUnitWidth</see>
+		/// value as 'reasonable' avarage width of characters.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.View">AzukiControl.View property</seealso>
 #		if !PocketPC
 		[Browsable(true)]
 		[Category("Appearance")]

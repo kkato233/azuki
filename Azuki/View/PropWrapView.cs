@@ -52,6 +52,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public override int TextAreaWidth
 		{
+			get{ return base.TextAreaWidth; }
 			set
 			{
 				// ignore if negative integer given.
@@ -308,7 +309,7 @@ namespace Sgry.Azuki
 			Rectangle invalidRect2 = new Rectangle();
 			bool changedTargetPosition;
 
-			// get position of the replacement before re-calculating PLHI
+			// get position of the replacement
 			oldCaretVirPos = GetVirPosFromIndex( e.Index );
 
 			// update physical line head indexes

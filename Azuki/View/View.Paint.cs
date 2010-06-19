@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-01-13
+// update: 2010-06-19
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -172,11 +172,11 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Draws underline to the line specified by it's Y coordinate.
+		/// Draws underline for the line specified by it's Y coordinate.
 		/// </summary>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
-		protected void DrawUnderLine( int lineTopY, Color color )
+		protected virtual void DrawUnderLine( int lineTopY, Color color )
 		{
 			if( lineTopY < 0 )
 				return;
@@ -184,7 +184,7 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 
 			// calculate position to underline
-			int bottom = lineTopY + _LineHeight + (_LinePadding >> 1);
+			int bottom = lineTopY + LineHeight + (LinePadding >> 1);
 
 			// draw underline
 			_Gra.ForeColor = color;

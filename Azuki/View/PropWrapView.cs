@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-06-13
+// update: 2010-06-19
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -951,6 +951,28 @@ namespace Sgry.Azuki
 #			if !DRAW_SLOWLY
 			_Gra.RemoveClipRect();
 #			endif
+		}
+
+		/// <summary>
+		/// Draws underline for the line specified by it's Y coordinate.
+		/// </summary>
+		/// <param name="lineTopY">Y-coordinate of the target line.</param>
+		/// <param name="color">Color to be used for drawing the underline.</param>
+		protected override void DrawUnderLine( int lineTopY, Color color )
+		{
+			if( lineTopY < 0 )
+				return;
+
+			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
+
+			// calculate position to underline
+			int bottom = lineTopY + LineHeight + (LinePadding >> 1);
+
+			// draw underline
+			Point rightEnd = new Point( TextAreaWidth, 0 );
+			VirtualToScreen( ref rightEnd );
+			_Gra.ForeColor = color;
+			_Gra.DrawLine( XofTextArea, bottom, rightEnd.X-1, bottom );
 		}
 		#endregion
 

@@ -741,6 +741,13 @@ namespace Sgry.Azuki
 			_Gra.EndPaint();
 #			endif
 
+			// draw right edge
+			{
+				int x = (XofTextArea + TextAreaWidth) - ScrollPosX;
+				_Gra.ForeColor = ColorScheme.RightEdgeColor;
+				_Gra.DrawLine( x, YofTextArea, x, VisibleSize.Height );
+			}
+
 			// draw underline to highlight current line if there is no selection
 			Document.GetSelection( out selBegin, out selEnd );
 			if( HighlightsCurrentLine && selBegin == selEnd )
@@ -803,26 +810,6 @@ namespace Sgry.Azuki
 				DrawLeftOfLine( pos.Y, logicalLineIndex+1, drawsText );
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
-			}
-			if( physTextAreaRight < clipRect.Right )
-			{
-				// given clip rect covers the area at right from text area.
-				// fill right area and shrink clip rect
-				int bottom;
-
-				_Gra.ForeColor = ColorScheme.LineNumberFore;
-				_Gra.BackColor = ColorScheme.LineNumberBack;
-
-				// fill area
-				bottom = Math.Min( clipRect.Bottom, pos.Y + LineSpacing );
-				_Gra.FillRectangle(
-						physTextAreaRight+1, clipRect.Top,
-						clipRect.Right-physTextAreaRight-1, bottom-clipRect.Top
-					);
-
-				// draw border line
-				_Gra.DrawLine( physTextAreaRight, clipRect.Top, physTextAreaRight, bottom );
-				clipRect.Width = physTextAreaRight - clipRect.X;
 			}
 #			if !DRAW_SLOWLY
 			_Gra.SetClipRect( clipRect );
@@ -945,7 +932,7 @@ namespace Sgry.Azuki
 				if( pos.X < XofTextArea )
 					pos.X = XofTextArea;
 				_Gra.BackColor = ColorScheme.BackColor;
-				_Gra.FillRectangle( pos.X, pos.Y, physTextAreaRight-pos.X, LineSpacing );
+				_Gra.FillRectangle( pos.X, pos.Y, clipRect.Right-pos.X, LineSpacing );
 			}
 
 #			if !DRAW_SLOWLY

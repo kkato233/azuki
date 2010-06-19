@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2010-06-19
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -137,6 +137,7 @@ namespace Sgry.Azuki
 			this.LineNumberBack = Color.FromArgb( 0xef, 0xef, 0xff );
 			this.DirtyLineBar = himawari;
 			this.CleanedLineBar = waka_midori;
+			this.RightEdgeColor = Color.FromArgb( 0xDD, 0xDE, 0xD3 ); // ivory
 		}
 		#endregion
 
@@ -208,6 +209,11 @@ namespace Sgry.Azuki
 		/// Color of the dirt bar at left of a modified but saved (cleaned) line.
 		/// </summary>
 		public Color CleanedLineBar;
+
+		/// <summary>
+		/// Color of the right edge of text area (line wrapping edge).
+		/// </summary>
+		public Color RightEdgeColor;
 		#endregion
 	}
 }

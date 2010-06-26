@@ -1,7 +1,7 @@
 // file: CaretMoveLogic.cs
 // brief: Implementation of caret movement.
 // author: YAMAMOTO Suguru
-// update: 2010-05-16
+// update: 2010-06-26
 //=========================================================
 using System;
 using System.Drawing;
@@ -73,21 +73,15 @@ namespace Sgry.Azuki
 				return doc.Length;
 			}
 			
-			int offset = 1;
-			int caret = doc.CaretIndex;
-
-			// avoid placing caret at middle of a CR-LF or a surrogate pair
-			if( caret+2 <= doc.Length )
+			// avoid placing caret at middle of a CR-LF, a surrogate pair,
+			// or a combining character sequence
+			int newCaretIndex = doc.CaretIndex + 1;
+			while( Document.IsNotDividableIndex(doc, newCaretIndex) )
 			{
-				string nextTwoChars = "" + doc[caret] + doc[caret+1];
-				if( nextTwoChars == "\r\n"
-					|| Document.IsHighSurrogate(nextTwoChars[0]) )
-				{
-					offset = 2;
-				}
+				newCaretIndex++;
 			}
 
-			return doc.CaretIndex + offset;
+			return newCaretIndex;
 		}
 
 		/// <summary>
@@ -102,21 +96,15 @@ namespace Sgry.Azuki
 				return 0;
 			}
 
-			int offset = 1;
-			int caret = doc.CaretIndex;
-
-			// avoid placing caret at middle of a CR-LF or a surrogate pair
-			if( 0 <= caret-2 )
+			// avoid placing caret at middle of a CR-LF, a surrogate pair,
+			// or a combining character sequence
+			int newCaretIndex = doc.CaretIndex - 1;
+			while( Document.IsNotDividableIndex(doc, newCaretIndex) )
 			{
-				string prevTwoChars = "" + doc[caret-2] + doc[caret-1];
-				if( prevTwoChars == "\r\n"
-					|| Document.IsLowSurrogate(prevTwoChars[1]) )
-				{
-					offset = 2;
-				}
+				newCaretIndex--;
 			}
 
-			return doc.CaretIndex - offset;
+			return newCaretIndex;
 		}
 
 		/// <summary>

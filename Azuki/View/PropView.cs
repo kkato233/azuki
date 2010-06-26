@@ -815,7 +815,7 @@ namespace Sgry.Azuki
 					// set the position to cut extra trailings of this token
 					if( visibleCharCount+1 <= token.Length )
 					{
-						if( Document.IsDividableIndex(token, visibleCharCount+1) == false )
+						if( Document.IsNotDividableIndex(token, visibleCharCount+1) )
 						{
 							token = token.Substring( 0, visibleCharCount + 2 );
 						}

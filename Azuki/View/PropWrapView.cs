@@ -856,7 +856,7 @@ namespace Sgry.Azuki
 					peekingChar = String.Empty;
 					if( visCharCount+1 <= token.Length )
 					{
-						if( Document.IsDividableIndex(token, visCharCount+1) == false )
+						if( Document.IsNotDividableIndex(token, visCharCount+1) )
 						{
 							peekingChar = token.Substring( visCharCount, 2 );
 						}

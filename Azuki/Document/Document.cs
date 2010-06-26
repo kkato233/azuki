@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
@@ -1864,7 +1865,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Highlighter
+		#region Highlighter and word processor
 		/// <summary>
 		/// Gets or sets highlighter object to highlight currently active document
 		/// or null to disable highlighting.
@@ -1949,7 +1950,6 @@ namespace Sgry.Azuki
 					|| klass == CharClass.String
 				);
 		}
-		#endregion
 
 		/// <summary>
 		/// Gets or sets word processor object which determines how Azuki handles 'words.'
@@ -1972,6 +1972,7 @@ namespace Sgry.Azuki
 				_WordProc = value;
 			}
 		}
+		#endregion
 
 		#region Events
 		/// <summary>
@@ -2080,41 +2081,46 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Determines whether text can be divided by given index or not.
+		/// Determines whether text can not be divided by given index or not.
 		/// </summary>
-		public static bool IsDividableIndex( Document doc, int index )
+		public static bool IsNotDividableIndex( Document doc, int index )
 		{
-			if( 0 < index && doc[index-1] == '\r'
-				&& index < doc.Length && doc[index] == '\n' )
-			{
+			if( index <= 0 || doc.Length <= index )
 				return false;
-			}
-			if( 0 < index && IsHighSurrogate(doc[index-1])
-				&& index < doc.Length && IsLowSurrogate(doc[index]) )
-			{
-				return false;
-			}
 
-			return true;
+			return IsNotDividableIndex( doc[index-1], doc[index] );
 		}
 
 		/// <summary>
-		/// Determines whether text can be divided by given index or not.
+		/// Determines whether text can not be divided by given index or not.
 		/// </summary>
-		public static bool IsDividableIndex( string text, int index )
+		public static bool IsNotDividableIndex( string text, int index )
 		{
-			if( 0 < index && text[index-1] == '\r'
-				&& index < text.Length && text[index] == '\n' )
-			{
+			if( index <= 0 || text.Length <= index )
 				return false;
+
+			return IsNotDividableIndex( text[index-1], text[index] );
+		}
+
+		/// <summary>
+		/// Determines whether text can not be divided by given index or not.
+		/// </summary>
+		public static bool IsNotDividableIndex( char prevCh, char ch )
+		{
+			if( prevCh == '\r' && ch == '\n' )
+			{
+				return true;
 			}
-			if( 0 < index && IsHighSurrogate(text[index-1])
-				&& index < text.Length && IsLowSurrogate(text[index]) )
+			if( IsHighSurrogate(prevCh) && IsLowSurrogate(ch) )
 			{
-				return false;
+				return true;
+			}
+			if( IsCombiningCharacter(ch) )
+			{
+				return true;
 			}
 
-			return true;
+			return false;
 		}
 
 		/// <summary>
@@ -2131,6 +2137,40 @@ namespace Sgry.Azuki
 		public static bool IsLowSurrogate( char ch )
 		{
 			return (0xdc00 <= ch && ch <= 0xdfff);
+		}
+
+		/// <summary>
+		/// Determines whether given character is a combining character or not.
+		/// </summary>
+		public static bool IsCombiningCharacter( Document doc, int index )
+		{
+			if( index < 0 || doc.Length <= index )
+				return false;
+
+			return IsCombiningCharacter( doc[index] );
+		}
+
+		/// <summary>
+		/// Determines whether given character is a combining character or not.
+		/// </summary>
+		public static bool IsCombiningCharacter( string text, int index )
+		{
+			if( index < 0 || text.Length <= index )
+				return false;
+
+			return IsCombiningCharacter( text[index] );
+		}
+
+		/// <summary>
+		/// Determines whether given character is a combining character or not.
+		/// </summary>
+		public static bool IsCombiningCharacter( char ch )
+		{
+			UnicodeCategory category = Char.GetUnicodeCategory( ch );
+			return ( category == UnicodeCategory.NonSpacingMark
+					|| category == UnicodeCategory.SpacingCombiningMark
+					|| category == UnicodeCategory.EnclosingMark
+				);
 		}
 
 		internal void DeleteRectSelectText()

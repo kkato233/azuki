@@ -603,7 +603,7 @@ namespace Sgry.Azuki
 			}
 
 			// correct index if its forbidden position
-			if( Document.IsDividableIndex(doc, index) == false && 0 < index )
+			if( Document.IsNotDividableIndex(doc, index) && 0 < index )
 			{
 				DebugUtl.Assert( index+1 < doc.Length );
 				DebugUtl.Fail( String.Format(

@@ -740,10 +740,6 @@ namespace Sgry.Ann
 			Debug.Assert( doc != null );
 			Debug.Assert( filePath != null );
 
-			StreamReader file = null;
-			char[] buf = null;
-			int readCount = 0;
-
 			// analyze encoding
 			if( encoding == null )
 			{
@@ -753,8 +749,12 @@ namespace Sgry.Ann
 			doc.WithBom = withBom;
 
 			// load file content
-			using( file = new StreamReader(filePath, encoding) )
+			using( FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) )
+			using( StreamReader file = new StreamReader(stream, encoding) )
 			{
+				char[] buf = null;
+				int readCount = 0;
+
 				// make the document content empty first
 				doc.Replace( "", 0, doc.Length );
 
@@ -1248,7 +1248,7 @@ namespace Sgry.Ann
 
 				try
 				{
-					using( file = File.OpenRead(filePath) )
+					using( file = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite|FileShare.Delete) )
 					{
 						// prepare buffer
 						if( MaxSize < file.Length )

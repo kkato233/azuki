@@ -12,6 +12,7 @@
  * add: [Ann] now selection mode will be displayed in window title text
  * mod: [Ann] added "All files" to the list of the file type in save file dialog
  * fix: [Ann] font settings is not saved properly if the font is not TrueType font
+ * fix: [Ann] now Ann can open files opened by other processes which allows to read it
 
 == 1.5.6 (2010-06-12) ==
  * fix: if a word of specific pattern such as "11aa" was starting the document, and if a user deleted or selected it, an exception occurs (bug since 1.2.0)

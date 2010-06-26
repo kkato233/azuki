@@ -63,12 +63,14 @@ namespace Sgry.Azuki
 					return;
 				}
 
-				// avoid dividing a CR-LF or a surrogate pair
+				// avoid dividing a CR-LF or a surrogate pair,
+				// but not combining character sequence
 				if( 0 <= caret-2 )
 				{
-					string prevTwoChars = "" + doc[caret-2] + doc[caret-1];
-					if( prevTwoChars == "\r\n"
-						|| Document.IsLowSurrogate(prevTwoChars[1]) )
+					char prevCh = doc[caret-2];
+					char ch = doc[caret-1];
+					if( Document.IsNotDividableIndex(prevCh, ch)
+						&& Document.IsCombiningCharacter(ch) == false )
 					{
 						delLen = 2;
 					}
@@ -165,8 +167,8 @@ namespace Sgry.Azuki
 			else
 			{
 				//--- case of no selection ---
-				int delLen = 1;
-				int caret = doc.CaretIndex;
+				int begin = doc.CaretIndex;
+				int end = begin + 1;
 
 				// if the caret is at document end, there is no chars to delete
 				if( doc.Length <= doc.CaretIndex )
@@ -175,19 +177,15 @@ namespace Sgry.Azuki
 					return;
 				}
 
-				// avoid dividing a CR-LF or a surrogate pair
-				if( caret+2 <= doc.Length )
+				// avoid dividing a CR-LF, a surrogate pair,
+				// or a combining character sequence
+				while( Document.IsNotDividableIndex(doc, end) )
 				{
-					string nextTwoChars = "" + doc[caret] + doc[caret+1];
-					if( nextTwoChars == "\r\n"
-						|| Document.IsHighSurrogate(nextTwoChars[0]) )
-					{
-						delLen = 2;
-					}
+					end++;
 				}
 
 				// delete char(s).
-				doc.Replace( String.Empty, caret, caret+delLen );
+				doc.Replace( String.Empty, begin, end );
 			}
 
 			// update desired column

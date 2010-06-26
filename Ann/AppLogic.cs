@@ -56,6 +56,7 @@ namespace Sgry.Ann
 		bool _MonitorThreadCanContinue;
 		PseudoPipe _IpcPipe = new PseudoPipe();
 		bool _AskingUserToReloadOrNot = false;
+		bool _ShouldUpdateTextAreaWidth = false;
 		#endregion
 
 		#region Init / Dispose
@@ -1114,7 +1115,7 @@ namespace Sgry.Ann
 		{
 			if( MainForm.Azuki.ViewType == ViewType.WrappedProportional )
 			{
-				MainForm.Azuki.ViewWidth = MainForm.Azuki.ClientSize.Width;
+				_ShouldUpdateTextAreaWidth = true;
 			}
 		}
 		#endregion
@@ -1139,7 +1140,20 @@ namespace Sgry.Ann
 					// remember new timestamp
 					timestamp = File.GetLastWriteTime( IpcFilePath );
 				}
+				if( _ShouldUpdateTextAreaWidth )
+				{
+					_ShouldUpdateTextAreaWidth = false;
+					MainForm.Invoke(
+						new ThreadStart(ApplyNewTextAreaWidth)
+					);
+				}
 			}
+		}
+
+		void ApplyNewTextAreaWidth()
+		{
+			AzukiControl azuki = MainForm.Azuki;
+			azuki.ViewWidth = azuki.ClientSize.Width - azuki.View.HRulerUnitWidth * 2;
 		}
 
 		void ParseIpcFile()

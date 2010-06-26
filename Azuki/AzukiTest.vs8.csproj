@@ -42,6 +42,7 @@
     <Compile Include="Actions.Selection.cs" />
     <Compile Include="AutoIndentHooks.cs" />
     <Compile Include="CaretMoveLogic.cs" />
+    <Compile Include="DefaultWordProc.cs" />
     <Compile Include="Document\LineDirtyState.cs" />
     <Compile Include="Document\TextDataType.cs" />
     <Compile Include="Highlighter\Coco\Buffer.cs" />
@@ -49,6 +50,8 @@
     <Compile Include="Highlighter\Coco\LatexScanner.cs" />
     <Compile Include="Highlighter\LatexHighlighter.cs" />
     <Compile Include="IUserInterface.cs" />
+    <Compile Include="IWordProc.cs" />
+    <Compile Include="Test\DefaultWordProcTest.cs" />
     <Compile Include="UiImpl.cs" />
     <Compile Include="LineLogic.cs" />
     <Compile Include="Platform.cs" />

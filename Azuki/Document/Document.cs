@@ -35,6 +35,7 @@ namespace Sgry.Azuki
 		bool _IsReadOnly = false;
 		bool _IsDirty = false;
 		IHighlighter _Highlighter = null;
+		IWordProc _WordProc = new DefaultWordProc();
 		ViewParam _ViewParam = new ViewParam();
 		DateTime _LastModifiedTime = DateTime.Now;
 		int _LineSelectionAnchor1 = -1;
@@ -1949,6 +1950,28 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		/// <summary>
+		/// Gets or sets word processor object which determines how Azuki handles 'words.'
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets word processor object.
+		/// Please refer to the document of IWordProc interface for detail.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.IWordProc">IWordProc interface</seealso>
+		/// <seealso cref="Sgry.Azuki.DefaultWordProc">DefaultWordProc class</seealso>
+		public IWordProc WordProc
+		{
+			get{ return _WordProc; }
+			set
+			{
+				if( value == null )
+					value = new DefaultWordProc();
+				_WordProc = value;
+			}
+		}
+
 		#region Events
 		/// <summary>
 		/// Occurs when the selection was changed.
@@ -2053,6 +2076,25 @@ namespace Sgry.Azuki
 		public char this[ int index ]
 		{
 			get{ return _Buffer[index]; }
+		}
+
+		/// <summary>
+		/// Determines whether text can be divided by given index or not.
+		/// </summary>
+		public static bool IsDividableIndex( Document doc, int index )
+		{
+			if( 0 < index && doc[index-1] == '\r'
+				&& index < doc.Length && doc[index] == '\n' )
+			{
+				return false;
+			}
+			if( 0 < index && IsHighSurrogate(doc[index-1])
+				&& index < doc.Length && IsLowSurrogate(doc[index]) )
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>

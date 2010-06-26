@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-06-19
+// update: 2010-06-26
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -307,14 +307,22 @@ namespace Sgry.Azuki
 			Point oldCaretVirPos;
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
-			bool changedTargetPosition;
 
 			// get position of the replacement
 			oldCaretVirPos = GetVirPosFromIndex( e.Index );
+			if( IsWrappedLineHead(doc, PLHI, e.Index) )
+			{
+				oldCaretVirPos.Y -= LineSpacing;
+				if( oldCaretVirPos.Y < 0 )
+				{
+					oldCaretVirPos.X = 0;
+					oldCaretVirPos.Y = 0;
+				}
+			}
 
 			// update physical line head indexes
 			prevLineCount = LineCount;
-			UpdatePLHI( e.Index, e.OldText, e.NewText, out changedTargetPosition );
+			UpdatePLHI( e.Index, e.OldText, e.NewText );
 #			if PLHI_DEBUG
 			string __result_of_new_logic__ = PLHI.ToString();
 			DoLayout();
@@ -326,13 +334,6 @@ namespace Sgry.Azuki
 				Console.Error.WriteLine();
 			}
 #			endif
-
-			// re-get position of the replacement
-			// if the position was changed dualing updating PLHI
-			if( changedTargetPosition )
-			{
-				oldCaretVirPos = GetVirPosFromIndex( e.Index );
-			}
 
 			// update indicator graphic on horizontal ruler
 			UpdateHRuler();
@@ -508,20 +509,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Maintain line head indexes.
 		/// </summary>
-		void UpdatePLHI( int index, string oldText, string newText )
-		{
-			bool dummy;
-			UpdatePLHI( index, oldText, newText, out dummy );
-		}
-
-		/// <summary>
-		/// Maintain line head indexes.
-		/// </summary>
 		/// <param name="index">The index of the place where replacement was occurred.</param>
 		/// <param name="oldText">The text which is removed by the replacement.</param>
 		/// <param name="newText">The text which is inserted by the replacement.</param>
-		/// <param name="changedTargetPosition">This will be true if virtual position of the replacement target specified by 'index' was changed dualing updating PLHI.</param>
-		void UpdatePLHI( int index, string oldText, string newText, out bool changedTargetPosition )
+		void UpdatePLHI( int index, string oldText, string newText )
 		{
 			Debug.Assert( 0 < this.TabWidth );
 			Document doc = Document;
@@ -529,33 +520,16 @@ namespace Sgry.Azuki
 			int reCalcBegin, reCalcEnd;
 			int shiftBeginL;
 			int diff = newText.Length - oldText.Length;
-
 			int replaceEnd;
 			int preTargetEndL;
 
-			// (preparation)
-			changedTargetPosition = false;
-
+			// calculate where to recalculate PLHI from
 			int firstDirtyLineIndex = LineLogic.GetLineIndexFromCharIndex( PLHI, index );
-			if( firstDirtyLineIndex < 0 )
+			if( 0 < firstDirtyLineIndex )
 			{
-				Debug.Fail( "unexpected error" );
-				return;
-			}
-
-			// in some special cases, re-calculate PLHI from previous line
-			if( 0 < index && index == PLHI[firstDirtyLineIndex] )
-			{
-				// case 1) if an EOL code is at head of line as a result of line wrapping,
-				// and if there is a character graphically narrower than an EOL mark just after it,
-				// removing the EOL code should moves the following character to previous line end.
-				// 
-				// case 2) if a character was inserted to the head of a line made by wrapping,
-				// and if the width of the character was narrower than the graphical 'gap'
-				// at right end of the previous line,
-				// the character must be inserted to previous line.
+				// we should always recalculate PLHI from previous line of the line replacement occured
+				// because word-wrapping may move token at line head to previous line
 				firstDirtyLineIndex--;
-				changedTargetPosition = true;
 			}
 
 			// [phase 3] calculate range of indexes to be deleted
@@ -625,7 +599,7 @@ namespace Sgry.Azuki
 			// [phase 3] re-calculate physical line indexes
 			// (here we should divide the text in the range into small segments
 			// to avoid making unnecessary copy of the text so many times)
-			const int segmentLen = 10;
+			const int segmentLen = 32;
 			int x = 0;
 			int drawableLen;
 			int begin, end;
@@ -638,12 +612,6 @@ namespace Sgry.Azuki
 				if( begin+segmentLen < reCalcEnd )
 				{
 					end = begin + segmentLen;
-					if( doc[end-1] == '\r'
-						&& end < doc.Length && doc[end] == '\n' )
-						end++;
-					else if( Document.IsHighSurrogate(doc[end-1])
-						&& end < doc.Length && Document.IsLowSurrogate(doc[end]) )
-						end++;
 				}
 				else
 				{
@@ -659,9 +627,18 @@ namespace Sgry.Azuki
 					|| LineLogic.IsEolChar(str, drawableLen-1) )
 				{
 					// hit right limit. end this physical line
-					PLHI.Insert( line, begin+drawableLen );
-					line++;
 					end = begin + drawableLen;
+					if( LineLogic.IsEolChar(str, drawableLen-1) == false )
+					{
+						// wrap word
+						int newEndIndex = doc.WordProc.HandleWordWrapping( doc, begin+drawableLen );
+						if( PLHI[line-1] < newEndIndex )
+						{
+							end = newEndIndex;
+						}
+					}
+					PLHI.Insert( line, end );
+					line++;
 					x = 0;
 				}
 			}
@@ -976,6 +953,26 @@ namespace Sgry.Azuki
 		bool IsEolCode( string str )
 		{
 			return (str == "\r" || str == "\n" || str == "\r\n");
+		}
+
+		int Min( int a, int b, int c )
+		{
+			return Math.Min(
+				Math.Min(a, b),
+				c
+			);
+		}
+
+		static bool IsWrappedLineHead( Document doc, SplitArray<int> plhi, int index )
+		{
+			int lineHeadIndex = LineLogic.GetLineHeadIndexFromCharIndex( doc.InternalBuffer, plhi, index );
+			if( lineHeadIndex <= 0 )
+			{
+				return false;
+			}
+
+			char lastCharOfPrevLine = doc[lineHeadIndex-1];
+			return ( LineLogic.IsEolChar(lastCharOfPrevLine) == false );
 		}
 		#endregion
 	}

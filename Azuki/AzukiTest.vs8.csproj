@@ -56,7 +56,6 @@
     <Compile Include="LineLogic.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="UserPref.cs" />
-    <Compile Include="WordLogic.cs" />
     <Compile Include="DebugUtl.cs" />
     <Compile Include="Document\CharClass.cs" />
     <Compile Include="Document\Document.cs" />

@@ -673,7 +673,8 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count < index ) // index can be equal to char-count
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", this.Length:"+Length+")." );
 
-			WordLogic.GetWordAt( this, index, out begin, out end );
+			begin = WordProc.PrevWordStart( this, index );
+			end = WordProc.NextWordEnd( this, index );
 			if( begin < 0 || end < 0 || end <= begin )
 			{
 				return String.Empty;

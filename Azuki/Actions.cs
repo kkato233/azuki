@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-04-30
+// update: 2010-06-26
 //=========================================================
 using System;
 using System.Drawing;
@@ -124,7 +124,7 @@ namespace Sgry.Azuki
 				}
 
 				// delete between previous word start position and the caret position
-				int prevWordIndex = WordLogic.PrevWordStartForMove( doc, doc.CaretIndex );
+				int prevWordIndex = CaretMoveLogic.Calc_PrevWord( view );
 				doc.Replace( String.Empty, prevWordIndex, doc.CaretIndex );
 			}
 
@@ -227,7 +227,7 @@ namespace Sgry.Azuki
 			else
 			{
 				//--- case of no selection ---
-				int nextWordIndex = WordLogic.NextWordStartForMove( doc, doc.CaretIndex );
+				int nextWordIndex = CaretMoveLogic.Calc_NextWord( view );
 				if( nextWordIndex == doc.Length && doc.CaretIndex == nextWordIndex )
 				{
 					Plat.Inst.MessageBeep();

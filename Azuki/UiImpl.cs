@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-04-30
+// update: 2010-06-26
 //=========================================================
 using System;
 using System.Text;
@@ -694,7 +694,7 @@ namespace Sgry.Azuki
 
 			// get range of a word at clicked location
 			index = View.GetIndexFromVirPos( pos );
-			WordLogic.GetWordAt( Document, index, out begin, out end );
+			Document.GetWordAt( index, out begin, out end );
 			if( end <= begin )
 			{
 				return;

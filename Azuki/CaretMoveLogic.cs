@@ -1,7 +1,7 @@
 // file: CaretMoveLogic.cs
 // brief: Implementation of caret movement.
 // author: YAMAMOTO Suguru
-// update: 2010-05-02
+// update: 2010-05-16
 //=========================================================
 using System;
 using System.Drawing;
@@ -205,13 +205,32 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static int Calc_NextWord( IView view )
 		{
+			int index;
 			Document doc = view.Document;
-			if( doc.Length < doc.CaretIndex+1 )
+
+			// if EOL code comes, return just after them
+			if( Utl.IsEol(doc, doc.CaretIndex) )
+			{
+				return Utl.SkipOneEol( doc, doc.CaretIndex );
+			}
+
+			// if the caret is at the end of document, return end of document
+			index = doc.CaretIndex + 1;
+			if( doc.Length <= index )
 			{
 				return doc.Length;
 			}
 
-			return WordLogic.NextWordStartForMove( doc, doc.CaretIndex );
+			// seek to next word starting position
+			index = doc.WordProc.NextWordStart( doc, index );
+
+			// skip trailling whitespace
+			if( Utl.IsWhiteSpace(doc, index) )
+			{
+				index = doc.WordProc.NextWordStart( doc, index+1 );
+			}
+
+			return index;
 		}
 
 		/// <summary>
@@ -219,13 +238,54 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static int Calc_PrevWord( IView view )
 		{
+			int index;
+			int startIndex;
 			Document doc = view.Document;
-			if( doc.CaretIndex <= 1 )
+
+			// if the caret is at the head of document, return head of document
+			index = doc.CaretIndex - 1;
+			if( index <= 0 )
 			{
 				return 0;
 			}
 
-			return WordLogic.PrevWordStartForMove( doc, doc.CaretIndex );
+			// skip whitespace
+			startIndex = index;
+			if( Utl.IsWhiteSpace(doc, index) )
+			{
+				index = doc.WordProc.PrevWordStart( doc, index ) - 1;
+				if( index < 0 )
+					return 0;
+			}
+			DebugUtl.Assert( 0 <= index && index <= doc.Length );
+
+			// if EOL code comes, return just before them
+			if( Utl.IsEol(doc, index) )
+			{
+				if( startIndex != index )
+				{
+					// do not skip this EOL code
+					// if this was detected after skipping whitespaces
+					return index + 1;
+				}
+				else if( doc[index] == '\r' )
+				{
+					return index;
+				}
+				else
+				{
+					DebugUtl.Assert( doc[index] == '\n' );
+					if( 0 <= index-1 && doc[index-1] == '\r' )
+						return index-1;
+					else
+						return index;
+				}
+			}
+
+			// seek to previous word starting position
+			index = doc.WordProc.PrevWordStart( doc, index );
+
+			return index;
 		}
 
 		/// <summary>
@@ -250,7 +310,7 @@ namespace Sgry.Azuki
 
 			firstNonSpaceIndex = lineHeadIndex;
 			while( firstNonSpaceIndex < doc.Length
-				&& Utl.IsWhiteSpace(doc[firstNonSpaceIndex]) )
+				&& Utl.IsWhiteSpace(doc, firstNonSpaceIndex) )
 			{
 				firstNonSpaceIndex++;
 			}
@@ -303,14 +363,53 @@ namespace Sgry.Azuki
 		#region Utilities
 		static class Utl
 		{
-			public static bool IsWhiteSpace( char ch )
+			public static bool IsWhiteSpace( Document doc, int index )
 			{
-				if( ch == ' '
-					|| ch == '\t'
-					|| ch == '\x3000' )
-					return true;
+				if( doc.Length <= index )
+					return false;
 
-				return false;
+				return ( doc[index] == ' '
+						|| doc[index] == '\t'
+						|| doc[index] == '\x3000'
+					);
+			}
+
+			public static bool IsEol( Document doc, int index )
+			{
+				if( doc.Length <= index )
+					return false;
+
+				return (doc[index] == '\r' || doc[index] == '\n');
+			}
+
+			public static int SkipOneEol( Document doc, int startIndex )
+			{
+				int index = startIndex;
+				char ch;
+				
+				ch = doc[index];
+				if( ch == 0x0d ) // CR?
+				{
+					index++;
+					if( doc.Length <= index )
+						return doc.Length;
+					
+					ch = doc[index];
+					if( ch == 0x0a ) // CR+LF?
+					{
+						index++;
+						if( doc.Length <= index )
+							return doc.Length;
+					}
+				}
+				else if( ch == 0x0a ) // LF?
+				{
+					index++;
+					if( doc.Length <= index )
+						return doc.Length;
+				}
+
+				return index;
 			}
 		}
 		#endregion

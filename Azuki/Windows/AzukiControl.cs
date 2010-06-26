@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-05-16
+// update: 2010-06-26
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1368,7 +1368,8 @@ namespace Sgry.Azuki.Windows
 
 		/// <summary>
 		/// Gets currently inputted character's count.
-		/// Note that a surrogate pair will be counted as two chars.
+		/// Note that a surrogate pair or a combining character sequence
+		/// will be counted as two characters.
 		/// </summary>
 #		if !PocketPC
 		[Browsable(false)]
@@ -2000,15 +2001,14 @@ namespace Sgry.Azuki.Windows
 				// set them as string body, composition string, and target string.
 				int end;
 
-				// shurink range if it is unreasonably big
+				// shrink range if it is unreasonably big
 				end = selEnd;
 				if( MaxRangeLength < end - selBegin )
 				{
 					end = selBegin + MaxRangeLength;
-					if( end < Document.Length
-						&& Document.IsLowSurrogate(Document[end]) )
+					while( Document.IsNotDividableIndex(Document, end) )
 					{
-						end--;
+						end++;
 					}
 				}
 
@@ -2029,8 +2029,12 @@ namespace Sgry.Azuki.Windows
 				lineHeadIndex = Document.GetLineHeadIndex( lineIndex );
 				lineEndIndex = lineHeadIndex + Document.GetLineLength( lineIndex );
 				begin = Math.Max( lineHeadIndex, selBegin - (MaxRangeLength / 2) );
+				while( Document.IsNotDividableIndex(Document, begin) )
+				{
+					begin++;
+				}
 				end = Math.Min( selBegin + (MaxRangeLength / 2), lineEndIndex );
-				if( end < Document.Length && Document.IsLowSurrogate(Document[end]) )
+				while( Document.IsNotDividableIndex(Document, end) )
 				{
 					end--;
 				}

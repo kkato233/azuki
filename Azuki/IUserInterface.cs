@@ -475,7 +475,8 @@ namespace Sgry.Azuki
 
 		/// <summary>
 		/// Gets currently inputted character's count.
-		/// Note that a surrogate pair will be counted as two chars.
+		/// Note that a surrogate pair or a combined character sequence
+		/// will be counted as two characters.
 		/// </summary>
 		int TextLength
 		{

@@ -3,6 +3,7 @@
  * add: now selection mode can be set programatically through Document.SelectionMode property
  * add: now with Document.SetSelection method, Azuki can select text line by line
  * add: now with Document.SetSelection method, Azuki can select text in specific rectangle
+ * add: added new overload of Document.GetWordAt method
  * mod: now AzukiControl.IsRectSelectModeChanged event is obsoleted by Document.SelectionModeChanged event
  * mod: double buffering also be enabled for .NET Compact Framework version
  * add: [Ann] now the Mode menu item corresponding to the active editing mode is checked

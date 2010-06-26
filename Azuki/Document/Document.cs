@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-04-30
+// update: 2010-06-26
 //=========================================================
 using System;
 using System.Collections;
@@ -656,10 +656,21 @@ namespace Sgry.Azuki
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public string GetWordAt( int index )
 		{
+			int begin, end;
+			return GetWordAt( index, out begin, out end );
+		}
+
+		/// <summary>
+		/// Gets a word at specified index.
+		/// </summary>
+		/// <param name="index">The word at this index will be retrieved.</param>
+		/// <param name="begin">The index of the char which starts the word.</param>
+		/// <param name="end">The index of where the word ends.</param>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		public string GetWordAt( int index, out int begin, out int end )
+		{
 			if( index < 0 || _Buffer.Count < index ) // index can be equal to char-count
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", this.Length:"+Length+")." );
-
-			int begin, end;
 
 			WordLogic.GetWordAt( this, index, out begin, out end );
 			if( begin < 0 || end < 0 || end <= begin )

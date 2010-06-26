@@ -1,4 +1,4 @@
-// 2010-06-12
+// 2010-06-26
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -942,7 +942,7 @@ namespace Sgry.Ann
 		public void SaveConfig()
 		{
 			// update config fields
-			AppConfig.FontInfo				= new FontInfo( MainForm.Azuki.Font );
+			AppConfig.FontInfo				= MainForm.Azuki.FontInfo;
 			AppConfig.WindowMaximized		= (MainForm.WindowState == FormWindowState.Maximized);
 			if( MainForm.WindowState == FormWindowState.Normal )
 			{

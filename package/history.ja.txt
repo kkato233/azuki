@@ -4,6 +4,7 @@
  * add: Document.SetSelection メソッドで行選択を可能に
  * add: Document.SetSelection メソッドで箱形選択を可能に
  * add: Document.GetWordAt メソッドのオーバーロードを追加
+ * add: Document.GetLineLength メソッドのオーバーロードを追加
  * mod: AzukiControl.IsRectSelectModeChanged イベントを Obsolete 指定に（Document.SelectionModeChanged で置き換え）
  * mod: .NET Compact Framework 版でも描画時にダブルバッファリングを行うように
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように

@@ -727,13 +727,35 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public int GetLineLength( int lineIndex )
 		{
+			return GetLineLength( lineIndex, false );
+		}
+
+		/// <summary>
+		/// Gets length of the logical line.
+		/// </summary>
+		/// <param name="lineIndex">Index of the line of which to get the length.</param>
+		/// <param name="includesEolCode">Whether EOL codes should be count or not.</param>
+		/// <returns>Length of the specified line in character count.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method retrieves length of logical line.
+		/// If <paramref name="includesEolCode"/> was true,
+		/// this method count EOL code as line content.
+		/// </para>
+		/// </remarks>
+		public int GetLineLength( int lineIndex, bool includesEolCode )
+		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
 				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid line index was given (lineIndex:"+lineIndex+", this.LineCount:"+LineCount+")." );
 
 			int begin, end;
 
 			// get line range
-			LineLogic.GetLineRange( _Buffer, _LHI, lineIndex, out begin, out end );
+			if( includesEolCode )
+				LineLogic.GetLineRangeWithEol( _Buffer, _LHI, lineIndex, out begin, out end );
+			else
+				LineLogic.GetLineRange( _Buffer, _LHI, lineIndex, out begin, out end );
 
 			// return length
 			return end - begin;

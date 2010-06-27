@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-06-26
+// update: 2010-06-27
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -301,6 +301,16 @@ namespace Sgry.Azuki
 		#region Event Handlers
 		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
+			// [*1] if replacement breaks or creates
+			// a combining character sequence at left boundary of the range,
+			// at least one grapheme cluster left must be redrawn.
+			// 
+			// One case of that e.OldText has combining char at first:
+			//    aa^aa --(replace [2, 4) to "AA")--> aaAAa
+			// 
+			// One case of that e.NewText has combining char at first:
+			//    aaaa --(replace [2, 3) to "^A")--> aa^Aa
+
 			Document doc = base.Document;
 			bool isMultiLine;
 			int prevLineCount;
@@ -339,7 +349,15 @@ namespace Sgry.Azuki
 			UpdateHRuler();
 
 			// invalidate the part at right of the old selection
-			invalidRect1.X = oldCaretVirPos.X;
+			if( Document.IsCombiningCharacter(e.OldText, 0)
+				|| Document.IsCombiningCharacter(e.NewText, 0) )
+			{
+				invalidRect1.X = 0; // [*1]
+			}
+			else
+			{
+				invalidRect1.X = oldCaretVirPos.X;
+			}
 			invalidRect1.Y = oldCaretVirPos.Y - (LinePadding >> 1);
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
 			invalidRect1.Height = LineSpacing;
@@ -465,7 +483,7 @@ namespace Sgry.Azuki
 				DoLayoutOneLine( i );
 			}
 
-			PLHI.Delete( PLHI.Count-1, PLHI.Count );
+			PLHI.RemoveRange( PLHI.Count-1, PLHI.Count );
 		}
 
 		void DoLayoutOneLine( int lineIndex )

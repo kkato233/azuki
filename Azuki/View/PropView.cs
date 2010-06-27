@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-06-13
+// update: 2010-06-27
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -494,6 +494,16 @@ namespace Sgry.Azuki
 
 		internal override void HandleContentChanged( object sender, ContentChangedEventArgs e )
 		{
+			// [*1] if replacement breaks or creates
+			// a combining character sequence at left boundary of the range,
+			// at least one grapheme cluster left must be redrawn.
+			// 
+			// One case of that e.OldText has combining char at first:
+			//    aa^aa --(replace [2, 4) to "AA")--> aaAAa
+			// 
+			// One case of that e.NewText has combining char at first:
+			//    aaaa --(replace [2, 3) to "^A")--> aa^Aa
+
 			Point oldCaretPos;
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
@@ -507,9 +517,17 @@ namespace Sgry.Azuki
 			UpdateHRuler();
 
 			// invalidate the part at right of the old selection
-			invalidRect1.X = oldCaretPos.X;
-			invalidRect1.Y = oldCaretPos.Y - (LinePadding >> 1);
+			if( Document.IsCombiningCharacter(e.OldText, 0)
+				|| Document.IsCombiningCharacter(e.NewText, 0) )
+			{
+				invalidRect1.X = XofTextArea; // [*1]
+			}
+			else
+			{
+				invalidRect1.X = oldCaretPos.X;
+			}
 			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
+			invalidRect1.Y = oldCaretPos.Y - (LinePadding >> 1);
 			invalidRect1.Height = LineSpacing;
 
 			// invalidate all lines below caret

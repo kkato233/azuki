@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-05-16
+// update: 2010-06-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -870,6 +870,8 @@ namespace Sgry.Azuki
 				{
 					break; // reached EOF
 				}
+				Debug.Assert( Document.IsNotDividableIndex(Document, leftIndex) == false );
+				Debug.Assert( Document.IsNotDividableIndex(Document, rightIndex) == false );
 
 				// add this sub-selection range
 				selRanges.Add( leftIndex );

@@ -156,17 +156,31 @@ namespace Sgry.Azuki
 				// calc maximum length of chars in line
 				int rightLimitX = pt.X;
 				int leftPartWidth = MeasureTokenEndX( line, 0, rightLimitX, out drawableTextLen );
+				Debug.Assert( Document.IsNotDividableIndex(line, drawableTextLen) == false );
 				columnIndex = drawableTextLen;
 
 				// if the location is nearer to the NEXT of that char,
 				// we should return the index of next one.
 				if( drawableTextLen < line.Length )
 				{
+					// get next grapheme cluster
 					string nextChar = line[drawableTextLen].ToString();
+					int nextCharEnd = drawableTextLen + 1;
+					while( Document.IsNotDividableIndex(line, nextCharEnd) )
+					{
+						nextChar += line[ nextCharEnd ];
+						nextCharEnd++;
+					}
+
+					// determine which side the location is near
 					int nextCharWidth = MeasureTokenEndX( nextChar, leftPartWidth ) - leftPartWidth;
 					if( leftPartWidth + nextCharWidth/2 < pt.X ) // == "x of middle of next char" < "x of click in virtual text area"
 					{
 						columnIndex = drawableTextLen + 1;
+						while( Document.IsNotDividableIndex(line, columnIndex) )
+						{
+							columnIndex++;
+						}
 					}
 				}
 			}
@@ -300,11 +314,7 @@ namespace Sgry.Azuki
 				// if an exception was caught here, it is not a fatal error
 				// so avoid crashing application
 				Invalidate();
-#				if DEBUG
-				throw new Exception( "NON FATAL INTERNAL ERROR", ex );
-#				else
-				ex.GetHashCode(); // (suppressing warning)
-#				endif
+				Debug.Fail( ex.ToString() );
 			}
 			finally
 			{
@@ -347,6 +357,8 @@ namespace Sgry.Azuki
 			// calculate rectangle in virtual space
 			firstBegin = e.OldRectSelectRanges[0];
 			lastEnd = e.OldRectSelectRanges[ e.OldRectSelectRanges.Length - 1 ];
+			Debug.Assert( 0 <= firstBegin && firstBegin < Document.Length );
+			Debug.Assert( 0 <= lastEnd && lastEnd <= Document.Length );
 			firstBeginPos = this.GetVirPosFromIndex( firstBegin );
 			lastEndPos = this.GetVirPosFromIndex( lastEnd );
 			firstBeginPos.Y -= (LinePadding >> 1);

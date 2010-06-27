@@ -2,7 +2,7 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-04-15
+// update: 2010-06-27
 //=========================================================
 using System;
 using System.Drawing;
@@ -484,6 +484,17 @@ namespace Sgry.Azuki.Windows
 				{
 					size.Width = extents[ drawableLength - 1 ];
 				}
+			}
+
+			// (MUST DO AFTER GETTING EXTENTS)
+			// extend length if it ends with in a grapheme cluster
+			if( 0 < drawableLength && Document.IsNotDividableIndex(text, drawableLength) )
+			{
+				do
+				{
+					drawableLength++;
+				}
+				while( Document.IsNotDividableIndex(text, drawableLength) );
 			}
 
 			WinApi.SelectObject( DC, oldFont );

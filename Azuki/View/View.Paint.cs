@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-06-19
+// update: 2010-06-27
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -712,7 +712,14 @@ Debug.Assert( drawableLength == i );
 							return x; // hit the right limit
 						}
 					}
+
+					// append one grapheme cluster
 					subToken.Append( token[i] );
+					while( Document.IsNotDividableIndex(token, i+1) )
+					{
+						subToken.Append( token[i+1] );
+						i++;
+					}
 				}
 			}
 
@@ -723,10 +730,12 @@ Debug.Assert( drawableLength == i );
 				if( relDLen < subToken.Length )
 				{
 					drawableLength = token.Length - (subToken.Length - relDLen);
+					Debug.Assert( Document.IsNotDividableIndex(token, drawableLength) == false );
 					return x; // hit the right limit.
 				}
 				drawableLength += subToken.Length;
 			}
+			Debug.Assert( Document.IsNotDividableIndex(token, drawableLength) == false );
 
 			// whole part of the given token can be drawn at given width.
 			return x;
@@ -755,6 +764,7 @@ Debug.Assert( drawableLength == i );
 				subToken.Length = 0;
 				return true;
 			}
+			Debug.Assert( Document.IsNotDividableIndex(subToken.ToString(), relDLen) == false );
 
 			x += subTokenWidth;
 			drawableLength += subToken.Length;

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-06-26
+// update: 2010-06-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -2013,7 +2013,7 @@ namespace Sgry.Azuki.Windows
 				}
 
 				// get selected text
-				stringBody = Document.GetTextInRange( selBegin, end );
+				stringBody = Document.GetTextInRange( ref selBegin, ref end );
 				stringBodyIndex = selBegin;
 			}
 			else
@@ -2029,18 +2029,10 @@ namespace Sgry.Azuki.Windows
 				lineHeadIndex = Document.GetLineHeadIndex( lineIndex );
 				lineEndIndex = lineHeadIndex + Document.GetLineLength( lineIndex );
 				begin = Math.Max( lineHeadIndex, selBegin - (MaxRangeLength / 2) );
-				while( Document.IsNotDividableIndex(Document, begin) )
-				{
-					begin++;
-				}
 				end = Math.Min( selBegin + (MaxRangeLength / 2), lineEndIndex );
-				while( Document.IsNotDividableIndex(Document, end) )
-				{
-					end--;
-				}
 
 				// get current line content
-				stringBody = Document.GetTextInRange( begin, end );
+				stringBody = Document.GetTextInRange( ref begin, ref end );
 				stringBodyIndex = begin;
 			}
 

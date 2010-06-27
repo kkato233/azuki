@@ -637,7 +637,7 @@ namespace Sgry.Azuki
 				}
 
 				// get next segment
-				string str = doc.GetTextInRange( begin, end );
+				string str = doc.GetTextInRange( ref begin, ref end );
 				x = MeasureTokenEndX( str, x, TextAreaWidth, out drawableLen );
 
 				// can this segment be written in this physical line?
@@ -816,7 +816,7 @@ namespace Sgry.Azuki
 			while( end <= lineEnd && end != -1 )
 			{
 				// get this token
-				token = Document.GetTextInRange( begin, end );
+				token = Document.GetTextInRange( ref begin, ref end );
 				Debug.Assert( 0 < token.Length, "@View.Paint. NextPaintToken returns empty range." );
 
 				// calc next drawing pos before drawing text

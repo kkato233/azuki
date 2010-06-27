@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-06-26
+// update: 2010-06-27
 //=========================================================
 using System;
 using System.Collections;
@@ -332,8 +332,8 @@ namespace Sgry.Azuki
 		/// <para>
 		/// This method sets selection range and invokes
 		/// <see cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged</see> event.
-		/// If given index is at middle of a surrogate pair,
-		/// selection range will be automatically expanded to avoid dividing the pair.
+		/// If given index is at middle of an undividable character sequence such as surrogate pair,
+		/// selection range will be automatically expanded to avoid dividing the it.
 		/// </para>
 		/// <para>
 		/// This method always selects text as a sequence of character.
@@ -375,8 +375,8 @@ namespace Sgry.Azuki
 		///			will be selected.
 		///			</para>
 		///			<para>
-		///			Note that if given index is at middle of a surrogate pair,
-		///			selection range will be automatically expanded to avoid dividing the pair.
+		///			Note that if given index is at middle of an undividable character sequence such as surrogate pair,
+		///			selection range will be automatically expanded to avoid dividing it.
 		///			</para>
 		///		</item>
 		///		<item>
@@ -449,8 +449,8 @@ namespace Sgry.Azuki
 				return;
 			}
 
-			// ensure that given index is not in middle of a surrogate pair or a CR-LF pair
-			Utl.ConstrainIndex( _Buffer, ref anchor, ref caret );
+			// ensure that document can be divided at given index
+			Utl.ConstrainIndex( this, ref anchor, ref caret );
 
 			// get anchor/caret position in new text content
 			oldAnchor = _AnchorIndex;
@@ -674,6 +674,7 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count < index ) // index can be equal to char-count
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", this.Length:"+Length+")." );
 
+			// ask word processor to get range of a word
 			begin = WordProc.PrevWordStart( this, index );
 			end = WordProc.NextWordEnd( this, index );
 			if( begin < 0 || end < 0 || end <= begin )
@@ -681,17 +682,18 @@ namespace Sgry.Azuki
 				return String.Empty;
 			}
 
-			return GetTextInRange( begin, end );
+			return GetTextInRange( ref begin, ref end );
 		}
 
 		/// <summary>
 		/// Gets number of characters currently held in this document.
-		/// Note that a surrogate pair will be counted as two characters.
+		/// Note that a surrogate pair or combining characters will be counted as two characters.
 		/// </summary>
 		/// <remarks>
 		/// This property is the number of characters currently held in this document.
 		/// Since Azuki stores characters in form of UTF-16,
-		/// surrogate pairs will not be counted as "1 character" in this property.
+		/// surrogate pairs or combining characters will not be counted as
+		/// "1 character" in this property.
 		/// </remarks>
 		public int Length
 		{
@@ -818,11 +820,41 @@ namespace Sgry.Azuki
 
 		/// <summary>
 		/// Gets text in the range [begin, end).
-		/// Note that if given index is at middle of a surrogate pair,
-		/// given range will be automatically expanded to avoid dividing the pair.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If given index is at middle of an undividable character sequence such as surrogate pair,
+		/// given range will be automatically expanded to avoid dividing the pair.
+		/// </para>
+		/// <para>
+		/// If expanded range is needed, use
+		/// <see cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">another overload</see>.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">Document.GetTextInRange(ref int, ref int) method</seealso>.
 		public string GetTextInRange( int begin, int end )
+		{
+			return GetTextInRange( ref begin, ref end );
+		}
+
+		/// <summary>
+		/// Gets text in the range [begin, end).
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If given index is at middle of an undividable character sequence such as surrogate pair,
+		/// given range will be automatically expanded to avoid dividing the pair.
+		/// </para>
+		/// <para>
+		/// This method returns the expanded range by setting parameter
+		/// <paramref name="begin"/> and <paramref name="end"/>
+		/// to actually used values.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(int, int)">Document.GetTextInRange(int, int) method</seealso>.
+		public string GetTextInRange( ref int begin, ref int end )
 		{
 			if( end < 0 || _Buffer.Count < end )
 				throw new ArgumentOutOfRangeException( "end", "Invalid index was given (end:"+end+", this.Length:"+Length+")." );
@@ -834,8 +866,8 @@ namespace Sgry.Azuki
 				return String.Empty;
 			}
 
-			// constrain indexes to avoid dividing surrogate pair
-			Utl.ConstrainIndex( _Buffer, ref begin, ref end );
+			// constrain indexes to avoid dividing a grapheme cluster
+			Utl.ConstrainIndex( this, ref begin, ref end );
 			
 			// retrieve a part of the content
 			char[] buf = new char[end - begin];
@@ -2184,6 +2216,8 @@ namespace Sgry.Azuki
 				RectSelectRanges[i+1] -= diff;
 
 				// replace this row
+				Debug.Assert( Document.IsNotDividableIndex(this, RectSelectRanges[i]) == false );
+				Debug.Assert( Document.IsNotDividableIndex(this, RectSelectRanges[i+1]) == false );
 				Replace( String.Empty,
 						RectSelectRanges[i],
 						RectSelectRanges[i+1]
@@ -2215,44 +2249,28 @@ namespace Sgry.Azuki
 				return false;
 			}
 
-			public static void ConstrainIndex( TextBuffer buf, ref int anchor, ref int caret )
+			public static void ConstrainIndex( Document doc, ref int anchor, ref int caret )
 			{
 				if( anchor < caret )
 				{
-					if( IsLowSurrogate(buf[anchor]) )
+					while( IsNotDividableIndex(doc, anchor) )
 						anchor--;
-					else if( buf[anchor] == '\n'
-						&& 0 <= anchor-1 && buf[anchor-1] == '\r' )
-						anchor--;
-					if( caret < buf.Count && IsLowSurrogate(buf[caret]) )
-						caret++;
-					else if( caret < buf.Count && buf[caret] == '\n'
-						&& 0 <= caret-1 && buf[caret-1] == '\r' )
+					while( IsNotDividableIndex(doc, caret) )
 						caret++;
 				}
 				else if( caret < anchor )
 				{
-					if( IsLowSurrogate(buf[caret]) )
+					while( IsNotDividableIndex(doc, caret) )
 						caret--;
-					else if( buf[caret] == '\n'
-						&& 0 < caret && buf[caret-1] == '\r' )
-						caret--;
-					if( anchor < buf.Count && IsLowSurrogate(buf[anchor]) )
-						anchor++;
-					else if( anchor < buf.Count && buf[anchor] == '\n'
-						&& 0 <= anchor-1 && buf[anchor-1] == '\r' )
+					while( IsNotDividableIndex(doc, anchor) )
 						anchor++;
 				}
 				else// if( anchor == caret )
 				{
-					if( anchor < buf.Count )
+					while( IsNotDividableIndex(doc, caret) )
 					{
-						if( IsLowSurrogate(buf[anchor])
-							|| (buf[anchor] == '\n' && 0 < anchor && buf[anchor-1] == '\r') )
-						{
-							anchor--;
-							caret--;
-						}
+						anchor--;
+						caret--;
 					}
 				}
 			}

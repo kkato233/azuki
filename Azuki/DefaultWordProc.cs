@@ -1,11 +1,12 @@
 ﻿// file: DefaultWordProc.cs
 // brief: built-in word processor for well Japanese handling
 // author: YAMAMOTO Suguru
-// update: 2010-06-26
+// update: 2010-07-04
 //=========================================================
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
@@ -321,13 +322,9 @@ namespace Sgry.Azuki
 			ClassifyCharProc isSameClass;
 			
 			// check start index
-			index = startIndex - 1;
-			if( doc.Length <= index )
-			{
-				DebugUtl.Fail( "this code must not be executed..." );
-				return doc.Length;
-			}
-			else if( index < 0 )
+			index = doc.PrevGraphemeClusterIndex( startIndex );
+			Debug.Assert( index < startIndex );
+			if( index < 0 )
 			{
 				return 0;
 			}
@@ -336,7 +333,7 @@ namespace Sgry.Azuki
 			isSameClass = ClassifyChar( doc, index );
 			do
 			{
-				index++;
+				index = doc.NextGraphemeClusterIndex( index );
 				if( doc.Length <= index )
 					return doc.Length;
 			}
@@ -369,22 +366,23 @@ namespace Sgry.Azuki
 			ClassifyCharProc isSameClass;
 
 			// check start index
-			index = startIndex;
-			if( doc.Length <= index )
+			if( doc.Length <= startIndex )
 			{
 				return doc.Length;
 			}
-			else if( index < 0 )
+
+			// set seek starting index
+			index = doc.PrevGraphemeClusterIndex( startIndex );
+			if( index < 0 )
 			{
-				DebugUtl.Fail( "this code must not be executed..." );
-				return 0;
+				index = 0;
 			}
 
 			// proceed until the char category changes
 			isSameClass = ClassifyChar( doc, index );
 			do
 			{
-				index++;
+				index = doc.NextGraphemeClusterIndex( index );
 				if( doc.Length <= index )
 					return doc.Length;
 			}
@@ -425,19 +423,25 @@ namespace Sgry.Azuki
 			{
 				return doc.Length;
 			}
+
+			// set seek starting index
 			index = startIndex;
+			while( Document.IsNotDividableIndex(doc, index) )
+			{
+				index--;
+			}
 
 			// proceed until the char category changes
 			isSameClass = ClassifyChar( doc, index );
 			do
 			{
-				index--;
+				index = doc.PrevGraphemeClusterIndex( index );
 				if( index < 0 )
 					return 0;
 			}
 			while( isSameClass(doc, index) );
 			
-			return index + 1;
+			return doc.NextGraphemeClusterIndex( index );
 		}
 
 		/// <summary>
@@ -464,27 +468,33 @@ namespace Sgry.Azuki
 			ClassifyCharProc isSameClass;
 			
 			// check start index
-			index = startIndex;
-			if( index <= 0 )
+			if( startIndex <= 0 )
 			{
 				return 0;
 			}
-			else if( doc.Length <= index )
+			else if( doc.Length <= startIndex )
 			{
 				return doc.Length;
+			}
+
+			// set seek starting index
+			index = startIndex;
+			while( Document.IsNotDividableIndex(doc, index) )
+			{
+				index--;
 			}
 
 			// proceed until the char category changes
 			isSameClass = ClassifyChar( doc, index );
 			do
 			{
-				index--;
-				if( index <= 0 )
+				index = doc.PrevGraphemeClusterIndex( index );
+				if( index < 0 )
 					return 0;
 			}
 			while( isSameClass(doc, index) );
 
-			return index + 1;
+			return doc.NextGraphemeClusterIndex( index );
 		}
 
 		/// <summary>
@@ -538,7 +548,7 @@ namespace Sgry.Azuki
 					&& index < doc.Length
 					&& 0 <= Array.BinarySearch(CharsToBeHanged, doc[index]) )
 				{
-					index++;
+					index = doc.NextGraphemeClusterIndex( index );
 					continue;
 				}
 
@@ -558,7 +568,7 @@ namespace Sgry.Azuki
 					&& 1 <= index
 					&& 0 <= Array.BinarySearch(CharsForbiddenToStartLine, doc[index]) )
 				{
-					index--;
+					index = doc.PrevGraphemeClusterIndex( index );
 					continue;
 				}
 
@@ -591,7 +601,7 @@ namespace Sgry.Azuki
 					&& 1 <= index
 					&& 0 <= Array.BinarySearch(CharsForbiddenToEndLine, doc[index-1]) )
 				{
-					index--;
+					index = doc.PrevGraphemeClusterIndex( index );
 					continue;
 				}
 
@@ -609,7 +619,7 @@ namespace Sgry.Azuki
 				DebugUtl.Fail( String.Format(
 					"kinsoku-shori resulted in forbidden index; between U+{0:X4} and U+{1:X4}", doc[index], doc[index+1]
 				));
-				index--;
+				index = doc.PrevGraphemeClusterIndex( index );
 			}
 			return index;
 		}
@@ -664,7 +674,7 @@ namespace Sgry.Azuki
 			if( IsAlphabet(doc, index) )	return IsAlphabet;
 			if( IsWhiteSpace(doc, index) )	return IsWhiteSpace;
 			if( IsPunct(doc, index) )		return IsPunct;
-			if( IsEolCode(doc, index) )	return IsEolCode;
+			if( IsEolCode(doc, index) )		return IsEolCode;
 			if( IsHiragana(doc, index) )	return IsHiragana;
 			if( IsKatakana(doc, index) )	return IsKatakana;
 

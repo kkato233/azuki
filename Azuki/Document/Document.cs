@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-06-27
+// update: 2010-07-04
 //=========================================================
 using System;
 using System.Collections;
@@ -1925,7 +1925,7 @@ namespace Sgry.Azuki
 		/// If you want to create a keyword-based highlighter,
 		/// you can extend
 		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>.
-		/// If you want ot create not a keyword based one,
+		/// If you want to create not a keyword based one,
 		/// create a class which implements
 		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
 		/// and write your own highlighting logic.
@@ -2081,7 +2081,93 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets line content enumerator.
+		/// Gets index of next grapheme cluster.
+		/// </summary>
+		/// <param name="index">The index to start the search from.</param>
+		/// <returns>The index of the character which starts next grapheme cluster.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method searches document for a grapheme cluster
+		/// from given <paramref name="index"/> forward.
+		/// Note that this method always return an index greater than given '<paramref name="index"/>'.
+		/// </para>
+		/// <para>
+		/// 'Grapheme cluster' is a sequence of characters
+		/// which consists one 'user perceived character'
+		/// such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
+		/// In most cases, such sequence should not be divided unless user wishes to do so.
+		/// </para>
+		/// <para>
+		/// This method determines an index pointing the middle of character sequences next as undividable:
+		/// </para>
+		/// <list type="bullet">
+		///		<item>CR+LF</item>
+		///		<item>Surrogate pair</item>
+		///		<item>Combining character sequence</item>
+		/// </list>
+		/// </remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
+		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
+		public int NextGraphemeClusterIndex( int index )
+		{
+			if( index < 0 || Length < index )
+				throw new ArgumentOutOfRangeException( "index" );
+
+			do
+			{
+				index++;
+			}
+			while( index < Length && IsNotDividableIndex(this, index) );
+
+			return index;
+		}
+
+		/// <summary>
+		/// Gets index of previous grapheme cluster.
+		/// </summary>
+		/// <param name="index">The index to start the search from.</param>
+		/// <returns>The index of the character which starts previous grapheme cluster.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method searches document for a grapheme cluster
+		/// from given <paramref name="index"/> backward.
+		/// Note that this method always return an index less than given '<paramref name="index"/>'.
+		/// </para>
+		/// <para>
+		/// 'Grapheme cluster' is a sequence of characters
+		/// which consists one 'user perceived character'
+		/// such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
+		/// In most cases, such sequence should not be divided unless user wishes to do so.
+		/// </para>
+		/// <para>
+		/// This method determines an index pointing the middle of character sequences next as undividable:
+		/// </para>
+		/// <list type="bullet">
+		///		<item>CR+LF</item>
+		///		<item>Surrogate pair</item>
+		///		<item>Combining character sequence</item>
+		/// </list>
+		/// </remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
+		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
+		public int PrevGraphemeClusterIndex( int index )
+		{
+			if( index < 0 || Length < index )
+				throw new ArgumentOutOfRangeException( "index" );
+
+			do
+			{
+				index--;
+			}
+			while( 0 < index && IsNotDividableIndex(this, index) );
+
+			return index;
+		}
+
+		/// <summary>
+		/// Gets content enumerator.
 		/// </summary>
 		public IEnumerator GetEnumerator()
 		{
@@ -2113,7 +2199,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Determines whether text can not be divided by given index or not.
+		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
 		public static bool IsNotDividableIndex( Document doc, int index )
 		{
@@ -2124,18 +2210,18 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Determines whether text can not be divided by given index or not.
+		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
 		public static bool IsNotDividableIndex( string text, int index )
 		{
-			if( index <= 0 || text.Length <= index )
+			if( text == null || index <= 0 || text.Length <= index )
 				return false;
 
 			return IsNotDividableIndex( text[index-1], text[index] );
 		}
 
 		/// <summary>
-		/// Determines whether text can not be divided by given index or not.
+		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
 		public static bool IsNotDividableIndex( char prevCh, char ch )
 		{

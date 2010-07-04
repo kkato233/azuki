@@ -426,7 +426,7 @@ namespace Sgry.Azuki
 
 			// set seek starting index
 			index = startIndex;
-			while( Document.IsNotDividableIndex(doc, index) )
+			while( doc.IsNotDividableIndex(index) )
 			{
 				index--;
 			}
@@ -479,7 +479,7 @@ namespace Sgry.Azuki
 
 			// set seek starting index
 			index = startIndex;
-			while( Document.IsNotDividableIndex(doc, index) )
+			while( doc.IsNotDividableIndex(index) )
 			{
 				index--;
 			}
@@ -613,7 +613,7 @@ namespace Sgry.Azuki
 			}
 
 			// correct index if its forbidden position
-			if( Document.IsNotDividableIndex(doc, index) && 0 < index )
+			if( doc.IsNotDividableIndex(index) && 0 < index )
 			{
 				DebugUtl.Assert( index+1 < doc.Length );
 				DebugUtl.Fail( String.Format(

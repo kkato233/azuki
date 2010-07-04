@@ -51,6 +51,18 @@ namespace Sgry.Azuki.Test
 			}
 			TestUtl.AssertEquals( doc.Length, wordProc.NextWordStart(doc, doc.Length) );
 
+			// combining character
+			doc.Text = ".a\x0300.";
+			TestUtl.AssertEquals( 1, wordProc.NextWordStart(doc, 1) );
+			TestUtl.AssertEquals( 3, wordProc.NextWordStart(doc, 2) );
+			TestUtl.AssertEquals( 3, wordProc.NextWordStart(doc, 3) );
+
+			// combining character
+			doc.Text = "aa\x0300a";
+			TestUtl.AssertEquals( 4, wordProc.NextWordStart(doc, 1) );
+			TestUtl.AssertEquals( 4, wordProc.NextWordStart(doc, 2) );
+			TestUtl.AssertEquals( 4, wordProc.NextWordStart(doc, 3) );
+
 			try{ wordProc.NextWordStart(null, 0); throw new Exception(); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
 
@@ -61,7 +73,7 @@ namespace Sgry.Azuki.Test
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// NextWordEnd
-			expected = new int[]{ 2, 2, 4, 4, 4 };
+			expected = new int[]{ 2, 2, 2, 4, 4 };
 			expectedForSameClass = new int[]{ 4, 4, 4, 4, 4 };
 			for( int left=0; left<samples.Length; left++ )
 			{
@@ -79,6 +91,18 @@ namespace Sgry.Azuki.Test
 				}
 			}
 			TestUtl.AssertEquals( doc.Length, wordProc.NextWordEnd(doc, doc.Length) );
+
+			// combining character
+			doc.Text = ".a\x0300.";
+			TestUtl.AssertEquals( 1, wordProc.NextWordEnd(doc, 1) );
+			TestUtl.AssertEquals( 3, wordProc.NextWordEnd(doc, 2) );
+			TestUtl.AssertEquals( 3, wordProc.NextWordEnd(doc, 3) );
+
+			// combining character
+			doc.Text = "aa\x0300a";
+			TestUtl.AssertEquals( 4, wordProc.NextWordEnd(doc, 1) );
+			TestUtl.AssertEquals( 4, wordProc.NextWordEnd(doc, 2) );
+			TestUtl.AssertEquals( 4, wordProc.NextWordEnd(doc, 3) );
 
 			try{ wordProc.NextWordEnd(null, 0); throw new Exception(); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
@@ -109,6 +133,18 @@ namespace Sgry.Azuki.Test
 			}
 			TestUtl.AssertEquals( doc.Length, wordProc.PrevWordStart(doc, doc.Length) );
 
+			// combining character
+			doc.Text = ".a\x0300.";
+			TestUtl.AssertEquals( 1, wordProc.PrevWordStart(doc, 1) );
+			TestUtl.AssertEquals( 1, wordProc.PrevWordStart(doc, 2) );
+			TestUtl.AssertEquals( 3, wordProc.PrevWordStart(doc, 3) );
+
+			// combining character
+			doc.Text = "aa\x0300a";
+			TestUtl.AssertEquals( 0, wordProc.PrevWordStart(doc, 1) );
+			TestUtl.AssertEquals( 0, wordProc.PrevWordStart(doc, 2) );
+			TestUtl.AssertEquals( 0, wordProc.PrevWordStart(doc, 3) );
+
 			try{ wordProc.PrevWordStart(null, 0); throw new Exception(); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
 
@@ -137,6 +173,18 @@ namespace Sgry.Azuki.Test
 				}
 			}
 			TestUtl.AssertEquals( doc.Length, wordProc.PrevWordEnd(doc, doc.Length) );
+
+			// combining character
+			doc.Text = ".a\x0300.";
+			TestUtl.AssertEquals( 1, wordProc.PrevWordEnd(doc, 1) );
+			TestUtl.AssertEquals( 1, wordProc.PrevWordEnd(doc, 2) );
+			TestUtl.AssertEquals( 3, wordProc.PrevWordEnd(doc, 3) );
+
+			// combining character
+			doc.Text = "aa\x0300a";
+			TestUtl.AssertEquals( 0, wordProc.PrevWordEnd(doc, 1) );
+			TestUtl.AssertEquals( 0, wordProc.PrevWordEnd(doc, 2) );
+			TestUtl.AssertEquals( 0, wordProc.PrevWordEnd(doc, 3) );
 
 			try{ wordProc.PrevWordEnd(null, 0); throw new Exception(); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }

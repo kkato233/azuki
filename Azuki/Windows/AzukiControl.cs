@@ -2006,7 +2006,7 @@ namespace Sgry.Azuki.Windows
 				if( MaxRangeLength < end - selBegin )
 				{
 					end = selBegin + MaxRangeLength;
-					while( Document.IsNotDividableIndex(Document, end) )
+					while( Document.IsNotDividableIndex(end) )
 					{
 						end++;
 					}

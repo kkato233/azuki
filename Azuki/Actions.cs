@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-06-26
+// update: 2010-07-04
 //=========================================================
 using System;
 using System.Drawing;
@@ -67,10 +67,8 @@ namespace Sgry.Azuki
 				// but not combining character sequence
 				if( 0 <= caret-2 )
 				{
-					char prevCh = doc[caret-2];
-					char ch = doc[caret-1];
-					if( Document.IsNotDividableIndex(prevCh, ch)
-						&& Document.IsCombiningCharacter(ch) == false )
+					if( doc.IsNotDividableIndex(caret-1)
+						&& doc.IsCombiningCharacter(caret-1) == false )
 					{
 						delLen = 2;
 					}
@@ -179,7 +177,7 @@ namespace Sgry.Azuki
 
 				// avoid dividing a CR-LF, a surrogate pair,
 				// or a combining character sequence
-				while( Document.IsNotDividableIndex(doc, end) )
+				while( doc.IsNotDividableIndex(end) )
 				{
 					end++;
 				}

@@ -353,6 +353,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Methods of Anti-Alias to be used for text rendering.
 	/// </summary>
+	/// <seealso cref="Sgry.Azuki.UserPref.Antialias">UserPref.Antialias property</seealso>
 	public enum Antialias
 	{
 		/// <summary>Uses system default setting.</summary>

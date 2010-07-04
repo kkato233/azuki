@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azuki.vs9", "Azuki\Azuki.vs9.csproj", "{9910474A-AA51-4DFF-8499-CB661216B200}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ann.vs9", "Ann\Ann.vs9.csproj", "{0A4BB220-4224-4879-8146-3230357CC320}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9910474A-AA51-4DFF-8499-CB661216B200} = {9910474A-AA51-4DFF-8499-CB661216B200}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution

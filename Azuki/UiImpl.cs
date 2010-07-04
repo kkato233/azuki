@@ -523,10 +523,10 @@ namespace Sgry.Azuki
 						break;
 					}
 
-					// For example, contents could be shorten just during highlighting
-					// because Azuki design does not lock buffers for thread safety.
+					// For example, contents could be shorten during highlighting
+					// because Azuki does not lock buffers for thread safety.
 					// It is very hard to take care of such cases in highlighters (including user-made ones)
-					// so here I trap any exception (except ThreadAbortException)
+					// so here I trap any exception except ThreadAbortException
 					// and invalidate whole view in that case.
 					View.Invalidate();
 				}

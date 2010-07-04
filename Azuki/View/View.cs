@@ -870,8 +870,8 @@ namespace Sgry.Azuki
 				{
 					break; // reached EOF
 				}
-				Debug.Assert( Document.IsNotDividableIndex(Document, leftIndex) == false );
-				Debug.Assert( Document.IsNotDividableIndex(Document, rightIndex) == false );
+				Debug.Assert( Document.IsNotDividableIndex(leftIndex) == false );
+				Debug.Assert( Document.IsNotDividableIndex(rightIndex) == false );
 
 				// add this sub-selection range
 				selRanges.Add( leftIndex );

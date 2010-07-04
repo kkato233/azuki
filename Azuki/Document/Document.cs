@@ -2118,7 +2118,7 @@ namespace Sgry.Azuki
 			{
 				index++;
 			}
-			while( index < Length && IsNotDividableIndex(this, index) );
+			while( index < Length && IsNotDividableIndex(index) );
 
 			return index;
 		}
@@ -2161,7 +2161,7 @@ namespace Sgry.Azuki
 			{
 				index--;
 			}
-			while( 0 < index && IsNotDividableIndex(this, index) );
+			while( 0 < index && IsNotDividableIndex(index) );
 
 			return index;
 		}
@@ -2201,17 +2201,57 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
-		public static bool IsNotDividableIndex( Document doc, int index )
+		/// <param name="index">The index to determine whether it points to middle of an undividable character sequence or not.</param>
+		/// <returns>Whether charcter sequence can not be divided at the index or not.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method determines whether text can not be divided at given index or not.
+		/// To seek document through grapheme cluster by grapheme cluster,
+		/// please consider to use
+		/// <see cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</see>
+		/// or
+		/// <see cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</see>.
+		/// </para>
+		/// <para>
+		/// This method determines an index pointing the middle of character sequences next as undividable:
+		/// </para>
+		/// <para>
+		/// 'Grapheme cluster' is a sequence of characters
+		/// which consists one 'user perceived character'
+		/// such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
+		/// In most cases, such sequence should not be divided unless user wishes to do so.
+		/// </para>
+		/// <list type="bullet">
+		///		<item>CR+LF</item>
+		///		<item>Surrogate pair</item>
+		///		<item>Combining character sequence</item>
+		/// </list>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
+		public bool IsNotDividableIndex( int index )
 		{
-			if( index <= 0 || doc.Length <= index )
+			if( index <= 0 || Length <= index )
 				return false;
 
-			return IsNotDividableIndex( doc[index-1], doc[index] );
+			return Document.IsNotDividableIndex( this[index-1], this[index] );
 		}
 
 		/// <summary>
 		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
+		/// <param name="text">The text to be examined.</param>
+		/// <param name="index">The index to determine whether it points to middle of an undividable character sequence or not.</param>
+		/// <remarks>
+		/// <para>
+		/// This method determines whether a string can not be divided at given index or not.
+		/// This is only an utility method.
+		/// Please refer to the document of
+		/// <see cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex instance method</see>
+		/// for detail.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
 		public static bool IsNotDividableIndex( string text, int index )
 		{
 			if( text == null || index <= 0 || text.Length <= index )
@@ -2223,7 +2263,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
-		public static bool IsNotDividableIndex( char prevCh, char ch )
+		static bool IsNotDividableIndex( char prevCh, char ch )
 		{
 			if( prevCh == '\r' && ch == '\n' )
 			{
@@ -2260,12 +2300,12 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Determines whether given character is a combining character or not.
 		/// </summary>
-		public static bool IsCombiningCharacter( Document doc, int index )
+		public bool IsCombiningCharacter( int index )
 		{
-			if( index < 0 || doc.Length <= index )
+			if( index < 0 || Length <= index )
 				return false;
 
-			return IsCombiningCharacter( doc[index] );
+			return IsCombiningCharacter( this[index] );
 		}
 
 		/// <summary>
@@ -2302,8 +2342,8 @@ namespace Sgry.Azuki
 				RectSelectRanges[i+1] -= diff;
 
 				// replace this row
-				Debug.Assert( Document.IsNotDividableIndex(this, RectSelectRanges[i]) == false );
-				Debug.Assert( Document.IsNotDividableIndex(this, RectSelectRanges[i+1]) == false );
+				Debug.Assert( IsNotDividableIndex(RectSelectRanges[i]) == false );
+				Debug.Assert( IsNotDividableIndex(RectSelectRanges[i+1]) == false );
 				Replace( String.Empty,
 						RectSelectRanges[i],
 						RectSelectRanges[i+1]
@@ -2339,21 +2379,21 @@ namespace Sgry.Azuki
 			{
 				if( anchor < caret )
 				{
-					while( IsNotDividableIndex(doc, anchor) )
+					while( doc.IsNotDividableIndex(anchor) )
 						anchor--;
-					while( IsNotDividableIndex(doc, caret) )
+					while( doc.IsNotDividableIndex(caret) )
 						caret++;
 				}
 				else if( caret < anchor )
 				{
-					while( IsNotDividableIndex(doc, caret) )
+					while( doc.IsNotDividableIndex(caret) )
 						caret--;
-					while( IsNotDividableIndex(doc, anchor) )
+					while( doc.IsNotDividableIndex(anchor) )
 						anchor++;
 				}
 				else// if( anchor == caret )
 				{
-					while( IsNotDividableIndex(doc, caret) )
+					while( doc.IsNotDividableIndex(caret) )
 					{
 						anchor--;
 						caret--;

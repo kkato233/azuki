@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnCompact.vs8", "Ann\AnnCompact.vs8.csproj", "{0B64D00E-BFA2-495E-879C-52EFB5C487A4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{107C8620-2549-48C3-B709-69075C3382E8} = {107C8620-2549-48C3-B709-69075C3382E8}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzukiCompact.vs8", "Azuki\AzukiCompact.vs8.csproj", "{107C8620-2549-48C3-B709-69075C3382E8}"
 EndProject

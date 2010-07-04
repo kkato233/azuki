@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-06-27
+// update: 2010-07-04
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -961,22 +961,17 @@ namespace Sgry.Azuki
 			int vDelta = 0, hDelta;
 
 			// make rentangle of virtual text view
-			threshRect.X = ScrollPosX;
+			threshRect.X = ScrollPosX + SpaceWidthInPx;
 			threshRect.Y = FirstVisibleLine * LineSpacing;
-			threshRect.Width = (_VisibleSize.Width - XofTextArea);
+			threshRect.Width = (_VisibleSize.Width - XofTextArea) - (SpaceWidthInPx * 2);
 			threshRect.Height = (_VisibleSize.Height - YofTextArea) - LineSpacing;
 
 			// shrink the rectangle if some lines must be visible
-			if( UserPref.AutoScrollNearWindowBorder )
+			if( 0 < UserPref.AutoScrollMargin )
 			{
-				threshRect.X += _SpaceWidth;
-				threshRect.Width -= _SpaceWidth << 1;
-				if( 0 < FirstVisibleLine )
-				{
-					threshRect.Y += LineSpacing;
-					threshRect.Height -= LineSpacing;
-				}
-				threshRect.Height -= (LineSpacing >> 1);
+				int yMargin = Math.Max( 0, UserPref.AutoScrollMargin * LineSpacing );
+				threshRect.Y += yMargin;
+				threshRect.Height -= (yMargin * 2);
 			}
 
 			// calculate caret position

@@ -2,7 +2,7 @@
 // brief: User preferences that affects all Azuki instances.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-04-15
+// update: 2010-07-04
 //=========================================================
 using System;
 using System.Text;
@@ -21,7 +21,7 @@ namespace Sgry.Azuki
 	public static class UserPref
 	{
 		static bool _CopyLineWhenNoSelection = true;
-		static bool _AutoScrollNearWindowBorder = true;
+		static int _AutoScrollMargin = 1;
 		static bool _UseTextForEofMark = true;
 		static Antialias _TextRenderingMode = Antialias.Default;
 
@@ -57,10 +57,33 @@ namespace Sgry.Azuki
 		/// If true, when the caret is near window border Azuki automatically scrolls
 		/// to ensure that at least one more line is visible between the caret and border.
 		/// </remarks>
+		[Obsolete("Use AutoScrollMargin property instead.", false)]
 		public static bool AutoScrollNearWindowBorder
 		{
-			get{ return _AutoScrollNearWindowBorder; }
-			set{ _AutoScrollNearWindowBorder = value; }
+			get{ return (0 < _AutoScrollMargin); }
+			set{ _AutoScrollMargin = 1; }
+		}
+
+		/// <summary>
+		/// Gets or sets how close the caret can come to window borders at top or bottom, in line count.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When user moves caret with keyboard or mouse,
+		/// Azuki automatically scrolls to ensure the caret always be in screen.
+		/// This property determines
+		/// how many lines the caret is distant at most from top or bottom of the window.
+		/// </para>
+		/// </remarks>
+		public static int AutoScrollMargin
+		{
+			get{ return _AutoScrollMargin; }
+			set
+			{
+				if( value < 0 )
+					value = 0;
+				_AutoScrollMargin = value;
+			}
 		}
 
 		/// <summary>

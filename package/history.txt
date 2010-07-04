@@ -7,6 +7,7 @@
  * add: now with Document.SetSelection method, Azuki can select text in specific rectangle
  * add: added new overload of Document.GetWordAt method
  * add: added new overload of Document.GetLineLength method
+ * add: scroll margin can be set by number of lines with UserPref.AutoScrollMargin
  * mod: now AzukiControl.IsRectSelectModeChanged event is obsoleted by Document.SelectionModeChanged event
  * mod: double buffering also be enabled for .NET Compact Framework version
  * add: [Ann] now the Mode menu item corresponding to the active editing mode is checked

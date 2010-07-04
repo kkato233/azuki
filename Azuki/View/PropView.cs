@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-06-27
+// update: 2010-07-04
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -519,7 +519,6 @@ namespace Sgry.Azuki
 			Point oldCaretPos;
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
-			int oldTextLineCount, newTextLineCount;
 
 			// get position of the word replacement occured
 			oldCaretPos = GetVirPosFromIndex( e.Index );
@@ -544,9 +543,7 @@ namespace Sgry.Azuki
 
 			// invalidate all lines below caret
 			// if old text or new text contains multiple lines
-			oldTextLineCount = LineLogic.CountLine( e.OldText );
-			newTextLineCount = LineLogic.CountLine( e.NewText );
-			if( 1 < oldTextLineCount || 1 < newTextLineCount )
+			if( LineLogic.IsMultiLine(e.OldText) || LineLogic.IsMultiLine(e.NewText) )
 			{
 				//NO_NEED//invalidRect2.X = 0;
 				invalidRect2.Y = invalidRect1.Bottom;

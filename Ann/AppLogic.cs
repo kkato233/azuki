@@ -1150,7 +1150,7 @@ namespace Sgry.Ann
 			}
 		}
 
-		void ApplyNewTextAreaWidth()
+		public void ApplyNewTextAreaWidth()
 		{
 			AzukiControl azuki = MainForm.Azuki;
 			azuki.ViewWidth = azuki.ClientSize.Width - azuki.View.HRulerUnitWidth * 2;

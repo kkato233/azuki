@@ -1,4 +1,4 @@
-// 2010-06-26
+// 2010-07-04
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1248,7 +1248,7 @@ namespace Sgry.Ann
 
 				try
 				{
-					using( file = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite|FileShare.Delete) )
+					using( file = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) )
 					{
 						// prepare buffer
 						if( MaxSize < file.Length )

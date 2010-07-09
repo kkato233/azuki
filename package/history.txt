@@ -18,6 +18,8 @@
 
 == 1.5.7 (2010-07-09) ==
  * fix: pasting non-text clipboard data locks clipboard system and prevents any other program from using  clipboard (degrade problem since 1.5.0)
+ * fix: now Azuki does not uses System.Drawing.Font.OriginalFontName property
+ * fix: [Ann] tagged as version 1.4.7
 
 == 1.5.6 (2010-06-12) ==
  * fix: if a word of specific pattern such as "11aa" was starting the document, and if a user deleted or selected it, an exception occurs (bug since 1.2.0)

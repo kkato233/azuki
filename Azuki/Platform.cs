@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2010-04-15
+// update: 2010-07-09
 //=========================================================
 using System;
 using System.Text;
@@ -231,15 +231,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public FontInfo( Font font )
 		{
-#			if !PocketPC
-			if( font.OriginalFontName != null )
-				_Name = font.OriginalFontName;
-			else
-				_Name = font.Name;
-#			else
 			_Name = font.Name;
-#			endif
-
 			_Size = (int)font.Size;
 			_Style = font.Style;
 		}

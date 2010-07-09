@@ -2,7 +2,7 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-06-27
+// update: 2010-07-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -46,64 +46,90 @@ namespace Sgry.Azuki.Windows
 		/// <param name="dataType">The type of the text data in the clipboard</param>
 		/// <returns>Text content in the clipboard.</returns>
 		/// <remarks>
+		/// <para>
 		/// This method gets text from the system clipboard.
 		/// If stored text data is a special format (line or rectangle,)
 		/// its data type will be set to <paramref name="dataType"/> parameter.
+		/// </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.TextDataType">TextDataType enum</seealso>
 		public string GetClipboardText( out TextDataType dataType )
 		{
 			Int32 rc; // result code
-			IntPtr dataHandle, dataPtr;
+			bool clipboardOpened = false;
+			IntPtr dataHandle = IntPtr.Zero;
+			IntPtr dataPtr = IntPtr.Zero;
 			uint formatID = UInt32.MaxValue;
 			string data = null;
 
 			dataType = TextDataType.Normal;
 
-			// open clipboard
-			rc = WinApi.OpenClipboard( IntPtr.Zero );
-			if( rc == 0 )
+			try
 			{
-				return null;
-			}
+				// open clipboard
+				rc = WinApi.OpenClipboard( IntPtr.Zero );
+				if( rc == 0 )
+				{
+					return null;
+				}
+				clipboardOpened = true;
 
-			// distinguish type of data in the clipboard
-			if( WinApi.IsClipboardFormatAvailable(_CF_LINEOBJECT) != 0 )
+				// distinguish type of data in the clipboard
+				if( WinApi.IsClipboardFormatAvailable(_CF_LINEOBJECT) != 0 )
+				{
+					formatID = WinApi.CF_UNICODETEXT;
+					dataType = TextDataType.Line;
+				}
+				else if( WinApi.IsClipboardFormatAvailable(_CF_RECTSELECT) != 0 )
+				{
+					formatID = WinApi.CF_UNICODETEXT;
+					dataType = TextDataType.Rectangle;
+				}
+				else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_UNICODETEXT) != 0 )
+				{
+					formatID = WinApi.CF_UNICODETEXT;
+				}
+				else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_TEXT) != 0 )
+				{
+					formatID = WinApi.CF_TEXT;
+				}
+				if( formatID == UInt32.MaxValue )
+				{
+					return null; // no text data was in clipboard
+				}
+
+				// get handle of the clipboard data
+				dataHandle = WinApi.GetClipboardData( formatID );
+				if( dataHandle == IntPtr.Zero )
+				{
+					return null;
+				}
+
+				// get data pointer by locking the handle
+				dataPtr = Utl.MyGlobalLock( dataHandle );
+				if( dataPtr == IntPtr.Zero )
+				{
+					return null;
+				}
+
+				// retrieve data
+				if( formatID == WinApi.CF_TEXT )
+					data = Utl.MyPtrToStringAnsi( dataPtr );
+				else
+					data = Marshal.PtrToStringUni( dataPtr );
+			}
+			finally
 			{
-				formatID = WinApi.CF_UNICODETEXT;
-				dataType = TextDataType.Line;
+				// unlock handle
+				if( dataPtr != IntPtr.Zero )
+				{
+					Utl.MyGlobalUnlock( dataHandle );
+				}
+				if( clipboardOpened )
+				{
+					WinApi.CloseClipboard();
+				}
 			}
-			else if( WinApi.IsClipboardFormatAvailable(_CF_RECTSELECT) != 0 )
-			{
-				formatID = WinApi.CF_UNICODETEXT;
-				dataType = TextDataType.Rectangle;
-			}
-			else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_UNICODETEXT) != 0 )
-			{
-				formatID = WinApi.CF_UNICODETEXT;
-			}
-			else if( WinApi.IsClipboardFormatAvailable(WinApi.CF_TEXT) != 0 )
-			{
-				formatID = WinApi.CF_TEXT;
-			}
-			if( formatID == UInt32.MaxValue )
-				return null; // no text data was in clipboard
-
-			// get handle of the clipboard data
-			dataHandle = WinApi.GetClipboardData( formatID );
-
-			// get data pointer by locking the handle
-			dataPtr = Utl.MyGlobalLock( dataHandle );
-
-			// retrieve data
-			if( formatID == WinApi.CF_TEXT )
-				data = Utl.MyPtrToStringAnsi( dataPtr );
-			else
-				data = Marshal.PtrToStringUni( dataPtr );
-
-			// unlock handle
-			Utl.MyGlobalUnlock( dataHandle );
-			WinApi.CloseClipboard();
 
 			return data;
 		}
@@ -114,45 +140,58 @@ namespace Sgry.Azuki.Windows
 		/// <param name="text">Text data to set.</param>
 		/// <param name="dataType">Type of the data to set.</param>
 		/// <remarks>
+		/// <para>
 		/// This method set content of the system clipboard.
 		/// If <paramref name="dataType"/> is TextDataType.Normal,
 		/// the text data will be just a character sequence.
 		/// If <paramref name="dataType"/> is TextDataType.Line or TextDataType.Rectangle,
 		/// stored text data would be special format that is compatible with Microsoft Visual Studio.
+		/// </para>
 		/// </remarks>
 		public void SetClipboardText( string text, TextDataType dataType )
 		{
 			Int32 rc; // result code
 			IntPtr dataHdl;
+			bool clipboardOpened = false;
 
-			// open clipboard
-			rc = WinApi.OpenClipboard( IntPtr.Zero );
-			if( rc == 0 )
+			try
 			{
-				return;
+				// open clipboard
+				rc = WinApi.OpenClipboard( IntPtr.Zero );
+				if( rc == 0 )
+				{
+					return;
+				}
+				clipboardOpened = true;
+
+				// clear clipboard first
+				WinApi.EmptyClipboard();
+
+				// set normal text data
+				dataHdl = Utl.MyStringToHGlobalUni( text );
+				WinApi.SetClipboardData( WinApi.CF_UNICODETEXT, dataHdl );
+
+				// set addional text data
+				if( dataType == TextDataType.Line )
+				{
+					// allocate dummy text (this is needed for PocketPC)
+					dataHdl = Utl.MyStringToHGlobalUni( "" );
+					WinApi.SetClipboardData( _CF_LINEOBJECT, dataHdl );
+				}
+				else if( dataType == TextDataType.Rectangle )
+				{
+					// allocate dummy text (this is needed for PocketPC)
+					dataHdl = Utl.MyStringToHGlobalUni( "" );
+					WinApi.SetClipboardData( _CF_RECTSELECT, dataHdl );
+				}
 			}
-			WinApi.EmptyClipboard();
-
-			// set normal text data
-			dataHdl = Utl.MyStringToHGlobalUni( text );
-			WinApi.SetClipboardData( WinApi.CF_UNICODETEXT, dataHdl );
-
-			// set addional text data
-			if( dataType == TextDataType.Line )
+			finally
 			{
-				// allocate dummy text (this is needed for PocketPC)
-				dataHdl = Utl.MyStringToHGlobalUni( "" );
-				WinApi.SetClipboardData( _CF_LINEOBJECT, dataHdl );
+				if( clipboardOpened )
+				{
+					WinApi.CloseClipboard();
+				}
 			}
-			else if( dataType == TextDataType.Rectangle )
-			{
-				// allocate dummy text (this is needed for PocketPC)
-				dataHdl = Utl.MyStringToHGlobalUni( "" );
-				WinApi.SetClipboardData( _CF_RECTSELECT, dataHdl );
-			}
-
-			// close clipboard
-			WinApi.CloseClipboard();
 		}
 		#endregion
 
@@ -211,6 +250,8 @@ namespace Sgry.Azuki.Windows
 				}
 			}
 
+			/// <exception cref="ArgumentOutOfRangeException">Too long text was given.</exception>
+			/// <exception cref="OutOfMemoryException">No enough memory.</exception>
 			public static IntPtr MyStringToHGlobalUni( string text )
 			{
 #				if !PocketPC

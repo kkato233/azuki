@@ -1,7 +1,7 @@
 // file: TabPanel.cs
 // brief: simple tab control
 // create: 2006-01-08 YAMAMOTO Suguru
-// update: 2009-10-12 YAMAMOTO Suguru
+// update: 2010-07-13 YAMAMOTO Suguru
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public TabPanel()
 		{
-			_Gra = Plat.Inst.GetGraphics( Handle );
+			_Gra = Plat.Inst.GetGraphics( this );
 			TabTextColor = Color.Black;
 			TabBackColor = Color.LightGray;
 			BackColor = Color.LightGray;

@@ -1,4 +1,4 @@
-// 2009-11-07
+// 2010-07-13
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -159,7 +159,7 @@ namespace Sgry.Ann
 			_Azuki_Pattern.Font = new Font( value.Name, value.Size-1, value.Style );
 
 			// calculate size of child controls
-			gra = Plat.Inst.GetGraphics( _Label_Pattern.Handle );
+			gra = Plat.Inst.GetGraphics( _Label_Pattern );
 			gra.Font = value;
 			labelSize.Width = gra.MeasureText( _Label_Pattern.Text ).Width + 2;
 			labelSize.Height = gra.MeasureText( "Mp" ).Height;

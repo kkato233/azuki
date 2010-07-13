@@ -10,6 +10,7 @@
  * add: UserPref.AutoScrollMargin プロパティで、キャレットがウィンドウの端から何行分の余裕を持って自動スクロールするかを設定可能に
  * mod: AzukiControl.IsRectSelectModeChanged イベントを Obsolete 指定に（Document.SelectionModeChanged で置き換え）
  * mod: .NET Compact Framework 版でも描画時にダブルバッファリングを行うように
+ * fix: GDI デバイスコンテキストを正しく使うように（使い方が正しくないとグラフィック描画が不正になることがある）
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように
  * add: [Ann] 現在の選択モードをタイトル文字列で表示するように
  * mod: [Ann] ファイル保存ダイアログの「ファイルの種類」フィルターに「All files」を追加

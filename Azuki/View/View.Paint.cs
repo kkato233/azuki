@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-06-27
+// update: 2010-07-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -18,14 +18,15 @@ namespace Sgry.Azuki
 		/// Paints content to a graphic device.
 		/// </summary>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public abstract void Paint( Rectangle clipRect );
+		public abstract void Paint( IGraphics g, Rectangle clipRect );
 
 		#region Drawing graphical units of view
 		/// <summary>
 		/// Paints a token including special characters.
 		/// </summary>
-		protected void DrawToken( string token, CharClass klass, bool inSelection, ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect )
+		protected void DrawToken( IGraphics g, string token, CharClass klass, bool inSelection, ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect )
 		{
+			Debug.Assert( g != null, "IGraphics must not be null." );
 			Debug.Assert( token != null, "given token is null." );
 			Debug.Assert( 0 < token.Length, "given token is empty." );
 			Point textPos = tokenPos;
@@ -36,25 +37,25 @@ namespace Sgry.Azuki
 
 #			if DRAW_SLOWLY
 			if(!Windows.WinApi.IsKeyDownAsync(System.Windows.Forms.Keys.ControlKey))
-			{ _Gra.BackColor=Color.Red; _Gra.FillRectangle(tokenPos.X, tokenPos.Y, 2, LineHeight); DebugUtl.Sleep(400); }
+			{ g.BackColor=Color.Red; g.FillRectangle(tokenPos.X, tokenPos.Y, 2, LineHeight); DebugUtl.Sleep(400); }
 #			endif
 
 			// get fore/back color for the class
 			Utl.ColorFromCharClass( ColorScheme, klass, inSelection, out fore, out back );
-			_Gra.BackColor = back;
+			g.BackColor = back;
 
 			//--- draw graphic ---
 			// space
 			if( token == " " )
 			{
 				// draw background
-				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, _SpaceWidth, LineSpacing );
+				g.FillRectangle( tokenPos.X, tokenPos.Y, _SpaceWidth, LineSpacing );
 
 				// draw foreground graphic
 				if( DrawsSpace )
 				{
-					_Gra.ForeColor = ColorScheme.WhiteSpaceColor;
-					_Gra.DrawRectangle(
+					g.ForeColor = ColorScheme.WhiteSpaceColor;
+					g.DrawRectangle(
 							tokenPos.X + (_SpaceWidth >> 1) - 1,
 							textPos.Y + (_LineHeight >> 1),
 							1,
@@ -75,13 +76,13 @@ namespace Sgry.Azuki
 				graBottom = (textPos.Y + _LineHeight / 2) + (graWidth / 2);
 
 				// draw background
-				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, _FullSpaceWidth, LineSpacing );
+				g.FillRectangle( tokenPos.X, tokenPos.Y, _FullSpaceWidth, LineSpacing );
 
 				// draw foreground
 				if( DrawsFullWidthSpace )
 				{
-					_Gra.ForeColor = ColorScheme.WhiteSpaceColor;
-					_Gra.DrawRectangle( graLeft, graTop, graWidth, graBottom-graTop );
+					g.ForeColor = ColorScheme.WhiteSpaceColor;
+					g.DrawRectangle( graLeft, graTop, graWidth, graBottom-graTop );
 				}
 				return;
 			}
@@ -105,14 +106,14 @@ namespace Sgry.Azuki
 				bgLeft = tokenPos.X;
 
 				// draw background
-				_Gra.FillRectangle( bgLeft, tokenPos.Y, bgRight-bgLeft, LineSpacing );
+				g.FillRectangle( bgLeft, tokenPos.Y, bgRight-bgLeft, LineSpacing );
 
 				// draw foreground
 				if( DrawsTab )
 				{
-					_Gra.ForeColor = ColorScheme.WhiteSpaceColor;
-					_Gra.DrawLine( fgLeft, fgBottom, fgRight, fgBottom );
-					_Gra.DrawLine( fgRight, fgBottom, fgRight, fgTop );
+					g.ForeColor = ColorScheme.WhiteSpaceColor;
+					g.DrawLine( fgLeft, fgBottom, fgRight, fgBottom );
+					g.DrawLine( fgRight, fgBottom, fgRight, fgTop );
 				}
 				return;
 			}
@@ -124,11 +125,11 @@ namespace Sgry.Azuki
 				// before to draw background,
 				// change bgcolor to normal if it's not selected
 				if( inSelection == false )
-					_Gra.BackColor = ColorScheme.BackColor;
+					g.BackColor = ColorScheme.BackColor;
 
 				// draw background
 				width = EolCodeWidthInPx;
-				_Gra.FillRectangle( tokenPos.X, tokenPos.Y, width, LineSpacing );
+				g.FillRectangle( tokenPos.X, tokenPos.Y, width, LineSpacing );
 
 				if( DrawsEolCode == false )
 					return;
@@ -142,33 +143,33 @@ namespace Sgry.Azuki
 				int bottom = y_middle + (width >> 1);
 
 				// draw EOL char's graphic
-				_Gra.ForeColor = ColorScheme.EolColor;
+				g.ForeColor = ColorScheme.EolColor;
 				if( token == "\r" ) // CR (left arrow)
 				{
-					_Gra.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle-halfSpaceWidth );
-					_Gra.DrawLine( left, y_middle, tokenPos.X+width-2, y_middle );
-					_Gra.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle+halfSpaceWidth );
+					g.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle-halfSpaceWidth );
+					g.DrawLine( left, y_middle, tokenPos.X+width-2, y_middle );
+					g.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle+halfSpaceWidth );
 				}
 				else if( token == "\n" ) // LF (down arrow)
 				{
-					_Gra.DrawLine( x_middle, bottom, x_middle-halfSpaceWidth, bottom-halfSpaceWidth );
-					_Gra.DrawLine( x_middle, y_middle-(width>>1), x_middle, bottom );
-					_Gra.DrawLine( x_middle, bottom, x_middle+halfSpaceWidth, bottom-halfSpaceWidth );
+					g.DrawLine( x_middle, bottom, x_middle-halfSpaceWidth, bottom-halfSpaceWidth );
+					g.DrawLine( x_middle, y_middle-(width>>1), x_middle, bottom );
+					g.DrawLine( x_middle, bottom, x_middle+halfSpaceWidth, bottom-halfSpaceWidth );
 				}
 				else // CRLF (snapped arrow)
 				{
-					_Gra.DrawLine( right, y_middle-(width>>1), right, y_middle+2 );
+					g.DrawLine( right, y_middle-(width>>1), right, y_middle+2 );
 
-					_Gra.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2-halfSpaceWidth );
-					_Gra.DrawLine( right, y_middle+2, left, y_middle+2 );
-					_Gra.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2+halfSpaceWidth );
+					g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2-halfSpaceWidth );
+					g.DrawLine( right, y_middle+2, left, y_middle+2 );
+					g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2+halfSpaceWidth );
 				}
 				return;
 			}
 
 			// draw normal visible text
-			_Gra.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
-			_Gra.DrawText( token, ref textPos, fore );
+			g.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
+			g.DrawText( token, ref textPos, fore );
 		}
 
 		/// <summary>
@@ -176,7 +177,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
-		protected virtual void DrawUnderLine( int lineTopY, Color color )
+		protected virtual void DrawUnderLine( IGraphics g, int lineTopY, Color color )
 		{
 			if( lineTopY < 0 )
 				return;
@@ -187,14 +188,14 @@ namespace Sgry.Azuki
 			int bottom = lineTopY + LineHeight + (LinePadding >> 1);
 
 			// draw underline
-			_Gra.ForeColor = color;
-			_Gra.DrawLine( XofTextArea, bottom, _VisibleSize.Width, bottom );
+			g.ForeColor = color;
+			g.DrawLine( XofTextArea, bottom, _VisibleSize.Width, bottom );
 		}
 
 		/// <summary>
 		/// Draws dirt bar.
 		/// </summary>
-		protected void DrawDirtBar( int lineTopY, int logicalLineIndex )
+		protected void DrawDirtBar( IGraphics g, int lineTopY, int logicalLineIndex )
 		{
 			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0, "((lineTopY-YofTextArea) % LineSpacing) is not 0 but " + (lineTopY-YofTextArea) % LineSpacing );
 			LineDirtyState dirtyState;
@@ -208,19 +209,19 @@ namespace Sgry.Azuki
 			// choose color
 			if( dirtyState == LineDirtyState.Cleaned )
 			{
-				_Gra.BackColor = ColorScheme.CleanedLineBar;
+				g.BackColor = ColorScheme.CleanedLineBar;
 			}
 			else if( dirtyState == LineDirtyState.Dirty )
 			{
-				_Gra.BackColor = ColorScheme.DirtyLineBar;
+				g.BackColor = ColorScheme.DirtyLineBar;
 			}
 			else
 			{
-				_Gra.BackColor = ColorScheme.LineNumberBack;
+				g.BackColor = ColorScheme.LineNumberBack;
 			}
 
 			// fill
-			_Gra.FillRectangle( XofDirtBar, lineTopY, DirtBarWidth, LineSpacing );
+			g.FillRectangle( XofDirtBar, lineTopY, DirtBarWidth, LineSpacing );
 		}
 
 		/// <summary>
@@ -229,7 +230,7 @@ namespace Sgry.Azuki
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="lineNumber">line number to be drawn.</param>
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>
-		protected void DrawLeftOfLine( int lineTopY, int lineNumber, bool drawsText )
+		protected void DrawLeftOfLine( IGraphics g, int lineTopY, int lineNumber, bool drawsText )
 		{
 			DebugUtl.Assert( (lineTopY % LineSpacing) == (YofTextArea % LineSpacing), "lineTopY:"+lineTopY+", LineSpacing:"+LineSpacing+", YofTextArea:"+YofTextArea );
 			Point pos = new Point( XofLineNumberArea, lineTopY );
@@ -237,21 +238,21 @@ namespace Sgry.Azuki
 			// fill line number area
 			if( ShowLineNumber )
 			{
-				_Gra.BackColor = ColorScheme.LineNumberBack;
-				_Gra.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
+				g.BackColor = ColorScheme.LineNumberBack;
+				g.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
 			}
 
 			// fill dirt bar
 			if( ShowsDirtBar )
 			{
-				DrawDirtBar( lineTopY, lineNumber-1 );
+				DrawDirtBar( g, lineTopY, lineNumber-1 );
 			}
 			
 			// fill left margin area
 			if( 0 < LeftMargin )
 			{
-				_Gra.BackColor = ColorScheme.BackColor;
-				_Gra.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
+				g.BackColor = ColorScheme.BackColor;
+				g.FillRectangle( XofLeftMargin, pos.Y, LeftMargin, LineSpacing );
 			}
 			
 			// draw line number text
@@ -262,28 +263,28 @@ namespace Sgry.Azuki
 
 				// calculate text position
 				lineNumText = lineNumber.ToString();
-				pos.X = XofDirtBar - _Gra.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
+				pos.X = XofDirtBar - g.MeasureText( lineNumText ).Width - LineNumberAreaPadding;
 				textPos = pos;
 				textPos.Y += (LinePadding >> 1);
 
 				// draw text
-				_Gra.ForeColor = ColorScheme.LineNumberFore;
-				_Gra.DrawText( lineNumText, ref textPos, ColorScheme.LineNumberFore );
+				g.ForeColor = ColorScheme.LineNumberFore;
+				g.DrawText( lineNumText, ref textPos, ColorScheme.LineNumberFore );
 			}
 
 			// draw margin line between the line number area and text area
 			if( ShowLineNumber || ShowsDirtBar )
 			{
 				pos.X = XofLeftMargin - 1;
-				_Gra.ForeColor = ColorScheme.LineNumberFore;
-				_Gra.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing );
+				g.ForeColor = ColorScheme.LineNumberFore;
+				g.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing );
 			}
 		}
 
 		/// <summary>
 		/// Draws horizontal ruler on top of the text area.
 		/// </summary>
-		protected void DrawHRuler( Rectangle clipRect )
+		protected void DrawHRuler( IGraphics g, Rectangle clipRect )
 		{
 			string columnNumberText;
 			int lineX, rulerIndex;
@@ -293,12 +294,12 @@ namespace Sgry.Azuki
 			if( ShowsHRuler == false || YofTopMargin < clipRect.Y )
 				return;
 
-			_Gra.SetClipRect( clipRect );
+			g.SetClipRect( clipRect );
 
 			// fill ruler area
-			_Gra.ForeColor = ColorScheme.LineNumberFore;
-			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
+			g.ForeColor = ColorScheme.LineNumberFore;
+			g.BackColor = ColorScheme.LineNumberBack;
+			g.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
 
 			// if clipping rectangle covers left of text area,
 			// reset clipping rect that does not covers left of text area
@@ -306,8 +307,8 @@ namespace Sgry.Azuki
 			{
 				clipRect.Width -= XofLeftMargin - clipRect.X;
 				clipRect.X = XofLeftMargin;
-				_Gra.RemoveClipRect();
-				_Gra.SetClipRect( clipRect );
+				g.RemoveClipRect();
+				g.SetClipRect( clipRect );
 			}
 
 			// calculate first line to be drawn
@@ -328,7 +329,7 @@ namespace Sgry.Azuki
 			}
 
 			// draw lines on the ruler
-			_Gra.FontInfo = _HRulerFont;
+			g.FontInfo = _HRulerFont;
 			lineX = leftMostLineX;
 			rulerIndex = leftMostRulerIndex;
 			while( lineX < clipRect.Right )
@@ -339,44 +340,44 @@ namespace Sgry.Azuki
 					Point pos;
 
 					// draw largest line
-					_Gra.DrawLine( lineX, YofHRuler, lineX, YofHRuler+HRulerHeight );
+					g.DrawLine( lineX, YofHRuler, lineX, YofHRuler+HRulerHeight );
 
 					// draw column text
 					columnNumberText = (rulerIndex / 10).ToString();
 					pos = new Point( lineX+2, YofHRuler );
-					_Gra.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
+					g.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
 				}
 				else if( (rulerIndex % 5) == 0 )
 				{
 					// draw middle-length line
-					_Gra.DrawLine( lineX, YofHRuler+_HRulerY_5, lineX, YofHRuler+HRulerHeight );
+					g.DrawLine( lineX, YofHRuler+_HRulerY_5, lineX, YofHRuler+HRulerHeight );
 				}
 				else
 				{
 					// draw smallest line
-					_Gra.DrawLine( lineX, YofHRuler+_HRulerY_1, lineX, YofHRuler+HRulerHeight );
+					g.DrawLine( lineX, YofHRuler+_HRulerY_1, lineX, YofHRuler+HRulerHeight );
 				}
 
 				// go to next ruler line
 				rulerIndex++;
 				lineX += HRulerUnitWidth;
 			}
-			_Gra.FontInfo = _Font;
+			g.FontInfo = _Font;
 
 			// draw bottom border line
-			_Gra.DrawLine(
+			g.DrawLine(
 					XofLeftMargin-1, YofHRuler + HRulerHeight - 1,
 					VisibleSize.Width, YofHRuler + HRulerHeight - 1
 				);
 
 			// draw indicator of caret column
-			_Gra.BackColor = ColorScheme.ForeColor;
+			g.BackColor = ColorScheme.ForeColor;
 			if( HRulerIndicatorType == HRulerIndicatorType.Position )
 			{
 				int indicatorWidth = 2;
 
 				// calculate indicator region
-				Point caretPos = GetVirPosFromIndex( Document.CaretIndex );
+				Point caretPos = GetVirPosFromIndex( g, Document.CaretIndex );
 				VirtualToScreen( ref caretPos );
 				if( caretPos.X < XofTextArea )
 				{
@@ -387,7 +388,7 @@ namespace Sgry.Azuki
 				// draw indicator
 				if( 0 < indicatorWidth )
 				{
-					_Gra.FillRectangle( caretPos.X, YofHRuler, indicatorWidth, HRulerHeight );
+					g.FillRectangle( caretPos.X, YofHRuler, indicatorWidth, HRulerHeight );
 				}
 
 				// remember lastly drawn ruler bar position
@@ -411,7 +412,7 @@ namespace Sgry.Azuki
 				// draw indicator
 				if( 0 < indicatorWidth )
 				{
-					_Gra.FillRectangle( indicatorX+1, YofHRuler, indicatorWidth, HRulerHeight-1 );
+					g.FillRectangle( indicatorX+1, YofHRuler, indicatorWidth, HRulerHeight-1 );
 				}
 
 				// remember lastly filled ruler segmentr position
@@ -421,7 +422,7 @@ namespace Sgry.Azuki
 			{
 				// calculate indicator region
 				int indicatorWidth = HRulerUnitWidth - 1;
-				Point indicatorPos = GetVirPosFromIndex( Document.CaretIndex );
+				Point indicatorPos = GetVirPosFromIndex( g, Document.CaretIndex );
 				indicatorPos.X -= (indicatorPos.X % HRulerUnitWidth);
 				VirtualToScreen( ref indicatorPos );
 				if( indicatorPos.X < XofTextArea )
@@ -433,57 +434,57 @@ namespace Sgry.Azuki
 				// draw indicator
 				if( 0 < indicatorWidth )
 				{
-					_Gra.FillRectangle( indicatorPos.X+1, YofHRuler, indicatorWidth, HRulerHeight-1 );
+					g.FillRectangle( indicatorPos.X+1, YofHRuler, indicatorWidth, HRulerHeight-1 );
 				}
 
 				// remember lastly filled ruler segmentr position
 				Document.ViewParam.PrevHRulerVirX = indicatorPos.X - XofTextArea + ScrollPosX;
 			}
 
-			_Gra.RemoveClipRect();
+			g.RemoveClipRect();
 		}
 
 		/// <summary>
 		/// Draws top margin.
 		/// </summary>
-		protected void DrawTopMargin()
+		protected void DrawTopMargin( IGraphics g )
 		{
 			// fill area above the line-number area [copied from DrawLineNumber]
-			_Gra.BackColor = ColorScheme.LineNumberBack;
-			_Gra.FillRectangle(
+			g.BackColor = ColorScheme.LineNumberBack;
+			g.FillRectangle(
 					XofLineNumberArea, YofTopMargin,
 					XofTextArea-XofLineNumberArea, TopMargin
 				);
 			
 			// fill left margin area [copied from DrawLineNumber]
-			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( XofLeftMargin, YofTopMargin, LeftMargin, TopMargin );
+			g.BackColor = ColorScheme.BackColor;
+			g.FillRectangle( XofLeftMargin, YofTopMargin, LeftMargin, TopMargin );
 
 			// draw margin line between the line number area and text area [copied from DrawLineNumber]
 			int x = XofLeftMargin - 1;
-			_Gra.ForeColor = ColorScheme.LineNumberFore;
-			_Gra.DrawLine( x, YofTopMargin, x, YofTopMargin+TopMargin );
+			g.ForeColor = ColorScheme.LineNumberFore;
+			g.DrawLine( x, YofTopMargin, x, YofTopMargin+TopMargin );
 
 			// fill area above the text area
-			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( XofTextArea, YofTopMargin, VisibleSize.Width-XofTextArea, TopMargin );
+			g.BackColor = ColorScheme.BackColor;
+			g.FillRectangle( XofTextArea, YofTopMargin, VisibleSize.Width-XofTextArea, TopMargin );
 		}
 
 		/// <summary>
 		/// Draws EOF mark.
 		/// </summary>
-		protected void DrawEofMark( ref Point pos )
+		protected void DrawEofMark( IGraphics g, ref Point pos )
 		{
 			Point textPos;
 
-			_Gra.BackColor = ColorScheme.BackColor;
+			g.BackColor = ColorScheme.BackColor;
 			if( UserPref.UseTextForEofMark )
 			{
 				int margin = (_SpaceWidth >> 2);
 
 				// fill background
-				int width = _Gra.MeasureText( "[EOF]" ).Width;
-				_Gra.FillRectangle( pos.X, pos.Y, width+margin, LineSpacing );
+				int width = g.MeasureText( "[EOF]" ).Width;
+				g.FillRectangle( pos.X, pos.Y, width+margin, LineSpacing );
 
 				// calculate text position
 				pos.X += margin;
@@ -491,7 +492,7 @@ namespace Sgry.Azuki
 				textPos.Y += (LinePadding >> 1);
 
 				// draw text
-				_Gra.DrawText( "[EOF]", ref textPos, ColorScheme.EofColor );
+				g.DrawText( "[EOF]", ref textPos, ColorScheme.EofColor );
 				pos.X += width;
 			}
 			else
@@ -499,22 +500,22 @@ namespace Sgry.Azuki
 				int width = LineHeight - (LineHeight >> 2);
 
 				// fill background
-				_Gra.FillRectangle( pos.X, pos.Y, width, LineSpacing );
+				g.FillRectangle( pos.X, pos.Y, width, LineSpacing );
 
 				// draw graphic
 				textPos = pos;
 				textPos.Y += (LinePadding >> 1);
-				_Gra.ForeColor = ColorScheme.EofColor;
-				_Gra.DrawLine( pos.X+2, textPos.Y+2, pos.X+2, textPos.Y + LineHeight - 3 );
-				_Gra.DrawLine( pos.X+2, textPos.Y+2, pos.X + width - 3, textPos.Y+2 );
-				_Gra.DrawLine( pos.X+2, textPos.Y + LineHeight - 3, pos.X + width - 3, textPos.Y+2 );
+				g.ForeColor = ColorScheme.EofColor;
+				g.DrawLine( pos.X+2, textPos.Y+2, pos.X+2, textPos.Y + LineHeight - 3 );
+				g.DrawLine( pos.X+2, textPos.Y+2, pos.X + width - 3, textPos.Y+2 );
+				g.DrawLine( pos.X+2, textPos.Y + LineHeight - 3, pos.X + width - 3, textPos.Y+2 );
 				pos.X += width;
 			}
 		}
 		#endregion
 
 		#region Special updating logic
-		protected void UpdateHRuler()
+		protected void UpdateHRuler( IGraphics g )
 		{
 			if( ShowsHRuler == false )
 				return;
@@ -525,7 +526,7 @@ namespace Sgry.Azuki
 			if( HRulerIndicatorType == HRulerIndicatorType.Position )
 			{
 				// get virtual position of the new caret
-				Point newCaretScreenPos = GetVirPosFromIndex( Document.CaretIndex );
+				Point newCaretScreenPos = GetVirPosFromIndex( g, Document.CaretIndex );
 				VirtualToScreen( ref newCaretScreenPos );
 
 				// get previous screen position of the caret
@@ -579,7 +580,7 @@ namespace Sgry.Azuki
 				int oldSegmentX, newSegmentX;
 
 				// get virtual position of the new caret
-				Point newCaretScreenPos = GetVirPosFromIndex( Document.CaretIndex );
+				Point newCaretScreenPos = GetVirPosFromIndex( g, Document.CaretIndex );
 				VirtualToScreen( ref newCaretScreenPos );
 
 				// calculate new segment of horizontal rulse
@@ -608,12 +609,12 @@ namespace Sgry.Azuki
 			}
 
 			// not invalidate but DRAW old and new indicator here
-			// (because all invalid rectangles will be combined,
-			// invalidating area in horizontal ruler will make
-			// very large invalid rectangle and has bad effect on performance,
+			// (because if all invalid rectangles was combined,
+			// invalidating area in horizontal ruler makes
+			// large invalid rectangle and has bad effect on performance,
 			// especially on mobile devices.)
-			DrawHRuler( updateRect_old );
-			DrawHRuler( udpateRect_new );
+			DrawHRuler( g, updateRect_old );
+			DrawHRuler( g, udpateRect_new );
 		}
 		#endregion
 
@@ -621,17 +622,17 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates x-coordinate of the right end of given token drawed at specified position with specified tab-width.
 		/// </summary>
-		internal int MeasureTokenEndX( string token, int virX )
+		internal int MeasureTokenEndX( IGraphics g, string token, int virX )
 		{
 			int dummy;
-			return MeasureTokenEndX( token, virX, Int32.MaxValue, out dummy );
+			return MeasureTokenEndX( g, token, virX, Int32.MaxValue, out dummy );
 		}
 
 		/// <summary>
 		/// Calculates x-coordinate of the right end of given token
 		/// drawed at specified position with specified tab-width.
 		/// </summary>
-		protected int MeasureTokenEndX( string token, int virX, int rightLimitX, out int drawableLength )
+		protected int MeasureTokenEndX( IGraphics g, string token, int virX, int rightLimitX, out int drawableLength )
 		{
 			StringBuilder subToken;
 			int x = virX;
@@ -653,7 +654,7 @@ namespace Sgry.Azuki
 				{
 					//--- found a tab ---
 					// calculate drawn length of cached characters
-					hitRightLimit = MeasureTokenEndX_TreatSubToken( _Gra, i, subToken, rightLimitX, ref x, ref drawableLength );
+					hitRightLimit = MeasureTokenEndX_TreatSubToken( g, i, subToken, rightLimitX, ref x, ref drawableLength );
 					if( hitRightLimit )
 					{
 						// before this tab, cached characters already hit the limit.
@@ -676,7 +677,7 @@ Debug.Assert( drawableLength == i );
 				{
 					//--- detected an EOL char ---
 					// calculate drawn length of cached characters
-					hitRightLimit = MeasureTokenEndX_TreatSubToken( _Gra, i, subToken, rightLimitX, ref x, ref drawableLength );
+					hitRightLimit = MeasureTokenEndX_TreatSubToken( g, i, subToken, rightLimitX, ref x, ref drawableLength );
 					if( hitRightLimit )
 					{
 						// before this EOL char, cached characters already hit the limit.
@@ -706,7 +707,7 @@ Debug.Assert( drawableLength == i );
 					{
 						// pretty long text was cached.
 						// calculate its width and check whether drawable or not
-						hitRightLimit = MeasureTokenEndX_TreatSubToken( _Gra, i, subToken, rightLimitX, ref x, ref drawableLength );
+						hitRightLimit = MeasureTokenEndX_TreatSubToken( g, i, subToken, rightLimitX, ref x, ref drawableLength );
 						if( hitRightLimit )
 						{
 							return x; // hit the right limit
@@ -726,7 +727,7 @@ Debug.Assert( drawableLength == i );
 			// calc last sub-token
 			if( 0 < subToken.Length )
 			{
-				x += _Gra.MeasureText( subToken.ToString(), rightLimitX-x, out relDLen ).Width;
+				x += g.MeasureText( subToken.ToString(), rightLimitX-x, out relDLen ).Width;
 				if( relDLen < subToken.Length )
 				{
 					drawableLength = token.Length - (subToken.Length - relDLen);

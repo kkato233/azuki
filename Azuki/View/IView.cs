@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2010-03-20
+// update: 2010-07-13
 //=========================================================
 using System;
 using System.Drawing;
@@ -239,13 +239,33 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
+		Point GetVirPosFromIndex( IGraphics g, int index );
+
+		/// <summary>
+		/// Calculates location in the virtual space of the character at specified index.
+		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
 		Point GetVirPosFromIndex( int lineIndex, int columnIndex );
+
+		/// <summary>
+		/// Calculates location in the virtual space of the character at specified index.
+		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
+		Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex );
 
 		/// <summary>
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the character at specified location.</returns>
 		int GetIndexFromVirPos( Point pt );
+
+		/// <summary>
+		/// Gets char-index of the char at the point specified by location in the virtual space.
+		/// </summary>
+		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
+		int GetIndexFromVirPos( IGraphics g, Point pt );
 
 		/// <summary>
 		/// Converts a coordinate in virtual space to a coordinate in client area.

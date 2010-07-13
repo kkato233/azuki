@@ -2,11 +2,12 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-07-07
+// update: 2010-07-13
 //=========================================================
 using System;
 using System.Drawing;
 using System.Text;
+using Control = System.Windows.Forms.Control;
 using Marshal = System.Runtime.InteropServices.Marshal;
 using Debug = Sgry.DebugUtl;
 
@@ -198,9 +199,24 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Gets a graphic device context from a window.
 		/// </summary>
-		public IGraphics GetGraphics( IntPtr window )
+		public IGraphics GetGraphics( object window )
 		{
-			return new GraWin( window );
+			AzukiControl azuki = window as AzukiControl;
+			if( azuki != null )
+			{
+				return new GraWin( azuki.Handle, azuki.FontInfo );
+			}
+
+			Control control = window as Control;
+			if( control != null )
+			{
+				if( control.Font == null )
+					return new GraWin( control.Handle, new FontInfo() );
+				else
+					return new GraWin( control.Handle, new FontInfo(control.Font) );
+			}
+
+			throw new ArgumentException( "an object of unexpected type ("+window.GetType()+") was given to PlatWin.GetGraphics.", "window" );
 		}
 
 		#region Utilities
@@ -292,10 +308,11 @@ namespace Sgry.Azuki.Windows
 		#endregion
 
 		#region Init / Dispose
-		public GraWin( IntPtr window )
+		public GraWin( IntPtr hWnd, FontInfo fontInfo )
 		{
-			_Window = window;
+			_Window = hWnd;
 			_DC = WinApi.GetDC( _Window );
+			FontInfo = fontInfo;
 		}
 
 		public void Dispose()

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-06-27
+// update: 2010-07-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -97,11 +97,6 @@ namespace Sgry.Azuki.Windows
 		protected override void OnHandleCreated( EventArgs e )
 		{
 			base.OnHandleCreated( e );
-
-			if( _Impl != null && _Impl.View != null )
-			{
-				_Impl.View.HandleGraphicContextChanged();
-			}
 
 #			if PocketPC
 			// remember that handle is associated
@@ -424,7 +419,12 @@ namespace Sgry.Azuki.Windows
 			if( Document != null )
 			{
 				// calculate caret size
-				_CaretSize.Width = Utl.CalcOverwriteCaretWidth( Document, _Impl.View, CaretIndex, IsOverwriteMode );
+				using( IGraphics g = GetIGraphics() )
+				{
+					_CaretSize.Width = Utl.CalcOverwriteCaretWidth(
+							g, Document, _Impl.View, CaretIndex, IsOverwriteMode
+						);
+				}
 
 				// calculate caret position and show/hide caret
 				Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
@@ -1672,7 +1672,7 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public IGraphics GetIGraphics()
 		{
-			return Plat.Inst.GetGraphics( Handle );
+			return Plat.Inst.GetGraphics( this );
 		}
 
 		/// <summary>
@@ -2589,7 +2589,7 @@ namespace Sgry.Azuki.Windows
 		#region Utilities
 		static class Utl
 		{
-			public static int CalcOverwriteCaretWidth( Document doc, View view, int caretIndex, bool isOverwriteMode )
+			public static int CalcOverwriteCaretWidth( IGraphics g, Document doc, View view, int caretIndex, bool isOverwriteMode )
 			{
 				int begin, end;
 				char ch;
@@ -2612,7 +2612,7 @@ namespace Sgry.Azuki.Windows
 				if( ch != '\t' )
 				{
 					// this is not a tab so return width of this char
-					return view.MeasureTokenEndX( ch.ToString(), 0 );
+					return view.MeasureTokenEndX( g, ch.ToString(), 0 );
 				}
 				else
 				{
@@ -2620,8 +2620,8 @@ namespace Sgry.Azuki.Windows
 					// from current position to next tab-stop and return it
 					int lineHead = view.GetLineHeadIndexFromCharIndex( caretIndex );
 					string leftPart = doc.GetTextInRange( lineHead, caretIndex );
-					int currentX = view.MeasureTokenEndX( leftPart, 0 );
-					int nextTabStopX = view.MeasureTokenEndX( leftPart+'\t', 0 );
+					int currentX = view.MeasureTokenEndX( g, leftPart, 0 );
+					int nextTabStopX = view.MeasureTokenEndX( g, leftPart+'\t', 0 );
 					return nextTabStopX - currentX;
 				}
 			}

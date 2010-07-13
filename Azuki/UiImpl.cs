@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-06-26
+// update: 2010-07-13
 //=========================================================
 using System;
 using System.Text;
@@ -329,6 +329,7 @@ namespace Sgry.Azuki
 			Document doc = Document;
 			int selBegin, selEnd;
 			StringBuilder input = new StringBuilder( Math.Max(64, text.Length) );
+			IGraphics g = null;
 
 			// if in read only mode, just notify and return 
 			if( doc.IsReadOnly )
@@ -345,6 +346,8 @@ namespace Sgry.Azuki
 
 			try
 			{
+				g = _UI.GetIGraphics();
+
 				// begin grouping UNDO action
 				doc.BeginUndo();
 
@@ -378,7 +381,7 @@ namespace Sgry.Azuki
 						
 						// get x-coord of caret index
 						doc.GetSelection( out selBegin, out selEnd );
-						caretPos = View.GetVirPosFromIndex( selBegin );
+						caretPos = View.GetVirPosFromIndex( g, selBegin );
 
 						// calc next tab stop
 						// ([*] When distance of the caret and next tab stop is narrower than a space width,
@@ -425,16 +428,20 @@ namespace Sgry.Azuki
 				doc.SetSelection( newCaretIndex, newCaretIndex );
 
 				// set desired column
-				_View.SetDesiredColumn();
+				_View.SetDesiredColumn( g );
 
 				// update graphic
-				_View.ScrollToCaret();
+				_View.ScrollToCaret( g );
 				//NO_NEED//_View.Invalidate( xxx ); // Doc_ContentChanged will do invalidation well.
 			}
 			finally
 			{
 				doc.EndUndo();
 				input.Length = 0;
+				if( g != null )
+				{
+					g.Dispose();
+				}
 			}
 		}
 		#endregion
@@ -585,7 +592,10 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
-			_View.Paint( clipRect );
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				_View.Paint( g, clipRect );
+			}
 		}
 
 		public void HandleLostFocus()
@@ -609,6 +619,8 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
 			bool onLineNumberArea = false;
 
 			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
@@ -632,7 +644,7 @@ namespace Sgry.Azuki
 				int index;
 
 				// calculate index of clicked character
-				index = View.GetIndexFromVirPos( pos );
+				index = View.GetIndexFromVirPos( g, pos );
 
 				// set selection
 				if( onLineNumberArea )
@@ -674,8 +686,9 @@ namespace Sgry.Azuki
 					//--- setting caret ---
 					Document.SetSelection( index, index );
 				}
-				View.SetDesiredColumn();
-				View.ScrollToCaret();
+				View.SetDesiredColumn( g );
+				View.ScrollToCaret( g );
+			}
 			}
 		}
 
@@ -736,6 +749,9 @@ namespace Sgry.Azuki
 			}
 			_MouseDragging = true;
 
+			// do drag action
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
 			// dragging with left button?
 			if( buttonIndex == 0 )
 			{
@@ -777,8 +793,9 @@ namespace Sgry.Azuki
 						Document.SetSelection( Document.AnchorIndex, curPosIndex );
 					}
 				}
-				View.SetDesiredColumn();
-				View.ScrollToCaret();
+				View.SetDesiredColumn( g );
+				View.ScrollToCaret( g );
+			}
 			}
 		}
 

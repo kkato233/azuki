@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2010-07-09
+// update: 2010-07-13
 //=========================================================
 using System;
 using System.Text;
@@ -56,7 +56,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets a graphic device context from a window.
 		/// </summary>
-		IGraphics GetGraphics( IntPtr window );
+		IGraphics GetGraphics( object window );
 	}
 
 	/// <summary>
@@ -209,6 +209,22 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
+		public FontInfo()
+		{
+#			if PocketPC
+			_Name = FontFamily.GenericSansSerif.Name;
+			_Size = 10;
+			_Style = FontStyle.Regular;
+#			else
+			_Name = SystemFonts.DefaultFont.Name;
+			_Size = (int)SystemFonts.DefaultFont.Size;
+			_Style = SystemFonts.DefaultFont.Style;
+#			endif
+		}
+
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
 		public FontInfo( string name, int size, FontStyle style )
 		{
 			_Name = name;
@@ -221,6 +237,9 @@ namespace Sgry.Azuki
 		/// </summary>
 		public FontInfo( FontInfo fontInfo )
 		{
+			if( fontInfo == null )
+				throw new ArgumentNullException( "fontInfo" );
+
 			_Name = fontInfo.Name;
 			_Size = fontInfo.Size;
 			_Style = fontInfo.Style;
@@ -231,6 +250,9 @@ namespace Sgry.Azuki
 		/// </summary>
 		public FontInfo( Font font )
 		{
+			if( font == null )
+				throw new ArgumentNullException( "font" );
+
 			_Name = font.Name;
 			_Size = (int)font.Size;
 			_Style = font.Style;

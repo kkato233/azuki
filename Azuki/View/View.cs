@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-07-04
+// update: 2010-07-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,6 @@ namespace Sgry.Azuki
 		int _TextAreaWidth = 4096;
 		int _MinimumTextAreaWidth = 300;
 		Size _VisibleSize = new Size( 300, 300 );
-		protected IGraphics _Gra = null;
 		int _LastUsedLineNumberSample = _LineNumberSamples[0];
 		protected int _LineNumAreaWidth = 0;// Width of the line number area in pixel
 		int _SpaceWidth; 					// Width of a space char (U+0020) in pixel
@@ -88,7 +87,6 @@ namespace Sgry.Azuki
 
 			// inherit reference to the UI module
 			this._UI = other._UI;
-			this._Gra = _UI.GetIGraphics();
 
 			// inherit other parameters
 			if( other != null )
@@ -118,28 +116,18 @@ namespace Sgry.Azuki
 				// re-calculate graphic metrics
 				// (because there is a metric which needs a reference to Document to be calculated
 				// but it cannnot be set Document before setting Font by structural reason)
-				UpdateMetrics();
+				using( IGraphics g = _UI.GetIGraphics() )
+				{
+					UpdateMetrics( g );
+				}
 			}
 		}
-
-#		if DEBUG
-		~View()
-		{
-			Debug.Assert( _Gra == null, ""+GetType()+"("+GetHashCode()+") was destroyed but not disposed." );
-		}
-#		endif
 
 		/// <summary>
 		/// Disposes resources.
 		/// </summary>
 		public virtual void Dispose()
 		{
-			// dispose graphic resources
-			if( _Gra != null )
-			{
-				_Gra.Dispose();
-				_Gra = null;
-			}
 		}
 		#endregion
 
@@ -228,7 +216,6 @@ namespace Sgry.Azuki
 
 				// apply font
 				_Font = value;
-				_Gra.FontInfo = value;
 				_HRulerFont = new FontInfo(
 						value.Name,
 						(int)( value.Size / GoldenRatio ),
@@ -236,13 +223,16 @@ namespace Sgry.Azuki
 					);
 
 				// update font metrics and graphic
-				UpdateMetrics();
+				using( IGraphics g = _UI.GetIGraphics() )
+				{
+					UpdateMetrics( g );
+				}
 				Invalidate();
 				_UI.UpdateCaretGraphic();
 			}
 		}
 
-		protected void UpdateMetrics()
+		protected void UpdateMetrics( IGraphics g )
 		{
 			StringBuilder buf = new StringBuilder( 32 );
 			_LastUsedLineNumberSample = _LineNumberSamples[0];
@@ -252,29 +242,29 @@ namespace Sgry.Azuki
 			{
 				buf.Append( ' ' );
 			}
-			_TabWidthInPx = _Gra.MeasureText( buf.ToString() ).Width;
+			_TabWidthInPx = g.MeasureText( buf.ToString() ).Width;
 
 			// update other metrics
-			_SpaceWidth = _Gra.MeasureText( " " ).Width;
-			_LCharWidth = _Gra.MeasureText( "l" ).Width;
-			_XCharWidth = _Gra.MeasureText( "x" ).Width;
-			_FullSpaceWidth = _Gra.MeasureText( "\x3000" ).Width;
-			_LineHeight = _Gra.MeasureText( "Mp" ).Height;
+			_SpaceWidth = g.MeasureText( " " ).Width;
+			_LCharWidth = g.MeasureText( "l" ).Width;
+			_XCharWidth = g.MeasureText( "x" ).Width;
+			_FullSpaceWidth = g.MeasureText( "\x3000" ).Width;
+			_LineHeight = g.MeasureText( "Mp" ).Height;
 			if( this.Document != null )
 			{
 				_LastUsedLineNumberSample = Document.ViewParam.MaxLineNumber;
 			}
 			_LineNumAreaWidth
-				= _Gra.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + _SpaceWidth;
+				= g.MeasureText( _LastUsedLineNumberSample.ToString() ).Width + _SpaceWidth;
 			_DirtBarWidth = Math.Max( 3, _SpaceWidth >> 1 );
 
 			// update metrics related with horizontal ruler
 			_HRulerHeight = (int)( _LineHeight / GoldenRatio ) + 2;
 			_HRulerY_5 = (int)( _HRulerHeight / (GoldenRatio * GoldenRatio) );
 			_HRulerY_1 = (int)( _HRulerHeight / (GoldenRatio) );
-			_Gra.FontInfo = _HRulerFont;
-			_HRulerTextHeight = (int)( _Gra.MeasureText("Mp").Height * 0.97 );
-			_Gra.FontInfo = _Font;
+			g.FontInfo = _HRulerFont;
+			_HRulerTextHeight = (int)( g.MeasureText("Mp").Height * 0.97 );
+			g.FontInfo = _Font;
 
 			// calculate minimum text area width
 			_MinimumTextAreaWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
@@ -560,9 +550,12 @@ namespace Sgry.Azuki
 				if( value <= 0 )
 					throw new ArgumentOutOfRangeException( "value", "TabWidth must not be a negative number (given value:"+value+".)" );
 
+				using( IGraphics g = _UI.GetIGraphics() )
+				{
 				_TabWidth = value;
-				UpdateMetrics();
+				UpdateMetrics( g );
 				Invalidate();
+				}
 			}
 		}
 		
@@ -708,7 +701,26 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public void SetDesiredColumn()
 		{
-			Document.ViewParam.DesiredColumnX = GetVirPosFromIndex( Document.CaretIndex ).X;
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				SetDesiredColumn( g );
+			}
+		}
+
+		/// <summary>
+		/// Sets column index of the current caret position to "desired column" value.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When the caret moves up or down,
+		/// Azuki tries to set next caret's column index to this value.
+		/// Note that "desired column" is associated with each document
+		/// so this value may change when Document property was set to another document.
+		/// </para>
+		/// </remarks>
+		public void SetDesiredColumn( IGraphics g )
+		{
+			Document.ViewParam.DesiredColumnX = GetVirPosFromIndex( g, Document.CaretIndex ).X;
 		}
 
 		/// <summary>
@@ -732,20 +744,58 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public abstract Point GetVirPosFromIndex( int index );
+		public Point GetVirPosFromIndex( int index )
+		{
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				return GetVirPosFromIndex( g, index );
+			}
+		}
 
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public abstract Point GetVirPosFromIndex( int lineIndex, int columnIndex );
+		public abstract Point GetVirPosFromIndex( IGraphics g, int index );
+
+		/// <summary>
+		/// Calculates location in the virtual space of the character at specified index.
+		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
+		public Point GetVirPosFromIndex( int lineIndex, int columnIndex )
+		{
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				return GetVirPosFromIndex( g, lineIndex, columnIndex );
+			}
+		}
+
+		/// <summary>
+		/// Calculates location in the virtual space of the character at specified index.
+		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
+		public abstract Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex );
 
 		/// <summary>
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
-		public abstract int GetIndexFromVirPos( Point pt );
+		public int GetIndexFromVirPos( Point pt )
+		{
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				return GetIndexFromVirPos( g, pt );
+			}
+		}
+
+		/// <summary>
+		/// Gets char-index of the char at the point specified by location in the virtual space.
+		/// </summary>
+		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
+		public abstract int GetIndexFromVirPos( IGraphics g, Point pt );
 
 		/// <summary>
 		/// Converts a coordinate in virtual space to a coordinate in client area.
@@ -909,7 +959,10 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "charIndex", "Specified index is out of range. (value:"+charIndex+", document length:"+Document.Length+")" );
 
 			// calculate location of the character in coordinate in virtual text area
-			virPos = GetVirPosFromIndex( charIndex );
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				virPos = GetVirPosFromIndex( g, charIndex );
+			}
 
 			// calculate how many smallest lines exist at left of the character
 			return (virPos.X / HRulerUnitWidth);
@@ -943,7 +996,10 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "columnIndex", "Specified index is out of range. (value:"+columnIndex+")" );
 
 			// calculate location of the character in coordinate in virtual text area
-			virPos = GetVirPosFromIndex( lineIndex, columnIndex );
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				virPos = GetVirPosFromIndex( g, lineIndex, columnIndex );
+			}
 
 			// calculate how many smallest lines exist at left of the character
 			return (virPos.X / HRulerUnitWidth);
@@ -955,6 +1011,17 @@ namespace Sgry.Azuki
 		/// Scroll to where the caret is.
 		/// </summary>
 		public void ScrollToCaret()
+		{
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				ScrollToCaret( g );
+			}
+		}
+
+		/// <summary>
+		/// Scroll to where the caret is.
+		/// </summary>
+		public void ScrollToCaret( IGraphics g )
 		{
 			Rectangle threshRect = new Rectangle();
 			Point caretPos;
@@ -975,7 +1042,7 @@ namespace Sgry.Azuki
 			}
 
 			// calculate caret position
-			caretPos = GetVirPosFromIndex( Document.CaretIndex );
+			caretPos = GetVirPosFromIndex( g, Document.CaretIndex );
 			if( threshRect.Left <= caretPos.X
 				&& caretPos.X <= threshRect.Right
 				&& threshRect.Top <= caretPos.Y
@@ -1019,7 +1086,7 @@ namespace Sgry.Azuki
 			// just scrolling horizontal ruler area may make uncompeltely drawn indicator
 			if( ShowsHRuler && 0 < hDelta )
 			{
-				UpdateHRuler();
+				UpdateHRuler( g );
 			}
 		}
 
@@ -1156,6 +1223,13 @@ namespace Sgry.Azuki
 		public abstract void Invalidate( int beginIndex, int endIndex );
 
 		/// <summary>
+		/// Requests to invalidate area covered by given text range.
+		/// </summary>
+		/// <param name="beginIndex">Begin text index of the area to be invalidated.</param>
+		/// <param name="endIndex">End text index of the area to be invalidated.</param>
+		public abstract void Invalidate( IGraphics g, int beginIndex, int endIndex );
+
+		/// <summary>
 		/// Sets font size to larger one.
 		/// </summary>
 		public void ZoomIn()
@@ -1225,8 +1299,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal virtual void HandleDocumentChanged( Document prevDocument )
 		{
-			// adjust for new document
-			UpdateLineNumberWidth();
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+			// reset width of line number area
+			UpdateLineNumberWidth( g );
 
 			// re-calculate line index of caret and anchor
 			Document.ViewParam.PrevCaretLine
@@ -1235,7 +1311,8 @@ namespace Sgry.Azuki
 				= GetLineIndexFromCharIndex( Document.AnchorIndex );
 
 			// reset desired column to current caret position
-			SetDesiredColumn();
+			SetDesiredColumn( g );
+			}
 		}
 
 		/// <summary>
@@ -1265,20 +1342,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal abstract void HandleContentChanged( object sender, ContentChangedEventArgs e );
 
-		internal void HandleGraphicContextChanged()
-		{
-			if( _Gra != null )
-			{
-				_Gra.Dispose();
-			}
-			_Gra = _UI.GetIGraphics();
-			_Gra.FontInfo = this.FontInfo;
-		}
-
 		/// <summary>
 		/// Updates width of the line number area.
 		/// </summary>
-		protected void UpdateLineNumberWidth()
+		protected void UpdateLineNumberWidth( IGraphics g )
 		{
 			DebugUtl.Assert( this.Document != null );
 
@@ -1296,7 +1363,7 @@ namespace Sgry.Azuki
 					Document.ViewParam.MaxLineNumber = _LineNumberSamples[i];
 					if( _LastUsedLineNumberSample != _LineNumberSamples[i] )
 					{
-						UpdateMetrics();
+						UpdateMetrics( g );
 						Invalidate();
 					}
 					return;

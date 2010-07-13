@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-06-27
+// update: 2010-07-13
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -66,6 +66,8 @@ namespace Sgry.Azuki
 
 				if( base.TextAreaWidth != value )
 				{
+					using( IGraphics g = _UI.GetIGraphics() )
+					{
 					// update property
 					base.TextAreaWidth = value;
 
@@ -73,7 +75,7 @@ namespace Sgry.Azuki
 					string text = Document.Text;
 					PLHI.Clear();
 					PLHI.Add( 0 );
-					UpdatePLHI( 0, "", text );
+					UpdatePLHI( g, 0, "", text );
 
 					// re-calculate line index of caret and anchor
 					Document.ViewParam.PrevCaretLine
@@ -83,7 +85,8 @@ namespace Sgry.Azuki
 
 					// update desired column
 					// (must be done after UpdatePLHI)
-					SetDesiredColumn();
+					SetDesiredColumn( g );
+					}
 				}
 			}
 		}
@@ -125,7 +128,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override Point GetVirPosFromIndex( int index )
+		public override Point GetVirPosFromIndex( IGraphics g, int index )
 		{
 			int line, column;
 
@@ -137,7 +140,7 @@ namespace Sgry.Azuki
 					out column
 				);
 
-			return GetVirPosFromIndex( line, column );
+			return GetVirPosFromIndex( g, line, column );
 		}
 
 		/// <summary>
@@ -145,7 +148,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override Point GetVirPosFromIndex( int lineIndex, int columnIndex )
+		public override Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex )
 		{
 			if( lineIndex < 0 )
 				throw new ArgumentOutOfRangeException( "lineIndex("+lineIndex+")" );
@@ -167,7 +170,7 @@ namespace Sgry.Azuki
 				string leftPart = Document.GetTextInRange( lineBegin, lineBegin+columnIndex );
 
 				// measure the characters
-				pos.X = MeasureTokenEndX( leftPart, pos.X );
+				pos.X = MeasureTokenEndX( g, leftPart, pos.X );
 			}
 
 			return pos;
@@ -177,7 +180,7 @@ namespace Sgry.Azuki
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the character at specified location.</returns>
-		public override int GetIndexFromVirPos( Point pt )
+		public override int GetIndexFromVirPos( IGraphics g, Point pt )
 		{
 			int lineIndex, columnIndex;
 			int drawableTextLen;
@@ -215,7 +218,7 @@ namespace Sgry.Azuki
 
 				// calc maximum length of chars in line
 				int rightLimitX = pt.X;
-				int leftPartWidth = MeasureTokenEndX( line, 0, rightLimitX, out drawableTextLen );
+				int leftPartWidth = MeasureTokenEndX( g, line, 0, rightLimitX, out drawableTextLen );
 				columnIndex = drawableTextLen;
 
 				// if the location is nearer to the NEXT of that char,
@@ -223,7 +226,7 @@ namespace Sgry.Azuki
 				if( drawableTextLen < line.Length )
 				{
 					string nextChar = line[drawableTextLen].ToString();
-					int nextCharWidth = MeasureTokenEndX( nextChar, leftPartWidth ) - leftPartWidth;
+					int nextCharWidth = MeasureTokenEndX( g, nextChar, leftPartWidth ) - leftPartWidth;
 					if( leftPartWidth + nextCharWidth/2 < pt.X ) // == "x of middle of next char" < "x of click in virtual text area"
 					{
 						columnIndex = drawableTextLen + 1;
@@ -318,8 +321,10 @@ namespace Sgry.Azuki
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
 
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
 			// get position of the replacement
-			oldCaretVirPos = GetVirPosFromIndex( e.Index );
+			oldCaretVirPos = GetVirPosFromIndex( g, e.Index );
 			if( IsWrappedLineHead(doc, PLHI, e.Index) )
 			{
 				oldCaretVirPos.Y -= LineSpacing;
@@ -332,7 +337,7 @@ namespace Sgry.Azuki
 
 			// update physical line head indexes
 			prevLineCount = LineCount;
-			UpdatePLHI( e.Index, e.OldText, e.NewText );
+			UpdatePLHI( g, e.Index, e.OldText, e.NewText );
 #			if PLHI_DEBUG
 			string __result_of_new_logic__ = PLHI.ToString();
 			DoLayout();
@@ -346,7 +351,7 @@ namespace Sgry.Azuki
 #			endif
 
 			// update indicator graphic on horizontal ruler
-			UpdateHRuler();
+			UpdateHRuler( g );
 
 			// invalidate the part at right of the old selection
 			if( Document.IsCombiningCharacter(e.OldText, 0)
@@ -385,7 +390,7 @@ namespace Sgry.Azuki
 				// get position of the char at the end of the logical line
 				logLine = doc.GetLineIndexFromCharIndex( e.Index );
 				logLineEnd = doc.GetLineHeadIndex( logLine ) + doc.GetLineLength( logLine );
-				logLineEndPos = GetVirPosFromIndex( logLineEnd );
+				logLineEndPos = GetVirPosFromIndex( g, logLineEnd );
 				VirtualToScreen( ref logLineEndPos );
 				logLineBottom = logLineEndPos.Y - (LinePadding >> 1);
 
@@ -405,17 +410,18 @@ namespace Sgry.Azuki
 			}
 
 			// update left side of text area
-			UpdateDirtBar( doc.GetLineIndexFromCharIndex(e.Index) );
-			UpdateLineNumberWidth();
+			UpdateDirtBar( g, doc.GetLineIndexFromCharIndex(e.Index) );
+			UpdateLineNumberWidth( g );
 
 			//DO_NOT//base.HandleContentChanged( sender, e );
+			}
 		}
 
 		/// <summary>
 		/// Update dirt bar area.
 		/// </summary>
 		/// <param name="logLineIndex">dirt bar area for the line indicated by this index will be updated.</param>
-		void UpdateDirtBar( int logLineIndex )
+		void UpdateDirtBar( IGraphics g, int logLineIndex )
 		{
 			int logLineHeadIndex, logLineEndIndex;
 			Point top, bottom;
@@ -426,8 +432,8 @@ namespace Sgry.Azuki
 			logLineEndIndex = logLineHeadIndex + doc.GetLineLength( logLineIndex );
 
 			// get the screen position of both beginning and ending character
-			top = this.GetVirPosFromIndex( logLineHeadIndex );
-			bottom = this.GetVirPosFromIndex( logLineEndIndex );
+			top = this.GetVirPosFromIndex( g, logLineHeadIndex );
+			bottom = this.GetVirPosFromIndex( g, logLineEndIndex );
 			VirtualToScreen( ref top );
 			VirtualToScreen( ref bottom );
 			if( bottom.Y < YofTextArea )
@@ -444,7 +450,7 @@ namespace Sgry.Azuki
 			// overdraw dirt bar
 			for( int y=top.Y; y<bottom.Y; y+=LineSpacing )
 			{
-				DrawDirtBar( y, logLineIndex );
+				DrawDirtBar( g, y, logLineIndex );
 			}
 		}
 
@@ -531,6 +537,20 @@ namespace Sgry.Azuki
 		/// <param name="oldText">The text which is removed by the replacement.</param>
 		/// <param name="newText">The text which is inserted by the replacement.</param>
 		void UpdatePLHI( int index, string oldText, string newText )
+		{
+			using( IGraphics g = _UI.GetIGraphics() )
+			{
+				UpdatePLHI( g, index, oldText, newText );
+			}
+		}
+
+		/// <summary>
+		/// Maintain line head indexes.
+		/// </summary>
+		/// <param name="index">The index of the place where replacement was occurred.</param>
+		/// <param name="oldText">The text which is removed by the replacement.</param>
+		/// <param name="newText">The text which is inserted by the replacement.</param>
+		void UpdatePLHI( IGraphics g, int index, string oldText, string newText )
 		{
 			Debug.Assert( 0 < this.TabWidth );
 			Document doc = Document;
@@ -638,7 +658,7 @@ namespace Sgry.Azuki
 
 				// get next segment
 				string str = doc.GetTextInRange( ref begin, ref end );
-				x = MeasureTokenEndX( str, x, TextAreaWidth, out drawableLen );
+				x = MeasureTokenEndX( g, str, x, TextAreaWidth, out drawableLen );
 
 				// can this segment be written in this physical line?
 				if( drawableLen < str.Length
@@ -679,8 +699,9 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints content to a graphic device.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
-		public override void Paint( Rectangle clipRect )
+		public override void Paint( IGraphics g, Rectangle clipRect )
 		{
 			Debug.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			Debug.Assert( Document != null, "invalid state; Document is null" );
@@ -690,22 +711,22 @@ namespace Sgry.Azuki
 
 			// prepare off-screen buffer
 #			if !DRAW_SLOWLY
-			_Gra.BeginPaint( clipRect );
+			g.BeginPaint( clipRect );
 #			endif
 
 #			if DRAW_SLOWLY
-			_Gra.ForeColor = Color.Fuchsia;
-			_Gra.DrawRectangle( clipRect.X, clipRect.Y, clipRect.Width-1, clipRect.Height-1 );
-			_Gra.DrawLine( clipRect.X, clipRect.Y, clipRect.X+clipRect.Width-1, clipRect.Y+clipRect.Height-1 );
-			_Gra.DrawLine( clipRect.X+clipRect.Width-1, clipRect.Y, clipRect.X, clipRect.Y+clipRect.Height-1 );
+			g.ForeColor = Color.Fuchsia;
+			g.DrawRectangle( clipRect.X, clipRect.Y, clipRect.Width-1, clipRect.Height-1 );
+			g.DrawLine( clipRect.X, clipRect.Y, clipRect.X+clipRect.Width-1, clipRect.Y+clipRect.Height-1 );
+			g.DrawLine( clipRect.X+clipRect.Width-1, clipRect.Y, clipRect.X, clipRect.Y+clipRect.Height-1 );
 			DebugUtl.Sleep(400);
 #			endif
 
 			// draw horizontal ruler
-			DrawHRuler( clipRect );
+			DrawHRuler( g, clipRect );
 
 			// draw top margin
-			DrawTopMargin();
+			DrawTopMargin( g );
 
 			// draw all lines
 			pos.Y = YofTextArea;
@@ -717,30 +738,30 @@ namespace Sgry.Azuki
 					pos.X = -(ScrollPosX - XofTextArea);
 
 					// draw this line
-					DrawLine( i, ref pos, clipRect );
+					DrawLine( g, i, ref pos, clipRect );
 				}
 				pos.Y += LineSpacing;
 			}
 
 			// fill area below of the text
-			_Gra.BackColor = ColorScheme.BackColor;
-			_Gra.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
+			g.BackColor = ColorScheme.BackColor;
+			g.FillRectangle( 0, pos.Y, VisibleSize.Width, VisibleSize.Height-pos.Y );
 			for( int y=pos.Y; y<VisibleSize.Height; y+=LineSpacing )
 			{
-				DrawLeftOfLine( y, -1, false );
+				DrawLeftOfLine( g, y, -1, false );
 			}
 
 			// flush drawing results BEFORE updating current line highlight
 			// because the highlight graphic is never limited to clipping rect
 #			if !DRAW_SLOWLY
-			_Gra.EndPaint();
+			g.EndPaint();
 #			endif
 
 			// draw right edge
 			{
 				int x = (XofTextArea + TextAreaWidth) - ScrollPosX;
-				_Gra.ForeColor = ColorScheme.RightEdgeColor;
-				_Gra.DrawLine( x, YofTextArea, x, VisibleSize.Height );
+				g.ForeColor = ColorScheme.RightEdgeColor;
+				g.DrawLine( x, YofTextArea, x, VisibleSize.Height );
 			}
 
 			// draw underline to highlight current line if there is no selection
@@ -754,11 +775,11 @@ namespace Sgry.Azuki
 				caretPosY = YofTextArea + (caretLine - FirstVisibleLine) * LineSpacing;
 				
 				// draw underline to current line
-				DrawUnderLine( caretPosY, ColorScheme.HighlightColor );
+				DrawUnderLine( g, caretPosY, ColorScheme.HighlightColor );
 			}
 		}
 
-		void DrawLine( int lineIndex, ref Point pos, Rectangle clipRect )
+		void DrawLine( IGraphics g, int lineIndex, ref Point pos, Rectangle clipRect )
 		{
 			Debug.Assert( this.FontInfo != null );
 			Debug.Assert( this.Document != null );
@@ -802,12 +823,12 @@ namespace Sgry.Azuki
 					drawsText = false;
 				}
 
-				DrawLeftOfLine( pos.Y, logicalLineIndex+1, drawsText );
+				DrawLeftOfLine( g, pos.Y, logicalLineIndex+1, drawsText );
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}
 #			if !DRAW_SLOWLY
-			_Gra.SetClipRect( clipRect );
+			g.SetClipRect( clipRect );
 #			endif
 
 			// draw line text
@@ -822,7 +843,7 @@ namespace Sgry.Azuki
 				// calc next drawing pos before drawing text
 				{
 					int virLeft = pos.X - (XofTextArea - ScrollPosX);
-					tokenEndPos.X = MeasureTokenEndX( token, virLeft );
+					tokenEndPos.X = MeasureTokenEndX( g, token, virLeft );
 					tokenEndPos.X += (XofTextArea - ScrollPosX);
 				}
 
@@ -845,7 +866,7 @@ namespace Sgry.Azuki
 					int rightLimit = clipRect.Left - pos.X;
 
 					// calculate how many chars will not be in the clip-rect
-					invisWidth = MeasureTokenEndX( token, 0, rightLimit, out invisCharCount );
+					invisWidth = MeasureTokenEndX( g, token, 0, rightLimit, out invisCharCount );
 					if( 0 < invisCharCount && invisCharCount < token.Length )
 					{
 						// cut extra (invisible) part of the token
@@ -865,7 +886,7 @@ namespace Sgry.Azuki
 					int peekingCharRight = 0;
 
 					// calculate number of chars which fits within the clip-rect
-					visPartRight = MeasureTokenEndX( token, pos.X, clipRect.Right, out visCharCount );
+					visPartRight = MeasureTokenEndX( g, token, pos.X, clipRect.Right, out visCharCount );
 
 					// (if the clip-rect's right boundary is NOT the text area's right boundary,
 					// we must write one more char so that the peeking char appears at the boundary.)
@@ -887,7 +908,7 @@ namespace Sgry.Azuki
 					// calculate right end coordinate of the peeking char
 					if( peekingChar != String.Empty )
 					{
-						peekingCharRight = MeasureTokenEndX( peekingChar, visPartRight );
+						peekingCharRight = MeasureTokenEndX( g, peekingChar, visPartRight );
 					}
 
 					// cut trailing extra
@@ -899,7 +920,7 @@ namespace Sgry.Azuki
 				}
 
 				// draw this token
-				DrawToken( token, klass, inSelection, ref pos, ref tokenEndPos, ref clipRect );
+				DrawToken( g, token, klass, inSelection, ref pos, ref tokenEndPos, ref clipRect );
 
 			next_token:
 				// get next token
@@ -915,7 +936,7 @@ namespace Sgry.Azuki
 				if( lineHead == lineEnd
 					|| (0 < lineEnd && LineLogic.IsEolChar(Document[lineEnd-1]) == false) )
 				{
-					DrawEofMark( ref pos );
+					DrawEofMark( g, ref pos );
 				}
 			}
 
@@ -926,12 +947,12 @@ namespace Sgry.Azuki
 				// make drawing pos to text area's left if the line end does not exceed left of text area
 				if( pos.X < XofTextArea )
 					pos.X = XofTextArea;
-				_Gra.BackColor = ColorScheme.BackColor;
-				_Gra.FillRectangle( pos.X, pos.Y, clipRect.Right-pos.X, LineSpacing );
+				g.BackColor = ColorScheme.BackColor;
+				g.FillRectangle( pos.X, pos.Y, clipRect.Right-pos.X, LineSpacing );
 			}
 
 #			if !DRAW_SLOWLY
-			_Gra.RemoveClipRect();
+			g.RemoveClipRect();
 #			endif
 		}
 
@@ -940,7 +961,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
-		protected override void DrawUnderLine( int lineTopY, Color color )
+		protected override void DrawUnderLine( IGraphics g, int lineTopY, Color color )
 		{
 			if( lineTopY < 0 )
 				return;
@@ -953,8 +974,8 @@ namespace Sgry.Azuki
 			// draw underline
 			Point rightEnd = new Point( TextAreaWidth, 0 );
 			VirtualToScreen( ref rightEnd );
-			_Gra.ForeColor = color;
-			_Gra.DrawLine( XofTextArea, bottom, rightEnd.X-1, bottom );
+			g.ForeColor = color;
+			g.DrawLine( XofTextArea, bottom, rightEnd.X-1, bottom );
 		}
 		#endregion
 

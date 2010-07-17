@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-07-04
+// update: 2010-07-17
 //=========================================================
 using System;
 using System.Collections;
@@ -674,9 +674,35 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count < index ) // index can be equal to char-count
 				throw new ArgumentOutOfRangeException( "index", "Invalid index was given (index:"+index+", this.Length:"+Length+")." );
 
-			// ask word processor to get range of a word
+			// if specified position indicates an empty line, select nothing
+			if( IsEmptyLine(index) )
+			{
+				begin = end = index;
+				return String.Empty;
+			}
+
+			// ask word processor where the word starting/ending positions are
 			begin = WordProc.PrevWordStart( this, index );
 			end = WordProc.NextWordEnd( this, index );
+			if( begin == end )
+			{
+				if( Length <= end || Char.IsWhiteSpace(this[end]) )
+				{
+					if( 0 <= index-1 )
+						begin = WordProc.PrevWordStart( this, index-1 );
+					else
+						begin = 0;
+				}
+				else
+				{
+					if( index+1 < Length )
+						end = WordProc.NextWordEnd( this, index+1 );
+					else
+						end = Length;
+				}
+			}
+
+			// validate result
 			if( begin < 0 || end < 0 || end <= begin )
 			{
 				return String.Empty;
@@ -2195,7 +2221,11 @@ namespace Sgry.Azuki
 		/// </summary>
 		public char this[ int index ]
 		{
-			get{ return _Buffer[index]; }
+			get
+			{
+				Debug.Assert( 0 <= index && index < Length, "Document.this[int] needs a valid index (given index:"+index+", this.Length:"+Length+")" );
+				return _Buffer[index];
+			}
 		}
 
 		/// <summary>
@@ -2455,6 +2485,22 @@ namespace Sgry.Azuki
 
 				return rect;
 			}
+		}
+
+		bool IsEmptyLine( int index )
+		{
+			// is the index indicates end of the document or end of a line?
+			if( index == Length
+				|| index < Length && LineLogic.IsEolChar(this[index]))
+			{
+				// is the index indicates start of the document or start of a line?
+				if( index == 0
+					|| 0 <= index-1 && LineLogic.IsEolChar(this[index-1]) )
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 		#endregion
 	}

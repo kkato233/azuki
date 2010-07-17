@@ -213,27 +213,26 @@ namespace Sgry.Azuki
 			if( dirtyState == LineDirtyState.Cleaned )
 			{
 				backColor = ColorScheme.CleanedLineBar;
+				if( backColor == Color.Transparent )
+				{
+					backColor = Utl.BackColorOfLineNumber( ColorScheme );
+				}
 			}
 			else if( dirtyState == LineDirtyState.Dirty )
 			{
 				backColor = ColorScheme.DirtyLineBar;
+				if( backColor == Color.Transparent )
+				{
+					backColor = Utl.BackColorOfLineNumber( ColorScheme );
+				}
 			}
 			else
 			{
-				backColor = ColorScheme.LineNumberBack;
-			}
-
-			// apply back-ground color
-			if( backColor != Color.Transparent )
-			{
-				g.BackColor = backColor;
-			}
-			else
-			{
-				g.BackColor = ColorScheme.BackColor;
+				backColor = Utl.BackColorOfLineNumber( ColorScheme );
 			}
 
 			// fill
+			g.BackColor = backColor;
 			g.FillRectangle( XofDirtBar, lineTopY, DirtBarWidth, LineSpacing );
 		}
 
@@ -252,10 +251,7 @@ namespace Sgry.Azuki
 			// fill line number area
 			if( ShowLineNumber )
 			{
-				if( ColorScheme.LineNumberBack != Color.Transparent )
-					g.BackColor = ColorScheme.LineNumberBack;
-				else
-					g.BackColor = ColorScheme.BackColor;
+				g.BackColor = Utl.BackColorOfLineNumber( ColorScheme );
 				g.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
 			}
 
@@ -285,15 +281,14 @@ namespace Sgry.Azuki
 				textPos.Y += (LinePadding >> 1);
 
 				// draw text
-				g.ForeColor = ColorScheme.LineNumberFore;
-				g.DrawText( lineNumText, ref textPos, ColorScheme.LineNumberFore );
+				g.DrawText( lineNumText, ref textPos, Utl.ForeColorOfLineNumber(ColorScheme) );
 			}
 
 			// draw margin line between the line number area and text area
 			if( ShowLineNumber || ShowsDirtBar )
 			{
 				pos.X = XofLeftMargin - 1;
-				g.ForeColor = ColorScheme.LineNumberFore;
+				g.ForeColor = Utl.ForeColorOfLineNumber( ColorScheme );
 				g.DrawLine( pos.X, pos.Y, pos.X, pos.Y+LineSpacing );
 			}
 		}
@@ -314,11 +309,8 @@ namespace Sgry.Azuki
 			g.SetClipRect( clipRect );
 
 			// fill ruler area
-			g.ForeColor = ColorScheme.LineNumberFore;
-			if( ColorScheme.LineNumberBack != Color.Transparent )
-				g.BackColor = ColorScheme.LineNumberBack;
-			else
-				g.BackColor = ColorScheme.BackColor;
+			g.ForeColor = Utl.ForeColorOfLineNumber( ColorScheme );
+			g.BackColor = Utl.BackColorOfLineNumber( ColorScheme );
 			g.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
 
 			// if clipping rectangle covers left of text area,
@@ -365,7 +357,7 @@ namespace Sgry.Azuki
 					// draw column text
 					columnNumberText = (rulerIndex / 10).ToString();
 					pos = new Point( lineX+2, YofHRuler );
-					g.DrawText( columnNumberText, ref pos, ColorScheme.LineNumberFore );
+					g.DrawText( columnNumberText, ref pos, Utl.ForeColorOfLineNumber(ColorScheme) );
 				}
 				else if( (rulerIndex % 5) == 0 )
 				{
@@ -470,10 +462,7 @@ namespace Sgry.Azuki
 		protected void DrawTopMargin( IGraphics g )
 		{
 			// fill area above the line-number area [copied from DrawLineNumber]
-			if( ColorScheme.LineNumberBack != Color.Transparent )
-				g.BackColor = ColorScheme.LineNumberBack;
-			else
-				g.BackColor = ColorScheme.BackColor;
+			g.BackColor = Utl.BackColorOfLineNumber( ColorScheme );
 			g.FillRectangle(
 					XofLineNumberArea, YofTopMargin,
 					XofTextArea-XofLineNumberArea, TopMargin
@@ -485,7 +474,7 @@ namespace Sgry.Azuki
 
 			// draw margin line between the line number area and text area [copied from DrawLineNumber]
 			int x = XofLeftMargin - 1;
-			g.ForeColor = ColorScheme.LineNumberFore;
+			g.ForeColor = Utl.ForeColorOfLineNumber( ColorScheme );
 			g.DrawLine( x, YofTopMargin, x, YofTopMargin+TopMargin );
 
 			// fill area above the text area
@@ -969,6 +958,7 @@ namespace Sgry.Azuki
 					out Color fore, out Color back
 				)
 			{
+				// set fore and back color
 				if( inSelection )
 				{
 					fore = cs.SelectionFore;
@@ -977,11 +967,33 @@ namespace Sgry.Azuki
 				else
 				{
 					cs.GetColor( klass, out fore, out back );
-					if( back == Color.Transparent )
-					{
-						back = cs.BackColor;
-					}
 				}
+
+				// fallback if it is transparent
+				if( fore == Color.Transparent )
+				{
+					fore = cs.ForeColor;
+				}
+				if( back == Color.Transparent )
+				{
+					back = cs.BackColor;
+				}
+			}
+
+			public static Color ForeColorOfLineNumber( ColorScheme cs )
+			{
+				if( cs.LineNumberFore != Color.Transparent )
+					return cs.LineNumberFore;
+				else
+					return cs.ForeColor;
+			}
+
+			public static Color BackColorOfLineNumber( ColorScheme cs )
+			{
+				if( cs.LineNumberBack != Color.Transparent )
+					return cs.LineNumberBack;
+				else
+					return cs.BackColor;
 			}
 
 			/// <summary>

@@ -100,17 +100,12 @@ namespace Sgry.Azuki
 		/// for drawing tokens of the CharClass.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">
-		///		Parameter '<paramref name="fore"/>' is Color.Transparent.
-		///		- or -
-		///		Parameter '<paramref name="back"/>' is Color.Transparent but parameter '<paramref name="klass"/>' is CharClass.Normal.
-		/// </exception>
+		/// <exception cref="System.ArgumentException">Color.Transparent was set to CharClass.Normal.</exception>
 		public void SetColor( CharClass klass, Color fore, Color back )
 		{
-			if( fore == Color.Transparent )
-				throw new ArgumentException( "fore-ground color must not be Color.Transparent.", "fore" );
-			if( klass == CharClass.Normal && back == Color.Transparent )
-				throw new ArgumentException( "back-ground color for CharClass.Normal must not be Color.Transparent.", "back" );
+			if( klass == CharClass.Normal
+				&& (fore == Color.Transparent || back == Color.Transparent) )
+				throw new ArgumentException( "fore-ground color or back-ground color for CharClass.Normal must not be Color.Transparent." );
 
 			_ForeColors[ (byte)klass ] = fore;
 			_BackColors[ (byte)klass ] = back;
@@ -201,19 +196,31 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Foreground color of normal text.
 		/// </summary>
+		/// <exception cref="System.ArgumentException">Set value is Color.Transparent.</exception>
 		public Color ForeColor
 		{
 			get{ return _ForeColors[0]; }
-			set{ _ForeColors[0] = value; }
+			set
+			{
+				if( value == Color.Transparent )
+					throw new ArgumentException( "fore-ground color for CharClass.Normal must not be Color.Transparent." );
+				_ForeColors[0] = value;
+			}
 		}
 
 		/// <summary>
 		/// Background color of normal text.
 		/// </summary>
+		/// <exception cref="System.ArgumentException">Set value is Color.Transparent.</exception>
 		public Color BackColor
 		{
 			get{ return _BackColors[0]; }
-			set{ _BackColors[0] = value; }
+			set
+			{
+				if( value == Color.Transparent )
+					throw new ArgumentException( "back-ground color for CharClass.Normal must not be Color.Transparent." );
+				_BackColors[0] = value;
+			}
 		}
 
 		/// <summary>

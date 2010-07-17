@@ -434,6 +434,10 @@ namespace Sgry.Ann
 			{
 				Alert( ex );
 			}
+			catch( OutOfMemoryException ex )
+			{
+				Alert( ex );
+			}
 			
 			return null;
 		}
@@ -735,6 +739,7 @@ namespace Sgry.Ann
 			}
 		}
 
+		/// <exception cref="System.OutOfMemoryException">There is no enough memory to operate.</exception>
 		void LoadFileContentToDocument( Document doc, string filePath, Encoding encoding, bool withBom )
 		{
 			Debug.Assert( doc != null );

@@ -17,6 +17,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints content to a graphic device.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public abstract void Paint( IGraphics g, Rectangle clipRect );
 
@@ -175,6 +176,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Draws underline for the line specified by it's Y coordinate.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
 		protected virtual void DrawUnderLine( IGraphics g, int lineTopY, Color color )
@@ -227,6 +229,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Draws line number area at specified line.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="lineNumber">line number to be drawn.</param>
 		/// <param name="drawsText">specify true if line number text should be drawn.</param>

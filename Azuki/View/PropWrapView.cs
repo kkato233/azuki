@@ -420,6 +420,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Update dirt bar area.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="logLineIndex">dirt bar area for the line indicated by this index will be updated.</param>
 		void UpdateDirtBar( IGraphics g, int logLineIndex )
 		{
@@ -547,6 +548,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Maintain line head indexes.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="index">The index of the place where replacement was occurred.</param>
 		/// <param name="oldText">The text which is removed by the replacement.</param>
 		/// <param name="newText">The text which is inserted by the replacement.</param>
@@ -959,6 +961,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Draws underline for the line specified by it's Y coordinate.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="lineTopY">Y-coordinate of the target line.</param>
 		/// <param name="color">Color to be used for drawing the underline.</param>
 		protected override void DrawUnderLine( IGraphics g, int lineTopY, Color color )

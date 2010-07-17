@@ -94,6 +94,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets the size of the internal buffer.
 		/// </summary>
+		/// <exception cref="System.OutOfMemoryException">There is no enough memory to expand buffer.</exception>
 		public virtual int Capacity
 		{
 			get{ return _Data.Length; }
@@ -502,6 +503,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Ensures the buffer is capable to insert data.
 		/// </summary>
+		/// <exception cref="System.OutOfMemoryException">There is no enough memory to expand buffer.</exception>
 		void EnsureSpaceForInsertion( int insertLength )
 		{
 			DebugUtl.Assert( _Data != null );
@@ -565,6 +567,7 @@ namespace Sgry.Azuki
 			get{ return _GapPos; }
 		}
 
+		/// <exception cref="System.OutOfMemoryException">There is no enough memory to expand buffer.</exception>
 		void ResizeArray( ref T[] array, int newSize )
 		{
 #			if !PocketPC

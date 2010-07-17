@@ -1225,6 +1225,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Requests to invalidate area covered by given text range.
 		/// </summary>
+		/// <param name="g">graphic drawing interface to be used.</param>
 		/// <param name="beginIndex">Begin text index of the area to be invalidated.</param>
 		/// <param name="endIndex">End text index of the area to be invalidated.</param>
 		public abstract void Invalidate( IGraphics g, int beginIndex, int endIndex );

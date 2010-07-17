@@ -217,6 +217,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets the size of the internal buffer.
 		/// </summary>
+		/// <exception cref="System.OutOfMemoryException">There is no enough memory to expand buffer.</exception>
 		public int Capacity
 		{
 			get{ return _Buffer.Capacity; }

@@ -1,6 +1,7 @@
 == 1.6.0 (    -  -  ) ==
  * add: now Azuki supports word wrap including kinsoku shori
  * add: now Unicode combining charcter sequence can be treated as one character on selecting or editing
+ * add: now uses ColorScheme.BackColor if back-ground for a CharClass was set to Color.Transparent
  * add: now selecting text by line can be executed by keyboard
  * add: now selection mode can be set programatically through Document.SelectionMode property
  * add: now with Document.SetSelection method, Azuki can select text line by line

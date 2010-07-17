@@ -959,6 +959,8 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets class of the character at given index.
 		/// </summary>
+		/// <param name="index">The index of character which class is to be determined.</param>
+		/// <returns>The class of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		public CharClass GetCharClass( int index )
 		{

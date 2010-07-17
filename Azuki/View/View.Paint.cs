@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-07-17
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -201,6 +201,7 @@ namespace Sgry.Azuki
 		{
 			Debug.Assert( ((lineTopY-YofTextArea) % LineSpacing) == 0, "((lineTopY-YofTextArea) % LineSpacing) is not 0 but " + (lineTopY-YofTextArea) % LineSpacing );
 			LineDirtyState dirtyState;
+			Color backColor;
 
 			// get dirty state of the line
 			if( 0 <= logicalLineIndex && logicalLineIndex < Document.LineCount )
@@ -208,18 +209,28 @@ namespace Sgry.Azuki
 			else
 				dirtyState = LineDirtyState.Clean;
 
-			// choose color
+			// choose back-ground color
 			if( dirtyState == LineDirtyState.Cleaned )
 			{
-				g.BackColor = ColorScheme.CleanedLineBar;
+				backColor = ColorScheme.CleanedLineBar;
 			}
 			else if( dirtyState == LineDirtyState.Dirty )
 			{
-				g.BackColor = ColorScheme.DirtyLineBar;
+				backColor = ColorScheme.DirtyLineBar;
 			}
 			else
 			{
-				g.BackColor = ColorScheme.LineNumberBack;
+				backColor = ColorScheme.LineNumberBack;
+			}
+
+			// apply back-ground color
+			if( backColor != Color.Transparent )
+			{
+				g.BackColor = backColor;
+			}
+			else
+			{
+				g.BackColor = ColorScheme.BackColor;
 			}
 
 			// fill
@@ -241,7 +252,10 @@ namespace Sgry.Azuki
 			// fill line number area
 			if( ShowLineNumber )
 			{
-				g.BackColor = ColorScheme.LineNumberBack;
+				if( ColorScheme.LineNumberBack != Color.Transparent )
+					g.BackColor = ColorScheme.LineNumberBack;
+				else
+					g.BackColor = ColorScheme.BackColor;
 				g.FillRectangle( XofLineNumberArea, pos.Y, LineNumAreaWidth, LineSpacing );
 			}
 
@@ -301,7 +315,10 @@ namespace Sgry.Azuki
 
 			// fill ruler area
 			g.ForeColor = ColorScheme.LineNumberFore;
-			g.BackColor = ColorScheme.LineNumberBack;
+			if( ColorScheme.LineNumberBack != Color.Transparent )
+				g.BackColor = ColorScheme.LineNumberBack;
+			else
+				g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle( 0, YofHRuler, VisibleSize.Width, HRulerHeight );
 
 			// if clipping rectangle covers left of text area,
@@ -453,7 +470,10 @@ namespace Sgry.Azuki
 		protected void DrawTopMargin( IGraphics g )
 		{
 			// fill area above the line-number area [copied from DrawLineNumber]
-			g.BackColor = ColorScheme.LineNumberBack;
+			if( ColorScheme.LineNumberBack != Color.Transparent )
+				g.BackColor = ColorScheme.LineNumberBack;
+			else
+				g.BackColor = ColorScheme.BackColor;
 			g.FillRectangle(
 					XofLineNumberArea, YofTopMargin,
 					XofTextArea-XofLineNumberArea, TopMargin
@@ -957,6 +977,10 @@ namespace Sgry.Azuki
 				else
 				{
 					cs.GetColor( klass, out fore, out back );
+					if( back == Color.Transparent )
+					{
+						back = cs.BackColor;
+					}
 				}
 			}
 

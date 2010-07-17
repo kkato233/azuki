@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2010-06-19
+// update: 2010-07-17
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -15,11 +15,33 @@ namespace Sgry.Azuki
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// ColorScheme is a set of pairs of foreground color and background color
-	/// and is used to draw tokens of document.
+	/// ColorScheme defines color set used for drawing document by Azuki.
+	/// </para>
+	/// <para>
+	/// ColorScheme is consisted with two major parts.
+	/// First part is a set of pairs of fore-ground color and back-ground color
+	/// associated with each <see cref="Sgry.Azuki.CharClass">CharClass</see>.
+	/// The view objects will reference this
+	/// to determine which color should be used for each token by its character-class.
+	/// This set can be accessed through
+	/// <see cref="Sgry.Azuki.ColorScheme.GetColor">GetColor method</see>
+	/// or <see cref="Sgry.Azuki.ColorScheme.SetColor">SetColor method</see>.
+	/// Second part is color values used to draw graphic
+	/// such as selected text, line numbers, control characters and so on.
+	/// Values of this part are defined as
+	/// public properties of this class.
+	/// </para>
+	/// <para>
+	/// Note that if back-ground color for a CharClass except CharClass.Normal
+	/// was set to Color.Transparent,
+	/// Azuki uses the color of
+	/// <see cref="Sgry.Azuki.ColorScheme.BackColor">BackColor property</see>
+	/// for drawing tokens of the character-class.
 	/// </para>
 	/// </remarks>
 	/// <seealso cref="Sgry.Azuki.CharClass">CharClass enum</seealso>
+	/// <seealso cref="Sgry.Azuki.ColorScheme.GetColor">GetColor method</seealso>
+	/// <seealso cref="Sgry.Azuki.ColorScheme.SetColor">SetColor method</seealso>
 	public class ColorScheme
 	{
 		Color[] _ForeColors = new Color[ Byte.MaxValue ];
@@ -37,11 +59,22 @@ namespace Sgry.Azuki
 
 		#region Operations
 		/// <summary>
-		/// Gets color pair for a char-class.
+		/// Gets color pair for a character-class.
 		/// </summary>
-		/// <param name="klass">The color-pair associated with this char-class will be got.</param>
-		/// <param name="fore">Foreground color used to draw characters marked as the char-class.</param>
-		/// <param name="back">Background color used to draw characters marked as the char-class.</param>
+		/// <param name="klass">The color-pair associated with this character-class will be got.</param>
+		/// <param name="fore">Foreground color used to draw characters marked as the character-class.</param>
+		/// <param name="back">Background color used to draw characters marked as the character-class.</param>
+		/// <remarks>
+		/// <para>
+		/// This method gets a pair of colors which is associated with
+		/// CharClass specified by parameter '<paramref name="klass"/>.'
+		/// </para>
+		/// <para>
+		/// Note that, although Azuki does not use actually set back-ground color value
+		/// if it was Color.Transparent,
+		/// this method returns the actually set value (Color.Transparent) in the case.
+		/// </para>
+		/// </remarks>
 		public void GetColor( CharClass klass, out Color fore, out Color back )
 		{
 			fore = _ForeColors[ (byte)klass ];
@@ -49,13 +82,36 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Sets color pair for a char-class.
+		/// Sets color pair for a character-class.
 		/// </summary>
-		/// <param name="klass">The color-pair associated with this char-class will be got.</param>
-		/// <param name="fore">Foreground color used to draw characters marked as the char-class.</param>
-		/// <param name="back">Background color used to draw characters marked as the char-class.</param>
+		/// <param name="klass">The color-pair associated with this character-class will be got.</param>
+		/// <param name="fore">Fore-ground color used to draw characters marked as the character-class.</param>
+		/// <param name="back">Back-ground color used to draw characters marked as the character-class.</param>
+		/// <remarks>
+		/// <para>
+		/// This method sets a pair of colors which is associated with
+		/// CharClass specified by parameter '<paramref name="klass"/>.'
+		/// </para>
+		/// <para>
+		/// Note that if Color.Transparent was set for back-ground color
+		/// of a CharClass except CharClass.Normal,
+		/// Azuki uses the color of
+		/// <see cref="Sgry.Azuki.ColorScheme.BackColor">BackColor property</see>
+		/// for drawing tokens of the CharClass.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter '<paramref name="fore"/>' is Color.Transparent.
+		///		- or -
+		///		Parameter '<paramref name="back"/>' is Color.Transparent but parameter '<paramref name="klass"/>' is CharClass.Normal.
+		/// </exception>
 		public void SetColor( CharClass klass, Color fore, Color back )
 		{
+			if( fore == Color.Transparent )
+				throw new ArgumentException( "fore-ground color must not be Color.Transparent.", "fore" );
+			if( klass == CharClass.Normal && back == Color.Transparent )
+				throw new ArgumentException( "back-ground color for CharClass.Normal must not be Color.Transparent.", "back" );
+
 			_ForeColors[ (byte)klass ] = fore;
 			_BackColors[ (byte)klass ] = back;
 		}
@@ -94,32 +150,32 @@ namespace Sgry.Azuki
 			Color sax_blue = Color.FromArgb( 0x46, 0x48, 0xb8 );
 			
 			SetColor( CharClass.Normal, Color.Black, bgcolor );
-			SetColor( CharClass.Number, Color.Black, bgcolor );
-			SetColor( CharClass.String, Color.Teal, bgcolor );
-			SetColor( CharClass.Comment, Color.Green, bgcolor );
-			SetColor( CharClass.DocComment, Color.Gray, bgcolor );
-			SetColor( CharClass.Keyword, Color.Blue, bgcolor );
-			SetColor( CharClass.Keyword2, Color.Maroon, bgcolor );
-			SetColor( CharClass.Keyword3, Color.Navy, bgcolor );
-			SetColor( CharClass.Macro, Color.Purple, bgcolor );
-			SetColor( CharClass.Character, Color.Purple, bgcolor );
-			SetColor( CharClass.Type, Color.BlueViolet, bgcolor );
-			SetColor( CharClass.Regex, Color.Teal, bgcolor );
-			SetColor( CharClass.Annotation, Color.Gray, bgcolor );
-			SetColor( CharClass.Selecter, Color.Navy, bgcolor );
-			SetColor( CharClass.Property, Color.Blue, bgcolor );
-			SetColor( CharClass.Value, Color.Red, bgcolor );
-			SetColor( CharClass.ElementName, Color.Maroon, bgcolor );
-			SetColor( CharClass.Entity, Color.Gray, bgcolor );
-			SetColor( CharClass.Attribute, Color.Navy, bgcolor );
-			SetColor( CharClass.AttributeValue, Color.Navy, bgcolor );
-			SetColor( CharClass.EmbededScript, Color.Gray, bgcolor );
-			SetColor( CharClass.Delimiter, Color.Blue, bgcolor );
-			SetColor( CharClass.CDataSection, Color.Silver, bgcolor );
-			SetColor( CharClass.LatexBracket, Color.Teal, bgcolor );
-			SetColor( CharClass.LatexCommand, sax_blue, bgcolor );
-			SetColor( CharClass.LatexCurlyBracket, Color.Maroon, bgcolor );
-			SetColor( CharClass.LatexEquation, Color.Maroon, bgcolor );
+			SetColor( CharClass.Number, Color.Black, Color.Transparent );
+			SetColor( CharClass.String, Color.Teal, Color.Transparent );
+			SetColor( CharClass.Comment, Color.Green, Color.Transparent );
+			SetColor( CharClass.DocComment, Color.Gray, Color.Transparent );
+			SetColor( CharClass.Keyword, Color.Blue, Color.Transparent );
+			SetColor( CharClass.Keyword2, Color.Maroon, Color.Transparent );
+			SetColor( CharClass.Keyword3, Color.Navy, Color.Transparent );
+			SetColor( CharClass.Macro, Color.Purple, Color.Transparent );
+			SetColor( CharClass.Character, Color.Purple, Color.Transparent );
+			SetColor( CharClass.Type, Color.BlueViolet, Color.Transparent );
+			SetColor( CharClass.Regex, Color.Teal, Color.Transparent );
+			SetColor( CharClass.Annotation, Color.Gray, Color.Transparent );
+			SetColor( CharClass.Selecter, Color.Navy, Color.Transparent );
+			SetColor( CharClass.Property, Color.Blue, Color.Transparent );
+			SetColor( CharClass.Value, Color.Red, Color.Transparent );
+			SetColor( CharClass.ElementName, Color.Maroon, Color.Transparent );
+			SetColor( CharClass.Entity, Color.Gray, Color.Transparent );
+			SetColor( CharClass.Attribute, Color.Navy, Color.Transparent );
+			SetColor( CharClass.AttributeValue, Color.Navy, Color.Transparent );
+			SetColor( CharClass.EmbededScript, Color.Gray, Color.Transparent );
+			SetColor( CharClass.Delimiter, Color.Blue, Color.Transparent );
+			SetColor( CharClass.CDataSection, Color.Silver, Color.Transparent );
+			SetColor( CharClass.LatexBracket, Color.Teal, Color.Transparent );
+			SetColor( CharClass.LatexCommand, sax_blue, Color.Transparent );
+			SetColor( CharClass.LatexCurlyBracket, Color.Maroon, Color.Transparent );
+			SetColor( CharClass.LatexEquation, Color.Maroon, Color.Transparent );
 			SetColor( CharClass.Heading1, Color.Black, Color.FromArgb(0xff, 0xff, 0x00) ); // -LOG( 1/1.0 )
 			SetColor( CharClass.Heading2, Color.Black, Color.FromArgb(0xff, 0xff, 0x65) ); // -LOG( 1/2.5 )
 			SetColor( CharClass.Heading3, Color.Black, Color.FromArgb(0xff, 0xff, 0x99) ); // -LOG( 1/4.0 )

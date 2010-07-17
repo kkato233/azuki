@@ -9,6 +9,7 @@
  * add: added new overload of Document.GetLineLength method
  * add: scroll margin can be set by number of lines with UserPref.AutoScrollMargin
  * mod: now AzukiControl.IsRectSelectModeChanged event is obsoleted by Document.SelectionModeChanged event
+ * mod: now KeywordHighlighter.SetKeywords method is obsoleted by AddKeywordSet method
  * mod: double buffering also be enabled for .NET Compact Framework version
  * mod: improved how a word is selected on double click
  * fix: corrected usage of 'GDI device context' which is system shared resource (incorrect usage might make graphics totally invalid)

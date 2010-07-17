@@ -217,7 +217,7 @@ namespace Sgry.Azuki.Highlighter
 		/// AddKeywordSet</see> method instead.
 		/// </para>
 		/// </remarks>
-		[Obsolete("Please use AddKeywordSet method instead.", false)]
+		[Obsolete("Please use AddKeywordSet method instead.", true)]
 		public void SetKeywords( string[] keywords, CharClass klass )
 		{
 			AddKeywordSet( keywords, klass, false );

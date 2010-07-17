@@ -669,7 +669,7 @@ namespace Sgry.Azuki
 					if( rightLimitX <= subTokenWidth )
 					{
 						// this tab hit the right limit.
-Debug.Assert( drawableLength == i );
+						Debug.Assert( drawableLength == i );
 						drawableLength = i;
 						return x;
 					}

@@ -552,9 +552,9 @@ namespace Sgry.Azuki
 
 				using( IGraphics g = _UI.GetIGraphics() )
 				{
-				_TabWidth = value;
-				UpdateMetrics( g );
-				Invalidate();
+					_TabWidth = value;
+					UpdateMetrics( g );
+					Invalidate();
 				}
 			}
 		}
@@ -1302,17 +1302,17 @@ namespace Sgry.Azuki
 		{
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-			// reset width of line number area
-			UpdateLineNumberWidth( g );
+				// reset width of line number area
+				UpdateLineNumberWidth( g );
 
-			// re-calculate line index of caret and anchor
-			Document.ViewParam.PrevCaretLine
-				= GetLineIndexFromCharIndex( Document.CaretIndex );
-			Document.ViewParam.PrevAnchorLine
-				= GetLineIndexFromCharIndex( Document.AnchorIndex );
+				// re-calculate line index of caret and anchor
+				Document.ViewParam.PrevCaretLine
+					= GetLineIndexFromCharIndex( Document.CaretIndex );
+				Document.ViewParam.PrevAnchorLine
+					= GetLineIndexFromCharIndex( Document.AnchorIndex );
 
-			// reset desired column to current caret position
-			SetDesiredColumn( g );
+				// reset desired column to current caret position
+				SetDesiredColumn( g );
 			}
 		}
 

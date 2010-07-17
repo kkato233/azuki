@@ -68,24 +68,24 @@ namespace Sgry.Azuki
 				{
 					using( IGraphics g = _UI.GetIGraphics() )
 					{
-					// update property
-					base.TextAreaWidth = value;
+						// update property
+						base.TextAreaWidth = value;
 
-					// update physical line head indexes
-					string text = Document.Text;
-					PLHI.Clear();
-					PLHI.Add( 0 );
-					UpdatePLHI( g, 0, "", text );
+						// update physical line head indexes
+						string text = Document.Text;
+						PLHI.Clear();
+						PLHI.Add( 0 );
+						UpdatePLHI( g, 0, "", text );
 
-					// re-calculate line index of caret and anchor
-					Document.ViewParam.PrevCaretLine
-						= GetLineIndexFromCharIndex( Document.CaretIndex );
-					Document.ViewParam.PrevAnchorLine
-						= GetLineIndexFromCharIndex( Document.AnchorIndex );
+						// re-calculate line index of caret and anchor
+						Document.ViewParam.PrevCaretLine
+							= GetLineIndexFromCharIndex( Document.CaretIndex );
+						Document.ViewParam.PrevAnchorLine
+							= GetLineIndexFromCharIndex( Document.AnchorIndex );
 
-					// update desired column
-					// (must be done after UpdatePLHI)
-					SetDesiredColumn( g );
+						// update desired column
+						// (must be done after UpdatePLHI)
+						SetDesiredColumn( g );
 					}
 				}
 			}
@@ -323,97 +323,97 @@ namespace Sgry.Azuki
 
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-			// get position of the replacement
-			oldCaretVirPos = GetVirPosFromIndex( g, e.Index );
-			if( IsWrappedLineHead(doc, PLHI, e.Index) )
-			{
-				oldCaretVirPos.Y -= LineSpacing;
-				if( oldCaretVirPos.Y < 0 )
+				// get position of the replacement
+				oldCaretVirPos = GetVirPosFromIndex( g, e.Index );
+				if( IsWrappedLineHead(doc, PLHI, e.Index) )
 				{
-					oldCaretVirPos.X = 0;
-					oldCaretVirPos.Y = 0;
+					oldCaretVirPos.Y -= LineSpacing;
+					if( oldCaretVirPos.Y < 0 )
+					{
+						oldCaretVirPos.X = 0;
+						oldCaretVirPos.Y = 0;
+					}
 				}
-			}
 
-			// update physical line head indexes
-			prevLineCount = LineCount;
-			UpdatePLHI( g, e.Index, e.OldText, e.NewText );
-#			if PLHI_DEBUG
-			string __result_of_new_logic__ = PLHI.ToString();
-			DoLayout();
-			if( __result_of_new_logic__ != PLHI.ToString() )
-			{
-				System.Windows.Forms.MessageBox.Show("sync error");
-				Console.Error.WriteLine( __result_of_new_logic__ );
-				Console.Error.WriteLine( PLHI );
-				Console.Error.WriteLine();
-			}
-#			endif
+				// update physical line head indexes
+				prevLineCount = LineCount;
+				UpdatePLHI( g, e.Index, e.OldText, e.NewText );
+#				if PLHI_DEBUG
+				string __result_of_new_logic__ = PLHI.ToString();
+				DoLayout();
+				if( __result_of_new_logic__ != PLHI.ToString() )
+				{
+					System.Windows.Forms.MessageBox.Show("sync error");
+					Console.Error.WriteLine( __result_of_new_logic__ );
+					Console.Error.WriteLine( PLHI );
+					Console.Error.WriteLine();
+				}
+#				endif
 
-			// update indicator graphic on horizontal ruler
-			UpdateHRuler( g );
+				// update indicator graphic on horizontal ruler
+				UpdateHRuler( g );
 
-			// invalidate the part at right of the old selection
-			if( Document.IsCombiningCharacter(e.OldText, 0)
-				|| Document.IsCombiningCharacter(e.NewText, 0) )
-			{
-				invalidRect1.X = 0; // [*1]
-			}
-			else
-			{
-				invalidRect1.X = oldCaretVirPos.X;
-			}
-			invalidRect1.Y = oldCaretVirPos.Y - (LinePadding >> 1);
-			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
-			invalidRect1.Height = LineSpacing;
-			VirtualToScreen( ref invalidRect1 );
+				// invalidate the part at right of the old selection
+				if( Document.IsCombiningCharacter(e.OldText, 0)
+					|| Document.IsCombiningCharacter(e.NewText, 0) )
+				{
+					invalidRect1.X = 0; // [*1]
+				}
+				else
+				{
+					invalidRect1.X = oldCaretVirPos.X;
+				}
+				invalidRect1.Y = oldCaretVirPos.Y - (LinePadding >> 1);
+				invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
+				invalidRect1.Height = LineSpacing;
+				VirtualToScreen( ref invalidRect1 );
 
-			// invalidate all lines below caret
-			// if old text or new text contains multiple lines
-			isMultiLine = LineLogic.IsMultiLine( e.NewText );
-			if( prevLineCount != PLHI.Count || isMultiLine )
-			{
-				//NO_NEED//invalidRect2.X = 0;
-				invalidRect2.Y = invalidRect1.Bottom;
-				invalidRect2.Width = VisibleSize.Width;
-				invalidRect2.Height = VisibleSize.Height - invalidRect2.Top;
-			}
-			else
-			{
-				// if the replacement changed physical line count,
-				// invalidate this *logical* line
-				int logLine;
-				int logLineEnd;
-				Point logLineEndPos;
-				int logLineBottom;
+				// invalidate all lines below caret
+				// if old text or new text contains multiple lines
+				isMultiLine = LineLogic.IsMultiLine( e.NewText );
+				if( prevLineCount != PLHI.Count || isMultiLine )
+				{
+					//NO_NEED//invalidRect2.X = 0;
+					invalidRect2.Y = invalidRect1.Bottom;
+					invalidRect2.Width = VisibleSize.Width;
+					invalidRect2.Height = VisibleSize.Height - invalidRect2.Top;
+				}
+				else
+				{
+					// if the replacement changed physical line count,
+					// invalidate this *logical* line
+					int logLine;
+					int logLineEnd;
+					Point logLineEndPos;
+					int logLineBottom;
 
-				// get position of the char at the end of the logical line
-				logLine = doc.GetLineIndexFromCharIndex( e.Index );
-				logLineEnd = doc.GetLineHeadIndex( logLine ) + doc.GetLineLength( logLine );
-				logLineEndPos = GetVirPosFromIndex( g, logLineEnd );
-				VirtualToScreen( ref logLineEndPos );
-				logLineBottom = logLineEndPos.Y - (LinePadding >> 1);
+					// get position of the char at the end of the logical line
+					logLine = doc.GetLineIndexFromCharIndex( e.Index );
+					logLineEnd = doc.GetLineHeadIndex( logLine ) + doc.GetLineLength( logLine );
+					logLineEndPos = GetVirPosFromIndex( g, logLineEnd );
+					VirtualToScreen( ref logLineEndPos );
+					logLineBottom = logLineEndPos.Y - (LinePadding >> 1);
 
-				// make a rectangle that covers the logical line area
-				//NO_NEED//invalidRect2.X = 0;
-				invalidRect2.Y = invalidRect1.Bottom;
-				invalidRect2.Width = VisibleSize.Width;
-				invalidRect2.Height = (logLineBottom + LineSpacing) - invalidRect2.Top;
-			}
+					// make a rectangle that covers the logical line area
+					//NO_NEED//invalidRect2.X = 0;
+					invalidRect2.Y = invalidRect1.Bottom;
+					invalidRect2.Width = VisibleSize.Width;
+					invalidRect2.Height = (logLineBottom + LineSpacing) - invalidRect2.Top;
+				}
 
-			// invalidate the range
-			Invalidate( invalidRect1 );
-			if( 0 < invalidRect2.Height )
-			{
-				//--- multiple logical lines are affected ---
-				Invalidate( invalidRect2 );
-			}
+				// invalidate the range
+				Invalidate( invalidRect1 );
+				if( 0 < invalidRect2.Height )
+				{
+					//--- multiple logical lines are affected ---
+					Invalidate( invalidRect2 );
+				}
 
-			// update left side of text area
-			UpdateDirtBar( g, doc.GetLineIndexFromCharIndex(e.Index) );
-			UpdateLineNumberWidth( g );
+				// update left side of text area
+				UpdateDirtBar( g, doc.GetLineIndexFromCharIndex(e.Index) );
+				UpdateLineNumberWidth( g );
 
-			//DO_NOT//base.HandleContentChanged( sender, e );
+				//DO_NOT//base.HandleContentChanged( sender, e );
 			}
 		}
 

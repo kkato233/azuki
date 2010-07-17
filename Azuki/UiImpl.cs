@@ -621,74 +621,74 @@ namespace Sgry.Azuki
 
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-			bool onLineNumberArea = false;
+				bool onLineNumberArea = false;
 
-			// if mouse-down coordinate is out of window, this is not a normal event so ignore this
-			if( pos.X < 0 || pos.Y < 0 )
-			{
-				return;
-			}
-
-			// check whether the mouse position is on the line number area or not
-			if( pos.X < View.XofLeftMargin )
-			{
-				onLineNumberArea = true;
-			}
-
-			// remember mouse down screen position and convert it to virtual view's coordinate
-			View.ScreenToVirtual( ref pos );
-			_MouseDownVirPos = pos;
-
-			if( buttonIndex == 0 ) // left click
-			{
-				int index;
-
-				// calculate index of clicked character
-				index = View.GetIndexFromVirPos( g, pos );
-
-				// set selection
-				if( onLineNumberArea )
+				// if mouse-down coordinate is out of window, this is not a normal event so ignore this
+				if( pos.X < 0 || pos.Y < 0 )
 				{
-					//--- line selection ---
-					_UI.SelectionMode = TextDataType.Line;
-					if( shift )
+					return;
+				}
+
+				// check whether the mouse position is on the line number area or not
+				if( pos.X < View.XofLeftMargin )
+				{
+					onLineNumberArea = true;
+				}
+
+				// remember mouse down screen position and convert it to virtual view's coordinate
+				View.ScreenToVirtual( ref pos );
+				_MouseDownVirPos = pos;
+
+				if( buttonIndex == 0 ) // left click
+				{
+					int index;
+
+					// calculate index of clicked character
+					index = View.GetIndexFromVirPos( g, pos );
+
+					// set selection
+					if( onLineNumberArea )
 					{
-						//--- expanding line selection ---
-						// expand selection to one char next of clicked position
-						// (if caret is at head of a line,
-						// the line will not be selected by SetSelection.)
-						int newCaretIndex = index;
-						if( newCaretIndex+1 < Document.Length )
+						//--- line selection ---
+						_UI.SelectionMode = TextDataType.Line;
+						if( shift )
 						{
-							newCaretIndex++;
+							//--- expanding line selection ---
+							// expand selection to one char next of clicked position
+							// (if caret is at head of a line,
+							// the line will not be selected by SetSelection.)
+							int newCaretIndex = index;
+							if( newCaretIndex+1 < Document.Length )
+							{
+								newCaretIndex++;
+							}
+							Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
 						}
-						Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
+						else
+						{
+							//--- setting line selection ---
+							Document.SetSelection( index, index, View );
+						}
+					}
+					else if( shift )
+					{
+						//--- expanding selection ---
+						Document.SetSelection( Document.AnchorIndex, index );
+					}
+					else if( alt )
+					{
+						//--- rectangle selection ---
+						_UI.SelectionMode = TextDataType.Rectangle;
+						Document.SetSelection( index, index, View );
 					}
 					else
 					{
-						//--- setting line selection ---
-						Document.SetSelection( index, index, View );
+						//--- setting caret ---
+						Document.SetSelection( index, index );
 					}
+					View.SetDesiredColumn( g );
+					View.ScrollToCaret( g );
 				}
-				else if( shift )
-				{
-					//--- expanding selection ---
-					Document.SetSelection( Document.AnchorIndex, index );
-				}
-				else if( alt )
-				{
-					//--- rectangle selection ---
-					_UI.SelectionMode = TextDataType.Rectangle;
-					Document.SetSelection( index, index, View );
-				}
-				else
-				{
-					//--- setting caret ---
-					Document.SetSelection( index, index );
-				}
-				View.SetDesiredColumn( g );
-				View.ScrollToCaret( g );
-			}
 			}
 		}
 
@@ -752,50 +752,50 @@ namespace Sgry.Azuki
 			// do drag action
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-			// dragging with left button?
-			if( buttonIndex == 0 )
-			{
-				int curPosIndex;
+				// dragging with left button?
+				if( buttonIndex == 0 )
+				{
+					int curPosIndex;
 
-				// calc index of where the mouse pointer is on
-				curPosIndex = View.GetIndexFromVirPos( pos );
-				if( curPosIndex == -1 )
-				{
-					return;
-				}
+					// calc index of where the mouse pointer is on
+					curPosIndex = View.GetIndexFromVirPos( pos );
+					if( curPosIndex == -1 )
+					{
+						return;
+					}
 
-				// expand selection to there
-				if( _UI.SelectionMode == TextDataType.Rectangle )
-				{
-					//--- rectangle selection ---
-					// expand selection to the point
-					Document.SetSelection( Document.AnchorIndex, curPosIndex, View );
-				}
-				else if( _UI.SelectionMode == TextDataType.Line )
-				{
-					//--- line selection ---
-					// expand selection to one char next of clicked position
-					// (if caret is at head of a line,
-					// the line will not be selected by SetSelection.)
-					int newCaretIndex = curPosIndex;
-					if( newCaretIndex+1 < Document.Length )
+					// expand selection to there
+					if( _UI.SelectionMode == TextDataType.Rectangle )
 					{
-						newCaretIndex++;
+						//--- rectangle selection ---
+						// expand selection to the point
+						Document.SetSelection( Document.AnchorIndex, curPosIndex, View );
 					}
-					Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
-				}
-				else
-				{
-					//--- normal selection ---
-					// expand selection to the point if it was different from previous index
-					if( curPosIndex != Document.CaretIndex )
+					else if( _UI.SelectionMode == TextDataType.Line )
 					{
-						Document.SetSelection( Document.AnchorIndex, curPosIndex );
+						//--- line selection ---
+						// expand selection to one char next of clicked position
+						// (if caret is at head of a line,
+						// the line will not be selected by SetSelection.)
+						int newCaretIndex = curPosIndex;
+						if( newCaretIndex+1 < Document.Length )
+						{
+							newCaretIndex++;
+						}
+						Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
 					}
+					else
+					{
+						//--- normal selection ---
+						// expand selection to the point if it was different from previous index
+						if( curPosIndex != Document.CaretIndex )
+						{
+							Document.SetSelection( Document.AnchorIndex, curPosIndex );
+						}
+					}
+					View.SetDesiredColumn( g );
+					View.ScrollToCaret( g );
 				}
-				View.SetDesiredColumn( g );
-				View.ScrollToCaret( g );
-			}
 			}
 		}
 

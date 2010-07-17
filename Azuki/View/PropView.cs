@@ -45,13 +45,13 @@ namespace Sgry.Azuki
 				// so ScrollToCaret does not work properly)
 				using( IGraphics g = _UI.GetIGraphics() )
 				{
-				Point pos = GetVirPosFromIndex( g, Document.CaretIndex );
-				int newValue = pos.X - (VisibleTextAreaSize.Width / 2);
-				if( 0 < newValue )
-				{
-					ScrollPosX = newValue;
-					_UI.UpdateScrollBarRange();
-				}
+					Point pos = GetVirPosFromIndex( g, Document.CaretIndex );
+					int newValue = pos.X - (VisibleTextAreaSize.Width / 2);
+					if( 0 < newValue )
+					{
+						ScrollPosX = newValue;
+						_UI.UpdateScrollBarRange();
+					}
 				}
 			}
 		}
@@ -534,49 +534,49 @@ namespace Sgry.Azuki
 
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-			// get position of the word replacement occured
-			oldCaretPos = GetVirPosFromIndex( g, e.Index );
-			VirtualToScreen( ref oldCaretPos );
+				// get position of the word replacement occured
+				oldCaretPos = GetVirPosFromIndex( g, e.Index );
+				VirtualToScreen( ref oldCaretPos );
 
-			// update indicator graphic on horizontal ruler
-			UpdateHRuler( g );
+				// update indicator graphic on horizontal ruler
+				UpdateHRuler( g );
 
-			// invalidate the part at right of the old selection
-			if( Document.IsCombiningCharacter(e.OldText, 0)
-				|| Document.IsCombiningCharacter(e.NewText, 0) )
-			{
-				invalidRect1.X = XofTextArea; // [*1]
-			}
-			else
-			{
-				invalidRect1.X = oldCaretPos.X;
-			}
-			invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
-			invalidRect1.Y = oldCaretPos.Y - (LinePadding >> 1);
-			invalidRect1.Height = LineSpacing;
+				// invalidate the part at right of the old selection
+				if( Document.IsCombiningCharacter(e.OldText, 0)
+					|| Document.IsCombiningCharacter(e.NewText, 0) )
+				{
+					invalidRect1.X = XofTextArea; // [*1]
+				}
+				else
+				{
+					invalidRect1.X = oldCaretPos.X;
+				}
+				invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
+				invalidRect1.Y = oldCaretPos.Y - (LinePadding >> 1);
+				invalidRect1.Height = LineSpacing;
 
-			// invalidate all lines below caret
-			// if old text or new text contains multiple lines
-			if( LineLogic.IsMultiLine(e.OldText) || LineLogic.IsMultiLine(e.NewText) )
-			{
-				//NO_NEED//invalidRect2.X = 0;
-				invalidRect2.Y = invalidRect1.Bottom;
-				invalidRect2.Width = VisibleSize.Width;
-				invalidRect2.Height = VisibleSize.Height - invalidRect2.Top;
-			}
+				// invalidate all lines below caret
+				// if old text or new text contains multiple lines
+				if( LineLogic.IsMultiLine(e.OldText) || LineLogic.IsMultiLine(e.NewText) )
+				{
+					//NO_NEED//invalidRect2.X = 0;
+					invalidRect2.Y = invalidRect1.Bottom;
+					invalidRect2.Width = VisibleSize.Width;
+					invalidRect2.Height = VisibleSize.Height - invalidRect2.Top;
+				}
 
-			// invalidate the range
-			Invalidate( invalidRect1 );
-			if( 0 < invalidRect2.Height )
-			{
-				Invalidate( invalidRect2 );
-			}
+				// invalidate the range
+				Invalidate( invalidRect1 );
+				if( 0 < invalidRect2.Height )
+				{
+					Invalidate( invalidRect2 );
+				}
 
-			// update left side of text area
-			DrawDirtBar( g, invalidRect1.Top, Document.GetLineIndexFromCharIndex(e.Index) );
-			UpdateLineNumberWidth( g );
+				// update left side of text area
+				DrawDirtBar( g, invalidRect1.Top, Document.GetLineIndexFromCharIndex(e.Index) );
+				UpdateLineNumberWidth( g );
 
-			//DO_NOT//base.HandleContentChanged( sender, e );
+				//DO_NOT//base.HandleContentChanged( sender, e );
 			}
 		}
 

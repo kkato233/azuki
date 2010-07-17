@@ -415,26 +415,30 @@ namespace Sgry.Azuki
 				throw new ArgumentNullException( "view", "Parameter 'view' must not be null if SelectionMode is not TextDataType.Normal. (SelectionMode:"+SelectionMode+")." );
 
 			if( _SelectionMode == TextDataType.Rectangle )
+			{
+				ClearLineSelectionData();
 				SetSelection_Rect( anchor, caret, view );
+			}
 			else if( _SelectionMode == TextDataType.Line )
+			{
+				ClearRectSelectionData();
 				SetSelection_Line( anchor, caret, view );
+			}
 			else
-				SetSelection_Impl( anchor, caret, true );
+			{
+				ClearLineSelectionData();
+				ClearRectSelectionData();
+				SetSelection_Impl( anchor, caret );
+			}
 		}
 
-		void SetSelection_Impl( int anchor, int caret, bool clearsSpecialSelection )
+		void SetSelection_Impl( int anchor, int caret )
 		{
 			int oldAnchor, oldCaret;
 			int[] oldRectSelectRanges = null;
 
 			// clear special selection data if specified
 			oldRectSelectRanges = _RectSelectRanges;
-			if( clearsSpecialSelection )
-			{
-				_RectSelectRanges = null;
-				_LineSelectionAnchor1 = -1;
-				_LineSelectionAnchor2 = -1;
-			}
 
 			// if given parameters change nothing, do nothing
 			if( _AnchorIndex == anchor && _CaretIndex == caret )
@@ -535,7 +539,7 @@ namespace Sgry.Azuki
 			}
 
 			// apply new selection
-			SetSelection_Impl( anchor, caret, false );
+			SetSelection_Impl( anchor, caret );
 		}
 
 		void SetSelection_Rect( int anchor, int caret, IView view )
@@ -550,7 +554,7 @@ namespace Sgry.Azuki
 				);
 
 			// set selection
-			SetSelection_Impl( anchor, caret, false );
+			SetSelection_Impl( anchor, caret );
 		}
 
 		/// <summary>
@@ -598,10 +602,21 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets the char-index where the line selection has been started; or -1 if line selection is not executing.
 		/// </summary>
-		internal int LineSelectionAnchor
+		int LineSelectionAnchor
 		{
 			get{ return _LineSelectionAnchor1; }
 			set{ _LineSelectionAnchor1 = value; }
+		}
+
+		void ClearRectSelectionData()
+		{
+			_RectSelectRanges = null;
+		}
+
+		void ClearLineSelectionData()
+		{
+			_LineSelectionAnchor1 = -1;
+			_LineSelectionAnchor2 = -1;
 		}
 		#endregion
 

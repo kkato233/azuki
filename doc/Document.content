@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Topics defaultTopic="01234567-55e0-4cee-a443-11aeb276403f">
+  <Topic id="01234567-55e0-4cee-a443-11aeb276403f" title="Azuki documentation" tocTitle="Overview" visible="True" />
+  <Topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" title="Developper's Notes" visible="True" />
+</Topics>

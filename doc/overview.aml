@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="01234567-55e0-4cee-a443-11aeb276403f" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+	This is the documentation for Azuki - a text editor engine for C#.
+	</para>
+    </introduction>
+    <section address="toc">
+      <title>Table of Content</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <link xlink:href="756940e2-4b6c-4378-bb88-42f2bbba9a57" />
+          </listItem>
+          <listItem>
+            <externalLink>
+              <linkText>API Reference</linkText>
+              <linkAlternateText>API Reference</linkAlternateText>
+              <linkUri>R_Project.htm</linkUri>
+              <linkTarget>_self</linkTarget>
+            </externalLink>
+          </listItem>
+        </list>
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

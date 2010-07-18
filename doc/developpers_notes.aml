@@ -1,51 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<developerConceptualDocument
-	xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
-	xmlns:xlink="http://www.w3.org/1999/xlink"
->
-
-<introduction>
-	<para>
-	This page is &quot;developper's notes.&quot;
+<topic id="756940e2-4b6c-4378-bb88-42f2bbba9a57" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+	This page is "developper's notes."
 	</para>
-	<para>
+      <para>
 	These notes are written by developper for developper so basically worthy for only the developper
 	but may worth for someone who is facing same problem as I've met.
 	</para>
-	<para>
+      <para>
 	(In this note, a term CF is used to indicate .NET Compact Framework,
 	and a term FF is used to indicate .NET Framework.)
 	</para>
-	<autoOutline>1</autoOutline>
-</introduction>
-
-<section address="Optimization">
-	<title>Optimization</title>
-	<content>
-		<para>These notes are about optimization.</para>
-	</content>
-
-	<sections>
-	<!--******************************************************-->
-	<section address="Buffer.BlockCopy">
-		<title>Buffer.BlockCopy and Array.Copy</title>
-		<content>
-		<para>
+      <autoOutline>1</autoOutline>
+    </introduction>
+    <section address="Optimization">
+      <title>Optimization</title>
+      <content>
+        <para>These notes are about optimization.</para>
+      </content>
+      <sections>
+        <!--******************************************************-->
+        <section address="Buffer.BlockCopy">
+          <title>Buffer.BlockCopy and Array.Copy</title>
+          <content>
+            <para>
 		I found some people is saying that Buffer.BlockCopy is faster than Array.Copy.
 		But as far as I tested, Buffer.BlockCopy is not significantly faster than Array.Copy
 		so Azuki uses Array.Copy.
 		</para>
-		</content>
-	</section>
-	<!--******************************************************-->
-	</sections>
-</section>
-
-
-<section address="resizing_array">
-	<title>Resizing array on .NET Compact Framework</title>
-	<content>
-		<para>
+          </content>
+        </section>
+        <!--******************************************************-->
+      </sections>
+    </section>
+    <section address="resizing_array">
+      <title>Resizing array on .NET Compact Framework</title>
+      <content>
+        <para>
 		Array&lt;T&lt;.Resize does not exists on .NET Compact Framework
 		so Azuki creates original resize logic for CF version.
 		Note that if compared with Array&lt;T&gt;.Resize,
@@ -53,21 +46,19 @@
 		so Azuki uses Array&lt;T&lt;.Resize for full version,
 		and uses original logic for CF version.
 		</para>
-	</content>
-</section>
-
-
-<section address="MeasureString">
-	<title>Measuring string on .NET Compact Framework</title>
-	<content>
-		<para>
+      </content>
+    </section>
+    <section address="MeasureString">
+      <title>Measuring string on .NET Compact Framework</title>
+      <content>
+        <para>
 		System.Drawing.Graphics.DrawString / MeasureString automatically adds padding
 		before drawing/measuring so I can not get exact drawing/calculation result from them.
 		Although specifiying System.Drawing.StringFormat.GenericTypographic
 		to them removes the padding, CF does not support GenericTypographic
 		so I cannot use it.
 		</para>
-		<code title="test code" lang="C#"><![CDATA[
+        <code title="test code" lang="C#"><![CDATA[
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -136,29 +127,26 @@ class Form1 : Form
 		int* out_fitLength, int* out_x, SIZE* out_size
 	);
 }]]></code>
-		<para>
-		The result when using &quot;MS Gothic (Japanese fixed width font)&quot; 14pt on Windows Vista is next.
+        <para>
+		The result when using "MS Gothic (Japanese fixed width font)" 14pt on Windows Vista is next.
 		</para>
-		<code title="result"
-><![CDATA[[A] , {Width=11, Height=18}     {Width=15, Height=21}   {Width=9.333334, Height=18.66667}
+        <code title="result"><![CDATA[[A] , {Width=11, Height=18}     {Width=15, Height=21}   {Width=9.333334, Height=18.66667}
 [ ] , {Width=6, Height=18}      {Width=6, Height=21}    {Width=0, Height=0}
 [|] , {Width=3, Height=18}      {Width=15, Height=21}   {Width=9.333334, Height=18.66667}
 [.] , {Width=5, Height=18}      {Width=15, Height=21}   {Width=9.333334, Height=18.66667}
 [あ], {Width=16, Height=18}     {Width=25, Height=21}   {Width=18.66667, Height=18.66667}
-[]  , {Width=0, Height=0}       {Width=0, Height=0}     {Width=0, Height=0}]]></code
-		>
-		<para>
+[]  , {Width=0, Height=0}       {Width=0, Height=0}     {Width=0, Height=0}]]></code>
+        <para>
 		There is no portable way to determine exact metric of drawn text in C#.
 		Therefore I must use platform drawing APIs through P/Invoke.
 		</para>
-	</content>
-</section>
-
-<section address="DrawingSelection">
-	<title>Drawing Selection</title>
-	<content>
-		<para>
-		To represent &quot;selection&quot;, there are two ways.
+      </content>
+    </section>
+    <section address="DrawingSelection">
+      <title>Drawing Selection</title>
+      <content>
+        <para>
+		To represent "selection", there are two ways.
 		First one is simply drawing selected text with specified background color.
 		Second one is inverting the selected text area.
 		To use specific background color for selected text has no impact on performance
@@ -169,26 +157,24 @@ class Form1 : Form
 		but it's obvious that first choice will not cause trouble.
 		Therefore Azuki took first one.
 		</para>
-	</content>
-</section>
-
-<section address="Invalidation">
-	<title>Invalidation system in Windows.Forms GUI Toolkit</title>
-	<content>
-		<para>
+      </content>
+    </section>
+    <section address="Invalidation">
+      <title>Invalidation system in Windows.Forms GUI Toolkit</title>
+      <content>
+        <para>
 		For unknown reason, calling Control.Invalidate with invalid rectangle DOES NOT affect to the
 		ClipBounds property of Graphics object given at Control.Paint method
 		without enabling double buffering by using Control.SetStyle.
 		Control.SetStyle is not included in Compact Framework
 		so Azuki avoids to use framework's invalidation system.
 		</para>
-	</content>
-</section>
-
-<section address="OverridingWindowProcedure">
-	<title>Overwriting window procedure</title>
-	<content>
-		<para>
+      </content>
+    </section>
+    <section address="OverridingWindowProcedure">
+      <title>Overwriting window procedure</title>
+      <content>
+        <para>
 		Control.WndProc does not exist in Compact Framework so
 		I overwrite window procedure by calling SetWindowLong API in CF build.
 		On the other hand, in x64 Vista,
@@ -196,13 +182,12 @@ class Form1 : Form
 		with GWL_WNDPROC always fail for unknown reason as far as I tested.
 		Therefore I override Control.WndProc in desktop build (not CF build).
 		</para>
-	</content>
-</section>
-
-<section address="LineHeightAndLineSpacing">
-	<title>Line height and line spacing</title>
-	<content>
-		<para>
+      </content>
+    </section>
+    <section address="LineHeightAndLineSpacing">
+      <title>Line height and line spacing</title>
+      <content>
+        <para>
 		Line height is calculated as height of '\x3000' [px].
 		('\x3000' is full-width space char.)
 		Line spacing is the distance between each lines.
@@ -210,7 +195,7 @@ class Form1 : Form
 		1px under the text so line spacing is larger than
 		line height if highlighting is enabled.
 		</para>
-	</content>
-</section>
-
-</developerConceptualDocument>
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

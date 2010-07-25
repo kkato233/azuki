@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-07-25
 //=========================================================
 using System;
 using System.Text;
@@ -598,11 +598,22 @@ namespace Sgry.Azuki
 			}
 		}
 
+		public void HandleGotFocus()
+		{
+			if( _IsDisposed )
+				return;
+
+			Debug.Assert( View != null );
+			View.HandleGotFocus();
+		}
+
 		public void HandleLostFocus()
 		{
 			if( _IsDisposed )
 				return;
 
+			Debug.Assert( View != null );
+			View.HandleLostFocus();
 			ClearDragState();
 		}
 

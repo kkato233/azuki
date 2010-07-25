@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-07-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1840,6 +1840,7 @@ namespace Sgry.Azuki.Windows
 
 			WinApi.CreateCaret( Handle, _CaretSize );
 			UpdateCaretGraphic();
+			_Impl.HandleGotFocus();
 		}
 
 		/// <summary>

@@ -13,6 +13,7 @@
  * mod: AzukiControl.IsRectSelectModeChanged イベントを Obsolete 指定に（Document.SelectionModeChanged で置き換え）
  * mod: KeywordHighlighter.SetKeywords メソッドを Obsolete 指定に（AddKeywordSet メソッドで置き換え）
  * mod: .NET Compact Framework 版でも描画時にダブルバッファリングを行うように
+ * mod: Azuki にフォーカスが無い間は、カーソル行を表すアンダーラインを表示しないように
  * mod: ダブルクリックで単語を選択する処理を改善
  * fix: GDI デバイスコンテキストを正しく使うように（使い方が正しくないとグラフィック描画が不正になることがある）
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように

@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-07-25
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1368,6 +1368,40 @@ namespace Sgry.Azuki
 						Invalidate();
 					}
 					return;
+				}
+			}
+		}
+
+		internal void HandleGotFocus()
+		{
+			// draw underline on current line
+			if( HighlightsCurrentLine )
+			{
+				using( IGraphics g = _UI.GetIGraphics() )
+				{
+					int selBegin, selEnd;
+					Document.GetSelection( out selBegin, out selEnd );
+					if( selBegin == selEnd )
+					{
+						DrawUnderLine( g, YofLine(GetLineIndexFromCharIndex(selBegin)), ColorScheme.HighlightColor );
+					}
+				}
+			}
+		}
+
+		internal void HandleLostFocus()
+		{
+			// erase underline on current line
+			if( HighlightsCurrentLine )
+			{
+				using( IGraphics g = _UI.GetIGraphics() )
+				{
+					int selBegin, selEnd;
+					Document.GetSelection( out selBegin, out selEnd );
+					if( selBegin == selEnd )
+					{
+						DrawUnderLine( g, YofLine(GetLineIndexFromCharIndex(selBegin)), ColorScheme.BackColor );
+					}
 				}
 			}
 		}

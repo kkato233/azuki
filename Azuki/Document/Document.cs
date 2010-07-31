@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-07-17
+// update: 2010-07-31
 //=========================================================
 using System;
 using System.Collections;
@@ -2321,7 +2321,7 @@ namespace Sgry.Azuki
 			{
 				return true;
 			}
-			if( IsCombiningCharacter(ch) )
+			if( IsCombiningCharacter(ch) && LineLogic.IsEolChar(prevCh) == false )
 			{
 				return true;
 			}

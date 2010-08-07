@@ -8,6 +8,7 @@ rmdir /S /Q bin  2> NUL
 rmdir /S /Q Debug  2> NUL
 rmdir /S /Q Release  2> NUL
 del /Q *.csproj.user  2> NUL
+del /Q *.pidb         2> NUL
 
 del ..\package\Azuki.pdb  2> NUL
 del ..\package\Azuki.dll  2> NUL

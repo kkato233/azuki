@@ -67,13 +67,12 @@ Azuki text editor engine for .NET Framework.
 		doc="${document_name}"
 		unsafe="true"
 		optimize="true"
-		nostdlib="true"
+		nostdlib="false"
 		define="${define}"
 		warninglevel="4"
 		keyfile="Azuki.snk"
 	>
 		<references>
-			<include name="mscorlib.dll"/>
 			<include name="System.dll"/>
 			<include name="System.Drawing.dll"/>
 			<include name="System.Windows.Forms.dll"/>

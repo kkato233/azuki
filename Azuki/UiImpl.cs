@@ -652,10 +652,10 @@ namespace Sgry.Azuki
 
 				if( buttonIndex == 0 ) // left click
 				{
-					int index;
+					int clickedIndex;
 
 					// calculate index of clicked character
-					index = View.GetIndexFromVirPos( g, pos );
+					clickedIndex = View.GetIndexFromVirPos( g, pos );
 
 					// set selection
 					if( onLineNumberArea )
@@ -668,7 +668,7 @@ namespace Sgry.Azuki
 							// expand selection to one char next of clicked position
 							// (if caret is at head of a line,
 							// the line will not be selected by SetSelection.)
-							int newCaretIndex = index;
+							int newCaretIndex = clickedIndex;
 							if( newCaretIndex+1 < Document.Length )
 							{
 								newCaretIndex++;
@@ -678,24 +678,24 @@ namespace Sgry.Azuki
 						else
 						{
 							//--- setting line selection ---
-							Document.SetSelection( index, index, View );
+							Document.SetSelection( clickedIndex, clickedIndex, View );
 						}
 					}
 					else if( shift )
 					{
 						//--- expanding selection ---
-						Document.SetSelection( Document.AnchorIndex, index );
+						Document.SetSelection( Document.AnchorIndex, clickedIndex );
 					}
 					else if( alt )
 					{
 						//--- rectangle selection ---
 						_UI.SelectionMode = TextDataType.Rectangle;
-						Document.SetSelection( index, index, View );
+						Document.SetSelection( clickedIndex, clickedIndex, View );
 					}
 					else
 					{
 						//--- setting caret ---
-						Document.SetSelection( index, index );
+						Document.SetSelection( clickedIndex, clickedIndex );
 					}
 					View.SetDesiredColumn( g );
 					View.ScrollToCaret( g );

@@ -33,6 +33,9 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Selection State
+		/// <summary>
+		/// Gets or sets current position of the caret.
+		/// </summary>
 		public int CaretIndex
 		{
 			get{ return _CaretIndex; }
@@ -43,6 +46,9 @@ namespace Sgry.Azuki
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets current position of selection anchor.
+		/// </summary>
 		public int AnchorIndex
 		{
 			get{ return _AnchorIndex; }
@@ -93,6 +99,10 @@ namespace Sgry.Azuki
 			Debug.Assert( 0 <= caret && caret <= _Document.Length, "parameter 'caret' out of range (anchor:"+anchor+", Document.Length:"+_Document.Length+")" );
 			Debug.Assert( _SelectionMode == TextDataType.Normal || view != null );
 
+			// ensure that document can be divided at given index
+			Document.Utl.ConstrainIndex( _Document, ref anchor, ref caret );
+
+			// set selection
 			if( SelectionMode == TextDataType.Rectangle )
 			{
 				ClearLineSelectionData();
@@ -107,7 +117,7 @@ namespace Sgry.Azuki
 			{
 				ClearLineSelectionData();
 				ClearRectSelectionData();
-				SetSelection_Impl( anchor, caret );
+				SetSelection_Normal( anchor, caret );
 			}
 		}
 		#endregion
@@ -125,7 +135,7 @@ namespace Sgry.Azuki
 				);
 
 			// set selection
-			SetSelection_Impl( anchor, caret );
+			SetSelection_Normal( anchor, caret );
 		}
 
 		void SetSelection_Line( int anchor, int caret, IView view )
@@ -191,16 +201,13 @@ namespace Sgry.Azuki
 			}
 
 			// apply new selection
-			SetSelection_Impl( anchor, caret );
+			SetSelection_Normal( anchor, caret );
 		}
 
-		void SetSelection_Impl( int anchor, int caret )
+		void SetSelection_Normal( int anchor, int caret )
 		{
 			int oldAnchor, oldCaret;
 			int[] oldRectSelectRanges = null;
-
-			// clear special selection data if specified
-			oldRectSelectRanges = _RectSelectRanges;
 
 			// if given parameters change nothing, do nothing
 			if( _AnchorIndex == anchor && _CaretIndex == caret )
@@ -216,12 +223,10 @@ namespace Sgry.Azuki
 				return;
 			}
 
-			// ensure that document can be divided at given index
-			Document.Utl.ConstrainIndex( _Document, ref anchor, ref caret );
-
-			// get anchor/caret position in new text content
+			// remember old selection state
 			oldAnchor = _AnchorIndex;
 			oldCaret = _CaretIndex;
+			oldRectSelectRanges = _RectSelectRanges;
 
 			// apply new selection
 			_AnchorIndex = anchor;

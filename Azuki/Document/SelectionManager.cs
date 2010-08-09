@@ -1,5 +1,5 @@
 ﻿// file: SelectionManager.cs
-// brief: Object to manage text selection range.
+// brief: Internal class to manage text selection range.
 // author: YAMAMOTO Suguru
 // update: 2010-08-09
 //=========================================================
@@ -9,6 +9,9 @@ using System.Drawing;
 
 namespace Sgry.Azuki
 {
+	/// <summary>
+	/// Internal class to manage text selection range.
+	/// </summary>
 	class SelectionManager
 	{
 		#region Fields
@@ -247,6 +250,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Utilities
 		static class Utl
 		{
 			public static Rectangle MakeRectFromTwoPoints( Point pt1, Point pt2 )
@@ -280,5 +284,6 @@ namespace Sgry.Azuki
 				return rect;
 			}
 		}
+		#endregion
 	}
 }

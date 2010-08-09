@@ -844,6 +844,7 @@ namespace Sgry.Azuki
 			string oldText = String.Empty;
 			int oldAnchor, anchorDelta;
 			int oldCaret, caretDelta;
+			int newAnchor, newCaret;
 			EditAction undo;
 
 			// keep copy of the part which will be deleted by this replacement
@@ -855,8 +856,8 @@ namespace Sgry.Azuki
 			}
 
 			// keep copy of old caret/anchor index
-			oldAnchor = _SelMan.AnchorIndex;
-			oldCaret = _SelMan.CaretIndex;
+			oldAnchor = newAnchor = AnchorIndex;
+			oldCaret = newCaret = CaretIndex;
 
 			// delete target range
 			if( begin < end )
@@ -866,17 +867,17 @@ namespace Sgry.Azuki
 				_Buffer.RemoveRange( begin, end );
 
 				// manage caret/anchor index
-				if( begin < _SelMan.CaretIndex )
+				if( begin < newCaret )
 				{
-					_SelMan.CaretIndex -= end - begin;
-					if( _SelMan.CaretIndex < begin )
-						_SelMan.CaretIndex = begin;
+					newCaret -= end - begin;
+					if( newCaret < begin )
+						newCaret = begin;
 				}
-				if( begin < _SelMan.AnchorIndex )
+				if( begin < newAnchor )
 				{
-					_SelMan.AnchorIndex -= end - begin;
-					if( _SelMan.AnchorIndex < begin )
-						_SelMan.AnchorIndex = begin;
+					newAnchor -= end - begin;
+					if( newAnchor < begin )
+						newAnchor = begin;
 				}
 			}
 
@@ -888,23 +889,23 @@ namespace Sgry.Azuki
 				_Buffer.Insert( begin, text.ToCharArray() );
 
 				// manage caret/anchor index
-				if( begin <= _SelMan.CaretIndex )
+				if( begin <= newCaret )
 				{
-					_SelMan.CaretIndex += text.Length;
-					if( _Buffer.Count < _SelMan.CaretIndex ) // _Buffer.Count? really? isn't this "end"?
-						_SelMan.CaretIndex = _Buffer.Count;
+					newCaret += text.Length;
+					if( _Buffer.Count < newCaret ) // this is not "end" but "_Buffer.Count"
+						newCaret = _Buffer.Count;
 				}
-				if( begin <= _SelMan.AnchorIndex )
+				if( begin <= newAnchor )
 				{
-					_SelMan.AnchorIndex += text.Length;
-					if( _Buffer.Count < _SelMan.AnchorIndex )
-						_SelMan.AnchorIndex = _Buffer.Count;
+					newAnchor += text.Length;
+					if( _Buffer.Count < newAnchor )
+						newAnchor = _Buffer.Count;
 				}
 			}
 
 			// calc diff of anchor/caret between old and new positions
-			anchorDelta = _SelMan.AnchorIndex - oldAnchor;
-			caretDelta = _SelMan.CaretIndex - oldCaret;
+			anchorDelta = newAnchor - oldAnchor;
+			caretDelta = newCaret - oldCaret;
 
 			// stack UNDO history
 			if( _IsRecordingHistory )
@@ -923,6 +924,8 @@ namespace Sgry.Azuki
 
 			// cast event
 			IsDirty = true;
+			_SelMan.AnchorIndex = newAnchor;
+			_SelMan.CaretIndex = newCaret;
 			InvokeContentChanged( begin, oldText, text );
 			InvokeSelectionChanged( oldAnchor, oldCaret, null, true );
 		}

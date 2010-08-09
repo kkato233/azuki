@@ -369,7 +369,7 @@ namespace Sgry.Azuki
 			// calculate rectangle in virtual space
 			firstBegin = e.OldRectSelectRanges[0];
 			lastEnd = e.OldRectSelectRanges[ e.OldRectSelectRanges.Length - 1 ];
-			Debug.Assert( 0 <= firstBegin && firstBegin < Document.Length );
+			Debug.Assert( 0 <= firstBegin && firstBegin <= Document.Length );
 			Debug.Assert( 0 <= lastEnd && lastEnd <= Document.Length );
 			firstBeginPos = this.GetVirPosFromIndex( g, firstBegin );
 			lastEndPos = this.GetVirPosFromIndex( g, lastEnd );

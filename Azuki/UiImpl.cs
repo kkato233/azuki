@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-07-25
+// update: 2010-08-09
 //=========================================================
 using System;
 using System.Text;
@@ -684,12 +684,21 @@ namespace Sgry.Azuki
 					else if( shift )
 					{
 						//--- expanding selection ---
-						Document.SetSelection( Document.AnchorIndex, clickedIndex );
+						_UI.SelectionMode = (ctrl) ? TextDataType.Words : TextDataType.Normal;
+						Document.SetSelection(
+								Document.OriginalAnchorIndex, clickedIndex, View
+							);
 					}
 					else if( alt )
 					{
 						//--- rectangle selection ---
 						_UI.SelectionMode = TextDataType.Rectangle;
+						Document.SetSelection( clickedIndex, clickedIndex, View );
+					}
+					else if( ctrl )
+					{
+						//--- expanding selection ---
+						_UI.SelectionMode = TextDataType.Words;
 						Document.SetSelection( clickedIndex, clickedIndex, View );
 					}
 					else
@@ -794,6 +803,12 @@ namespace Sgry.Azuki
 							newCaretIndex++;
 						}
 						Document.SetSelection( Document.AnchorIndex, newCaretIndex, View );
+					}
+					else if( _UI.SelectionMode == TextDataType.Words )
+					{
+						Document.SetSelection(
+								Document.OriginalAnchorIndex, curPosIndex, View
+							);
 					}
 					else
 					{

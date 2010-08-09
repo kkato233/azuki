@@ -292,6 +292,11 @@ namespace Sgry.Azuki
 			get{ return _SelMan.AnchorIndex; }
 		}
 
+		internal int OriginalAnchorIndex
+		{
+			get{ return _SelMan.OriginalAnchorIndex; }
+		}
+
 		/// <summary>
 		/// Gets caret location by logical line/column index.
 		/// </summary>

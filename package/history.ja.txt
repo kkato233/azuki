@@ -4,6 +4,7 @@
  * add: 前景色に Color.Transparent を指定した CharClass の文字は ColorScheme.ForeColor の前景色で描画するように
  * add: 背景色に Color.Transparent を指定した CharClass の文字は ColorScheme.BackColor の背景色で描画するように
  * add: キーボードで行選択を可能に
+ * add: Ctrl キーを押しながらクリックまたはドラッグすると単語単位で選択できるように
  * add: Document.SelectionMode プロパティで選択モードを設定可能に
  * add: Document.SetSelection メソッドで行選択を可能に
  * add: Document.SetSelection メソッドで箱形選択を可能に

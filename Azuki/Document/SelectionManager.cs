@@ -18,6 +18,7 @@ namespace Sgry.Azuki
 		Document _Document;
 		int _CaretIndex = 0;
 		int _AnchorIndex = 0;
+		int _OriginalAnchorIndex = -1;
 		int _LineSelectionAnchor1 = -1;
 		int _LineSelectionAnchor2 = -1; // temporary variable holding selection anchor on expanding line selection backward
 		int[] _RectSelectRanges = null;
@@ -55,7 +56,22 @@ namespace Sgry.Azuki
 			set
 			{
 				Debug.Assert( 0 <= value && value <= _Document.Length, "invalid value ("+value+") was set to SelectionManager.AnchorIndex (Document.Length:"+_Document.Length+")" );
+				_OriginalAnchorIndex = -1;
 				_AnchorIndex = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets originally set position of selection anchor.
+		/// </summary>
+		public int OriginalAnchorIndex
+		{
+			get
+			{
+				if( 0 <= _OriginalAnchorIndex )
+					return _OriginalAnchorIndex;
+				else
+					return _AnchorIndex;
 			}
 		}
 
@@ -106,17 +122,26 @@ namespace Sgry.Azuki
 			if( SelectionMode == TextDataType.Rectangle )
 			{
 				ClearLineSelectionData();
+				_OriginalAnchorIndex = -1;
 				SetSelection_Rect( anchor, caret, view );
 			}
 			else if( SelectionMode == TextDataType.Line )
 			{
 				ClearRectSelectionData();
+				_OriginalAnchorIndex = -1;
 				SetSelection_Line( anchor, caret, view );
+			}
+			else if( SelectionMode == TextDataType.Words )
+			{
+				ClearLineSelectionData();
+				ClearRectSelectionData();
+				SetSelection_Words( anchor, caret );
 			}
 			else
 			{
 				ClearLineSelectionData();
 				ClearRectSelectionData();
+				_OriginalAnchorIndex = -1;
 				SetSelection_Normal( anchor, caret );
 			}
 		}
@@ -202,6 +227,33 @@ namespace Sgry.Azuki
 
 			// apply new selection
 			SetSelection_Normal( anchor, caret );
+		}
+
+		void SetSelection_Words( int anchor, int caret )
+		{
+			int waBegin, waEnd; // wa = Word at Anchor
+			int wcBegin, wcEnd; // wc = Word at Caret
+
+			// remember original position of anchor 
+			_OriginalAnchorIndex = anchor;
+
+			// ensure both selection boundaries are on word boundary
+			_Document.GetWordAt( anchor, out waBegin, out waEnd );
+			_Document.GetWordAt( caret, out wcBegin, out wcEnd );
+			if( anchor <= caret )
+			{
+				anchor = waBegin;
+				caret = wcEnd;
+			}
+			else
+			{
+				caret = wcBegin;
+				anchor = waEnd;
+			}
+
+			// select normally
+			SetSelection_Normal( anchor, caret );
+
 		}
 
 		void SetSelection_Normal( int anchor, int caret )

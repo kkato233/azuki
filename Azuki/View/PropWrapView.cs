@@ -677,6 +677,7 @@ namespace Sgry.Azuki
 							end = newEndIndex;
 						}
 					}
+					Debug.Assert( PLHI[line-1] < end, "INTERNAL ERROR" );
 					PLHI.Insert( line, end );
 					line++;
 					x = 0;

@@ -4,6 +4,7 @@
  * add: now uses ColorScheme.ForeColor if fore-ground for a CharClass was set to Color.Transparent
  * add: now uses ColorScheme.BackColor if back-ground for a CharClass was set to Color.Transparent
  * add: now selecting text by line can be executed by keyboard
+ * add: now mouse click or drag with Ctrl key selects word by word
  * add: now selection mode can be set programatically through Document.SelectionMode property
  * add: now with Document.SetSelection method, Azuki can select text line by line
  * add: now with Document.SetSelection method, Azuki can select text in specific rectangle

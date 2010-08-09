@@ -716,29 +716,21 @@ namespace Sgry.Azuki
 		{
 			if( _IsDisposed )
 				return;
+			if( pos.X < 0 || pos.Y < 0 )
+				return;
 
-			int index;
-			int begin, end;
+			int clickedIndex;
 
-			// convert screen coordinate to virtual view coordinate
-			pos.X = Math.Max( 0, pos.X );
-			pos.Y = Math.Max( 0, pos.Y );
+			// remember mouse down screen position and convert it to virtual view's coordinate
+			_MouseDownVirPos = pos;
 			View.ScreenToVirtual( ref pos );
 
-			// get range of a word at clicked location
-			index = View.GetIndexFromVirPos( pos );
-			Document.GetWordAt( index, out begin, out end );
-			if( end <= begin )
-			{
-				return;
-			}
+			// calculate index of the clicked position
+			clickedIndex = View.GetIndexFromVirPos( pos );
 
-			// select the word.
-			// (because Azuki's invalidation logic only supports
-			// selection change by keyboard commands,
-			// emulate as if this selection was done by keyboard.
-			Document.SetSelection( begin, begin ); // select caret to the head of the word
-			Document.SetSelection( begin, end ); // then, expand selection to the end of it
+			// select a word there
+			_UI.SelectionMode = TextDataType.Words;
+			Document.SetSelection( clickedIndex, clickedIndex, View );
 		}
 
 		internal void HandleMouseMove( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )

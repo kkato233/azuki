@@ -40,7 +40,7 @@ namespace Sgry.Azuki
 
 		#region Properties
 		/// <summary>
-		/// Gets number of the physical lines.
+		/// Gets number of the screen lines.
 		/// </summary>
 		public override int LineCount
 		{
@@ -71,7 +71,7 @@ namespace Sgry.Azuki
 						// update property
 						base.TextAreaWidth = value;
 
-						// update physical line head indexes
+						// update screen line head indexes
 						string text = Document.Text;
 						PLHI.Clear();
 						PLHI.Add( 0 );
@@ -256,7 +256,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets the index of the first char in the physical line
+		/// Gets the index of the first char in the screen line
 		/// which contains the specified char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
@@ -271,7 +271,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Calculates physical line/column index from char-index.
+		/// Calculates screen line/column index from char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
@@ -285,7 +285,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Calculates char-index from physical line/column index.
+		/// Calculates char-index from screen line/column index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
@@ -335,7 +335,7 @@ namespace Sgry.Azuki
 					}
 				}
 
-				// update physical line head indexes
+				// update screen line head indexes
 				prevLineCount = LineCount;
 				UpdatePLHI( g, e.Index, e.OldText, e.NewText );
 #				if PLHI_DEBUG
@@ -380,7 +380,7 @@ namespace Sgry.Azuki
 				}
 				else
 				{
-					// if the replacement changed physical line count,
+					// if the replacement changed screen line count,
 					// invalidate this *logical* line
 					int logLine;
 					int logLineEnd;
@@ -457,7 +457,7 @@ namespace Sgry.Azuki
 
 		internal override void HandleDocumentChanged( Document prevDocument )
 		{
-			// update physical line head indexes if needed
+			// update screen line head indexes if needed
 			if( Document.ViewParam.LastModifiedTime != Document.LastModifiedTime
 				|| Document.ViewParam.LastFontHashCode != FontInfo.GetHashCode()
 				|| Document.ViewParam.LastTextAreaWidth != TextAreaWidth )
@@ -517,7 +517,7 @@ namespace Sgry.Azuki
 				// whole line can not be printed in the virtual space.
 				// so wrap this line
 
-				// make drawable part of this line as a physical line
+				// make drawable part of this line as a screen line
 				PLHI.Add( begin + drawableLength );
 				begin += drawableLength;
 
@@ -632,11 +632,11 @@ namespace Sgry.Azuki
 				PLHI[i] += newText.Length - oldText.Length;
 			}
 
-			// [phase 2] delete LHI of affected physical lines except first one
+			// [phase 2] delete LHI of affected screen lines except first one
 			if( delBeginL < delEndL && delEndL <= PLHI.Count )
 				PLHI.RemoveRange( delBeginL, delEndL );
 
-			// [phase 3] re-calculate physical line indexes
+			// [phase 3] re-calculate screen line indexes
 			// (here we should divide the text in the range into small segments
 			// to avoid making unnecessary copy of the text so many times)
 			const int segmentLen = 32;
@@ -662,11 +662,11 @@ namespace Sgry.Azuki
 				string str = doc.GetTextInRange( ref begin, ref end );
 				x = MeasureTokenEndX( g, str, x, TextAreaWidth, out drawableLen );
 
-				// can this segment be written in this physical line?
+				// can this segment be written in this screen line?
 				if( drawableLen < str.Length
 					|| LineLogic.IsEolChar(str, drawableLen-1) )
 				{
-					// hit right limit. end this physical line
+					// hit right limit. end this screen line
 					end = begin + drawableLen;
 					if( LineLogic.IsEolChar(str, drawableLen-1) == false )
 					{
@@ -685,7 +685,7 @@ namespace Sgry.Azuki
 			}
 			while( end < reCalcEnd );
 
-			// then, remove extra last physical line index made as the result of phase 3
+			// then, remove extra last screen line index made as the result of phase 3
 			if( line != delBeginL && line < PLHI.Count )
 			{
 				PLHI.RemoveAt( line-1 );
@@ -821,8 +821,8 @@ namespace Sgry.Azuki
 				}
 				else
 				{
-					// physical line head index is different from logical line head index.
-					// this means this physical line was a wrapped line so do not draw foregorund text.
+					// screen line head index is different from logical line head index.
+					// this means this screen line was a wrapped line so do not draw foregorund text.
 					drawsText = false;
 				}
 

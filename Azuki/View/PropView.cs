@@ -59,7 +59,7 @@ namespace Sgry.Azuki
 
 		#region Properties
 		/// <summary>
-		/// Gets number of the physical lines.
+		/// Gets number of the screen lines.
 		/// </summary>
 		public override int LineCount
 		{
@@ -201,7 +201,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets the index of the first char in the physical line
+		/// Gets the index of the first char in the screen line
 		/// which contains the specified char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
@@ -211,7 +211,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Calculates physical line/column index from char-index.
+		/// Calculates screen line/column index from char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public override void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
@@ -220,7 +220,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Calculates char-index from physical line/column index.
+		/// Calculates char-index from screen line/column index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
 		public override int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
@@ -376,7 +376,7 @@ namespace Sgry.Azuki
 			firstBeginPos.Y -= (LinePadding >> 1);
 			lastEndPos.Y -= (LinePadding >> 1);
 
-			// convert it to physical screen coordinate
+			// convert it to screen screen coordinate
 			VirtualToScreen( ref firstBeginPos );
 			VirtualToScreen( ref lastEndPos );
 

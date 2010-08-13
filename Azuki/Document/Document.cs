@@ -585,7 +585,7 @@ namespace Sgry.Azuki
 		/// Through this property,
 		/// number of the logical lines in this document can be retrieved.
 		/// "Logical line" here means a string simply separated by EOL codes.
-		/// and differs from "physical line" (a text line drawn as a graphc).
+		/// and differs from "screen line" (a text line drawn as a graphc).
 		/// To retrieve count of the logical lines,
 		/// use <see cref="Sgry.Azuki.IView.LineCount">IView.LineCount</see> or
 		/// <see cref="Sgry.Azuki.IUserInterface.LineCount">

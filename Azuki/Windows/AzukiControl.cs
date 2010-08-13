@@ -1569,7 +1569,7 @@ string TODO="should make original .cur resource and use it...";
 		}
 		#endregion
 
-		#region IUserInterface - Physical Line/Column Index
+		#region IUserInterface - Screen Line/Column Index
 		/// <summary>
 		/// Gets the index of the first char in the line.
 		/// </summary>
@@ -1580,7 +1580,7 @@ string TODO="should make original .cur resource and use it...";
 		}
 
 		/// <summary>
-		/// Gets the index of the first char in the physical line
+		/// Gets the index of the first char in the screen line
 		/// which contains the specified char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
@@ -1590,7 +1590,7 @@ string TODO="should make original .cur resource and use it...";
 		}
 
 		/// <summary>
-		/// Calculates physical line index from char-index.
+		/// Calculates screen line index from char-index.
 		/// </summary>
 		/// <param name="charIndex">The index of the line which contains the char at this parameter will be calculated.</param>
 		/// <returns>The index of the line which contains the character at specified index.</returns>
@@ -1601,7 +1601,7 @@ string TODO="should make original .cur resource and use it...";
 		}
 
 		/// <summary>
-		/// Calculates physical line/column index from char-index.
+		/// Calculates screen line/column index from char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
 		public void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
@@ -1610,7 +1610,7 @@ string TODO="should make original .cur resource and use it...";
 		}
 
 		/// <summary>
-		/// Calculates char-index from physical line/column index.
+		/// Calculates char-index from screen line/column index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
 		public int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )

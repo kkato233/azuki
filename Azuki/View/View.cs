@@ -141,7 +141,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets number of the physical lines.
+		/// Gets number of the screen lines.
 		/// </summary>
 		public abstract int LineCount
 		{
@@ -831,14 +831,14 @@ namespace Sgry.Azuki
 		public abstract int GetLineHeadIndex( int lineIndex );
 
 		/// <summary>
-		/// Gets the index of the first char in the physical line
+		/// Gets the index of the first char in the screen line
 		/// which contains the specified char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetLineHeadIndexFromCharIndex( int charIndex );
 
 		/// <summary>
-		/// Calculates physical line index from char-index.
+		/// Calculates screen line index from char-index.
 		/// </summary>
 		/// <param name="charIndex">The index of the line which contains the char at this parameter will be calculated.</param>
 		/// <returns>The index of the line which contains the character at specified index.</returns>
@@ -853,13 +853,13 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Calculates physical line/column index from char-index.
+		/// Calculates screen line/column index from char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex );
 
 		/// <summary>
-		/// Calculates char-index from physical line/column index.
+		/// Calculates char-index from screen line/column index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
 		public abstract int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex );

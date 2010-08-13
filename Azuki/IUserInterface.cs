@@ -97,6 +97,16 @@ namespace Sgry.Azuki
 		void UpdateCaretGraphic();
 
 		/// <summary>
+		/// Updates size and position of the caret graphic.
+		/// </summary>
+		void UpdateCaretGraphic( Rectangle caretRect );
+
+		/// <summary>
+		/// Sets graphic of mouse cursor.
+		/// </summary>
+		void SetCursorGraphic( MouseCursor cursorType );
+
+		/// <summary>
 		/// Font to be used for displaying text.
 		/// </summary>
 		Font Font

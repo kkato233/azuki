@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-08-09
+// update: 2010-08-13
 //=========================================================
 using System;
 using System.Collections;
@@ -292,9 +292,12 @@ namespace Sgry.Azuki
 			get{ return _SelMan.AnchorIndex; }
 		}
 
-		internal int OriginalAnchorIndex
+		/// <summary>
+		/// Gets selection manager object associated with this document.
+		/// </summary>
+		internal SelectionManager SelectionManager
 		{
-			get{ return _SelMan.OriginalAnchorIndex; }
+			get{ return _SelMan; }
 		}
 
 		/// <summary>

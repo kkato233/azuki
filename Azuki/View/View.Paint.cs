@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-07-25
+// update: 2010-08-13
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -794,36 +794,6 @@ namespace Sgry.Azuki
 
 		#region Utilities
 		/// <summary>
-		/// Distinguishes whether specified index is in selection or not.
-		/// </summary>
-		protected bool IsInSelection( int index )
-		{
-			int begin, end;
-
-			if( Document.RectSelectRanges != null )
-			{
-				// is in rectangular selection mode.
-				for( int i=0; i<Document.RectSelectRanges.Length; i+=2 )
-				{
-					begin = Document.RectSelectRanges[i];
-					end = Document.RectSelectRanges[i+1];
-					if( begin <= index && index < end )
-					{
-						return true;
-					}
-				}
-
-				return false;
-			}
-			else
-			{
-				// is not in rectangular selection mode.
-				Document.GetSelection( out begin, out end );
-				return (begin <= index && index < end);
-			}
-		}
-
-		/// <summary>
 		/// Calculates end index of the drawing token at longest case by selection state.
 		/// </summary>
 		int CalcTokenEndLimit( Document doc, int index, int nextLineHead, out bool inSelection )
@@ -907,7 +877,7 @@ namespace Sgry.Azuki
 			tokenEndLimit = CalcTokenEndLimit( doc, index, nextLineHead, out out_inSelection );
 
 			// get first char class and selection state
-			out_inSelection = IsInSelection( index );
+			out_inSelection = Document.SelectionManager.IsInSelection( index );
 			firstCh = doc[ index ];
 			firstKlass = doc.GetCharClass( index );
 			out_klass = firstKlass;

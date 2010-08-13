@@ -23,14 +23,13 @@ namespace Sgry.Azuki.Windows
 	public class AzukiControl : Control, IUserInterface
 	{
 		#region Types, Constants and Fields
-		const int DefaultCaretWidth = 2;
 		static int _ScrollBarWidth = 0;
 		
 		delegate void InvalidateProc1();
 		delegate void InvalidateProc2( Rectangle rect );
 		
 		UiImpl _Impl;
-		Size _CaretSize = new Size( DefaultCaretWidth, 10 );
+		Size _CaretSize = new Size( UiImpl.DefaultCaretWidth, 10 );
 		bool _AcceptsReturn = true;
 		bool _AcceptsTab = true;
 		bool _ShowsHScrollBar = true;
@@ -46,6 +45,7 @@ namespace Sgry.Azuki.Windows
 		
 		InvalidateProc1 _invalidateProc1 = null;
 		InvalidateProc2 _invalidateProc2 = null;
+		Action<MouseCursor> _SetCursorGraphicDelegate = null;
 		
 		IntPtr _OriginalWndProcObj = IntPtr.Zero;
 		WinApi.WNDPROC _CustomWndProcObj = null;
@@ -403,6 +403,30 @@ namespace Sgry.Azuki.Windows
 		/// </summary>
 		public void UpdateCaretGraphic()
 		{
+			if( Document == null )
+				return;
+			
+			// calculate caret size for current caret position
+			Point pos = GetPositionFromIndex( Document.CaretIndex );
+			using( IGraphics g = GetIGraphics() )
+			{
+				_CaretSize.Height = View.LineHeight;
+				_CaretSize.Width = Utl.CalcOverwriteCaretWidth(
+						g, Document, _Impl.View, CaretIndex, IsOverwriteMode
+					);
+			}
+
+			// update graphic
+			UpdateCaretGraphic(
+					new Rectangle(pos.X, pos.Y, _CaretSize.Width, _CaretSize.Height)
+				);
+		}
+
+		/// <summary>
+		/// Updates size and position of the caret graphic.
+		/// </summary>
+		public void UpdateCaretGraphic( Rectangle caretRect )
+		{
 #			if !PocketPC
 			if( DesignMode )
 				return;
@@ -412,40 +436,64 @@ namespace Sgry.Azuki.Windows
 			if( Focused == false )
 				return;
 
-			// update caret size
-			_CaretSize.Height = View.LineHeight;
-
 			// if document is already set, update caret size according to the state
 			if( Document != null )
 			{
-				// calculate caret size
-				using( IGraphics g = GetIGraphics() )
-				{
-					_CaretSize.Width = Utl.CalcOverwriteCaretWidth(
-							g, Document, _Impl.View, CaretIndex, IsOverwriteMode
-						);
-				}
-
 				// calculate caret position and show/hide caret
-				Point newCaretPos = GetPositionFromIndex( Document.CaretIndex );
-				if( newCaretPos.X < _Impl.View.XofTextArea
-					|| newCaretPos.Y < _Impl.View.YofTextArea )
+				if( caretRect.X < _Impl.View.XofTextArea
+					|| caretRect.Y < _Impl.View.YofTextArea )
 				{
-					WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y );
+					WinApi.SetCaretPos( caretRect.X, caretRect.Y );
 					WinApi.HideCaret( Handle );
 				}
 				else
 				{
 					//NO_NEED//_Caret.Destroy();
 					WinApi.CreateCaret( Handle, _CaretSize );
-					WinApi.SetCaretPos( newCaretPos.X, newCaretPos.Y ); // must be called after creation in CE
+					WinApi.SetCaretPos( caretRect.X, caretRect.Y ); // must be called after creation in CE
 					
 					WinApi.ShowCaret( Handle );
 				}
 
 				// move IMM window to there if exists
-				WinApi.SetImeWindowPos( Handle, newCaretPos );
+				WinApi.SetImeWindowPos( Handle, caretRect.Location );
 			}
+		}
+
+		/// <summary>
+		/// Sets graphic of mouse cursor.
+		/// </summary>
+		public void SetCursorGraphic( MouseCursor cursorType )
+		{
+#			if !PocketPC
+			if( _SetCursorGraphicDelegate == null )
+			{
+				_SetCursorGraphicDelegate = SetCursorGraphic_Impl;
+			}
+			Invoke( _SetCursorGraphicDelegate, new object[]{cursorType} );
+#			endif
+		}
+
+		void SetCursorGraphic_Impl( MouseCursor cursorType )
+		{
+#			if !PocketPC
+			switch( cursorType )
+			{
+				case MouseCursor.DragAndDrop:
+string TODO="should make original .cur resource and use it...";
+					this.Cursor = Cursors.UpArrow;
+					break;
+				case MouseCursor.Hand:
+					this.Cursor = Cursors.Hand;
+					break;
+				case MouseCursor.IBeam:
+					this.Cursor = Cursors.IBeam;
+					break;
+				default:
+					this.Cursor = Cursors.Arrow;
+					break;
+			}
+#			endif
 		}
 
 		/// <summary>
@@ -2367,14 +2415,14 @@ namespace Sgry.Azuki.Windows
 					const int MK_SHIFT		= 0x0004;
 					const int MK_CONTROL	= 0x0008;
 
-					Point pos = new Point();
+					Point mousePos = new Point();
 					int modFlag;
 					bool shift, ctrl, alt, win;
 					int buttonIndex;
 
 					// get mouse cursor pos
-					pos.X = (short)( (lParam.ToInt32()      ) & 0xffff );
-					pos.Y = (short)( (lParam.ToInt32() >> 16) & 0xffff );
+					mousePos.X = (short)( (lParam.ToInt32()      ) & 0xffff );
+					mousePos.Y = (short)( (lParam.ToInt32() >> 16) & 0xffff );
 
 					// get modifier information
 					modFlag = wParam.ToInt32();
@@ -2398,21 +2446,11 @@ namespace Sgry.Azuki.Windows
 					// delegate
 					if( message == WinApi.WM_LBUTTONDBLCLK )
 					{
-						_Impl.HandleDoubleClick( buttonIndex, pos, shift, ctrl, alt, win );
+						_Impl.HandleDoubleClick( buttonIndex, mousePos, shift, ctrl, alt, win );
 					}
 					else if( message == WinApi.WM_MOUSEMOVE )
 					{
-						_Impl.HandleMouseMove( buttonIndex, pos, shift, ctrl, alt, win );
-#						if !PocketPC
-						if( pos.X < View.XofLeftMargin )
-						{
-							this.Cursor = Cursors.Arrow;
-						}
-						else
-						{
-							this.Cursor = Cursors.IBeam;
-						}
-#						endif
+						_Impl.HandleMouseMove( buttonIndex, mousePos, shift, ctrl, alt, win );
 					}
 					else if( message == WinApi.WM_LBUTTONDOWN || message == WinApi.WM_RBUTTONDOWN )
 					{
@@ -2420,12 +2458,12 @@ namespace Sgry.Azuki.Windows
 						this.Focus();
 
 						// handle mouse down event
-						_Impl.HandleMouseDown( buttonIndex, pos, shift, ctrl, alt, win );
+						_Impl.HandleMouseDown( buttonIndex, mousePos, shift, ctrl, alt, win );
+
+						// do Windows specific special actions
 #						if !PocketPC
 						if( alt )
 						{
-							this.Cursor = Cursors.Arrow;
-
 							// set flag to prevent opening menu
 							// by Alt key for rectangular selection mode
 							if( IsRectSelectMode )
@@ -2437,10 +2475,7 @@ namespace Sgry.Azuki.Windows
 					}
 					else if( message == WinApi.WM_LBUTTONUP || message == WinApi.WM_RBUTTONUP )
 					{
-#						if !PocketPC
-						this.Cursor = Cursors.IBeam;
-#						endif
-						_Impl.HandleMouseUp( buttonIndex, pos, shift, ctrl, alt, win );
+						_Impl.HandleMouseUp( buttonIndex, mousePos, shift, ctrl, alt, win );
 					}
 				}
 				else if( message == WinApi.WM_MOUSEWHEEL )
@@ -2617,14 +2652,14 @@ namespace Sgry.Azuki.Windows
 				// if it's no in overwrite mode, return default width
 				if( !isOverwriteMode )
 				{
-					return DefaultCaretWidth;
+					return UiImpl.DefaultCaretWidth;
 				}
 
 				// if something selected, return default width
 				doc.GetSelection( out begin, out end );
 				if( begin != end || doc.Length <= end )
 				{
-					return DefaultCaretWidth;
+					return UiImpl.DefaultCaretWidth;
 				}
 
 				// calculate and return width

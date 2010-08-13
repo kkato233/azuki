@@ -1,7 +1,7 @@
 ﻿// file: SelectionManager.cs
 // brief: Internal class to manage text selection range.
 // author: YAMAMOTO Suguru
-// update: 2010-08-09
+// update: 2010-08-13
 //=========================================================
 using System;
 using System.Diagnostics;
@@ -143,6 +143,36 @@ namespace Sgry.Azuki
 				ClearRectSelectionData();
 				_OriginalAnchorIndex = -1;
 				SetSelection_Normal( anchor, caret );
+			}
+		}
+
+		/// <summary>
+		/// Distinguishes whether specified index is in selection or not.
+		/// </summary>
+		public bool IsInSelection( int index )
+		{
+			int begin, end;
+
+			if( _Document.RectSelectRanges != null )
+			{
+				// is in rectangular selection mode.
+				for( int i=0; i<_Document.RectSelectRanges.Length; i+=2 )
+				{
+					begin = _Document.RectSelectRanges[i];
+					end = _Document.RectSelectRanges[i+1];
+					if( begin <= index && index < end )
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+			else
+			{
+				// is not in rectangular selection mode.
+				_Document.GetSelection( out begin, out end );
+				return (begin <= index && index < end);
 			}
 		}
 		#endregion

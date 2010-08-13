@@ -89,6 +89,7 @@
     <Compile Include="View\DrawingOption.cs" />
     <Compile Include="View\HRulerIndicatorType.cs" />
     <Compile Include="View\IView.cs" />
+    <Compile Include="View\MouseCursor.cs" />
     <Compile Include="View\PropView.cs" />
     <Compile Include="View\PropWrapView.cs" />
     <Compile Include="View\View.cs" />

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-07-25
+// update: 2010-08-13
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -925,6 +925,7 @@ namespace Sgry.Azuki.Windows
 		/// In overwrite mode, input character will not be inserted
 		/// but replaces the character at where the caret is on.
 		/// </summary>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.IsOverwriteModeChanged">AzukiControl.IsOverwriteModeChanged event</seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1577,7 +1578,7 @@ namespace Sgry.Azuki.Windows
 		public event EventHandler CaretMoved;
 
 		/// <summary>
-		/// Invokes CaretMoved event.
+		/// For internal use only. Invokes CaretMoved event.
 		/// </summary>
 		public void InvokeCaretMoved()
 		{
@@ -1594,7 +1595,7 @@ namespace Sgry.Azuki.Windows
 		public event EventHandler IsRectSelectModeChanged;
 
 		/// <summary>
-		/// Invokes IsRectSelectModeChanged event.
+		/// For internal use only. Invokes IsRectSelectModeChanged event.
 		/// </summary>
 		[Obsolete("Use InvokeSelectionModeChanged method instead.", false)]
 		public void InvokeIsRectSelectModeChanged()
@@ -1604,6 +1605,24 @@ namespace Sgry.Azuki.Windows
 				IsRectSelectModeChanged( this, EventArgs.Empty );
 			}
 		}
+
+		/// <summary>
+		/// Occurs soon after the overwrite mode was changed.
+		/// </summary>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.IsOverwriteMode">AzukiControl.IsOverwriteMode property</seealso>
+		public event EventHandler IsOverwriteModeChanged;
+
+		/// <summary>
+		/// For internal use only. Invokes IsOverwriteModeChanged event.
+		/// </summary>
+		public void InvokeIsOverwriteModeChanged()
+		{
+			if( IsOverwriteModeChanged != null )
+			{
+				IsOverwriteModeChanged( this, EventArgs.Empty );
+			}
+		}
+
 		#endregion
 
 		#region IUserInterface - Scroll

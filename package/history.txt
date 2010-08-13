@@ -11,6 +11,7 @@
  * add: added new overload of Document.GetWordAt method
  * add: added new overload of Document.GetLineLength method
  * add: scroll margin can be set by number of lines with UserPref.AutoScrollMargin
+ * add: added AzukiControl.IsOverwriteModeChanged event
  * mod: now AzukiControl.IsRectSelectModeChanged event is obsoleted by Document.SelectionModeChanged event
  * mod: now KeywordHighlighter.SetKeywords method is obsoleted by AddKeywordSet method
  * mod: double buffering also be enabled for .NET Compact Framework version

@@ -34,17 +34,18 @@ namespace Sgry.Ann
 			InitMenuMap();
 			InitKeyMap();
 			ResetShortcutInMenu();
+
 #			if !PocketPC
-			_Azuki.UseCtrlTabToMoveFocus = false;
 			Font = SystemInformation.MenuFont;
 			AllowDrop = true;
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
 			Shown += Form_Shown;
 #			endif
-			this.Icon = Resource.AppIcon;
+			Icon = Resource.AppIcon;
 
 #			if !PocketPC
+			_Azuki.UseCtrlTabToMoveFocus = false;
 			_Azuki.CaretMoved += _Azuki_CaretMoved;
 #			endif
 			_Azuki.IsOverwriteModeChanged += _Azuki_IsOverwriteModeChanged;
@@ -134,15 +135,6 @@ namespace Sgry.Ann
 			{
 				text.Append( ", R/O" );
 			}
-			/*DEL*switch ( doc.SelectionMode )
-			{
-				case TextDataType.Line:
-					text.Append( ", LINE-SEL" );
-					break;
-				case TextDataType.Rectangle:
-					text.Append( ", RECT-SEL" );
-					break;
-			}*/
 			text.Append( "]" );
 			this.Text = text.ToString();
 

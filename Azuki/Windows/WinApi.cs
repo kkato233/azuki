@@ -299,7 +299,7 @@ namespace Sgry.Azuki.Windows
 		public static extern Int32 HideCaret( IntPtr window );
 		#endregion
 
-		#region Core
+		#region Other
 		[DllImport(kernel32_dll)]
 		public static extern UInt32 GetLastError();
 

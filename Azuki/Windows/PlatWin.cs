@@ -196,6 +196,7 @@ namespace Sgry.Azuki.Windows
 		}
 		#endregion
 
+		#region Graphic Interface
 		/// <summary>
 		/// Gets a graphic device context from a window.
 		/// </summary>
@@ -218,6 +219,7 @@ namespace Sgry.Azuki.Windows
 
 			throw new ArgumentException( "an object of unexpected type ("+window.GetType()+") was given to PlatWin.GetGraphics.", "window" );
 		}
+		#endregion
 
 		#region Utilities
 		class Utl

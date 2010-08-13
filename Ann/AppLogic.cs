@@ -1,4 +1,4 @@
-// 2010-07-04
+// 2010-08-13
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,10 +45,11 @@ namespace Sgry.Ann
 
 		static string _AppInstanceMutexName = null;
 		static string _IpcFilePath = null;
+		public static string StatusMsg_CaretPos = "line:{0}, column:{1}, char:{2}";
 
 		AnnForm _MainForm = null;
-		List<Document> _DAD_Documents = new List<Document>(); // Dont Access Directly
-		Document _DAD_ActiveDocument = null; // Dont Access Directly
+		List<Document> _DAD_Documents = new List<Document>(); // Don't Access Directly
+		Document _DAD_ActiveDocument = null; // Don't Access Directly
 		int _UntitledFileCount = 1;
 		string _InitOpenFilePath = null;
 		SearchContext _SearchContext = new SearchContext();
@@ -243,6 +244,7 @@ namespace Sgry.Ann
 					_DAD_ActiveDocument = null;
 			}
 			doc.DirtyStateChanged -= Doc_DirtyStateChanged;
+			doc.SelectionModeChanged -= Doc_SelectionModeChanged;
 		}
 
 		/// <summary>

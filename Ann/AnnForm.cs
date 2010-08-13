@@ -1,4 +1,4 @@
-// 2010-04-30
+// 2010-08-13
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -40,8 +40,15 @@ namespace Sgry.Ann
 			AllowDrop = true;
 			DragEnter += Form_DragEnter;
 			DragDrop += Form_DragDrop;
+			Shown += Form_Shown;
 #			endif
 			this.Icon = Resource.AppIcon;
+
+#			if !PocketPC
+			_Azuki.CaretMoved += _Azuki_CaretMoved;
+#			endif
+			_Azuki.IsOverwriteModeChanged += _Azuki_IsOverwriteModeChanged;
+
 			_SearchPanel.SetFont( this.Font );
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
 			_TimerForDelayedActivatedEvent.Interval = 100;
@@ -127,7 +134,7 @@ namespace Sgry.Ann
 			{
 				text.Append( ", R/O" );
 			}
-			switch ( doc.SelectionMode )
+			/*DEL*switch ( doc.SelectionMode )
 			{
 				case TextDataType.Line:
 					text.Append( ", LINE-SEL" );
@@ -135,9 +142,30 @@ namespace Sgry.Ann
 				case TextDataType.Rectangle:
 					text.Append( ", RECT-SEL" );
 					break;
-			}
+			}*/
 			text.Append( "]" );
 			this.Text = text.ToString();
+
+			// update status bar
+#			if !PocketPC
+			switch( doc.SelectionMode )
+			{
+				case TextDataType.Line:
+					_Status_SelectionMode.Text = "LINE";
+					break;
+				case TextDataType.Rectangle:
+					_Status_SelectionMode.Text = "RECT";
+					break;
+				case TextDataType.Words:
+					_Status_SelectionMode.Text = "WORD";
+					break;
+				default:
+					_Status_SelectionMode.Text = "";
+					break;
+			}
+			_Status_InsertionMode.Text = (Azuki.IsOverwriteMode) ? "Overwrite" : "Insert";
+			_Azuki_CaretMoved( this, EventArgs.Empty ); // emulate event to update text of caret position
+#			endif
 
 			// apply read-only mode
 			_MI_File_ReadOnly.Checked = readOnly;
@@ -363,6 +391,11 @@ namespace Sgry.Ann
 		}
 #		endif
 
+		void Form_Shown( object sender, EventArgs e )
+		{
+			UpdateUI();
+		}
+
 		protected override void OnActivated( EventArgs e )
 		{
 			base.OnActivated( e );
@@ -373,6 +406,61 @@ namespace Sgry.Ann
 		{
 			_TimerForDelayedActivatedEvent.Enabled = false;
 			_App.MainForm_DelayedActivated();
+		}
+
+		void _Azuki_IsOverwriteModeChanged( object sender, EventArgs e )
+		{
+			// update status bar
+			UpdateUI();
+		}
+
+#		if !PocketPC
+		void _Azuki_CaretMoved( object sender, EventArgs e )
+		{
+			int line, columnInHRuler, columnInChar;
+
+			// get caret position
+			_Azuki.GetLineColumnIndexFromCharIndex(
+				_Azuki.CaretIndex, out line, out columnInChar
+			);
+			columnInHRuler = _Azuki.View.GetVirPosFromIndex( _Azuki.CaretIndex ).X
+				/ _Azuki.View.HRulerUnitWidth;
+
+			// display it in status bar
+			_Status_CaretPos.Text = String.Format(
+					"line:{0}, column:{1}, char:{2}",
+					line+1, columnInHRuler+1, columnInChar+1
+				);
+		}
+#		endif
+		#endregion
+
+		#region Other
+		public override Font Font
+		{
+			get{ return base.Font; }
+			set
+			{
+				base.Font = value;
+#				if !PocketPC
+				using( Graphics g = CreateGraphics() )
+				{
+					// update size of status panels
+					string sampleText = String.Format(
+							AppLogic.StatusMsg_CaretPos, 999, 999, 999
+						);
+					_Status_CaretPos.Width = (int)g.MeasureString(
+							sampleText, value
+						).Width;
+					_Status_SelectionMode.Width = (int)g.MeasureString(
+							"WORD_", value
+						).Width;
+					_Status_InsertionMode.Width = (int)g.MeasureString(
+							"Overwrite_", value
+						).Width;
+				}
+#				endif
+			}
 		}
 		#endregion
 
@@ -403,6 +491,21 @@ namespace Sgry.Ann
 			_SearchPanel.PatternFixed += delegate {
 				DeactivateSearchPanel();
 			};
+#			if !PocketPC
+			//
+			// _StatusBar
+			//
+			_StatusBar.Dock = DockStyle.Bottom;
+			_StatusBar.Panels.AddRange( new StatusBarPanel[] {
+				_Status_Message, _Status_CaretPos, _Status_SelectionMode, _Status_InsertionMode
+			});
+			_StatusBar.ShowPanels = true;
+			_StatusBar.SizingGrip = true;
+			//
+			// _Status_Message
+			//
+			_Status_Message.AutoSize = StatusBarPanelAutoSize.Spring;
+#			endif
 			//
 			// AnnForm
 			// 
@@ -410,6 +513,9 @@ namespace Sgry.Ann
 			Controls.Add( _Azuki );
 			Controls.Add( _TabPanel );
 			Controls.Add( _SearchPanel );
+#			if !PocketPC
+			Controls.Add( _StatusBar );
+#			endif
 			Text = "Ann";
 			ResumeLayout( false );
 		}
@@ -603,8 +709,8 @@ namespace Sgry.Ann
 		#region UI Components
 		MainMenu _MainMenu			= new MainMenu();
 #		if PocketPC
-		MenuItem _MI_Menu = new MenuItem();
-		MenuItem _MI_Save = new MenuItem();
+		MenuItem _MI_Menu			= new MenuItem();
+		MenuItem _MI_Save			= new MenuItem();
 #		endif
 		MenuItem _MI_File			= new MenuItem();
 		MenuItem _MI_File_New		= new MenuItem();
@@ -656,6 +762,13 @@ namespace Sgry.Ann
 		AzukiControl _Azuki;
 		TabPanel<Document> _TabPanel = new TabPanel<Document>();
 		SearchPanel _SearchPanel = new SearchPanel();
+#		if !PocketPC
+		StatusBar _StatusBar = new StatusBar();
+		StatusBarPanel _Status_Message = new StatusBarPanel();
+		StatusBarPanel _Status_CaretPos = new StatusBarPanel();
+		StatusBarPanel _Status_SelectionMode = new StatusBarPanel();
+		StatusBarPanel _Status_InsertionMode = new StatusBarPanel();
+#		endif
 		#endregion
 
 		#region Utilities

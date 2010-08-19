@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-08-13
+// update: 2010-08-19
 //=========================================================
 using System;
 using System.Collections;
@@ -927,13 +927,17 @@ namespace Sgry.Azuki
 			oldAnchor += anchorDelta;
 			oldCaret += caretDelta;
 
-			Debug.Assert( begin <= Length );
+			// update selection
+			_SelMan.AnchorIndex = newAnchor;
+			_SelMan.CaretIndex = newCaret;
+
+			// examine post assertions
+			Debug.Assert( newAnchor <= Length );
+			Debug.Assert( newCaret <= Length );
 			Debug.Assert( _LHI.Count == _LDS.Count, "LHI.Count("+_LHI.Count+") is not LMF.Count("+_LDS.Count+")" );
 
 			// cast event
 			IsDirty = true;
-			_SelMan.AnchorIndex = newAnchor;
-			_SelMan.CaretIndex = newCaret;
 			InvokeContentChanged( begin, oldText, text );
 			InvokeSelectionChanged( oldAnchor, oldCaret, null, true );
 		}

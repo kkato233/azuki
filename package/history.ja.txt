@@ -12,7 +12,7 @@
  * add: Document.GetWordAt メソッドのオーバーロードを追加
  * add: Document.GetLineLength メソッドのオーバーロードを追加
  * add: UserPref.AutoScrollMargin プロパティで、キャレットがウィンドウの端から何行分の余裕を持って自動スクロールするかを設定可能に
- * add: AzukiControl.IsOverwriteModeChanged イベントを追加
+ * add: AzukiControl.OverwriteModeChanged イベントを追加
  * mod: AzukiControl.IsRectSelectModeChanged イベントを Obsolete 指定に（Document.SelectionModeChanged で置き換え）
  * mod: KeywordHighlighter.SetKeywords メソッドを Obsolete 指定に（AddKeywordSet メソッドで置き換え）
  * mod: .NET Compact Framework 版でも描画時にダブルバッファリングを行うように

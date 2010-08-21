@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-08-13
+// update: 2010-08-21
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,9 @@ namespace Sgry.Azuki.Windows
 		
 		InvalidateProc1 _invalidateProc1 = null;
 		InvalidateProc2 _invalidateProc2 = null;
+#		if !PocketPC
 		Action<MouseCursor> _SetCursorGraphicDelegate = null;
+#		endif
 		
 		IntPtr _OriginalWndProcObj = IntPtr.Zero;
 		WinApi.WNDPROC _CustomWndProcObj = null;
@@ -973,7 +975,7 @@ string TODO="should make original .cur resource and use it...";
 		/// In overwrite mode, input character will not be inserted
 		/// but replaces the character at where the caret is on.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.IsOverwriteModeChanged">AzukiControl.IsOverwriteModeChanged event</seealso>
+		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.OverwriteModeChanged">AzukiControl.OverwriteModeChanged event</seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1658,16 +1660,16 @@ string TODO="should make original .cur resource and use it...";
 		/// Occurs soon after the overwrite mode was changed.
 		/// </summary>
 		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.IsOverwriteMode">AzukiControl.IsOverwriteMode property</seealso>
-		public event EventHandler IsOverwriteModeChanged;
+		public event EventHandler OverwriteModeChanged;
 
 		/// <summary>
-		/// For internal use only. Invokes IsOverwriteModeChanged event.
+		/// For internal use only. Invokes OverwriteModeChanged event.
 		/// </summary>
-		public void InvokeIsOverwriteModeChanged()
+		public void InvokeOverwriteModeChanged()
 		{
-			if( IsOverwriteModeChanged != null )
+			if( OverwriteModeChanged != null )
 			{
-				IsOverwriteModeChanged( this, EventArgs.Empty );
+				OverwriteModeChanged( this, EventArgs.Empty );
 			}
 		}
 

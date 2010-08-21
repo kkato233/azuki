@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-08-13
+// update: 2010-08-21
 //=========================================================
 using System;
 using System.Drawing;
@@ -265,7 +265,7 @@ namespace Sgry.Azuki
 		/// In overwrite mode, input character will not be inserted
 		/// but replace the character at where the caret is on.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.IsOverwriteModeChanged">IUserInterface.IsOverwriteModeChanged event</seealso>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.OverwriteModeChanged">IUserInterface.OverwriteModeChanged event</seealso>
 		bool IsOverwriteMode
 		{
 			get; set;
@@ -634,12 +634,12 @@ namespace Sgry.Azuki
 		/// Occurs soon after the overwrite mode was moved.
 		/// </summary>
 		/// <seealso cref="Sgry.Azuki.IUserInterface.IsOverwriteMode">IUserInterface.IsOverwriteMode property</seealso>
-		event EventHandler IsOverwriteModeChanged;
+		event EventHandler OverwriteModeChanged;
 
 		/// <summary>
-		/// Invokes IsOverwriteModeChanged event.
+		/// Invokes OverwriteModeChanged event.
 		/// </summary>
-		void InvokeIsOverwriteModeChanged();
+		void InvokeOverwriteModeChanged();
 		#endregion
 
 		#region Scroll

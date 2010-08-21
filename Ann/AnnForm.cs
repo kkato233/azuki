@@ -1,4 +1,4 @@
-// 2010-08-13
+// 2010-08-21
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ namespace Sgry.Ann
 			_Azuki.UseCtrlTabToMoveFocus = false;
 			_Azuki.CaretMoved += _Azuki_CaretMoved;
 #			endif
-			_Azuki.IsOverwriteModeChanged += _Azuki_IsOverwriteModeChanged;
+			_Azuki.OverwriteModeChanged += _Azuki_OverwriteModeChanged;
 
 			_SearchPanel.SetFont( this.Font );
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
@@ -400,7 +400,7 @@ namespace Sgry.Ann
 			_App.MainForm_DelayedActivated();
 		}
 
-		void _Azuki_IsOverwriteModeChanged( object sender, EventArgs e )
+		void _Azuki_OverwriteModeChanged( object sender, EventArgs e )
 		{
 			// update status bar
 			UpdateUI();

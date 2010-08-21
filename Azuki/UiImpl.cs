@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-08-13
+// update: 2010-08-21
 //=========================================================
 using System;
 using System.Text;
@@ -209,7 +209,7 @@ namespace Sgry.Azuki
 				Debug.Assert( _IsDisposed == false );
 				_IsOverwriteMode = value;
 				_UI.UpdateCaretGraphic();
-				_UI.InvokeIsOverwriteModeChanged();
+				_UI.InvokeOverwriteModeChanged();
 			}
 		}
 

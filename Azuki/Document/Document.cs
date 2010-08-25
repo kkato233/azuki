@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-08-19
+// update: 2010-08-22
 //=========================================================
 using System;
 using System.Collections;
@@ -1673,10 +1673,32 @@ namespace Sgry.Azuki
 		/// <para>
 		/// This method searches the matched bracket from specified index.
 		/// If the character at specified index was not a sort of bracket,
+		/// or if specified index points to a character
+		/// which has no meaning on grammar (such as comment block, string literal, etc.),
 		/// this method returns -1.
 		/// </para>
 		/// </remarks>
 		public int FindMatchedBracket( int index )
+		{
+			return FindMatchedBracket( index, -1 );
+		}
+
+		/// <summary>
+		/// Finds matched bracket from specified index.
+		/// </summary>
+		/// <param name="index">The index to start searching matched bracket.</param>
+		/// <param name="maxSearchLength">Maximum number of characters to search matched bracket for.</param>
+		/// <returns>Index of the matched bracket if found. Otherwise -1.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method searches the matched bracket from specified index.
+		/// If the character at specified index was not a sort of bracket,
+		/// or if specified index points to a character
+		/// which has no meaning on grammar (such as comment block, string literal, etc.),
+		/// this method returns -1.
+		/// </para>
+		/// </remarks>
+		public int FindMatchedBracket( int index, int maxSearchLength )
 		{
 			if( index < 0 || Length < index )
 				throw new ArgumentOutOfRangeException( "index" );
@@ -1687,7 +1709,7 @@ namespace Sgry.Azuki
 
 			// if given index is the end position,
 			// there is no char at the index so search must be fail
-			if( Length == index )
+			if( Length == index || IsCDATA(index) )
 			{
 				return -1;
 			}
@@ -1707,7 +1729,7 @@ namespace Sgry.Azuki
 					}
 					else
 					{
-						// found bracket is an closer. get paired opener
+						// found bracket is a closer. get paired opener
 						pairBracket = _PairBracketTable[i-1];
 						isOpenBracket = false;
 					}
@@ -1723,10 +1745,16 @@ namespace Sgry.Azuki
 			depth = 0;
 			if( isOpenBracket )
 			{
-				for( int i=index; i<this.Length; i++ )
+				// determine search ending position
+				int limit = this.Length;
+				if( 0 < maxSearchLength )
+					limit = Math.Min( this.Length, index+maxSearchLength );
+
+				// search
+				for( int i=index; i<limit; i++ )
 				{
 					// if it is in comment or something that is not a part of "content," ignore it
-					if( Utl.ShouldBeIgnoredGrammatically(this, i) )
+					if( IsCDATA(i) )
 						continue;
 
 					if( this[i] == bracket )
@@ -1747,11 +1775,16 @@ namespace Sgry.Azuki
 			}
 			else
 			{
-				// search matched one
-				for( int i=index; 0<=i; i-- )
+				// determine search ending position
+				int limit = 0;
+				if( 0 < maxSearchLength )
+					limit = Math.Max( 0, index-maxSearchLength );
+
+				// search
+				for( int i=index; limit<=i; i-- )
 				{
 					// if it is in comment or something that is not a part of "content," ignore it
-					if( Utl.ShouldBeIgnoredGrammatically(this, i) )
+					if( IsCDATA(i) )
 						continue;
 
 					if( this[i] == bracket )
@@ -1834,17 +1867,16 @@ namespace Sgry.Azuki
 
 		/// <summary>
 		/// Gets whether the character at specified index
-		/// is just a character data without meaning on grammer.
+		/// is just a data without meaning on grammar.
 		/// </summary>
 		/// <param name="index">The index of the character to examine.</param>
 		/// <returns>Whether the character is part of a character data or not.</returns>
 		/// <remarks>
 		/// <para>
 		/// This method gets whether the character at specified index
-		/// is just a character data without meaning on grammer.
-		/// 'Character data' here is text data
-		/// that is treated as plain text data on grammer
-		/// like characters in comment, string literal etc.
+		/// is just a character data without meaning on grammar.
+		/// 'Character data' here means text data which is not a part of the grammar.
+		/// Example of character data is comment or string literal in programming languages.
 		/// </para>
 		/// </remarks>
 		public bool IsCDATA( int index )
@@ -2242,22 +2274,6 @@ namespace Sgry.Azuki
 
 		internal class Utl
 		{
-			public static bool ShouldBeIgnoredGrammatically( Document doc, int index )
-			{
-				CharClass klass = doc.GetCharClass( index );
-				if( klass == CharClass.CDataSection
-					|| klass == CharClass.Character
-					|| klass == CharClass.Comment
-					|| klass == CharClass.DocComment
-					|| klass == CharClass.Regex
-					|| klass == CharClass.String )
-				{
-					return true;
-				}
-
-				return false;
-			}
-
 			public static void ConstrainIndex( Document doc, ref int anchor, ref int caret )
 			{
 				if( anchor < caret )

@@ -18,6 +18,7 @@
  * mod: double buffering also be enabled for .NET Compact Framework version
  * mod: now the underline to highlight current line will be hidden when Azuki has no focus
  * mod: improved how a word is selected on double click
+ * mod: Document.FindMatchedBracket now returns -1 if search start position is in the middle of CDATA (comment, string literal, ...)
  * fix: corrected usage of 'GDI device context' which is system shared resource (incorrect usage might make graphics totally invalid)
  * add: [Ann] now the Mode menu item corresponding to the active editing mode is checked
  * add: [Ann] added status bar (not available in .NET Compact Framework)

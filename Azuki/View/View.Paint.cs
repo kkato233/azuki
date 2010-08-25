@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-08-13
+// update: 2010-08-25
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -25,7 +25,11 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints a token including special characters.
 		/// </summary>
-		protected void DrawToken( IGraphics g, string token, CharClass klass, bool inSelection, ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect )
+		protected void DrawToken(
+				IGraphics g, Document doc, int tokenBegin, int tokenEnd,
+				string token, CharClass klass,
+				ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect, bool inSelection
+			)
 		{
 			Debug.Assert( g != null, "IGraphics must not be null." );
 			Debug.Assert( token != null, "given token is null." );
@@ -165,6 +169,20 @@ namespace Sgry.Azuki
 					g.DrawLine( right, y_middle+2, left, y_middle+2 );
 					g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2+halfSpaceWidth );
 				}
+				return;
+			}
+			// matched bracket
+			else if( doc.IsMatchedBracket(tokenBegin) )
+			{
+				Color textColor = ColorScheme.MatchedBracketFore;
+				g.BackColor = ColorScheme.MatchedBracketBack;
+				if( textColor == Color.Transparent )
+				{
+					textColor = fore;
+				}
+
+				g.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
+				g.DrawText( token, ref textPos, textColor );
 				return;
 			}
 
@@ -808,9 +826,10 @@ namespace Sgry.Azuki
 			if( doc.RectSelectRanges != null )
 			{
 				//--- rectangle selection ---
-				// find a selection range that is on the drawing line
-				// (finding a begin-end pair whose 'end' is at middle of 'index' and 'nextLineHead')
 				int i;
+
+				// find a row that is on the drawing line
+				// (finding a begin-end pair whose 'end' is at middle of 'index' and 'nextLineHead')
 				for( i=0; i<doc.RectSelectRanges.Length; i+=2 )
 				{
 					selBegin = doc.RectSelectRanges[i];
@@ -822,7 +841,7 @@ namespace Sgry.Azuki
 				}
 				if( doc.RectSelectRanges.Length <= i )
 				{
-					// no such pair was found so this token can extend to the line end
+					// this line is not selected
 					inSelection = false;
 					return nextLineHead;
 				}
@@ -873,11 +892,17 @@ namespace Sgry.Azuki
 				return -1;
 			}
 
+			// if specified index is a bracket paired with a bracket at caret, paint this single char
+			if( doc.IsMatchedBracket(index) )
+			{
+				out_klass = doc.GetCharClass( index );
+				return index + 1;
+			}
+
 			// calculate how many chars should be drawn as one token
 			tokenEndLimit = CalcTokenEndLimit( doc, index, nextLineHead, out out_inSelection );
 
 			// get first char class and selection state
-			out_inSelection = Document.SelectionManager.IsInSelection( index );
 			firstCh = doc[ index ];
 			firstKlass = doc.GetCharClass( index );
 			out_klass = firstKlass;
@@ -906,6 +931,11 @@ namespace Sgry.Azuki
 
 				// if this char is a special char, stop seeking
 				if( Utl.IsSpecialChar(ch) )
+				{
+					return index;
+				}
+				// or if this is matched bracket, stop seeking
+				else if( doc.IsMatchedBracket(index) )
 				{
 					return index;
 				}

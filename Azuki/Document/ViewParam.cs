@@ -1,14 +1,14 @@
 ﻿// file: ViewParam.cs
-// brief: View parameters associated with each document.
+// brief: Parameters associated with each document used internally by View and UiImpl.
 // author: YAMAMOTO Suguru
-// update: 2009-11-14
+// update: 2010-08-25
 //=========================================================
 using System;
 
 namespace Sgry.Azuki
 {
 	/// <summary>
-	/// View parameters associated with each document.
+	/// Parameters associated with each document used internally by View and UiImpl.
 	/// </summary>
 	/// <remarks>
 	/// This class is a set of parameters that are dependent on each document
@@ -34,6 +34,12 @@ namespace Sgry.Azuki
 		int _LastTextAreaWidth = 0;
 		int _LastFontHashCode = 0;
 		DateTime _LastModifiedTime = DateTime.MinValue;
+
+		// for UiImpl
+		/// <summary>Index of the bracket at caret position.</summary>
+		public int MatchedBracketIndex1 = 0;
+		/// <summary>Index of the found matched bracket.</summary>
+		public int MatchedBracketIndex2 = -1;
 		#endregion
 
 		#region Init / Dispose

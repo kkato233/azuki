@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-08-22
+// update: 2010-08-25
 //=========================================================
 using System;
 using System.Collections;
@@ -2244,6 +2244,20 @@ namespace Sgry.Azuki
 					|| category == UnicodeCategory.SpacingCombiningMark
 					|| category == UnicodeCategory.EnclosingMark
 				);
+		}
+
+		/// <summary>
+		/// Returnes whether the index points to one of the paired matching bracket or not.
+		/// Note that matching bracket position is not maintaned by Document but by UiImpl.
+		/// </summary>
+		internal bool IsMatchedBracket( int index )
+		{
+			if( index == ViewParam.MatchedBracketIndex2
+				|| index == ViewParam.MatchedBracketIndex1 )
+			{
+				return true;
+			}
+			return false;
 		}
 
 		internal void DeleteRectSelectText()

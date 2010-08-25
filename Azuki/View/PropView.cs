@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-08-25
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -603,6 +603,7 @@ namespace Sgry.Azuki
 		{
 			DebugUtl.Assert( 0 <= beginIndex, "cond: 0 <= beginIndex("+beginIndex+")" );
 			DebugUtl.Assert( beginIndex <= endIndex, "cond: beginIndex("+beginIndex+") <= endIndex("+endIndex+")" );
+			DebugUtl.Assert( endIndex <= Document.Length, "endIndex("+endIndex+") must not exceed document length ("+Document.Length+")" );
 			if( beginIndex == endIndex )
 				return;
 			
@@ -894,7 +895,7 @@ namespace Sgry.Azuki
 				}
 
 				// draw this token
-				DrawToken( g, token, klass, inSelection, ref pos, ref tokenEndPos, ref clipRect );
+				DrawToken( g, Document, begin, end, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
 
 			next_token:
 				// get next token

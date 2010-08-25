@@ -1,6 +1,7 @@
 == 1.6.0 (    -  -  ) ==
  * add: 禁則処理を含むワードラップ機能に対応
  * add: 選択テキストのドラッグ＆ドロップ編集に対応（箱形選択したテキストはサポート外）
+ * add: キャレット位置にあるカッコに対応するカッコをハイライトするように
  * add: Unicode の結合文字シーケンスを、選択・編集時に１文字として扱うように
  * add: 前景色に Color.Transparent を指定した CharClass の文字は ColorScheme.ForeColor の前景色で描画するように
  * add: 背景色に Color.Transparent を指定した CharClass の文字は ColorScheme.BackColor の背景色で描画するように

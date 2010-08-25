@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2010-07-17
+// update: 2010-08-22
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -189,6 +189,8 @@ namespace Sgry.Azuki
 			this.DirtyLineBar = himawari;
 			this.CleanedLineBar = waka_midori;
 			this.RightEdgeColor = Color.FromArgb( 0xDD, 0xDE, 0xD3 ); // ivory
+			this.MatchedBracketFore = Color.Transparent;
+			this.MatchedBracketBack = Color.FromArgb( 0x93, 0xff, 0xff );
 		}
 		#endregion
 
@@ -277,6 +279,16 @@ namespace Sgry.Azuki
 		/// Color of the right edge of text area (line wrapping edge).
 		/// </summary>
 		public Color RightEdgeColor;
+
+		/// <summary>
+		/// Color of the bracket which is matching to the bracket at caret.
+		/// </summary>
+		public Color MatchedBracketFore;
+
+		/// <summary>
+		/// Background color of the bracket which is matching to the bracket at caret.
+		/// </summary>
+		public Color MatchedBracketBack;
 		#endregion
 	}
 }

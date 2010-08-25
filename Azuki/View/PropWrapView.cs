@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-08-25
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -923,7 +923,7 @@ namespace Sgry.Azuki
 				}
 
 				// draw this token
-				DrawToken( g, token, klass, inSelection, ref pos, ref tokenEndPos, ref clipRect );
+				DrawToken( g, Document, begin, end, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
 
 			next_token:
 				// get next token

@@ -1,6 +1,7 @@
 == 1.6.0 (    -  -  ) ==
  * add: now Azuki supports word wrap including kinsoku shori
  * add: now drag and drop editing of selected text is now supported (dragging rectangular selection is not supported)
+ * add: now Azuki highlights a bracket which is matched to (is considered to be a counter-part of) a bracket at caret position
  * add: now Unicode combining charcter sequence can be treated as one character on selecting or editing
  * add: now uses ColorScheme.ForeColor if fore-ground for a CharClass was set to Color.Transparent
  * add: now uses ColorScheme.BackColor if back-ground for a CharClass was set to Color.Transparent

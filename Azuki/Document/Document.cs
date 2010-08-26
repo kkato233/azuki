@@ -2252,6 +2252,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		internal bool IsMatchedBracket( int index )
 		{
+			Debug.Assert( 0 <= index && index < Length );
+
 			if( index == ViewParam.MatchedBracketIndex2
 				|| index == ViewParam.MatchedBracketIndex1 )
 			{

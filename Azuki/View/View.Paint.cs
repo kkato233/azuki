@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-08-25
+// update: 2010-08-26
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -172,7 +172,8 @@ namespace Sgry.Azuki
 				return;
 			}
 			// matched bracket
-			else if( doc.IsMatchedBracket(tokenBegin) )
+			else if( doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
+				&& doc.IsMatchedBracket(tokenBegin) )
 			{
 				Color textColor = ColorScheme.MatchedBracketFore;
 				g.BackColor = ColorScheme.MatchedBracketBack;
@@ -892,15 +893,14 @@ namespace Sgry.Azuki
 				return -1;
 			}
 
-			// if specified index is a bracket paired with a bracket at caret, paint this single char
+			// calculate how many chars should be drawn as one token
+			tokenEndLimit = CalcTokenEndLimit( doc, index, nextLineHead, out out_inSelection );
 			if( doc.IsMatchedBracket(index) )
 			{
+				// if specified index is a bracket paired with a bracket at caret, paint this single char
 				out_klass = doc.GetCharClass( index );
 				return index + 1;
 			}
-
-			// calculate how many chars should be drawn as one token
-			tokenEndLimit = CalcTokenEndLimit( doc, index, nextLineHead, out out_inSelection );
 
 			// get first char class and selection state
 			firstCh = doc[ index ];

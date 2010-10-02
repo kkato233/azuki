@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-08-25
+// update: 2010-10-02
 //=========================================================
 using System;
 using System.Text;
@@ -1068,8 +1068,26 @@ namespace Sgry.Azuki
 
 			// redraw caret graphic
 			_UI.UpdateCaretGraphic();
-			
+
 			// update matched bracket positions
+			if( e.Index + e.OldText.Length < _Document.ViewParam.MatchedBracketIndex1 )
+			{
+				_Document.ViewParam.MatchedBracketIndex1 =
+					_Document.ViewParam.MatchedBracketIndex1 - e.OldText.Length + e.NewText.Length;
+			}
+			else if( e.Index <= _Document.ViewParam.MatchedBracketIndex1 )
+			{
+				_Document.ViewParam.MatchedBracketIndex1 = e.Index + e.NewText.Length;
+			}
+			if( e.Index + e.OldText.Length < _Document.ViewParam.MatchedBracketIndex2 )
+			{
+				_Document.ViewParam.MatchedBracketIndex2 =
+					_Document.ViewParam.MatchedBracketIndex2 - e.OldText.Length + e.NewText.Length;
+			}
+			else if( e.Index <= _Document.ViewParam.MatchedBracketIndex2 )
+			{
+				_Document.ViewParam.MatchedBracketIndex2 = e.Index + e.NewText.Length;
+			}
 			UpdateMatchedBracketPosition();
 
 			// update range of scroll bars

@@ -36,9 +36,9 @@ namespace Sgry.Azuki
 		DateTime _LastModifiedTime = DateTime.MinValue;
 
 		// for UiImpl
-		/// <summary>Index of the bracket at caret position.</summary>
+		/// <summary>Index of the bracket at caret position used to redraw (erase) previously highlighted bracket.</summary>
 		public int MatchedBracketIndex1 = 0;
-		/// <summary>Index of the found matched bracket.</summary>
+		/// <summary>Index of the lastly found matched bracket used to redraw previously highlighted bracket.</summary>
 		public int MatchedBracketIndex2 = -1;
 		#endregion
 

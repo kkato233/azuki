@@ -54,8 +54,8 @@
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
     <IncludeStopWordList>False</IncludeStopWordList>
     <DocumentationSources>
-      <DocumentationSource sourceFile="T:\dev\_Azuki\Azuki\package\Azuki.dll" xmlns="" />
-      <DocumentationSource sourceFile="T:\dev\_Azuki\Azuki\package\Azuki.xml" xmlns="" />
+      <DocumentationSource sourceFile="..\package\Azuki.dll" />
+      <DocumentationSource sourceFile="..\package\Azuki.xml" />
     </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />

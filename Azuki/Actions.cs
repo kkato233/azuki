@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-07-04
+// update: 2010-10-09
 //=========================================================
 using System;
 using System.Drawing;
@@ -79,7 +79,10 @@ namespace Sgry.Azuki
 			}
 
 			// update desired column
-			view.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				view.SetDesiredColumn();
+			}
 			view.ScrollToCaret();
 		}
 		
@@ -129,7 +132,10 @@ namespace Sgry.Azuki
 			}
 
 			// update desired column
-			view.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				view.SetDesiredColumn();
+			}
 			view.ScrollToCaret();
 		}
 		
@@ -187,7 +193,10 @@ namespace Sgry.Azuki
 			}
 
 			// update desired column
-			view.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				view.SetDesiredColumn();
+			}
 			view.ScrollToCaret();
 		}
 
@@ -235,7 +244,10 @@ namespace Sgry.Azuki
 			}
 
 			// update desired column
-			view.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				view.SetDesiredColumn();
+			}
 			view.ScrollToCaret();
 		}
 		#endregion
@@ -312,7 +324,10 @@ namespace Sgry.Azuki
 				doc.Replace( String.Empty, lineHeadIndex, nextLineHeadIndex );
 			}
 			
-			ui.View.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				ui.View.SetDesiredColumn();
+			}
 		}
 
 		/// <summary>
@@ -478,7 +493,10 @@ namespace Sgry.Azuki
 			doc.EndUndo();
 
 			// move caret
-			ui.View.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				ui.View.SetDesiredColumn();
+			}
 			ui.View.ScrollToCaret();
 		}
 		#endregion
@@ -498,7 +516,10 @@ namespace Sgry.Azuki
 
 			// undo
 			view.Document.Undo();
-			view.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				view.SetDesiredColumn();
+			}
 			view.ScrollToCaret();
 		}
 
@@ -516,7 +537,10 @@ namespace Sgry.Azuki
 
 			// redo
 			view.Document.Redo();
-			view.SetDesiredColumn();
+			if( ui.UsesStickyCaret == false )
+			{
+				view.SetDesiredColumn();
+			}
 			view.ScrollToCaret();
 		}
 

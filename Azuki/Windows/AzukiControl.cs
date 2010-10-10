@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-08-21
+// update: 2010-10-09
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1186,6 +1186,12 @@ string TODO="should make original .cur resource and use it...";
 				}
 #				endif
 			}
+		}
+
+		public bool UsesStickyCaret
+		{
+			get{ return _Impl.UsesStickyCaret; }
+			set{ _Impl.UsesStickyCaret = value; }
 		}
 		#endregion
 

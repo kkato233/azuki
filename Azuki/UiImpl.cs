@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-10-02
+// update: 2010-10-09
 //=========================================================
 using System;
 using System.Text;
@@ -42,6 +42,7 @@ namespace Sgry.Azuki
 		bool _IsOverwriteMode = false;
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
+		bool _UsesStickyCaret = false;
 
 		// X coordinate of this also be used as a flag to determine
 		// whether the mouse button is down or not.
@@ -241,6 +242,12 @@ namespace Sgry.Azuki
 			}
 		}
 
+		public bool UsesStickyCaret
+		{
+			get{ return _UsesStickyCaret; }
+			set{ _UsesStickyCaret = value; }
+		}
+
 		/// <summary>
 		/// Gets or sets hook delegate to execute auto-indentation.
 		/// If null, auto-indentation will not be performed.
@@ -436,7 +443,10 @@ namespace Sgry.Azuki
 				doc.SetSelection( newCaretIndex, newCaretIndex );
 
 				// set desired column
-				_View.SetDesiredColumn( g );
+				if( UsesStickyCaret == false )
+				{
+					_View.SetDesiredColumn( g );
+				}
 
 				// update graphic
 				_View.ScrollToCaret( g );

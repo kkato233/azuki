@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-08-21
+// update: 2010-10-09
 //=========================================================
 using System;
 using System.Drawing;
@@ -351,6 +351,11 @@ namespace Sgry.Azuki
 		/// Gets or sets currently active selection mode.
 		/// </summary>
 		TextDataType SelectionMode
+		{
+			get; set;
+		}
+
+		bool UsesStickyCaret
 		{
 			get; set;
 		}

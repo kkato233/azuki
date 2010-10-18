@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-10-09
+// update: 2010-10-18
 //=========================================================
 using System;
 using System.Text;
@@ -1144,13 +1144,13 @@ namespace Sgry.Azuki
 				// erase old matched bracket
 				if( 0 <= oldMbi1 && oldMbi1+1 <= Document.Length )
 					View.Invalidate( oldMbi1, oldMbi1+1 );
-				if( 0 <= oldMbi2 )
+				if( 0 <= oldMbi2 && oldMbi2+1 <= Document.Length )
 					View.Invalidate( oldMbi2, oldMbi2+1 );
 
 				// draw new matched bracket
 				if( 0 <= newMbi1 && newMbi1+1 <= Document.Length )
 					View.Invalidate( newMbi1, newMbi1+1 );
-				if( 0 <= newMbi2 )
+				if( 0 <= newMbi2 && newMbi2+1 <= Document.Length )
 					View.Invalidate( newMbi2, newMbi2+1 );
 
 				// update matched bracket positions

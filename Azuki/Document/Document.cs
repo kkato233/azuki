@@ -934,7 +934,7 @@ namespace Sgry.Azuki
 			// examine post assertions
 			Debug.Assert( newAnchor <= Length );
 			Debug.Assert( newCaret <= Length );
-			Debug.Assert( _LHI.Count == _LDS.Count, "LHI.Count("+_LHI.Count+") is not LMF.Count("+_LDS.Count+")" );
+			Debug.Assert( _LHI.Count == _LDS.Count, "LHI.Count("+_LHI.Count+") is not LDS.Count("+_LDS.Count+")" );
 
 			// cast event
 			IsDirty = true;

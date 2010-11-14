@@ -242,6 +242,9 @@ namespace Sgry.Azuki
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets whether caret behavior is 'sticky' or not.
+		/// </summary>
 		public bool UsesStickyCaret
 		{
 			get{ return _UsesStickyCaret; }

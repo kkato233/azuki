@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-08-26
+// update: 2010-11-07
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -26,7 +26,7 @@ namespace Sgry.Azuki
 		/// Paints a token including special characters.
 		/// </summary>
 		protected void DrawToken(
-				IGraphics g, Document doc, int tokenBegin, int tokenEnd,
+				IGraphics g, Document doc, int tokenIndex,
 				string token, CharClass klass,
 				ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect, bool inSelection
 			)
@@ -173,7 +173,7 @@ namespace Sgry.Azuki
 			}
 			// matched bracket
 			else if( doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
-				&& doc.IsMatchedBracket(tokenBegin) )
+				&& doc.IsMatchedBracket(tokenIndex) )
 			{
 				Color textColor = ColorScheme.MatchedBracketFore;
 				g.BackColor = ColorScheme.MatchedBracketBack;
@@ -815,7 +815,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates end index of the drawing token at longest case by selection state.
 		/// </summary>
-		int CalcTokenEndLimit( Document doc, int index, int nextLineHead, out bool inSelection )
+		int CalcTokenEndAtMost( Document doc, int index, int nextLineHead, out bool inSelection )
 		{
 			DebugUtl.Assert( doc != null );
 			DebugUtl.Assert( index < doc.Length );
@@ -894,7 +894,7 @@ namespace Sgry.Azuki
 			}
 
 			// calculate how many chars should be drawn as one token
-			tokenEndLimit = CalcTokenEndLimit( doc, index, nextLineHead, out out_inSelection );
+			tokenEndLimit = CalcTokenEndAtMost( doc, index, nextLineHead, out out_inSelection );
 			if( doc.IsMatchedBracket(index) )
 			{
 				// if specified index is a bracket paired with a bracket at caret, paint this single char

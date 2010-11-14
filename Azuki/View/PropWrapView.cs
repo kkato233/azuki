@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-08-25
+// update: 2010-11-14
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -711,6 +711,7 @@ namespace Sgry.Azuki
 
 			int selBegin, selEnd;
 			Point pos = new Point();
+			bool shouldRedraw1, shouldRedraw2;
 
 			// prepare off-screen buffer
 #			if !DRAW_SLOWLY
@@ -740,8 +741,21 @@ namespace Sgry.Azuki
 					// reset x-coord of drawing position
 					pos.X = -(ScrollPosX - XofTextArea);
 
-					// draw this line
-					DrawLine( g, i, ref pos, clipRect );
+					// invoke pre-draw event
+					shouldRedraw1 = _UI.InvokeLineDrawing( g, i, pos );
+
+					// draw the line
+					DrawLine( g, i, pos, clipRect );
+
+					// invoke post-draw event
+					shouldRedraw2 = _UI.InvokeLineDrawn( g, i, pos );
+
+					// [*1] invalidate the line graphic if needed
+					if( (shouldRedraw1 || shouldRedraw2)
+						&& 0 < clipRect.Left ) // prevent infinite loop
+					{
+						Invalidate( 0, clipRect.Y, VisibleSize.Width, clipRect.Height );
+					}
 				}
 				pos.Y += LineSpacing;
 			}
@@ -782,7 +796,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void DrawLine( IGraphics g, int lineIndex, ref Point pos, Rectangle clipRect )
+		void DrawLine( IGraphics g, int lineIndex, Point pos, Rectangle clipRect )
 		{
 			Debug.Assert( this.FontInfo != null );
 			Debug.Assert( this.Document != null );
@@ -923,7 +937,7 @@ namespace Sgry.Azuki
 				}
 
 				// draw this token
-				DrawToken( g, Document, begin, end, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
+				DrawToken( g, Document, begin, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
 
 			next_token:
 				// get next token

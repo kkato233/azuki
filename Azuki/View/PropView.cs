@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-08-25
+// update: 2010-11-14
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -727,6 +727,13 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint( IGraphics g, Rectangle clipRect )
 		{
+			// [*1] if graphic of the line should be redrawn by owner draw,
+			// Azuki does not redraw the line at this drawing chance
+			// but just invalidate the area and draw it on next time.
+			// (Because Azuki renders text on an off-screen buffer
+			// which size is same as clipping rectangle,
+			// expanding both clipping rectangle and off-screen buffer
+			// can updates graphic properly but may lead to flickering graphics.)
 			DebugUtl.Assert( g != null, "invalid argument; IGraphics is null" );
 			DebugUtl.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			DebugUtl.Assert( Document != null, "invalid state; Document is null" );
@@ -734,6 +741,7 @@ namespace Sgry.Azuki
 			int selBegin, selEnd;
 			Point pos = new Point();
 			int longestLineLength = 0;
+			bool shouldRedraw1, shouldRedraw2;
 
 			// prepare off-screen buffer
 #			if !DRAW_SLOWLY
@@ -762,7 +770,21 @@ namespace Sgry.Azuki
 			{
 				if( pos.Y < clipRect.Bottom && clipRect.Top <= pos.Y+LineSpacing )
 				{
+					// invoke pre-draw event
+					shouldRedraw1 = _UI.InvokeLineDrawing( g, i, pos );
+
+					// draw the line
 					DrawLine( g, i, pos, clipRect, ref longestLineLength );
+
+					// invoke post-draw event
+					shouldRedraw2 = _UI.InvokeLineDrawn( g, i, pos );
+
+					// [*1] invalidate the line graphic if needed
+					if( (shouldRedraw1 || shouldRedraw2)
+						&& 0 < clipRect.Left ) // prevent infinite loop
+					{
+						Invalidate( 0, clipRect.Y, VisibleSize.Width, clipRect.Height );
+					}
 				}
 				pos.Y += LineSpacing;
 			}
@@ -895,7 +917,7 @@ namespace Sgry.Azuki
 				}
 
 				// draw this token
-				DrawToken( g, Document, begin, end, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
+				DrawToken( g, Document, begin, token, klass, ref pos, ref tokenEndPos, ref clipRect, inSelection );
 
 			next_token:
 				// get next token

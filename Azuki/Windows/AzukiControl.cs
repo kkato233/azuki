@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-10-09
+// update: 2010-11-14
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1699,6 +1699,46 @@ string TODO="should make original .cur resource and use it...";
 			{
 				OverwriteModeChanged( this, EventArgs.Empty );
 			}
+		}
+
+		/// <summary>
+		/// Occurres before a screen line was drawn.
+		/// </summary>
+		public event LineDrawEventHandler LineDrawing;
+
+		/// <summary>
+		/// Invokes LineDrawing event.
+		/// </summary>
+		public bool InvokeLineDrawing( IGraphics g, int lineIndex, Point pos )
+		{
+			if( LineDrawing != null )
+			{
+				LineDrawEventArgs e = new LineDrawEventArgs( g, lineIndex, pos );
+				e.ShouldBeRedrawn = false;
+				LineDrawing( this, e );
+				return e.ShouldBeRedrawn;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Occurres after a screen line was drawn.
+		/// </summary>
+		public event LineDrawEventHandler LineDrawn;
+
+		/// <summary>
+		/// Invokes LineDrawn event.
+		/// </summary>
+		public bool InvokeLineDrawn( IGraphics g, int lineIndex, Point pos )
+		{
+			if( LineDrawn != null )
+			{
+				LineDrawEventArgs e = new LineDrawEventArgs( g, lineIndex, pos );
+				e.ShouldBeRedrawn = false;
+				LineDrawn( this, e );
+				return e.ShouldBeRedrawn;
+			}
+			return false;
 		}
 		#endregion
 

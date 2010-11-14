@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-11-14
 //=========================================================
 using System;
 using System.Drawing;
@@ -396,6 +396,11 @@ namespace Sgry.Azuki
 		/// Requests to invalidate whole area.
 		/// </summary>
 		void Invalidate();
+
+		/// <summary>
+		/// Requests to invalidate specified area.
+		/// </summary>
+		void Invalidate( int x, int y, int width, int height );
 
 		/// <summary>
 		/// Requests to invalidate specified area.

@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-10-09
+// update: 2010-11-14
 //=========================================================
 using System;
 using System.Drawing;
@@ -667,6 +667,26 @@ namespace Sgry.Azuki
 		/// Invokes OverwriteModeChanged event.
 		/// </summary>
 		void InvokeOverwriteModeChanged();
+
+		/// <summary>
+		/// Occurres before a screen line was drawn.
+		/// </summary>
+		event LineDrawEventHandler LineDrawing;
+
+		/// <summary>
+		/// Invokes LineDrawing event.
+		/// </summary>
+		bool InvokeLineDrawing( IGraphics g, int lineIndex, Point pos );
+
+		/// <summary>
+		/// Occurres after a screen line was drawn.
+		/// </summary>
+		event LineDrawEventHandler LineDrawn;
+
+		/// <summary>
+		/// Invokes LineDrawn event.
+		/// </summary>
+		bool InvokeLineDrawn( IGraphics g, int lineIndex, Point pos );
 		#endregion
 
 		#region Scroll
@@ -684,6 +704,80 @@ namespace Sgry.Azuki
 		/// Updates scrollbar's range.
 		/// </summary>
 		void UpdateScrollBarRange();
+		#endregion
+	}
+
+	/// <summary>
+	/// Event handler for LineDrawing event or LineDrawn event.
+	/// </summary>
+	/// <param name="sender">The view object which invoked the event.</param>
+	/// <param name="e">Information about the event.</param>
+	/// <seealso cref="Sgry.Azuki.IUserInterface.LineDrawing">IUserInterface.LineDrawing event</seealso>
+	/// <seealso cref="Sgry.Azuki.IUserInterface.LineDrawn">IUserInterface.LineDrawn event</seealso>
+	public delegate void LineDrawEventHandler( object sender, LineDrawEventArgs e );
+
+	/// <summary>
+	/// Information about LineDrawing event or LineDrawn event.
+	/// </summary>
+	/// <seealso cref="Sgry.Azuki.LineDrawEventHandler">LineDrawEventHandler delegate</seealso>
+	/// <seealso cref="Sgry.Azuki.IUserInterface.LineDrawing">IUserInterface.LineDrawing event</seealso>
+	/// <seealso cref="Sgry.Azuki.IUserInterface.LineDrawn">IUserInterface.LineDrawn event</seealso>
+	public class LineDrawEventArgs : EventArgs
+	{
+		#region Fields
+		IGraphics _Graphics;
+		int _LineIndex;
+		Point _Position;
+		bool _ShouldBeRedrawn;
+		#endregion
+
+		#region Init / Dispose
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public LineDrawEventArgs( IGraphics g, int lineIndex, Point pos )
+		{
+			_Graphics = g;
+			_LineIndex = lineIndex;
+			_Position = pos;
+			_ShouldBeRedrawn = false;
+		}
+		#endregion
+
+		#region Properties
+		/// <summary>
+		/// The graphic drawing interface currently used.
+		/// </summary>
+		public IGraphics Graphics
+		{
+			get{ return _Graphics; }
+		}
+
+		/// <summary>
+		/// The index of screen line which is to be drawn, or was drawn.
+		/// </summary>
+		public int LineIndex
+		{
+			get{ return _LineIndex; }
+		}
+
+		/// <summary>
+		/// Gets the top-left position of the screen line which is about to be drawn, or was drawn.
+		/// </summary>
+		public Point Position
+		{
+			get{ return _Position; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether graphic of the entire line
+		/// should be redrawn after the event or not.
+		/// </summary>
+		public bool ShouldBeRedrawn
+		{
+			get{ return _ShouldBeRedrawn; }
+			set{ _ShouldBeRedrawn = value; }
+		}
 		#endregion
 	}
 }

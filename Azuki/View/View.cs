@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-07-25
+// update: 2010-11-14
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -94,7 +94,6 @@ namespace Sgry.Azuki
 				this._ColorScheme = other._ColorScheme;
 				this._DrawingOption = other._DrawingOption;
 				//DO_NOT//this._DirtBarWidth = other._DirtBarWidth;
-				//DO_NOT//this._Gra = other._Gra;
 				//DO_NOT//this._HRulerFont = other._HRulerFont;
 				//DO_NOT//this._LCharWidth = other._LCharWidth;
 				//DO_NOT//this._LineHeight = other._LineHeight;
@@ -1208,10 +1207,18 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Requests to invalidate specified area.
 		/// </summary>
+		public void Invalidate( int x, int y, int width, int height )
+		{
+			Invalidate( new Rectangle(x, y, width, height) );
+		}
+
+		/// <summary>
+		/// Requests to invalidate specified area.
+		/// </summary>
 		/// <param name="rect">rectangle area to be invalidate (in client area coordinate)</param>
 		public void Invalidate( Rectangle rect )
 		{
-//DEBUG//_Gra.ForeColor=Color.Red;_Gra.DrawLine(rect.Left,rect.Top,rect.Right-1,rect.Bottom-1);_Gra.DrawLine(rect.Left,rect.Bottom-1,rect.Right-1,rect.Top);DebugUtl.Sleep(400);
+//DEBUG//using(IGraphics g = _UI.GetIGraphics() ){g.ForeColor=Color.Red; g.DrawLine(rect.Left,rect.Top,rect.Right-1,rect.Bottom-1);g.DrawLine(rect.Left,rect.Bottom-1,rect.Right-1,rect.Top);DebugUtl.Sleep(400);}
 			_UI.Invalidate( rect );
 		}
 

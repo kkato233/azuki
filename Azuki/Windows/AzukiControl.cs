@@ -1188,6 +1188,28 @@ string TODO="should make original .cur resource and use it...";
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets whether caret behavior is 'sticky' or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property determines whether the caret behaves
+		/// 'sticky' or not.
+		/// </para>
+		/// <para>
+		/// Sticky caret tries to keep its desired column position
+		/// unless user explicitly changes it, by hitting right or left key for instance.
+		/// Normal caret updates desired column position on typing text
+		/// so if user moves up or down the caret after typing,
+		/// column position of it will be as same as the position
+		/// finally the caret was located.
+		/// On the other hand, sticky caret does not update
+		/// desired column position by typing text
+		/// (because user does not 'explicitly' changed it,)
+		/// so column position will be restored to the position
+		/// where the caret was placed before user typed text.
+		/// </para>
+		/// </remarks>
 		public bool UsesStickyCaret
 		{
 			get{ return _Impl.UsesStickyCaret; }
@@ -1653,7 +1675,7 @@ string TODO="should make original .cur resource and use it...";
 		/// <summary>
 		/// For internal use only. Invokes IsRectSelectModeChanged event.
 		/// </summary>
-		[Obsolete("Use InvokeSelectionModeChanged method instead.", false)]
+		[Obsolete("Use Document.InvokeSelectionModeChanged method instead.", false)]
 		public void InvokeIsRectSelectModeChanged()
 		{
 			if( IsRectSelectModeChanged != null )
@@ -1678,7 +1700,6 @@ string TODO="should make original .cur resource and use it...";
 				OverwriteModeChanged( this, EventArgs.Empty );
 			}
 		}
-
 		#endregion
 
 		#region IUserInterface - Scroll

@@ -1,7 +1,7 @@
 // file: TabPanel.cs
 // brief: simple tab control
 // create: 2006-01-08 YAMAMOTO Suguru
-// update: 2010-07-13 YAMAMOTO Suguru
+// update: 2010-11-14 YAMAMOTO Suguru
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,6 @@ namespace Sgry.Azuki
 	{
 		#region Fields
 		IList<T> _Items = new T[0];
-		IGraphics _Gra;
 		int[] _TabRightCoords = null;
 		int _MaxTabTextWidth = 140;
 		int _ElipsisWidth;
@@ -39,7 +38,6 @@ namespace Sgry.Azuki
 		/// </summary>
 		public TabPanel()
 		{
-			_Gra = Plat.Inst.GetGraphics( this );
 			TabTextColor = Color.Black;
 			TabBackColor = Color.LightGray;
 			BackColor = Color.LightGray;
@@ -108,15 +106,20 @@ namespace Sgry.Azuki
 			if( font == null )
 				throw new ArgumentNullException( "font" );
 
+			Size sizeOfX;
+
 			// calculate unit text sizes
-			_Gra.Font = font;
-			Size size = _Gra.MeasureText( "X" );
-			_ElipsisWidth = _Gra.MeasureText( "..." ).Width;
+			using( IGraphics g = Plat.Inst.GetGraphics(this) )
+			{
+				g.Font = font;
+				sizeOfX = g.MeasureText( "X" );
+				_ElipsisWidth = g.MeasureText( "..." ).Width;
+			}
 
 			// update height if font height changed
-			if( Height != size.Height )
+			if( Height != sizeOfX.Height )
 			{
-				Height = (int)size.Height + 5;
+				Height = (int)sizeOfX.Height + 5;
 			}
 
 			// update other metrics for drawing
@@ -312,105 +315,108 @@ namespace Sgry.Azuki
 			Size size;
 			int drawableLength;
 
-			_Gra.BeginPaint( e.ClipRectangle );
-
-			// fill background
-			_Gra.ForeColor = _TabLineColor;
-			_Gra.BackColor = BackColor;
-			_Gra.FillRectangle( 0, 0, Width, Height );
-			_Gra.DrawLine( 0, Height-1, Width, Height-1 );
-
-			// ensure capacity of x-coordinate array
-			if( _TabRightCoords == null
-				|| _TabRightCoords.Length < _Items.Count )
+			using( IGraphics g = Plat.Inst.GetGraphics(this) )
 			{
-				_TabRightCoords = new int[_Items.Count + 8]; // add little extra
-			}
+				g.BeginPaint( e.ClipRectangle );
 
-			// draw each tabs
-			for( int i=0; i<_Items.Count; i++ )
-			{
-				// make label text
-				string text = (string)_Items[i].ToString();
-				size = _Gra.MeasureText(
-						text,
-						_MaxTabTextWidth,
-						out drawableLength
-					);
-				
-				// if the label is too long to draw, cut it and add ellipsis
-				if( drawableLength < text.Length )
+				// fill background
+				g.ForeColor = _TabLineColor;
+				g.BackColor = BackColor;
+				g.FillRectangle( 0, 0, Width, Height );
+				g.DrawLine( 0, Height-1, Width, Height-1 );
+
+				// ensure capacity of x-coordinate array
+				if( _TabRightCoords == null
+					|| _TabRightCoords.Length < _Items.Count )
 				{
-					// measure width of text attached the ellipsis
-					size = _Gra.MeasureText(
+					_TabRightCoords = new int[_Items.Count + 8]; // add little extra
+				}
+
+				// draw each tabs
+				for( int i=0; i<_Items.Count; i++ )
+				{
+					// make label text
+					string text = (string)_Items[i].ToString();
+					size = g.MeasureText(
 							text,
-							_MaxTabTextWidth - _ElipsisWidth,
+							_MaxTabTextWidth,
 							out drawableLength
 						);
-					text = text.Substring( 0, drawableLength ) + "...";
-					size.Width += _ElipsisWidth;
+					
+					// if the label is too long to draw, cut it and add ellipsis
+					if( drawableLength < text.Length )
+					{
+						// measure width of text attached the ellipsis
+						size = g.MeasureText(
+								text,
+								_MaxTabTextWidth - _ElipsisWidth,
+								out drawableLength
+							);
+						text = text.Substring( 0, drawableLength ) + "...";
+						size.Width += _ElipsisWidth;
+					}
+
+					// if right end of the tab exceeds limit, stop drawing
+					if( Right - DropTipWidth <= left + size.Width+8 )
+					{
+						break;
+					}
+
+					// draw background of this tab
+					int w = size.Width;
+					int h = size.Height;
+					if( _Items[i].Equals(_SelectedItem) )
+					{
+						// for selected tab, before drawing background
+						// draw a line to erase border between content area
+						g.ForeColor = _ActiveTabBackColor;
+						g.DrawLine( left+1, Height-1, left+w+7, Height-1 );
+
+						g.BackColor = _ActiveTabBackColor;
+					}
+					else
+					{
+						g.BackColor = _TabBackColor;
+					}
+					g.FillRectangle( left+1, Height-h-3, w+7, h+2 );
+					g.FillRectangle( left+2, Height-h-4, w+4, 1 );
+
+					// draw boundary
+					g.ForeColor = _TabLineColor;
+					g.DrawLine( left, Height-1, left, Height-h-2 ); // left
+					g.DrawLine( left, Height-h-2, left+3, Height-h-5 ); // left-top
+					g.DrawLine( left+3, Height-h-5, left+w+5, Height-h-5 ); // top
+					g.DrawLine( left+w+5, Height-h-5, left+w+8, Height-h-2 ); // top-right
+					g.DrawLine( left+w+8, Height-h-2, left+w+8, Height-1 ); // right
+
+					// draw text on the tab
+					Point pos = new Point( left+4, Height-size.Height-2 );
+					g.DrawText( text, ref pos, _TabTextColor );
+
+					// go to next tab
+					_TabRightCoords[i] = left + w + 8;
+					left += w + 8;
 				}
 
-				// if right end of the tab exceeds limit, stop drawing
-				if( Right - DropTipWidth <= left + size.Width+8 )
+				// draw line at left of triangle
+				int half = _HalfHeight;
+				int quarter = _QuarterHeight;
+				int oneEighth = _OneEighthHeight;
+				g.ForeColor = Color.Gray;
+				g.DrawLine( Right-DropTipWidth, 0, Right-DropTipWidth, Height );
+
+				// draw triangle
+				g.ForeColor = Color.Black;
+				for( int i=0; i<=oneEighth+1; i++ )
 				{
-					break;
+					g.DrawLine(
+							Right-half+i, Height-quarter-oneEighth+i,
+							Right-quarter-i+1, Height-quarter-oneEighth+i
+						);
 				}
 
-				// draw background of this tab
-				int w = size.Width;
-				int h = size.Height;
-				if( _Items[i].Equals(_SelectedItem) )
-				{
-					// for selected tab, before drawing background
-					// draw a line to erase border between content area
-					_Gra.ForeColor = _ActiveTabBackColor;
-					_Gra.DrawLine( left+1, Height-1, left+w+7, Height-1 );
-
-					_Gra.BackColor = _ActiveTabBackColor;
-				}
-				else
-				{
-					_Gra.BackColor = _TabBackColor;
-				}
-				_Gra.FillRectangle( left+1, Height-h-3, w+7, h+2 );
-				_Gra.FillRectangle( left+2, Height-h-4, w+4, 1 );
-
-				// draw boundary
-				_Gra.ForeColor = _TabLineColor;
-				_Gra.DrawLine( left, Height-1, left, Height-h-2 ); // left
-				_Gra.DrawLine( left, Height-h-2, left+3, Height-h-5 ); // left-top
-				_Gra.DrawLine( left+3, Height-h-5, left+w+5, Height-h-5 ); // top
-				_Gra.DrawLine( left+w+5, Height-h-5, left+w+8, Height-h-2 ); // top-right
-				_Gra.DrawLine( left+w+8, Height-h-2, left+w+8, Height-1 ); // right
-
-				// draw text on the tab
-				Point pos = new Point( left+4, Height-size.Height-2 );
-				_Gra.DrawText( text, ref pos, _TabTextColor );
-
-				// go to next tab
-				_TabRightCoords[i] = left + w + 8;
-				left += w + 8;
+				g.EndPaint();
 			}
-
-			// draw line at left of triangle
-			int half = _HalfHeight;
-			int quarter = _QuarterHeight;
-			int oneEighth = _OneEighthHeight;
-			_Gra.ForeColor = Color.Gray;
-			_Gra.DrawLine( Right-DropTipWidth, 0, Right-DropTipWidth, Height );
-
-			// draw triangle
-			_Gra.ForeColor = Color.Black;
-			for( int i=0; i<=oneEighth+1; i++ )
-			{
-				_Gra.DrawLine(
-						Right-half+i, Height-quarter-oneEighth+i,
-						Right-quarter-i+1, Height-quarter-oneEighth+i
-					);
-			}
-
-			_Gra.EndPaint();
 		}
 		#endregion
 

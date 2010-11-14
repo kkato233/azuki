@@ -27,6 +27,7 @@
  * mod: [Ann] added "All files" to the list of the file type in save file dialog
  * fix: [Ann] font settings is not saved properly if the font is not TrueType font
  * fix: [Ann] now Ann can open files opened by other processes which allows to read it
+ * fix: [Ann] corrected usage of 'GDI device context' which is system shared resource (incorrect usage might make graphics totally invalid)
 
 == 1.5.7 (2010-07-09) ==
  * fix: pasting non-text clipboard data locks clipboard system and prevents any other program from using  clipboard (degrade problem since 1.5.0)

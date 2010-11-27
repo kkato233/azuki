@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2010-04-18
+// update: 2010-11-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,7 @@ namespace Sgry.Azuki
 	{
 		#region Fields
 		SplitArray<CharClass> _Classes;
+		SplitArray<byte> _MarkingBitMasks;
 		#endregion
 
 		#region Init / Dispose
@@ -27,6 +28,7 @@ namespace Sgry.Azuki
 			: base( initGapSize, growSize )
 		{
 			_Classes = new SplitArray<CharClass>( initGapSize, growSize );
+			_MarkingBitMasks = new SplitArray<byte>( initGapSize, growSize );
 		}
 		#endregion
 
@@ -59,6 +61,13 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Marking
+		public SplitArray<byte> Marks
+		{
+			get{ return _MarkingBitMasks; }
+		}
+		#endregion
+
 		#region Content Access
 		/// <summary>
 		/// Gets or sets the size of the internal buffer.
@@ -71,6 +80,7 @@ namespace Sgry.Azuki
 			{
 				base.Capacity = value;
 				_Classes.Capacity = value;
+				_MarkingBitMasks.Capacity = value;
 			}
 		}
 
@@ -82,6 +92,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( index, value );
 			_Classes.Insert( index, CharClass.Normal );
+			_MarkingBitMasks.Insert( index, 0 );
 		}
 		
 		/// <summary>
@@ -95,6 +106,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( insertIndex, values, converter );
 			_Classes.Insert( insertIndex, new CharClass[values.Length] );
+			_MarkingBitMasks.Insert( insertIndex, new byte[values.Length] );
 		}
 
 		/// <summary>
@@ -109,6 +121,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( insertIndex, values, valueBegin, valueEnd );
 			_Classes.Insert( insertIndex, new CharClass[valueEnd - valueBegin] );
+			_MarkingBitMasks.Insert( insertIndex, new byte[valueEnd - valueBegin] );
 		}
 
 		/// <summary>
@@ -118,6 +131,7 @@ namespace Sgry.Azuki
 		{
 			base.Replace( replaceIndex, values, valueBegin, valueEnd );
 			_Classes.Replace( replaceIndex, new CharClass[values.Length], valueBegin, valueEnd );
+			_MarkingBitMasks.Replace( replaceIndex, new byte[values.Length], valueBegin, valueEnd );
 		}
 
 		/// <summary>
@@ -127,6 +141,7 @@ namespace Sgry.Azuki
 		{
 			base.RemoveRange( begin, end );
 			_Classes.RemoveRange( begin, end );
+			_MarkingBitMasks.RemoveRange( begin, end );
 		}
 
 		/// <summary>
@@ -136,6 +151,7 @@ namespace Sgry.Azuki
 		{
 			base.Clear();
 			_Classes.Clear();
+			_MarkingBitMasks.Clear();
 		}
 		#endregion
 

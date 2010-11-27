@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2010-08-22
+// update: 2010-11-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -46,6 +46,7 @@ namespace Sgry.Azuki
 	{
 		Color[] _ForeColors = new Color[ Byte.MaxValue ];
 		Color[] _BackColors = new Color[ Byte.MaxValue ];
+		TextDecoration[] _MarkingDecorations = new TextDecoration[ 8 ];
 
 		#region Init / Dispose
 		/// <summary>
@@ -79,6 +80,39 @@ namespace Sgry.Azuki
 		{
 			fore = _ForeColors[ (byte)klass ];
 			back = _BackColors[ (byte)klass ];
+		}
+
+		public TextDecoration[] GetMarkingDecorations( int[] markingIDs )
+		{
+			List<TextDecoration> styles = new List<TextDecoration>( 8 );
+
+			foreach( int id in markingIDs )
+			{
+				styles.Add( _MarkingDecorations[id-1] );
+			}
+
+			return styles.ToArray();
+		}
+
+		public TextDecoration[] GetMarkingDecorations( uint markingBitMask )
+		{
+			List<TextDecoration> styles = new List<TextDecoration>( 8 );
+
+			for( int i=0; i<Marking.MaxID; i++ )
+			{
+				if( (markingBitMask & 0x01) != 0 )
+				{
+					styles.Add( _MarkingDecorations[i] );
+				}
+				markingBitMask >>= 1;
+			}
+
+			return styles.ToArray();
+		}
+
+		public void SetMarkingDecoration( int markingID, TextDecoration decoration )
+		{
+			_MarkingDecorations[markingID-1] = decoration;
 		}
 
 		/// <summary>
@@ -191,6 +225,10 @@ namespace Sgry.Azuki
 			this.RightEdgeColor = Color.FromArgb( 0xDD, 0xDE, 0xD3 ); // ivory
 			this.MatchedBracketFore = Color.Transparent;
 			this.MatchedBracketBack = Color.FromArgb( 0x93, 0xff, 0xff );
+
+			_MarkingDecorations[0] = new UnderlineTextDecoration(
+					LineStyle.Solid, Color.Transparent
+				); // Marking.Uri
 		}
 		#endregion
 

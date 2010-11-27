@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-11-07
+// update: 2010-11-27
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -35,7 +35,9 @@ namespace Sgry.Azuki
 			Debug.Assert( token != null, "given token is null." );
 			Debug.Assert( 0 < token.Length, "given token is empty." );
 			Point textPos = tokenPos;
-			Color fore, back;
+			Color foreColor, backColor;
+			TextDecoration[] decorations;
+			uint markingBitMask;
 
 			// calculate top coordinate of text
 			textPos.Y += (LinePadding >> 1);
@@ -45,9 +47,13 @@ namespace Sgry.Azuki
 			{ g.BackColor=Color.Red; g.FillRectangle(tokenPos.X, tokenPos.Y, 2, LineHeight); DebugUtl.Sleep(400); }
 #			endif
 
-			// get fore/back color for the class
-			Utl.ColorFromCharClass( ColorScheme, klass, inSelection, out fore, out back );
-			g.BackColor = back;
+			// get drawing style for this token
+			Utl.ColorFromCharClass(
+					ColorScheme, klass, inSelection, out foreColor, out backColor
+				);
+			g.BackColor = backColor;
+			markingBitMask = doc.GetMarkingBitMaskAt( tokenIndex );
+			decorations = ColorScheme.GetMarkingDecorations( markingBitMask );
 
 			//--- draw graphic ---
 			// space
@@ -67,7 +73,6 @@ namespace Sgry.Azuki
 							1
 						);
 				}
-				return;
 			}
 			// full-width space
 			else if( token == "\x3000" )
@@ -89,7 +94,6 @@ namespace Sgry.Azuki
 					g.ForeColor = ColorScheme.WhiteSpaceColor;
 					g.DrawRectangle( graLeft, graTop, graWidth, graBottom-graTop );
 				}
-				return;
 			}
 			// tab
 			else if( token == "\t" )
@@ -120,7 +124,6 @@ namespace Sgry.Azuki
 					g.DrawLine( fgLeft, fgBottom, fgRight, fgBottom );
 					g.DrawLine( fgRight, fgBottom, fgRight, fgTop );
 				}
-				return;
 			}
 			// EOL-Code
 			else if( LineLogic.IsEolChar(token, 0) )
@@ -136,40 +139,40 @@ namespace Sgry.Azuki
 				width = EolCodeWidthInPx;
 				g.FillRectangle( tokenPos.X, tokenPos.Y, width, LineSpacing );
 
-				if( DrawsEolCode == false )
-					return;
-
-				// calc metric
-				int y_middle = tokenPos.Y + (LineSpacing >> 1);
-				int x_middle = tokenPos.X + (width >> 1); // width/2
-				int halfSpaceWidth = (_SpaceWidth >> 1); // _SpaceWidth/2
-				int left = tokenPos.X + 1;
-				int right = tokenPos.X + width - 2;
-				int bottom = y_middle + (width >> 1);
-
-				// draw EOL char's graphic
-				g.ForeColor = ColorScheme.EolColor;
-				if( token == "\r" ) // CR (left arrow)
+				// draw foreground
+				if( DrawsEolCode )
 				{
-					g.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle-halfSpaceWidth );
-					g.DrawLine( left, y_middle, tokenPos.X+width-2, y_middle );
-					g.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle+halfSpaceWidth );
-				}
-				else if( token == "\n" ) // LF (down arrow)
-				{
-					g.DrawLine( x_middle, bottom, x_middle-halfSpaceWidth, bottom-halfSpaceWidth );
-					g.DrawLine( x_middle, y_middle-(width>>1), x_middle, bottom );
-					g.DrawLine( x_middle, bottom, x_middle+halfSpaceWidth, bottom-halfSpaceWidth );
-				}
-				else // CRLF (snapped arrow)
-				{
-					g.DrawLine( right, y_middle-(width>>1), right, y_middle+2 );
+					// calc metric
+					int y_middle = tokenPos.Y + (LineSpacing >> 1);
+					int x_middle = tokenPos.X + (width >> 1); // width/2
+					int halfSpaceWidth = (_SpaceWidth >> 1); // _SpaceWidth/2
+					int left = tokenPos.X + 1;
+					int right = tokenPos.X + width - 2;
+					int bottom = y_middle + (width >> 1);
 
-					g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2-halfSpaceWidth );
-					g.DrawLine( right, y_middle+2, left, y_middle+2 );
-					g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2+halfSpaceWidth );
+					// draw EOL char's graphic
+					g.ForeColor = ColorScheme.EolColor;
+					if( token == "\r" ) // CR (left arrow)
+					{
+						g.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle-halfSpaceWidth );
+						g.DrawLine( left, y_middle, tokenPos.X+width-2, y_middle );
+						g.DrawLine( left, y_middle, left+halfSpaceWidth, y_middle+halfSpaceWidth );
+					}
+					else if( token == "\n" ) // LF (down arrow)
+					{
+						g.DrawLine( x_middle, bottom, x_middle-halfSpaceWidth, bottom-halfSpaceWidth );
+						g.DrawLine( x_middle, y_middle-(width>>1), x_middle, bottom );
+						g.DrawLine( x_middle, bottom, x_middle+halfSpaceWidth, bottom-halfSpaceWidth );
+					}
+					else // CRLF (snapped arrow)
+					{
+						g.DrawLine( right, y_middle-(width>>1), right, y_middle+2 );
+
+						g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2-halfSpaceWidth );
+						g.DrawLine( right, y_middle+2, left, y_middle+2 );
+						g.DrawLine( left, y_middle+2, left+halfSpaceWidth, y_middle+2+halfSpaceWidth );
+					}
 				}
-				return;
 			}
 			// matched bracket
 			else if( doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
@@ -179,17 +182,181 @@ namespace Sgry.Azuki
 				g.BackColor = ColorScheme.MatchedBracketBack;
 				if( textColor == Color.Transparent )
 				{
-					textColor = fore;
+					textColor = foreColor;
 				}
 
 				g.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
 				g.DrawText( token, ref textPos, textColor );
-				return;
+			}
+			else
+			{
+				// draw normal visible text
+				g.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
+				g.DrawText( token, ref textPos, foreColor );
 			}
 
-			// draw normal visible text
-			g.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
-			g.DrawText( token, ref textPos, fore );
+			// decorate token
+			foreach( TextDecoration decoration in decorations )
+			{
+				if( decoration is UnderlineTextDecoration )
+				{
+					DrawToken_Underline(
+							g, token, tokenPos, tokenEndPos,
+							(UnderlineTextDecoration)decoration,
+							foreColor
+						);
+				}
+				else if( decoration is OutlineTextDecoration )
+				{
+					DrawToken_Outline(
+							g, doc, token, tokenIndex, tokenPos, tokenEndPos,
+							(OutlineTextDecoration)decoration,
+							foreColor, markingBitMask
+						);
+				}
+			}
+		}
+
+		void DrawToken_Underline(
+				IGraphics g, string token,
+				Point tokenPos, Point tokenEndPos,
+				UnderlineTextDecoration decoration,
+				Color currentForeColor
+			)
+		{
+			Debug.Assert( g != null );
+			Debug.Assert( token != null );
+			Debug.Assert( decoration != null );
+
+			if( decoration.LineStyle == LineStyle.None )
+				return;
+
+			// prepare drawing
+			if( decoration.LineColor == Color.Transparent )
+			{
+				g.ForeColor = currentForeColor;
+				g.BackColor = currentForeColor;
+			}
+			else
+			{
+				g.ForeColor = decoration.LineColor;
+				g.BackColor = decoration.LineColor;
+			}
+
+			// draw underline
+			if( decoration.LineStyle == LineStyle.Dotted )
+			{
+				int dotSize = (_Font.Size / 13) + 1;
+				int dotSpacing = dotSize << 1;
+				int offsetX = tokenPos.X % dotSpacing;
+				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x += dotSpacing )
+				{
+					g.FillRectangle(
+						x, tokenPos.Y + LineHeight - dotSize,
+						dotSize, dotSize );
+				}
+			}
+			else if( decoration.LineStyle == LineStyle.Dashed )
+			{
+				int lineWidthSize = (_Font.Size / 13) + 1;
+				int lineLength = lineWidthSize + (lineWidthSize << 2);
+				int lineSpacing = lineWidthSize << 3;
+				int offsetX = tokenPos.X % lineSpacing;
+				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x +=lineSpacing )
+				{
+					g.FillRectangle(
+						x, tokenPos.Y + LineHeight - lineWidthSize,
+						lineLength, lineWidthSize );
+				}
+			}
+			else if( decoration.LineStyle == LineStyle.Waved )
+			{
+				int lineWidthSize = (_Font.Size / 24) + 1;
+				int lineLength = lineWidthSize + (lineWidthSize << 2);
+				int waveHeight = (_Font.Size / 6) + 1;
+				int lineSpacing = lineWidthSize << 3;
+				int offsetX = tokenPos.X % (waveHeight << 1);
+
+				int valleyY = tokenPos.Y + LineHeight - lineWidthSize;
+				int ridgeY = valleyY - waveHeight;
+				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x += (waveHeight<<1) )
+				{
+					int ridgeX = x + waveHeight;
+					int valleyX = ridgeX + waveHeight;
+					g.DrawLine( x, valleyY, ridgeX, ridgeY );
+					g.DrawLine( ridgeX, ridgeY, valleyX, valleyY );
+				}
+			}
+			else if( decoration.LineStyle == LineStyle.Double )
+			{
+				int lineWidth = (_Font.Size / 24) + 1;
+
+				g.FillRectangle(
+					tokenPos.X, tokenPos.Y + LineHeight - (3*lineWidth),
+					tokenEndPos.X, lineWidth );
+
+				g.FillRectangle(
+					tokenPos.X, tokenPos.Y + LineHeight - lineWidth,
+					tokenEndPos.X, lineWidth );
+			}
+			else if( decoration.LineStyle == LineStyle.Solid )
+			{
+				int lineWidth = (_Font.Size / 24) + 1;
+
+				g.FillRectangle(
+					tokenPos.X, tokenPos.Y + LineHeight - lineWidth,
+					tokenEndPos.X, lineWidth );
+			}
+		}
+
+		void DrawToken_Outline(
+				IGraphics g, Document doc,
+				string token, int tokenIndex,
+				Point tokenPos, Point tokenEndPos,
+				OutlineTextDecoration decoration,
+				Color currentForeColor, uint markingBitMask
+			)
+		{
+			Debug.Assert( g != null );
+			Debug.Assert( doc != null );
+			Debug.Assert( 0 <= tokenIndex && tokenIndex < doc.Length );
+			Debug.Assert( token != null );
+			Debug.Assert( decoration != null );
+
+			int tokenEndIndex = tokenIndex + token.Length;
+
+			// prepare drawing
+			if( decoration.LineColor == Color.Transparent )
+				g.BackColor = currentForeColor;
+			else
+				g.BackColor = decoration.LineColor;
+			int w = (_Font.Size / 24) + 1;
+			Rectangle rect = new Rectangle();
+			rect.X = tokenPos.X;
+			rect.Y = tokenPos.Y + 1;
+			rect.Width = tokenEndPos.X - tokenPos.X;
+			rect.Height = LineSpacing - w - 2; // 1 == width of current line highlight
+
+			// draw top line
+			g.FillRectangle( rect.Left, rect.Top, rect.Width, w );
+
+			// draw right line if previous character is marked same value
+			if( doc.Length <= tokenEndIndex
+				|| doc.GetMarkingBitMaskAt(tokenEndIndex) != markingBitMask )
+			{
+string どのビットによるアウトラインなのかが分からないと境界線を引いて良いかどうかを判断できない;
+				g.FillRectangle( rect.Right - w, rect.Top, w, rect.Height );
+			}
+
+			// draw bottom line
+			g.FillRectangle( rect.Left, rect.Bottom - w, rect.Width, w );
+
+			// draw left line
+			if( tokenIndex-1 < 0
+				|| doc.GetMarkingBitMaskAt(tokenIndex-1) != markingBitMask )
+			{
+				g.FillRectangle( rect.Left, rect.Top, w, rect.Height );
+			}
 		}
 
 		/// <summary>
@@ -881,6 +1048,7 @@ namespace Sgry.Azuki
 
 			char firstCh, ch;
 			CharClass firstKlass, klass;
+			uint firstMarkingBitMask, markingBitMask;
 			int tokenEndLimit;
 
 			out_inSelection = false;
@@ -905,6 +1073,7 @@ namespace Sgry.Azuki
 			// get first char class and selection state
 			firstCh = doc[ index ];
 			firstKlass = doc.GetCharClass( index );
+			firstMarkingBitMask = doc.GetMarkingBitMaskAt( index );
 			out_klass = firstKlass;
 			if( Utl.IsSpecialChar(firstCh) )
 			{
@@ -928,6 +1097,7 @@ namespace Sgry.Azuki
 				index++;
 				ch = doc[ index ];
 				klass = doc.GetCharClass( index );
+				markingBitMask = doc.GetMarkingBitMaskAt( index );
 
 				// if this char is a special char, stop seeking
 				if( Utl.IsSpecialChar(ch) )
@@ -941,6 +1111,11 @@ namespace Sgry.Azuki
 				}
 				// or, character class changed; token ended
 				else if( klass != firstKlass )
+				{
+					return index;
+				}
+				// or, marking changed; token ended
+				else if( markingBitMask != firstMarkingBitMask )
 				{
 					return index;
 				}

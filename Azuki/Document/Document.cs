@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-08-25
+// update: 2010-11-27
 //=========================================================
 using System;
 using System.Collections;
@@ -597,6 +597,48 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets length of the logical line
+		/// which contains the specified char-index.
+		/// </summary>
+		/// <param name="charIndex">Length of the line which contains this index will be retrieved.</param>
+		/// <returns>Length of the specified logical line in character count.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method retrieves length of logical line.
+		/// Note that this method does not count EOL codes.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.GetLineLengthFromCharIndex(int,bool)">Document.GetLineLengthFromCharIndex(int, bool) method</seealso>
+		public int GetLineLengthFromCharIndex( int charIndex )
+		{
+			return GetLineLengthFromCharIndex( charIndex, false );
+		}
+
+		/// <summary>
+		/// Gets length of the logical line
+		/// which contains the specified char-index.
+		/// </summary>
+		/// <param name="charIndex">Length of the line which contains this index will be retrieved.</param>
+		/// <param name="includesEolCode">Whether EOL codes should be count or not.</param>
+		/// <returns>Length of the specified logical line in character count.</returns>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method retrieves length of logical line.
+		/// Note that this method does not count EOL codes.
+		/// </para>
+		/// </remarks>
+		public int GetLineLengthFromCharIndex( int charIndex, bool includesEolCode )
+		{
+			if( _Buffer.Count < charIndex )
+				throw new ArgumentOutOfRangeException( "charIndex" );
+
+			int lineIndex = GetLineIndexFromCharIndex( charIndex );
+			return GetLineLength( lineIndex, includesEolCode );
+		}
+
+		/// <summary>
 		/// Gets length of the logical line.
 		/// </summary>
 		/// <param name="lineIndex">Index of the line of which to get the length.</param>
@@ -940,6 +982,275 @@ namespace Sgry.Azuki
 			IsDirty = true;
 			InvokeContentChanged( begin, oldText, text );
 			InvokeSelectionChanged( oldAnchor, oldCaret, null, true );
+		}
+		#endregion
+
+		#region Marking
+		/// <summary>
+		/// Marks up specified text range.
+		/// </summary>
+		/// <param name="begin">The index of where the range begins.</param>
+		/// <param name="end">The index of where the range ends.</param>
+		/// <param name="markingID">ID of marking to be set.</param>
+		/// <returns>Whether the operation changed previous marking data or not.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method marks up a range of text with ID of 'marking'.
+		/// Please refer to document of
+		/// <see cref="Sgry.Azuki.Marking">Marking class</see>
+		/// for detail of Azuki's marking feature.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.Unmark(int,int)">Document.Unmark(int,int) method</seealso>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///	</exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
+		///		- OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
+		///	</exception>
+		public bool Mark( int begin, int end, int markingID )
+		{
+			if( begin < 0 || _Buffer.Count <= begin )
+				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given. (begin:"+begin+", this.Length:"+Length+")" );
+			if( end < 0 || _Buffer.Count < end )
+				throw new ArgumentOutOfRangeException( "end", "Invalid index was given. (end:"+end+", this.Length:"+Length+")" );
+			if( end <= begin )
+				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "Specified marking ID is not registered. (id:"+markingID+")", "markingID" );
+
+			byte bitMask;
+			bool changed = false;
+
+			// store the marking ID in form of bit mask
+			bitMask = (byte)( 0x01 << (markingID-1) );
+			for( int i=begin; i<end; i++ )
+			{
+				if( (_Buffer.Marks[i] & bitMask) == 0 )
+				{
+					_Buffer.Marks[i] |= (byte)bitMask;
+					changed = true;
+				}
+			}
+
+			return changed;
+		}
+
+		/// <summary>
+		/// Removes specified type of marking at specified index.
+		/// </summary>
+		/// <param name="index">The index of where the marking to be removed exists.</param>
+		/// <param name="markingID">The type ID of the marking to be removed.</param>
+		/// <returns>Whether the text at specified index was marked-up with <paramref name="markingID"/> or not.</returns>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="index"/> is out of valid range.
+		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///	</exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="markingID"/> is not registered to Marking class.
+		///	</exception>
+		public bool Unmark( int index, int markingID )
+		{
+			if( index < 0 || _Buffer.Count <= index )
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+
+			int begin, end;
+			bool found;
+
+			// get marked range which contains the character at specified index
+			found = GetMarkedRange( index, markingID, out begin, out end );
+			if( !found )
+			{
+				return false;
+			}
+			Debug.Assert( 0 <= begin );
+			Debug.Assert( begin < end );
+			Debug.Assert( end < Length );
+
+			// unmark the range
+			return Unmark( begin, end, markingID );
+		}
+
+		/// <summary>
+		/// Removes specified type of marking information at specified range.
+		/// </summary>
+		/// <param name="begin">The index of where the range begins.</param>
+		/// <param name="end">The index of where the range ends.</param>
+		/// <param name="markingID">The ID of the marking to be removed.</param>
+		/// <returns>Whether any marking data was removed or not.</returns>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///	</exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
+		///		- OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
+		///	</exception>
+		public bool Unmark( int begin, int end, int markingID )
+		{
+			if( begin < 0 || _Buffer.Count <= begin )
+				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given. (begin:"+begin+", this.Length:"+Length+")" );
+			if( end < 0 || _Buffer.Count < end )
+				throw new ArgumentOutOfRangeException( "end", "Invalid index was given. (end:"+end+", this.Length:"+Length+")" );
+			if( end <= begin )
+				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+
+			byte bitMask;
+			bool changed = false;
+
+			// clears bit of the marking
+			bitMask = (byte)( 0x01 << (markingID-1) );
+			for( int i=begin; i<end; i++ )
+			{
+				if( (_Buffer.Marks[i] & bitMask) != 0 )
+				{
+					_Buffer.Marks[i] &= (byte)( ~bitMask );
+					changed = true;
+				}
+			}
+
+			return changed;
+		}
+
+		/// <summary>
+		/// Gets range of text segment which includes specified index
+		/// which is marked with specified ID.
+		/// </summary>
+		/// <param name="index">The text range including a character at this index will be retrieved.</param>
+		/// <param name="markingID">The text range marked with this ID will be retrieved.</param>
+		/// <param name="begin">When this method returns, contains the beginning index of the text range.</param>
+		/// <param name="end">When this method returns, contains the ending index of the text range.</param>
+		/// <returns>Whether a text range marked with specified marking ID was retrieved or not.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="index"/> is out of range.
+		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		/// </exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="markingID"/> is not registered in Marking class.
+		/// </exception>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		public bool GetMarkedRange( int index, int markingID, out int begin, out int end )
+		{
+			if( index < 0 || _Buffer.Count <= index )
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+
+			byte markingBitMask;
+
+			// make bit mask
+			markingBitMask = (byte)( 1 << (markingID-1) );
+			if( (_Buffer.Marks[index] & markingBitMask) == 0 )
+			{
+				begin = index;
+				end = index;
+				return false;
+			}
+
+			// seek back until the marking bit was disabled
+			begin = index;
+			while( 0 <= begin-1
+				&& (_Buffer.Marks[begin-1] & markingBitMask) != 0 )
+			{
+				begin--;
+			}
+
+			// seek forward until the marking bit was disabled
+			end = index;
+			while( end < _Buffer.Count
+				&& (_Buffer.Marks[end] & markingBitMask) != 0 )
+			{
+				end++;
+			}
+
+			return true;
+		}
+
+		public string GetMarkedText( int index, int markingID )
+		{
+			if( index < 0 || _Buffer.Count <= index )
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+
+			int begin, end;
+			bool found;
+
+			// get range of the marked text
+			found = GetMarkedRange( index, markingID, out begin, out end );
+			if( !found )
+			{
+				return null;
+			}
+
+			// extract that range
+			return GetTextInRange( begin, end );
+		}
+
+		public bool IsMarked( int index, int markingID )
+		{
+			if( index < 0 || _Buffer.Count <= index )
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+
+			byte markingBitMask = (byte)( GetMarkingBitMaskAt(index) & 0xff );
+			return ( (markingBitMask >> (markingID-1)) & 0x01) != 0;
+		}
+
+		public int[] GetMarkingsAt( int index )
+		{
+			if( index < 0 || _Buffer.Count <= index )
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+
+			byte markingBitMask;
+			List<int> result = new List<int>( 8 );
+
+			// get marking bit mask of specified character
+			markingBitMask = _Buffer.Marks[ index ];
+			if( markingBitMask == 0 )
+			{
+				return null;
+			}
+
+			// create an array of marking IDs
+			for( int i=0; i<Marking.MaxID; i++ )
+			{
+				if( (markingBitMask & 0x01) != 0 )
+				{
+					result.Add( i );
+				}
+				markingBitMask >>= 1;
+			}
+
+			return result.ToArray();
+		}
+
+		public uint GetMarkingBitMaskAt( int index )
+		{
+			if( index < 0 || _Buffer.Count <= index )
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+
+			return (uint)_Buffer.Marks[index];
+		}
+
+		/// <summary>
+		/// Clears all marking data in this document.
+		/// </summary>
+		public void ClearMarkings()
+		{
+			_Buffer.Marks.Clear();
 		}
 		#endregion
 
@@ -2431,6 +2742,7 @@ namespace Sgry.Azuki
 	{
 		int _Index;
 		string _OldText, _NewText;
+		int _RedrawStartIndex, _RedrawEndIndex;
 
 		/// <summary>
 		/// Creates a new instance.
@@ -2464,6 +2776,24 @@ namespace Sgry.Azuki
 		public string NewText
 		{
 			get{ return _NewText; }
+		}
+
+		/// <summary>
+		/// Gets or sets starting index of the range to be redrawn after this event.
+		/// </summary>
+		public int RedrawStartIndex
+		{
+			get{ return _RedrawStartIndex; }
+			set{ _RedrawStartIndex = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets ending index of the range to be redrawn after this event.
+		/// </summary>
+		public int RedrawEndIndex
+		{
+			get{ return _RedrawEndIndex; }
+			set{ _RedrawEndIndex = value; }
 		}
 	}
 	#endregion

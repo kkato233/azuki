@@ -450,8 +450,8 @@ namespace Sgry.Azuki.Windows
 			lf.height = -(int)( font.Size * dpi_y / 72 );
 			lf.weight = (font.Style & FontStyle.Bold) != 0 ? 700 : 400; // FW_BOLD or FW_NORMAL
 			lf.italic = (byte)( (font.Style & FontStyle.Italic) != 0 ? 1 : 0 );
-			lf.underline = 0;
-			lf.strikeOut = 0;
+			lf.underline = 0;//(byte)( (font.Style & FontStyle.Underline) != 0 ? 1 : 0 );
+			lf.strikeOut = 0;//(byte)( (font.Style & FontStyle.Strikeout) != 0 ? 1 : 0 );
 			lf.charSet = 1; // DEFAULT_CHARSET
 			lf.outPrecision = 0; // OUT_DEFAULT_PRECIS
 			lf.clipPrecision = 0; // CLIP_DEFAULT_PRECIS

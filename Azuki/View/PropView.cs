@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-11-14
+// update: 2010-11-27
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -528,31 +528,35 @@ namespace Sgry.Azuki
 			// One case of that e.NewText has combining char at first:
 			//    aaaa --(replace [2, 3) to "^A")--> aa^Aa
 
-			Point oldCaretPos;
+			Point invalidStartPos;
+			int invalidStartIndex;
 			Rectangle invalidRect1 = new Rectangle();
 			Rectangle invalidRect2 = new Rectangle();
 
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-				// get position of the word replacement occured
-				oldCaretPos = GetVirPosFromIndex( g, e.Index );
-				VirtualToScreen( ref oldCaretPos );
+				// calculate where to start invalidation
+				invalidStartIndex = e.Index;
+				if( Document.IsCombiningCharacter(e.OldText, 0)
+					|| Document.IsCombiningCharacter(e.NewText, 0) )
+				{
+					// [*1]
+					invalidStartIndex = GetLineHeadIndexFromCharIndex(
+							invalidStartIndex
+						);
+				}
+
+				// get graphical position of the place
+				invalidStartPos = GetVirPosFromIndex( g, invalidStartIndex );
+				VirtualToScreen( ref invalidStartPos );
 
 				// update indicator graphic on horizontal ruler
 				UpdateHRuler( g );
 
 				// invalidate the part at right of the old selection
-				if( Document.IsCombiningCharacter(e.OldText, 0)
-					|| Document.IsCombiningCharacter(e.NewText, 0) )
-				{
-					invalidRect1.X = XofTextArea; // [*1]
-				}
-				else
-				{
-					invalidRect1.X = oldCaretPos.X;
-				}
+				invalidRect1.X = invalidStartPos.X;
 				invalidRect1.Width = VisibleSize.Width - invalidRect1.X;
-				invalidRect1.Y = oldCaretPos.Y - (LinePadding >> 1);
+				invalidRect1.Y = invalidStartPos.Y - (LinePadding >> 1);
 				invalidRect1.Height = LineSpacing;
 
 				// invalidate all lines below caret

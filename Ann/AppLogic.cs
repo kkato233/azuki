@@ -1,6 +1,7 @@
 // 2010-08-13
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -116,6 +117,7 @@ namespace Sgry.Ann
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Closed += MainForm_Closed;
 				_MainForm.Azuki.Resize += Azuki_Resize;
+				_MainForm.Azuki.DoubleClick += Azuki_DoubleClick;
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 				_MainForm.TabPanel.Items = Documents;
 				_MainForm.TabPanel.TabSelected += TabPanel_TabSelected;
@@ -1123,6 +1125,25 @@ namespace Sgry.Ann
 			if( MainForm.Azuki.ViewType == ViewType.WrappedProportional )
 			{
 				_ShouldUpdateTextAreaWidth = true;
+			}
+		}
+
+		void Azuki_DoubleClick( object sender, EventArgs e )
+		{
+			AzukiControl azuki = MainForm.Azuki;
+			AzukiDocument doc = azuki.Document;
+
+			if( doc.CaretIndex < doc.Length
+				&& doc.IsMarked(doc.CaretIndex, Marking.Uri) )
+			{
+				string uri = azuki.Document.GetMarkedText( azuki.CaretIndex, Marking.Uri );
+				if( uri != null )
+				{
+					if( MessageBox.Show(_MainForm, "Open the URL?\n"+uri+"", "Ann", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes )
+					{
+						Process.Start( uri, "" );
+					}
+				}
 			}
 		}
 		#endregion

@@ -1076,6 +1076,9 @@ namespace Sgry.Azuki
 		{
 			Debug.Assert( _IsDisposed == false );
 
+			// delegate to URI marker object
+			UriMarker.Inst.HandleContentChanged( this, e );
+
 			// delegate to view object
 			View.HandleContentChanged( sender, e );
 

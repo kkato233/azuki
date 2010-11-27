@@ -344,7 +344,6 @@ namespace Sgry.Azuki
 			if( doc.Length <= tokenEndIndex
 				|| doc.GetMarkingBitMaskAt(tokenEndIndex) != markingBitMask )
 			{
-string どのビットによるアウトラインなのかが分からないと境界線を引いて良いかどうかを判断できない;
 				g.FillRectangle( rect.Right - w, rect.Top, w, rect.Height );
 			}
 

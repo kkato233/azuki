@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for Windows platform (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-11-14
+// update: 2010-11-27
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -75,6 +75,7 @@ namespace Sgry.Azuki.Windows
 			_Impl = new UiImpl( this );
 			Document = new Document();
 			ViewType = ViewType.Proportional; // (setting ViewType installs document event handlers)
+			LineDrawing += UriMarker.Inst.UI_LineDrawing;
 
 			// setup default keybind
 			ResetKeyBind();
@@ -482,7 +483,6 @@ namespace Sgry.Azuki.Windows
 			switch( cursorType )
 			{
 				case MouseCursor.DragAndDrop:
-string TODO="should make original .cur resource and use it...";
 					this.Cursor = Cursors.UpArrow;
 					break;
 				case MouseCursor.Hand:

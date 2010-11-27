@@ -66,6 +66,7 @@
     <Compile Include="Document\SplitArray.cs" />
     <Compile Include="Document\TextBuffer.cs" />
     <Compile Include="Document\TextDataType.cs" />
+    <Compile Include="Document\UriMarker.cs" />
     <Compile Include="Document\ViewParam.cs" />
     <Compile Include="Highlighter\Coco\Buffer.cs" />
     <Compile Include="Highlighter\Coco\LatexParser.cs" />

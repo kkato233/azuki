@@ -2262,6 +2262,9 @@ namespace Sgry.Azuki.Windows
 		/// .
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
+#		if !PocketPC
+		[DefaultValue(0xff000000)]
+#		endif
 		public override Color ForeColor
 		{
 			get
@@ -2290,6 +2293,9 @@ namespace Sgry.Azuki.Windows
 		/// .
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
+#		if !PocketPC
+		[DefaultValue(0xfffffaf0)]
+#		endif
 		public override Color BackColor
 		{
 			get
@@ -2298,7 +2304,7 @@ namespace Sgry.Azuki.Windows
 					return View.ColorScheme.BackColor;
 				else
 					return base.BackColor;
-			}
+				}
 			set
 			{
 				if( View != null )

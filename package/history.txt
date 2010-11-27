@@ -32,6 +32,10 @@
  * fix: [Ann] now Ann can open files opened by other processes which allows to read it
  * fix: [Ann] corrected usage of 'GDI device context' which is system shared resource (incorrect usage might make graphics totally invalid)
 
+== 1.5.8 (2010-11-27) ==
+ * fix: in visual designer, ForeColor and BackColor property of AzukiControl cannot be changed
+ * fix: [Ann] tagged as version 1.4.8
+
 == 1.5.7 (2010-07-09) ==
  * fix: pasting non-text clipboard data locks clipboard system and prevents any other program from using  clipboard (degrade problem since 1.5.0)
  * fix: now Azuki does not uses System.Drawing.Font.OriginalFontName property

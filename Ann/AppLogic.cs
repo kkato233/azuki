@@ -1147,7 +1147,8 @@ namespace Sgry.Ann
 							"Opening the URL. Do you wish to continue?\n" + uriString + "",
 							"Ann",
 							MessageBoxButtons.OKCancel,
-							MessageBoxIcon.Information
+							MessageBoxIcon.Question,
+							MessageBoxDefaultButton.Button1
 						);
 					if( result == DialogResult.OK )
 					{

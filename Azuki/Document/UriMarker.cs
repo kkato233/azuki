@@ -1,7 +1,7 @@
 ﻿// file: UriMarker.cs
 // brief: a singleton class which marks URIs up in document.
 // author: YAMAMOTO Suguru
-// update: 2010-11-16
+// update: 2010-11-28
 //=========================================================
 using System;
 using System.Text;
@@ -86,8 +86,12 @@ namespace Sgry.Azuki
 
 		public void UI_LineDrawing( object sender, LineDrawEventArgs e )
 		{
-			Document doc = ((IUserInterface)sender).Document;
-			e.ShouldBeRedrawn = MarkOneLine( doc, e.LineIndex );
+			IUserInterface ui = (IUserInterface)sender;
+
+			// scan a logical line only when the event has occurred at 
+			int scrernLineHeadIndex = ui.View.GetLineHeadIndex( e.LineIndex );
+			int logicalLineIndex = ui.Document.GetLineIndexFromCharIndex( scrernLineHeadIndex );
+			e.ShouldBeRedrawn = MarkOneLine( ui.Document, logicalLineIndex );
 		}
 		#endregion
 
@@ -96,11 +100,11 @@ namespace Sgry.Azuki
 		/// Mark one or more URIs in a logical line.
 		/// </summary>
 		/// <returns>Whether specified line should be redrawn or not.</returns>
-		bool MarkOneLine( Document doc, int lineIndex )
+		bool MarkOneLine( Document doc, int logicalLineIndex )
 		{
 			DebugUtl.Assert( doc != null );
-			DebugUtl.Assert( 0 <= lineIndex );
-			DebugUtl.Assert( lineIndex < doc.LineCount );
+			DebugUtl.Assert( 0 <= logicalLineIndex );
+			DebugUtl.Assert( logicalLineIndex < doc.LineCount );
 
 			int lineBegin, lineEnd;
 			int lastMarkedIndex;
@@ -114,8 +118,8 @@ namespace Sgry.Azuki
 			}
 
 			// prepare scanning
-			lineBegin = doc.GetLineHeadIndex( lineIndex );
-			lineEnd = lineBegin + doc.GetLineLength( lineIndex );
+			lineBegin = doc.GetLineHeadIndex( logicalLineIndex );
+			lineEnd = lineBegin + doc.GetLineLength( logicalLineIndex );
 			if( lineBegin == lineEnd )
 			{
 				return false; // this is an empty line.

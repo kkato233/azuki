@@ -413,9 +413,9 @@ namespace Sgry.Azuki
 		public void SetSelection( int anchor, int caret, IView view )
 		{
 			if( anchor < 0 || _Buffer.Count < anchor )
-				throw new ArgumentOutOfRangeException( "anchor", "Parameter 'anchor' is out of range (anchor:"+anchor+", caret:"+caret+")." );
+				throw new ArgumentOutOfRangeException( "anchor", "Parameter 'anchor' is out of valid range (anchor:"+anchor+", caret:"+caret+")." );
 			if( caret < 0 || _Buffer.Count < caret )
-				throw new ArgumentOutOfRangeException( "caret", "Parameter 'caret' is out of range (anchor:"+anchor+", caret:"+caret+")." );
+				throw new ArgumentOutOfRangeException( "caret", "Parameter 'caret' is out of valid range (anchor:"+anchor+", caret:"+caret+")." );
 			if( view == null && SelectionMode != TextDataType.Normal )
 				throw new ArgumentNullException( "view", "Parameter 'view' must not be null if SelectionMode is not TextDataType.Normal. (SelectionMode:"+SelectionMode+")." );
 
@@ -1105,7 +1105,7 @@ namespace Sgry.Azuki
 		/// <param name="end">When this method returns, contains the ending index of the text range.</param>
 		/// <returns>Whether a text range marked with specified marking ID was retrieved or not.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of range.
+		///		Parameter <paramref name="index"/> is out of valid range.
 		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
 		/// </exception>
 		/// <exception cref="System.ArgumentException">
@@ -1115,7 +1115,7 @@ namespace Sgry.Azuki
 		public bool GetMarkedRange( int index, int markingID, out int begin, out int end )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
@@ -1149,10 +1149,23 @@ namespace Sgry.Azuki
 			return true;
 		}
 
+		/// <summary>
+		/// Gets text part marked with specified ID at specified index.
+		/// </summary>
+		/// <param name="index">The marked text part at this index will be retrieved.</param>
+		/// <param name="markingID">The text part marked with this ID will be retrieved.</param>
+		/// <returns>The text if found, otherwise null.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="index"/> is out of valid range.
+		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		/// </exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="markingID"/> is not registered in Marking class.
+		/// </exception>
 		public string GetMarkedText( int index, int markingID )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
@@ -1170,10 +1183,28 @@ namespace Sgry.Azuki
 			return GetTextInRange( begin, end );
 		}
 
+		/// <summary>
+		/// Determine whether specified index is marked with specified marking ID or not.
+		/// </summary>
+		/// <param name="index">The index to examine.</param>
+		/// <param name="markingID">
+		///		Whether specified index is marked with this ID will be retrieved.
+		///	</param>
+		/// <returns>
+		///		Whether a character at <paramref name="index"/> is
+		///		marked with <paramref name="markingID"/> or not.
+		/// </returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="index"/> is out of valid range.
+		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		/// </exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="markingID"/> is not registered in Marking class.
+		/// </exception>
 		public bool IsMarked( int index, int markingID )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
@@ -1194,10 +1225,13 @@ namespace Sgry.Azuki
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="index"/> is out of valid range.
+		/// </exception>
 		public int[] GetMarkingsAt( int index )
 		{
 			if( index < 0 || _Buffer.Count < index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 
 			byte markingBitMask;
 			List<int> result = new List<int>( 8 );
@@ -1216,7 +1250,7 @@ namespace Sgry.Azuki
 			}
 
 			// create an array of marking IDs
-			for( int i=0; i<Marking.MaxID; i++ )
+			for( int i=0; i<=Marking.MaxID; i++ )
 			{
 				if( (markingBitMask & 0x01) != 0 )
 				{
@@ -1245,10 +1279,13 @@ namespace Sgry.Azuki
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.GetMarkingsAt">Document.GetMarkingsAt method</seealso>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="index"/> is out of valid range.
+		/// </exception>
 		public uint GetMarkingBitMaskAt( int index )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 
 			return (uint)_Buffer.Marks[index];
 		}
@@ -1731,7 +1768,7 @@ namespace Sgry.Azuki
 		/// Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is out of range.
+		/// Parameter <paramref name="startIndex"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -1770,7 +1807,7 @@ namespace Sgry.Azuki
 		/// Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is out of range.
+		/// Parameter <paramref name="startIndex"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -1808,7 +1845,7 @@ namespace Sgry.Azuki
 		/// Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is out of range.
+		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
 		/// <para>

@@ -1,7 +1,7 @@
 ﻿// file: Marking.cs
 // brief: Classes related to marking which indicates attributes apart from syntax and grammer.
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2010-11-28
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -27,40 +27,86 @@ namespace Sgry.Azuki
 	/// <seealso cref="Sgry.Azuki.ColorScheme">ColorScheme class</seealso>
 	public class MarkingInfo
 	{
+		#region Fields
 		int _ID;
 		string _Name;
-		MouseCursor _MouseCursor;
+		MouseCursor _MouseCursor = MouseCursor.IBeam;
+		#endregion
 
+		#region Init / Dispose
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		/// <param name="id">ID of the marking to be registered.</param>
+		/// <param name="name">Name of the marking.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter '<paramref name="id"/>' is out of valid range.
+		/// </exception>
+		/// <exception cref="System.ArgumentNullException">
+		///		Parameter '<paramref name="name"/>' is null.
+		/// </exception>
 		public MarkingInfo( int id, string name )
 		{
+			if( id < 0 || Marking.MaxID < id )
+				throw new ArgumentOutOfRangeException( "id" );
+			if( name == null )
+				throw new ArgumentNullException( "name" );
+
 			_ID = id;
 			_Name = name;
-			_MouseCursor = MouseCursor.IBeam;
 		}
 
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		/// <param name="id">ID of the marking to be registered.</param>
+		/// <param name="name">Name of the marking.</param>
+		/// <param name="cursor">
+		///		This type of mouse cursor will be used
+		///		when user puts cursor on the text with marking ID
+		///		specified by <paramref name="id"/>.
+		/// </param>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter '<paramref name="id"/>' is out of valid range.
+		/// </exception>
+		/// <exception cref="System.ArgumentNullException">
+		///		Parameter '<paramref name="name"/>' is null.
+		/// </exception>
 		public MarkingInfo( int id, string name, MouseCursor cursor )
 			: this( id, name )
 		{
 			_MouseCursor = cursor;
 		}
+		#endregion
 
+		#region Public properties
+		/// <summary>
+		/// Gets or sets ID of this marking.
+		/// </summary>
 		public int ID
 		{
 			get{ return _ID; }
 			set{ _ID = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets name of this marking.
+		/// </summary>
 		public string Name
 		{
 			get{ return _Name; }
 			set{ _Name = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets type of mouse cursor associated with this marking.
+		/// </summary>
 		public MouseCursor MouseCursor
 		{
 			get{ return _MouseCursor; }
 			set{ _MouseCursor = value; }
 		}
+		#endregion
 	}
 
 	/// <summary>
@@ -112,7 +158,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Maximum number of marking ID currently supported.
 		/// </summary>
-		public const int MaxID = 8;
+		public const int MaxID = 7;
 
 		/// <summary>
 		/// ID of URI marking type.
@@ -138,6 +184,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Operation
 		/// <summary>
 		/// Registers a marking ID.
 		/// </summary>
@@ -203,5 +250,6 @@ namespace Sgry.Azuki
 				}
 			}
 		}
+		#endregion
 	}
 }

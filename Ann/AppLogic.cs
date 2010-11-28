@@ -1,4 +1,4 @@
-// 2010-08-13
+// 2010-11-28
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1136,12 +1136,22 @@ namespace Sgry.Ann
 			if( doc.CaretIndex < doc.Length
 				&& doc.IsMarked(doc.CaretIndex, Marking.Uri) )
 			{
-				string uri = azuki.Document.GetMarkedText( azuki.CaretIndex, Marking.Uri );
-				if( uri != null )
+				string uriString;
+				DialogResult result;
+
+				// ask user to jump to the URI
+				uriString = azuki.Document.GetMarkedText( doc.CaretIndex, Marking.Uri );
+				if( uriString != null )
 				{
-					if( MessageBox.Show(_MainForm, "Open the URL?\n"+uri+"", "Ann", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes )
+					result = MessageBox.Show(
+							"Opening the URL. Do you wish to continue?\n" + uriString + "",
+							"Ann",
+							MessageBoxButtons.OKCancel,
+							MessageBoxIcon.Information
+						);
+					if( result == DialogResult.OK )
 					{
-						Process.Start( uri, "" );
+						Process.Start( uriString, "" );
 					}
 				}
 			}

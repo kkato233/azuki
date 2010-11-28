@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
-// brief: User interface for Windows platform (both Desktop and CE).
+// brief: User interface for WinForm framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2010-11-28
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -730,7 +730,7 @@ namespace Sgry.Azuki.Windows
 		/// that indicates the dirty state of each text line.
 		/// The state of line is one of the following states.
 		/// </para>
-		/// <list>
+		/// <list type="bullet">
 		///		<item>LineDirtyState.Clean: the line is not modified yet.</item>
 		///		<item>LineDirtyState.Dirty: the line is modified and not saved.</item>
 		///		<item>LineDirtyState.Cleaned: the line is modified but saved.</item>

@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2010-11-28
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace Sgry.Azuki
 	{
 		Color[] _ForeColors = new Color[ Byte.MaxValue ];
 		Color[] _BackColors = new Color[ Byte.MaxValue ];
-		TextDecoration[] _MarkingDecorations = new TextDecoration[ 8 ];
+		TextDecoration[] _MarkingDecorations = new TextDecoration[ Marking.MaxID+1 ];
 
 		#region Init / Dispose
 		/// <summary>
@@ -105,13 +105,52 @@ namespace Sgry.Azuki
 			back = _BackColors[ (byte)klass ];
 		}
 
+		/// <summary>
+		/// Gets how text marked with specified ID should be decorated.
+		/// </summary>
+		/// <param name="markingID">The ID of the marking.</param>
+		/// <returns>TextDecoration object associated with specified ID, or null.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="markingID"/> is out of valid range.
+		///	</exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="markingID"/> is not registered to Marking class.
+		///	</exception>
+		public TextDecoration GetMarkingDecoration( int markingID )
+		{
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "Specified markingID is not registered. (markingID:"+markingID+")", "markingID" );
+
+			return _MarkingDecorations[markingID];
+		}
+
+		/// <summary>
+		/// Gets multiple TextDecoration at once
+		/// associated with specified marking IDs.
+		/// </summary>
+		/// <param name="markingIDs">The array of marking ID.</param>
+		/// <returns>An array of TextDecoration objects.</returns>
+		/// <exception cref="System.ArgumentNullException">
+		///		Parameter <paramref name="markingIDs"/> is null.
+		/// </exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		Parameter <paramref name="markingIDs"/> contains a value
+		///		which is out of valid range.
+		///	</exception>
+		/// <exception cref="System.ArgumentException">
+		///		Parameter <paramref name="markingIDs"/> contains a value
+		///		which is not registered to Marking class.
+		///	</exception>
 		public TextDecoration[] GetMarkingDecorations( int[] markingIDs )
 		{
-			List<TextDecoration> styles = new List<TextDecoration>( 8 );
+			if( markingIDs == null )
+				throw new ArgumentNullException( "markingIDs" );
+
+			List<TextDecoration> styles = new List<TextDecoration>( Marking.MaxID+1 );
 
 			foreach( int id in markingIDs )
 			{
-				styles.Add( _MarkingDecorations[id] );
+				styles.Add( GetMarkingDecoration(id) );
 			}
 
 			return styles.ToArray();
@@ -120,13 +159,17 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets decorations associated with marking IDs from bit mask (internal representation).
 		/// </summary>
-		/// <param name="markingBitMask">When this method returns, an array of decorations associated with markings represented by this bit mask will be retrieved.</param>
+		/// <param name="markingBitMask">
+		///		When this method returns,
+		///		an array of decorations associated with markings
+		///		represented by this bit mask will be retrieved.
+		/// </param>
 		/// <returns>An array of decoration information, or an empty array.</returns>
 		public TextDecoration[] GetMarkingDecorations( uint markingBitMask )
 		{
-			List<TextDecoration> styles = new List<TextDecoration>( 8 );
+			List<TextDecoration> styles = new List<TextDecoration>( Marking.MaxID+1 );
 
-			for( int i=0; i<Marking.MaxID; i++ )
+			for( int i=0; i<=Marking.MaxID; i++ )
 			{
 				if( (markingBitMask & 0x01) != 0 )
 				{
@@ -141,11 +184,20 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Sets how text parts marked with specified ID should be decorated.
 		/// </summary>
+		/// <param name="markingID">The marking ID.</param>
+		/// <param name="decoration">
+		///		TextDecoration object to be associated with <paramref name="markingID"/>.
+		///		If null was specified, TextDecoration.None will be used internally.
+		/// </param>
 		public void SetMarkingDecoration( int markingID, TextDecoration decoration )
 		{
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
+			if( decoration == null )
+			{
+				decoration = TextDecoration.None;
+			}
 			_MarkingDecorations[markingID] = decoration;
 		}
 
@@ -155,6 +207,9 @@ namespace Sgry.Azuki
 		/// <param name="klass">The color-pair associated with this character-class will be got.</param>
 		/// <param name="fore">Fore-ground color used to draw characters marked as the character-class.</param>
 		/// <param name="back">Back-ground color used to draw characters marked as the character-class.</param>
+		/// <exception cref="System.ArgumentException">
+		///		Color.Transparent was set to CharClass.Normal.
+		///	</exception>
 		/// <remarks>
 		/// <para>
 		/// This method sets a pair of colors which is associated with
@@ -168,7 +223,6 @@ namespace Sgry.Azuki
 		/// for drawing tokens of the CharClass.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Color.Transparent was set to CharClass.Normal.</exception>
 		public void SetColor( CharClass klass, Color fore, Color back )
 		{
 			if( klass == CharClass.Normal
@@ -260,9 +314,13 @@ namespace Sgry.Azuki
 			this.MatchedBracketFore = Color.Transparent;
 			this.MatchedBracketBack = Color.FromArgb( 0x93, 0xff, 0xff );
 
-			_MarkingDecorations[0] = new UnderlineTextDecoration(
+			_MarkingDecorations[0] = new UnderlineTextDecoration( // Marking.Uri
 					LineStyle.Solid, Color.Transparent
-				); // Marking.Uri
+				);
+			for( int i=1; i<=Marking.MaxID; i++ )
+			{
+				_MarkingDecorations[i] = TextDecoration.None;
+			}
 		}
 		#endregion
 

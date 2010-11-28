@@ -116,7 +116,7 @@ namespace Sgry.Azuki
 		/// that indicates the dirty state of each text line.
 		/// The state of line is one of the following states.
 		/// </para>
-		/// <list>
+		/// <list type="bullet">
 		///		<item>LineDirtyState.Clean: the line is not modified yet.</item>
 		///		<item>LineDirtyState.Dirty: the line is modified and not saved.</item>
 		///		<item>LineDirtyState.Cleaned: the line is modified but saved.</item>

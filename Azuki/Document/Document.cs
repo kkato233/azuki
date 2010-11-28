@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2010-11-28
 //=========================================================
 using System;
 using System.Collections;
@@ -741,6 +741,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets text in the range [begin, end).
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
 		/// <para>
 		/// If given index is at middle of an undividable character sequence such as surrogate pair,
@@ -751,7 +752,6 @@ namespace Sgry.Azuki
 		/// <see cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">another overload</see>.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">Document.GetTextInRange(ref int, ref int) method</seealso>.
 		public string GetTextInRange( int begin, int end )
 		{
@@ -761,6 +761,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets text in the range [begin, end).
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
 		/// <para>
 		/// If given index is at middle of an undividable character sequence such as surrogate pair,
@@ -772,7 +773,6 @@ namespace Sgry.Azuki
 		/// to actually used values.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(int, int)">Document.GetTextInRange(int, int) method</seealso>.
 		public string GetTextInRange( ref int begin, ref int end )
 		{
@@ -993,16 +993,6 @@ namespace Sgry.Azuki
 		/// <param name="end">The index of where the range ends.</param>
 		/// <param name="markingID">ID of marking to be set.</param>
 		/// <returns>Whether the operation changed previous marking data or not.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method marks up a range of text with ID of 'marking'.
-		/// Please refer to document of
-		/// <see cref="Sgry.Azuki.Marking">Marking class</see>
-		/// for detail of Azuki's marking feature.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.Unmark(int,int)">Document.Unmark(int,int) method</seealso>
-		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		/// <exception cref="System.ArgumentOutOfRangeException">
 		///		Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
@@ -1011,6 +1001,17 @@ namespace Sgry.Azuki
 		///		Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
 		///		- OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
 		///	</exception>
+		/// <remarks>
+		/// <para>
+		/// This method marks up a range of text with ID of 'marking'.
+		/// </para>
+		///	<para>
+		///	For detail of marking feature, please refer to the document of
+		///	<see cref="Sgry.Azuki.Marking"/> class.
+		///	</para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Document.Unmark">Document.Unmark method</seealso>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		public bool Mark( int begin, int end, int markingID )
 		{
 			if( begin < 0 || _Buffer.Count <= begin )
@@ -1020,13 +1021,13 @@ namespace Sgry.Azuki
 			if( end <= begin )
 				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "Specified marking ID is not registered. (id:"+markingID+")", "markingID" );
+				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
 			byte bitMask;
 			bool changed = false;
 
 			// store the marking ID in form of bit mask
-			bitMask = (byte)( 0x01 << (markingID-1) );
+			bitMask = (byte)( 0x01 << markingID );
 			for( int i=begin; i<end; i++ )
 			{
 				if( (_Buffer.Marks[i] & bitMask) == 0 )
@@ -1040,53 +1041,12 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Removes specified type of marking at specified index.
-		/// </summary>
-		/// <param name="index">The index of where the marking to be removed exists.</param>
-		/// <param name="markingID">The type ID of the marking to be removed.</param>
-		/// <returns>Whether the text at specified index was marked-up with <paramref name="markingID"/> or not.</returns>
-		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
-		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
-		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of valid range.
-		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
-		///	</exception>
-		/// <exception cref="System.ArgumentException">
-		///		Parameter <paramref name="markingID"/> is not registered to Marking class.
-		///	</exception>
-		public bool Unmark( int index, int markingID )
-		{
-			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
-			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
-
-			int begin, end;
-			bool found;
-
-			// get marked range which contains the character at specified index
-			found = GetMarkedRange( index, markingID, out begin, out end );
-			if( !found )
-			{
-				return false;
-			}
-			Debug.Assert( 0 <= begin );
-			Debug.Assert( begin < end );
-			Debug.Assert( end < Length );
-
-			// unmark the range
-			return Unmark( begin, end, markingID );
-		}
-
-		/// <summary>
 		/// Removes specified type of marking information at specified range.
 		/// </summary>
 		/// <param name="begin">The index of where the range begins.</param>
 		/// <param name="end">The index of where the range ends.</param>
 		/// <param name="markingID">The ID of the marking to be removed.</param>
 		/// <returns>Whether any marking data was removed or not.</returns>
-		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
-		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
 		/// <exception cref="System.ArgumentOutOfRangeException">
 		///		Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
@@ -1095,6 +1055,18 @@ namespace Sgry.Azuki
 		///		Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
 		///		- OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
 		///	</exception>
+		///	<remarks>
+		///	<para>
+		///	This method scans range of [<paramref name="begin"/>, <paramref name="end"/>)
+		///	and removes specified marking ID.
+		///	</para>
+		///	<para>
+		///	For detail of marking feature, please refer to the document of
+		///	<see cref="Sgry.Azuki.Marking"/> class.
+		///	</para>
+		///	</remarks>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
 		public bool Unmark( int begin, int end, int markingID )
 		{
 			if( begin < 0 || _Buffer.Count <= begin )
@@ -1110,7 +1082,7 @@ namespace Sgry.Azuki
 			bool changed = false;
 
 			// clears bit of the marking
-			bitMask = (byte)( 0x01 << (markingID-1) );
+			bitMask = (byte)( 0x01 << markingID );
 			for( int i=begin; i<end; i++ )
 			{
 				if( (_Buffer.Marks[i] & bitMask) != 0 )
@@ -1124,7 +1096,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets range of text segment which includes specified index
+		/// Gets range of text part which includes specified index
 		/// which is marked with specified ID.
 		/// </summary>
 		/// <param name="index">The text range including a character at this index will be retrieved.</param>
@@ -1145,12 +1117,12 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count <= index )
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
 			byte markingBitMask;
 
 			// make bit mask
-			markingBitMask = (byte)( 1 << (markingID-1) );
+			markingBitMask = (byte)( 1 << markingID );
 			if( (_Buffer.Marks[index] & markingBitMask) == 0 )
 			{
 				begin = index;
@@ -1182,7 +1154,7 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count <= index )
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
 			int begin, end;
 			bool found;
@@ -1203,25 +1175,44 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count <= index )
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "markingID", "Specified marking ID is not registered. (markingID:"+markingID+")" );
+				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
 			byte markingBitMask = (byte)( GetMarkingBitMaskAt(index) & 0xff );
-			return ( (markingBitMask >> (markingID-1)) & 0x01) != 0;
+			return ( (markingBitMask >> markingID) & 0x01) != 0;
 		}
 
+		/// <summary>
+		/// List up all markings at specified index and returns their IDs as an array.
+		/// </summary>
+		/// <param name="index">The index of the position to examine.</param>
+		/// <returns>Array of marking IDs if any marking found, or an empty array if no marking found.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method does not throw exception
+		/// but returns an empty array if end index of the document
+		/// (index equal to length of document) was specified.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		public int[] GetMarkingsAt( int index )
 		{
-			if( index < 0 || _Buffer.Count <= index )
+			if( index < 0 || _Buffer.Count < index )
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
 
 			byte markingBitMask;
 			List<int> result = new List<int>( 8 );
 
+			// if specified index is end of document, no marking will be found anyway
+			if( _Buffer.Count == index )
+			{
+				return result.ToArray();
+			}
+
 			// get marking bit mask of specified character
 			markingBitMask = _Buffer.Marks[ index ];
 			if( markingBitMask == 0 )
 			{
-				return null;
+				return result.ToArray();
 			}
 
 			// create an array of marking IDs
@@ -1237,20 +1228,29 @@ namespace Sgry.Azuki
 			return result.ToArray();
 		}
 
+		/// <summary>
+		/// Gets marking IDs at specified index as a bit mask (internal representation).
+		/// </summary>
+		/// <param name="index">The marking IDs put on the character at this index will be returned.</param>
+		/// <returns>Bit mask represents markings which covers the character.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method gets a bit-masked integer representing
+		/// which marking IDs are put on that position.
+		/// </para>
+		///	<para>
+		///	For detail of marking feature, please refer to the document of
+		///	<see cref="Sgry.Azuki.Marking"/> class.
+		///	</para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.GetMarkingsAt">Document.GetMarkingsAt method</seealso>
 		public uint GetMarkingBitMaskAt( int index )
 		{
 			if( index < 0 || _Buffer.Count <= index )
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of range. (index:"+index+", Document.Length:"+Length+")" );
 
 			return (uint)_Buffer.Marks[index];
-		}
-
-		/// <summary>
-		/// Clears all marking data in this document.
-		/// </summary>
-		public void ClearMarkings()
-		{
-			_Buffer.Marks.Clear();
 		}
 		#endregion
 
@@ -1363,11 +1363,11 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets default EOL Code of this document.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Specified EOL code is not supported.</exception>
 		/// <remarks>
 		/// This value will be used when an Enter key was pressed,
 		/// but setting this property itself does nothing to the content.
 		/// </remarks>
-		/// <exception cref="InvalidOperationException">Specified EOL code is not supported.</exception>
 		public string EolCode
 		{
 			get{ return _EolCode; }
@@ -1716,7 +1716,7 @@ namespace Sgry.Azuki
 			if( regex == null )
 				throw new ArgumentNullException( "regex" );
 			if( (regex.Options & RegexOptions.RightToLeft) != 0 )
-				throw new ArgumentException( "RegexOptions.RightToLeft option must not be set to the object 'regex'." );
+				throw new ArgumentException( "RegexOptions.RightToLeft option must not be set to the object 'regex'.", "regex" );
 
 			return _Buffer.FindNext( regex, begin, end );
 		}
@@ -1970,7 +1970,7 @@ namespace Sgry.Azuki
 			if( regex == null )
 				throw new ArgumentNullException( "regex" );
 			if( (regex.Options & RegexOptions.RightToLeft) == 0 )
-				throw new ArgumentException( "RegexOptions.RightToLeft option must be set to the object 'regex'." );
+				throw new ArgumentException( "RegexOptions.RightToLeft option must be set to the object 'regex'.", "regex" );
 
 			return _Buffer.FindPrev( regex, begin, end );
 		}
@@ -2307,6 +2307,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="index">The index to start the search from.</param>
 		/// <returns>The index of the character which starts next grapheme cluster.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method searches document for a grapheme cluster
@@ -2328,7 +2329,6 @@ namespace Sgry.Azuki
 		///		<item>Combining character sequence</item>
 		/// </list>
 		/// </remarks>
-		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
 		public int NextGraphemeClusterIndex( int index )
@@ -2350,6 +2350,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="index">The index to start the search from.</param>
 		/// <returns>The index of the character which starts previous grapheme cluster.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method searches document for a grapheme cluster
@@ -2371,7 +2372,6 @@ namespace Sgry.Azuki
 		///		<item>Combining character sequence</item>
 		/// </list>
 		/// </remarks>
-		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
 		public int PrevGraphemeClusterIndex( int index )

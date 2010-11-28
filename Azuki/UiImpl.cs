@@ -980,6 +980,7 @@ namespace Sgry.Azuki
 			// check state
 			bool onLineNumberArea = false;
 			bool onSelectedText = false;
+			MouseCursor? cursorType = null;
 			if( cursorScreenPos != null )
 			{
 				int index;
@@ -993,7 +994,19 @@ namespace Sgry.Azuki
 					Point virPos = cursorScreenPos.Value;
 					View.ScreenToVirtual( ref virPos );
 					index = View.GetIndexFromVirPos( virPos );
+
 					onSelectedText = Document.SelectionManager.IsInSelection( index );
+					if( onSelectedText == false )
+					{
+						foreach( int id in Document.GetMarkingsAt(index) )
+						{
+							MarkingInfo info = Marking.GetMarkingInfo( id );
+							if( info.MouseCursor != MouseCursor.IBeam )
+							{
+								cursorType = info.MouseCursor;
+							}
+						}
+					}
 				}
 			}
 
@@ -1013,6 +1026,10 @@ namespace Sgry.Azuki
 			else if( onSelectedText )
 			{
 				_UI.SetCursorGraphic( MouseCursor.Arrow );
+			}
+			else if( cursorType.HasValue )
+			{
+				_UI.SetCursorGraphic( cursorType.Value );
 			}
 			else
 			{

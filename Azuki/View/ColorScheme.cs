@@ -56,6 +56,29 @@ namespace Sgry.Azuki
 		{
 			SetDefault();
 		}
+
+		/// <summary>
+		/// Creates a copy of another instance.
+		/// </summary>
+		public ColorScheme( ColorScheme another )
+		{
+			Array.Copy( another._ForeColors, _ForeColors, _ForeColors.Length );
+			Array.Copy( another._BackColors, _BackColors, _BackColors.Length );
+			Array.Copy( another._MarkingDecorations, _MarkingDecorations, _MarkingDecorations.Length );
+			SelectionFore = another.SelectionFore;
+			SelectionBack = another.SelectionBack;
+			WhiteSpaceColor = another.WhiteSpaceColor;
+			EolColor = another.EolColor;
+			EofColor = another.EofColor;
+			HighlightColor = another.HighlightColor;
+			LineNumberFore = another.LineNumberFore;
+			LineNumberBack = another.LineNumberBack;
+			DirtyLineBar = another.DirtyLineBar;
+			CleanedLineBar = another.CleanedLineBar;
+			RightEdgeColor = another.RightEdgeColor;
+			MatchedBracketFore = another.MatchedBracketFore;
+			MatchedBracketBack = another.MatchedBracketBack;
+		}
 		#endregion
 
 		#region Operations
@@ -88,12 +111,17 @@ namespace Sgry.Azuki
 
 			foreach( int id in markingIDs )
 			{
-				styles.Add( _MarkingDecorations[id-1] );
+				styles.Add( _MarkingDecorations[id] );
 			}
 
 			return styles.ToArray();
 		}
 
+		/// <summary>
+		/// Gets decorations associated with marking IDs from bit mask (internal representation).
+		/// </summary>
+		/// <param name="markingBitMask">When this method returns, an array of decorations associated with markings represented by this bit mask will be retrieved.</param>
+		/// <returns>An array of decoration information, or an empty array.</returns>
 		public TextDecoration[] GetMarkingDecorations( uint markingBitMask )
 		{
 			List<TextDecoration> styles = new List<TextDecoration>( 8 );
@@ -110,9 +138,15 @@ namespace Sgry.Azuki
 			return styles.ToArray();
 		}
 
+		/// <summary>
+		/// Sets how text parts marked with specified ID should be decorated.
+		/// </summary>
 		public void SetMarkingDecoration( int markingID, TextDecoration decoration )
 		{
-			_MarkingDecorations[markingID-1] = decoration;
+			if( Marking.GetMarkingInfo(markingID) == null )
+				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+
+			_MarkingDecorations[markingID] = decoration;
 		}
 
 		/// <summary>

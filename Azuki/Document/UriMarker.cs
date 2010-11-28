@@ -168,6 +168,10 @@ namespace Sgry.Azuki
 
 		public int GetUriEnd( Document doc, int startIndex, out bool isMailAddress )
 		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( 0 <= startIndex );
+			DebugUtl.Assert( startIndex < doc.Length );
+
 			int index = startIndex;
 			int lineEnd;
 			char ch;
@@ -319,6 +323,10 @@ namespace Sgry.Azuki
 		/// <returns>Whether next character was valid as part of URI and successfully retrieved.</returns>
 		bool NextChar( Document doc, int index, out char ch )
 		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( 0 <= index );
+			DebugUtl.Assert( index < doc.Length );
+
 			if( doc.Length <= index )
 			{
 				ch = '\0';
@@ -341,6 +349,10 @@ namespace Sgry.Azuki
 
 		int GetMailToEnd( Document doc, int startIndex )
 		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( 0 <= startIndex );
+			DebugUtl.Assert( startIndex < doc.Length );
+
 			int index = startIndex;
 			int lineEnd;
 			char ch;
@@ -413,6 +425,10 @@ namespace Sgry.Azuki
 		#region Utilities
 		bool SchemeStartsFromHere( Document doc, int index )
 		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( 0 <= index );
+			DebugUtl.Assert( index < doc.Length );
+
 			foreach( string scheme in _SchemeTriggers )
 			{
 				if( StartsWith(doc, index, scheme) )
@@ -426,6 +442,11 @@ namespace Sgry.Azuki
 
 		bool StartsWith( Document doc, int index, string text )
 		{
+			DebugUtl.Assert( doc != null );
+			DebugUtl.Assert( 0 <= index );
+			DebugUtl.Assert( index < doc.Length );
+			DebugUtl.Assert( text != null );
+
 			for( int i=0; i<text.Length; i++ )
 			{
 				if( doc.Length <= (index + i)

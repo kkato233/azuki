@@ -1,7 +1,7 @@
 ﻿// file: MouseCursor.cs
 // brief: Type of mouse cursor's graphic.
 // author: YAMAMOTO Suguru
-// update: 2010-08-13
+// update: 2010-11-28
 //=========================================================
 
 namespace Sgry.Azuki
@@ -30,8 +30,8 @@ namespace Sgry.Azuki
 		Hand,
 
 		/// <summary>
-		/// Arrow with a small rectangle at tail of it.
-		/// Typical usage is expressing moving or copying data.
+		/// Arrow pointing up.
+		/// Typical usage is expressing moving data.
 		/// </summary>
 		DragAndDrop
 	}

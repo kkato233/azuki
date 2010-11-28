@@ -91,7 +91,7 @@ namespace Sgry.Azuki
 			// inherit other parameters
 			if( other != null )
 			{
-				this._ColorScheme = other._ColorScheme;
+				this._ColorScheme = new ColorScheme( other._ColorScheme );
 				this._DrawingOption = other._DrawingOption;
 				//DO_NOT//this._DirtBarWidth = other._DirtBarWidth;
 				//DO_NOT//this._HRulerFont = other._HRulerFont;

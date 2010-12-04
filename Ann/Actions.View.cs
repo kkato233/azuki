@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 using Sgry.Azuki;
-using Sgry.Azuki.Windows;
+using Sgry.Azuki.WinForms;
 
 namespace Sgry.Ann
 {

@@ -23,7 +23,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Static class containing hook delegates for auto-indentation.
 	/// </summary>
-	/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
+	/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
 	public static class AutoIndentHooks
 	{
 		/// <summary>
@@ -37,7 +37,7 @@ namespace Sgry.Azuki
 		/// on making a new line.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
 		public static readonly AutoIndentHook GenericHook = delegate( IUserInterface ui, char ch )
 		{
 			Document doc = ui.Document;
@@ -84,12 +84,12 @@ namespace Sgry.Azuki
 		///	newly generated line will be indented one more level
 		///	by inserting additional indent characters.
 		///	The additional indent characters will be chosen according to the value of
-		///	<see cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">AzukiControl.UsesTabForIndent</see>
+		///	<see cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">AzukiControl.UsesTabForIndent</see>
 		/// property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">AzukiControl.UsesTabForIndent property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">AzukiControl.UsesTabForIndent property</seealso>
 		public static readonly AutoIndentHook CHook = delegate( IUserInterface ui, char ch )
 		{
 			Document doc = ui.Document;

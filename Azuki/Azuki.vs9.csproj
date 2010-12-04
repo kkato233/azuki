@@ -98,11 +98,12 @@
     <Compile Include="View\View.cs" />
     <Compile Include="View\View.Paint.cs" />
     <Compile Include="View\ViewType.cs" />
-    <Compile Include="Windows\AzukiControl.cs">
+    <Compile Include="WinForms\AzukiControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Windows\PlatWin.cs" />
-    <Compile Include="Windows\WinApi.cs" />
+    <Compile Include="WinForms\PlatWin.cs" />
+    <Compile Include="WinForms\WinApi.cs" />
+    <Compile Include="WinForms\WinFormsMouseEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Azuki.snk" />

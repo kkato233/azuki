@@ -1,6 +1,6 @@
 ﻿#if TEST
 using System;
-using Sgry.Azuki.Windows;
+using Sgry.Azuki.WinForms;
 
 namespace Sgry.Azuki.Test
 {

@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-10-18
+// update: 2010-12-04
 //=========================================================
 using System;
 using System.Text;
@@ -640,10 +640,12 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Mouse Handling
-		internal void HandleMouseUp( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
+		internal void HandleMouseUp( IMouseEventArgs e )
 		{
 			if( _IsDisposed )
 				return;
+
+			Point pos = e.Location;
 
 			lock( this )
 			{
@@ -651,7 +653,7 @@ namespace Sgry.Azuki
 				{
 					// mouse button was raised during drag-editing
 					// so move originally selected text to where the cursor is at
-					HandleMouseUp_OnDragEditing( buttonIndex, pos, shift, ctrl, alt, win );
+					HandleMouseUp_OnDragEditing( e );
 				}
 				else if( _MouseDragEditDelayTimer != null )
 				{
@@ -666,9 +668,10 @@ namespace Sgry.Azuki
 			ClearDragState( pos );
 		}
 
-		void HandleMouseUp_OnDragEditing( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
+		void HandleMouseUp_OnDragEditing( IMouseEventArgs e )
 		{
 			int targetIndex;
+			Point pos = e.Location;
 
 			// calculate target position where the selected text is moved to
 			View.ScreenToVirtual( ref pos );
@@ -704,13 +707,14 @@ namespace Sgry.Azuki
 			}
 		}
 
-		internal void HandleMouseDown( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
+		internal void HandleMouseDown( IMouseEventArgs e )
 		{
 			if( _IsDisposed )
 				return;
 
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
+				Point pos = e.Location;
 				bool onLineNumberArea = false;
 
 				// if mouse-down coordinate is out of window, this is not a normal event so ignore this
@@ -729,7 +733,7 @@ namespace Sgry.Azuki
 				View.ScreenToVirtual( ref pos );
 				_MouseDownVirPos = pos;
 
-				if( buttonIndex == 0 ) // left click
+				if( e.ButtonIndex == 0 ) // left click
 				{
 					int clickedIndex;
 					bool onSelectedText;
@@ -747,7 +751,7 @@ namespace Sgry.Azuki
 					{
 						//--- line selection ---
 						_UI.SelectionMode = TextDataType.Line;
-						if( shift )
+						if( e.Shift )
 						{
 							//--- expanding line selection ---
 							// expand selection to one char next of clicked position
@@ -766,22 +770,22 @@ namespace Sgry.Azuki
 							Document.SetSelection( clickedIndex, clickedIndex, View );
 						}
 					}
-					else if( shift )
+					else if( e.Shift )
 					{
 						//--- expanding selection ---
-						_UI.SelectionMode = (ctrl) ? TextDataType.Words : TextDataType.Normal;
+						_UI.SelectionMode = (e.Control) ? TextDataType.Words : TextDataType.Normal;
 						Document.SetSelection(
 								Document.SelectionManager.OriginalAnchorIndex,
 								clickedIndex, View
 							);
 					}
-					else if( alt )
+					else if( e.Alt )
 					{
 						//--- rectangle selection ---
 						_UI.SelectionMode = TextDataType.Rectangle;
 						Document.SetSelection( clickedIndex, clickedIndex, View );
 					}
-					else if( ctrl )
+					else if( e.Control )
 					{
 						//--- expanding selection ---
 						_UI.SelectionMode = TextDataType.Words;
@@ -807,8 +811,10 @@ namespace Sgry.Azuki
 			}
 		}
 
-		internal void HandleDoubleClick( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
+		internal void HandleDoubleClick( IMouseEventArgs e )
 		{
+			Point pos = e.Location;
+
 			if( _IsDisposed )
 				return;
 			if( pos.X < 0 || pos.Y < 0 )
@@ -828,10 +834,12 @@ namespace Sgry.Azuki
 			Document.SetSelection( clickedIndex, clickedIndex, View );
 		}
 
-		internal void HandleMouseMove( int buttonIndex, Point pos, bool shift, bool ctrl, bool alt, bool win )
+		internal void HandleMouseMove( IMouseEventArgs e )
 		{
 			if( _IsDisposed )
 				return;
+
+			Point pos = e.Location;
 
 			// update mouse cursor graphic
 			ResetCursorGraphic( pos );
@@ -883,7 +891,7 @@ namespace Sgry.Azuki
 						rect.Width = DefaultCaretWidth;
 						_UI.UpdateCaretGraphic( rect );
 					}
-					else if( buttonIndex == 0 ) // left button
+					else if( e.ButtonIndex == 0 ) // left button
 					{
 						if( _MouseDragEditDelayTimer != null )
 						{

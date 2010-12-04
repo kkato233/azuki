@@ -406,7 +406,7 @@ namespace Sgry.Azuki
 		/// UNDO or REDO action in currently active document.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ClearHistory">AzukiControl.ClearHistory method</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.ClearHistory">AzukiControl.ClearHistory method</seealso>
 		void ClearHistory();
 
 		/// <summary>

@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Sgry.Azuki;
-using Sgry.Azuki.Windows;
+using Sgry.Azuki.WinForms;
 using InstalledFontCollection = System.Drawing.Text.InstalledFontCollection;
 using Highlighters = Sgry.Azuki.Highlighter.Highlighters;
 

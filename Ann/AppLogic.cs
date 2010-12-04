@@ -1,4 +1,4 @@
-// 2010-11-28
+// 2010-12-04
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Sgry.Azuki;
 using Sgry.Azuki.Highlighter;
-using Sgry.Azuki.Windows;
+using Sgry.Azuki.WinForms;
 using Assembly = System.Reflection.Assembly;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
 using Debug = System.Diagnostics.Debug;
@@ -117,6 +117,7 @@ namespace Sgry.Ann
 				_MainForm.Closing += MainForm_Closing;
 				_MainForm.Closed += MainForm_Closed;
 				_MainForm.Azuki.Resize += Azuki_Resize;
+				_MainForm.Azuki.Click += Azuki_Click;
 				_MainForm.Azuki.DoubleClick += Azuki_DoubleClick;
 				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 				_MainForm.TabPanel.Items = Documents;
@@ -1128,19 +1129,37 @@ namespace Sgry.Ann
 			}
 		}
 
+		void Azuki_Click( object sender, EventArgs e )
+		{
+			AzukiControl azuki = MainForm.Azuki;
+			AzukiDocument doc = azuki.Document;
+			IMouseEventArgs mea = (IMouseEventArgs)e;
+			int begin, end;
+
+			if( mea.Index < doc.Length
+				&& doc.IsMarked(mea.Index, Marking.Uri) )
+			{
+				// select entire URI
+				doc.GetMarkedRange( mea.Index, Marking.Uri, out begin, out end );
+				doc.SetSelection( begin, end );
+				mea.Handled = true;
+			}
+		}
+
 		void Azuki_DoubleClick( object sender, EventArgs e )
 		{
 			AzukiControl azuki = MainForm.Azuki;
 			AzukiDocument doc = azuki.Document;
+			IMouseEventArgs mea = (IMouseEventArgs)e;
 
-			if( doc.CaretIndex < doc.Length
-				&& doc.IsMarked(doc.CaretIndex, Marking.Uri) )
+			if( mea.Index < doc.Length
+				&& doc.IsMarked(mea.Index, Marking.Uri) )
 			{
 				string uriString;
 				DialogResult result;
 
 				// ask user to jump to the URI
-				uriString = azuki.Document.GetMarkedText( doc.CaretIndex, Marking.Uri );
+				uriString = azuki.Document.GetMarkedText( mea.Index, Marking.Uri );
 				if( uriString != null )
 				{
 					result = MessageBox.Show(
@@ -1154,6 +1173,7 @@ namespace Sgry.Ann
 					{
 						Process.Start( uriString, "" );
 					}
+					mea.Handled = true;
 				}
 			}
 		}

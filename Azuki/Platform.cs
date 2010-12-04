@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2010-07-13
+// update: 2010-12-04
 //=========================================================
 using System;
 using System.Text;
@@ -333,7 +333,7 @@ namespace Sgry.Azuki
 				if( _Plat == null )
 				{
 					if( IsWindows() )
-						_Plat = new Sgry.Azuki.Windows.PlatWin();
+						_Plat = new Sgry.Azuki.WinForms.PlatWin();
 					else
 						throw new NotSupportedException( "Not supported!" );
 				}
@@ -362,6 +362,62 @@ namespace Sgry.Azuki
 	        return (type != null);
 		}*/
 		#endregion
+	}
+
+	/// <summary>
+	/// Describes information about mouse event.
+	/// </summary>
+	public interface IMouseEventArgs
+	{
+		/// <summary>
+		/// Gets the index of the mouse button which invoked this event.
+		/// </summary>
+		int ButtonIndex { get; }
+
+		/// <summary>
+		/// Gets the index of the character at where the mouse cursor points when this event occurred.
+		/// </summary>
+		int Index { get; }
+
+		/// <summary>
+		/// Gets the location of the mouse cursor when this event occurred.
+		/// </summary>
+		Point Location { get; }
+
+		/// <summary>
+		/// Gets x-coordinate of the mouse cursor when this event occurred.
+		/// </summary>
+		int X { get; }
+
+		/// <summary>
+		/// Gets y-coordinate of the mouse cursor when this event occurred.
+		/// </summary>
+		int Y { get; }
+
+		/// <summary>
+		/// Gets whether Shift key was pressed down when this event occurred.
+		/// </summary>
+		bool Shift { get; }
+
+		/// <summary>
+		/// Gets whether Control key was pressed down when this event occurred.
+		/// </summary>
+		bool Control { get; }
+
+		/// <summary>
+		/// Gets whether Alt key was pressed down when this event occurred.
+		/// </summary>
+		bool Alt { get; }
+
+		/// <summary>
+		/// Gets whether Special key (Windows key) was pressed down when this event occurred.
+		/// </summary>
+		bool Special { get; }
+
+		/// <summary>
+		/// If set true by an event handler, Azuki does not execute built-in default action.
+		/// </summary>
+		bool Handled { get; set; }
 	}
 
 	/// <summary>

@@ -5,7 +5,7 @@ using System;
 namespace Sgry.Azuki.Test
 {
 	using Highlighter;
-	using Windows;
+	using WinForms;
 
 	static class KeywordHighlighterTest
 	{

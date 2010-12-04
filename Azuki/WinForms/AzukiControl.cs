@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
-// brief: User interface for WinForm framework (both Desktop and CE).
+// brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-11-28
+// update: 2010-12-04
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace Sgry.Azuki.Windows
+namespace Sgry.Azuki.WinForms
 {
 	using IHighlighter = Highlighter.IHighlighter;
 
@@ -36,6 +36,7 @@ namespace Sgry.Azuki.Windows
 		bool _UseCtrlTabToMoveFocus = true;
 		int _WheelPos = 0;
 		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
+		Point _LastMouseDownPos;
 #		if !PocketPC
 		bool _LastAltWasForRectSelect = false;
 #		else
@@ -908,7 +909,7 @@ namespace Sgry.Azuki.Windows
 		/// value as 'reasonable' avarage width of characters.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.View">AzukiControl.View property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.View">AzukiControl.View property</seealso>
 #		if !PocketPC
 		[Browsable(true)]
 		[Category("Appearance")]
@@ -975,7 +976,7 @@ namespace Sgry.Azuki.Windows
 		/// In overwrite mode, input character will not be inserted
 		/// but replaces the character at where the caret is on.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.OverwriteModeChanged">AzukiControl.OverwriteModeChanged event</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.OverwriteModeChanged">AzukiControl.OverwriteModeChanged event</seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1018,11 +1019,11 @@ namespace Sgry.Azuki.Windows
 		/// <remarks>
 		/// <para>
 		/// This property is a synonym of
-		/// <see cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
+		/// <see cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
 		/// property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.UsesTabForIndent">UsesTabForIndent</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">UsesTabForIndent</seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1069,7 +1070,7 @@ namespace Sgry.Azuki.Windows
 		///		</item>
 		/// </list>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.TabWidth">AzukiControl.TabWidth property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.TabWidth">AzukiControl.TabWidth property</seealso>
 		/// <seealso cref="Sgry.Azuki.Actions.BlockIndent">Actions.BlockIndent action</seealso>
 		/// <seealso cref="Sgry.Azuki.Actions.BlockUnIndent">Actions.BlockUnIndent action</seealso>
 #		if !PocketPC
@@ -1228,10 +1229,10 @@ namespace Sgry.Azuki.Windows
 		/// </para>
 		/// <para>
 		/// To get whether any UNDOable action exists or not,
-		/// use <see cref="Sgry.Azuki.Windows.AzukiControl.CanUndo">CanUndo</see> property.
+		/// use <see cref="Sgry.Azuki.WinForms.AzukiControl.CanUndo">CanUndo</see> property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.CanUndo">AzukiControl.CanUndo property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.CanUndo">AzukiControl.CanUndo property</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.Undo">Document.Undo method</seealso>
 		public void Undo()
 		{
@@ -1246,10 +1247,10 @@ namespace Sgry.Azuki.Windows
 		/// This property gets whether one or more UNDOable action exists or not.
 		/// </para>
 		/// <para>
-		/// To execute UNDO, use <see cref="Sgry.Azuki.Windows.AzukiControl.Undo">Undo</see> method.
+		/// To execute UNDO, use <see cref="Sgry.Azuki.WinForms.AzukiControl.Undo">Undo</see> method.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.Undo">AzukiControl.Undo method</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.Undo">AzukiControl.Undo method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.CanUndo">Document.CanUndo property</seealso>
 #		if !PocketPC
 		[Browsable(false)]
@@ -1687,7 +1688,7 @@ namespace Sgry.Azuki.Windows
 		/// <summary>
 		/// Occurs soon after the overwrite mode was changed.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.IsOverwriteMode">AzukiControl.IsOverwriteMode property</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.IsOverwriteMode">AzukiControl.IsOverwriteMode property</seealso>
 		public event EventHandler OverwriteModeChanged;
 
 		/// <summary>
@@ -1873,6 +1874,139 @@ namespace Sgry.Azuki.Windows
 		#endregion
 
 		#region GUI Event Handling
+		/// <summary>
+		/// Invokes MouseDown event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnMouseDown( MouseEventArgs e )
+		{
+			// set focus manually (this is needed to get focus by mouse click)
+			this.Focus();
+
+			// store information
+			_LastMouseDownPos = new Point( e.X, e.Y );
+
+			// invoke event
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
+			base.OnMouseDown( amea );
+			if( amea.Handled )
+			{
+				return;
+			}
+			if( _Impl == null )
+			{
+				return;
+			}
+
+			// do built-in action
+			_Impl.HandleMouseDown( amea );
+
+			// do Windows specific special actions
+#			if !PocketPC
+			if( amea.Alt )
+			{
+				// set flag to prevent opening menu
+				// by Alt key for rectangular selection mode
+				if( IsRectSelectMode )
+				{
+					_LastAltWasForRectSelect = true;
+				}
+			}
+#			endif
+		}
+
+		/// <summary>
+		/// Invokes MouseUp event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnMouseUp( MouseEventArgs e )
+		{
+			// invoke event
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
+			base.OnMouseUp( amea );
+			if( amea.Handled )
+			{
+				return;
+			}
+
+			// do built-in action
+			_Impl.HandleMouseUp( amea );
+		}
+
+#		if !PocketPC
+		/// <summary>
+		/// Invokes MouseClick event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnMouseClick( MouseEventArgs e )
+		{
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
+			base.OnMouseClick( amea );
+		}
+#		endif
+
+#		if !PocketPC
+		/// <summary>
+		/// Invokes MouseDoubleClick event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnMouseDoubleClick( MouseEventArgs e )
+		{
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
+			base.OnMouseDoubleClick( amea );
+		}
+#		endif
+
+		/// <summary>
+		/// Invokes Click event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnClick( EventArgs e )
+		{
+			// gather information about the event
+			MouseEventArgs mea = new MouseEventArgs(
+					MouseButtons.Left, 2, _LastMouseDownPos.X, _LastMouseDownPos.Y, 0
+				);
+
+			// invoke event
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, mea );
+			base.OnClick( amea );
+		}
+
+		/// <summary>
+		/// Invokes DoubleClick event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnDoubleClick( EventArgs e )
+		{
+			// gather information about the event
+			MouseEventArgs mea = new MouseEventArgs(
+					MouseButtons.Left, 2, _LastMouseDownPos.X, _LastMouseDownPos.Y, 0
+				);
+
+			// invoke event
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, mea );
+			base.OnDoubleClick( amea );
+			if( amea.Handled )
+			{
+				return;
+			}
+
+			// do built-in action
+			_Impl.HandleDoubleClick( amea );
+		}
+
+		/// <summary>
+		/// Invokes MouseMove event with additional information through IMouseEventArgs.
+		/// </summary>
+		protected override void OnMouseMove( MouseEventArgs e )
+		{
+			// invoke event
+			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
+			base.OnMouseMove( amea );
+			if( amea.Handled || _Impl == null )
+			{
+				return;
+			}
+			
+			// do built-in action
+			_Impl.HandleMouseMove( amea );
+		}
+
 		void HandleWheelEvent( int scrollOffset )
 		{
 			// get modifier key state
@@ -2258,10 +2392,10 @@ namespace Sgry.Azuki.Windows
 		/// <remarks>
 		/// This property gets or sets default foreground color.
 		/// Note that this is a synonym of
-		/// <see cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</see>.BackColor
+		/// <see cref="Sgry.Azuki.WinForms.AzukiControl.ColorScheme">AzukiControl.ColorScheme</see>.BackColor
 		/// .
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
 #		if !PocketPC
 		[DefaultValue(0xff000000)]
 #		endif
@@ -2289,10 +2423,10 @@ namespace Sgry.Azuki.Windows
 		/// <remarks>
 		/// This property gets or sets default background color.
 		/// Note that this is a synonym of
-		/// <see cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</see>.BackColor
+		/// <see cref="Sgry.Azuki.WinForms.AzukiControl.ColorScheme">AzukiControl.ColorScheme</see>.BackColor
 		/// .
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Windows.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.ColorScheme">AzukiControl.ColorScheme</seealso>
 #		if !PocketPC
 		[DefaultValue(0xfffffaf0)]
 #		endif
@@ -2483,76 +2617,6 @@ namespace Sgry.Azuki.Windows
 				{
 					HandleHScrollEvent( wParam.ToInt32() & 0xffff );
 				}
-				else if( WinApi.WM_MOUSEMOVE <= message && message <= WinApi.WM_LBUTTONDBLCLK )
-				{
-					//const int MK_LBUTTON	= 0x0001;
-					//const int MK_RBUTTON	= 0x0002;
-					const int MK_SHIFT		= 0x0004;
-					const int MK_CONTROL	= 0x0008;
-
-					Point mousePos = new Point();
-					int modFlag;
-					bool shift, ctrl, alt, win;
-					int buttonIndex;
-
-					// get mouse cursor pos
-					mousePos.X = (short)( (lParam.ToInt32()      ) & 0xffff );
-					mousePos.Y = (short)( (lParam.ToInt32() >> 16) & 0xffff );
-
-					// get modifier information
-					modFlag = wParam.ToInt32();
-					shift = (modFlag & MK_SHIFT) != 0;
-					ctrl = (modFlag & MK_CONTROL) != 0;
-					alt = WinApi.IsKeyDown( Keys.Menu );
-					win = WinApi.IsKeyDown( Keys.LWin ) || WinApi.IsKeyDown( Keys.RWin );
-
-					// get button which was used for this click
-					if( message == WinApi.WM_RBUTTONDOWN
-						|| message == WinApi.WM_LBUTTONDBLCLK )
-					{
-						buttonIndex = 1;
-					}
-					else/*if( message == WinApi.WM_LBUTTONDOWN
-						|| message == WinApi.WM_LBUTTONDBLCLK )*/
-					{
-						buttonIndex = 0;
-					}
-
-					// delegate
-					if( message == WinApi.WM_LBUTTONDBLCLK )
-					{
-						_Impl.HandleDoubleClick( buttonIndex, mousePos, shift, ctrl, alt, win );
-					}
-					else if( message == WinApi.WM_MOUSEMOVE )
-					{
-						_Impl.HandleMouseMove( buttonIndex, mousePos, shift, ctrl, alt, win );
-					}
-					else if( message == WinApi.WM_LBUTTONDOWN || message == WinApi.WM_RBUTTONDOWN )
-					{
-						// set focus manually (this is needed to get focus by mouse click)
-						this.Focus();
-
-						// handle mouse down event
-						_Impl.HandleMouseDown( buttonIndex, mousePos, shift, ctrl, alt, win );
-
-						// do Windows specific special actions
-#						if !PocketPC
-						if( alt )
-						{
-							// set flag to prevent opening menu
-							// by Alt key for rectangular selection mode
-							if( IsRectSelectMode )
-							{
-								_LastAltWasForRectSelect = true;
-							}
-						}
-#						endif
-					}
-					else if( message == WinApi.WM_LBUTTONUP || message == WinApi.WM_RBUTTONUP )
-					{
-						_Impl.HandleMouseUp( buttonIndex, mousePos, shift, ctrl, alt, win );
-					}
-				}
 				else if( message == WinApi.WM_MOUSEWHEEL )
 				{
 					// [*] on Vista x64, wParam value SHOULD be signed 64 bit like next:
@@ -2719,6 +2783,25 @@ namespace Sgry.Azuki.Windows
 		#region Utilities
 		static class Utl
 		{
+			public static WinFormsMouseEventArgs CreateWinFormsMouseEventArgs( IView view, MouseEventArgs e )
+			{
+				Point pt = new Point( e.X, e.Y );
+				view.ScreenToVirtual( ref pt );
+				int index = view.GetIndexFromVirPos( pt );
+
+				int clicks = 1;
+#				if !PocketPC
+				clicks = e.Clicks;
+#				endif
+
+				bool shift = WinApi.IsKeyDown( Keys.ShiftKey );
+				bool ctrl = WinApi.IsKeyDown( Keys.ControlKey );
+				bool alt = WinApi.IsKeyDown( Keys.Menu );
+				bool special = ( WinApi.IsKeyDown(Keys.LWin) || WinApi.IsKeyDown(Keys.RWin) );
+
+				return new WinFormsMouseEventArgs( e, index, clicks, shift, ctrl, alt, special );
+			}
+
 			public static int CalcOverwriteCaretWidth( IGraphics g, Document doc, View view, int caretIndex, bool isOverwriteMode )
 			{
 				int begin, end;

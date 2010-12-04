@@ -11,7 +11,7 @@ using Control = System.Windows.Forms.Control;
 using Marshal = System.Runtime.InteropServices.Marshal;
 using Debug = Sgry.DebugUtl;
 
-namespace Sgry.Azuki.Windows
+namespace Sgry.Azuki.WinForms
 {
 	/// <summary>
 	/// Platform API for Windows.

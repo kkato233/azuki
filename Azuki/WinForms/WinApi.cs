@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Debug = System.Diagnostics.Debug;
 
-namespace Sgry.Azuki.Windows
+namespace Sgry.Azuki.WinForms
 {
 	/// <summary>
 	/// Win32API wrapper for modules which is used only in the Windows environment.

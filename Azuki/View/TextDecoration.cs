@@ -82,7 +82,7 @@ namespace Sgry.Azuki
 	}
 
 	/// <summary>
-	/// - EXPERIMENTAL - Decorates text with an transparent rectangle.
+	/// - EXPERIMENTAL - Decorates text with a transparent rectangle.
 	/// </summary>
 	public class OutlineTextDecoration : TextDecoration
 	{

@@ -19,7 +19,7 @@ namespace Sgry.Azuki
 	/// </para>
 	/// <para>
 	/// ColorScheme is consisted with two major parts.
-	/// First part is a set of pairs of fore-ground color and back-ground color
+	/// First part is a set of pairs of foreground color and background color
 	/// associated with each <see cref="Sgry.Azuki.CharClass">CharClass</see>.
 	/// The view objects will reference this
 	/// to determine which color should be used for each token by its character-class.
@@ -32,7 +32,7 @@ namespace Sgry.Azuki
 	/// public properties of this class.
 	/// </para>
 	/// <para>
-	/// Note that if back-ground color for a CharClass except CharClass.Normal
+	/// Note that if background color for a CharClass except CharClass.Normal
 	/// was set to Color.Transparent,
 	/// Azuki uses the color of
 	/// <see cref="Sgry.Azuki.ColorScheme.BackColor">BackColor property</see>
@@ -94,15 +94,49 @@ namespace Sgry.Azuki
 		/// CharClass specified by parameter '<paramref name="klass"/>.'
 		/// </para>
 		/// <para>
-		/// Note that, although Azuki does not use actually set back-ground color value
+		/// Note that, although Azuki does not use actually set background color value
 		/// if it was Color.Transparent,
 		/// this method returns the actually set value (Color.Transparent) in the case.
 		/// </para>
 		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.SetColor">ColorScheme.SetColor method</seealso>
 		public void GetColor( CharClass klass, out Color fore, out Color back )
 		{
 			fore = _ForeColors[ (byte)klass ];
 			back = _BackColors[ (byte)klass ];
+		}
+
+		/// <summary>
+		/// Sets color pair for a character-class.
+		/// </summary>
+		/// <param name="klass">The color-pair associated with this character-class will be got.</param>
+		/// <param name="fore">Foreground color used to draw characters marked as the character-class.</param>
+		/// <param name="back">Background color used to draw characters marked as the character-class.</param>
+		/// <exception cref="System.ArgumentException">
+		///		Color.Transparent was set to CharClass.Normal.
+		///	</exception>
+		/// <remarks>
+		/// <para>
+		/// This method sets a pair of colors which is associated with
+		/// CharClass specified by parameter '<paramref name="klass"/>.'
+		/// </para>
+		/// <para>
+		/// Note that if Color.Transparent was set for background color
+		/// of a CharClass except CharClass.Normal,
+		/// Azuki uses the color of
+		/// <see cref="Sgry.Azuki.ColorScheme.BackColor">BackColor property</see>
+		/// for drawing tokens of the CharClass.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetColor">ColorScheme.GetColor method</seealso>
+		public void SetColor( CharClass klass, Color fore, Color back )
+		{
+			if( klass == CharClass.Normal
+				&& (fore == Color.Transparent || back == Color.Transparent) )
+				throw new ArgumentException( "foreground color or background color for CharClass.Normal must not be Color.Transparent." );
+
+			_ForeColors[ (byte)klass ] = fore;
+			_BackColors[ (byte)klass ] = back;
 		}
 
 		/// <summary>
@@ -116,6 +150,9 @@ namespace Sgry.Azuki
 		/// <exception cref="System.ArgumentException">
 		///		Parameter <paramref name="markingID"/> is not registered to Marking class.
 		///	</exception>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(int[])">ColorScheme.GetMarkingDecorations(int[]) method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(uint)">ColorScheme.GetMarkingDecorations(uint) method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.SetMarkingDecoration">ColorScheme.SetMarkingDecoration method</seealso>
 		public TextDecoration GetMarkingDecoration( int markingID )
 		{
 			if( Marking.GetMarkingInfo(markingID) == null )
@@ -141,6 +178,9 @@ namespace Sgry.Azuki
 		///		Parameter <paramref name="markingIDs"/> contains a value
 		///		which is not registered to Marking class.
 		///	</exception>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecoration">ColorScheme.GetMarkingDecoration method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(uint)">ColorScheme.GetMarkingDecorations(uint) method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.SetMarkingDecoration">ColorScheme.SetMarkingDecoration method</seealso>
 		public TextDecoration[] GetMarkingDecorations( int[] markingIDs )
 		{
 			if( markingIDs == null )
@@ -165,6 +205,9 @@ namespace Sgry.Azuki
 		///		represented by this bit mask will be retrieved.
 		/// </param>
 		/// <returns>An array of decoration information, or an empty array.</returns>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecoration">ColorScheme.GetMarkingDecoration method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(int[])">ColorScheme.GetMarkingDecorations(int[]) method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.SetMarkingDecoration">ColorScheme.SetMarkingDecoration method</seealso>
 		public TextDecoration[] GetMarkingDecorations( uint markingBitMask )
 		{
 			List<TextDecoration> styles = new List<TextDecoration>( Marking.MaxID+1 );
@@ -189,6 +232,9 @@ namespace Sgry.Azuki
 		///		TextDecoration object to be associated with <paramref name="markingID"/>.
 		///		If null was specified, TextDecoration.None will be used internally.
 		/// </param>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecoration">ColorScheme.GetMarkingDecoration method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(uint)">ColorScheme.GetMarkingDecorations(uint) method</seealso>
+		/// <seealso cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(int[])">ColorScheme.GetMarkingDecorations(int[]) method</seealso>
 		public void SetMarkingDecoration( int markingID, TextDecoration decoration )
 		{
 			if( Marking.GetMarkingInfo(markingID) == null )
@@ -199,38 +245,6 @@ namespace Sgry.Azuki
 				decoration = TextDecoration.None;
 			}
 			_MarkingDecorations[markingID] = decoration;
-		}
-
-		/// <summary>
-		/// Sets color pair for a character-class.
-		/// </summary>
-		/// <param name="klass">The color-pair associated with this character-class will be got.</param>
-		/// <param name="fore">Fore-ground color used to draw characters marked as the character-class.</param>
-		/// <param name="back">Back-ground color used to draw characters marked as the character-class.</param>
-		/// <exception cref="System.ArgumentException">
-		///		Color.Transparent was set to CharClass.Normal.
-		///	</exception>
-		/// <remarks>
-		/// <para>
-		/// This method sets a pair of colors which is associated with
-		/// CharClass specified by parameter '<paramref name="klass"/>.'
-		/// </para>
-		/// <para>
-		/// Note that if Color.Transparent was set for back-ground color
-		/// of a CharClass except CharClass.Normal,
-		/// Azuki uses the color of
-		/// <see cref="Sgry.Azuki.ColorScheme.BackColor">BackColor property</see>
-		/// for drawing tokens of the CharClass.
-		/// </para>
-		/// </remarks>
-		public void SetColor( CharClass klass, Color fore, Color back )
-		{
-			if( klass == CharClass.Normal
-				&& (fore == Color.Transparent || back == Color.Transparent) )
-				throw new ArgumentException( "fore-ground color or back-ground color for CharClass.Normal must not be Color.Transparent." );
-
-			_ForeColors[ (byte)klass ] = fore;
-			_BackColors[ (byte)klass ] = back;
 		}
 
 		/// <summary>
@@ -328,14 +342,14 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Foreground color of normal text.
 		/// </summary>
-		/// <exception cref="System.ArgumentException">Set value is Color.Transparent.</exception>
+		/// <exception cref="System.ArgumentException">Color.Transparent was set.</exception>
 		public Color ForeColor
 		{
 			get{ return _ForeColors[0]; }
 			set
 			{
 				if( value == Color.Transparent )
-					throw new ArgumentException( "fore-ground color for CharClass.Normal must not be Color.Transparent." );
+					throw new ArgumentException( "foreground color for CharClass.Normal must not be Color.Transparent." );
 				_ForeColors[0] = value;
 			}
 		}
@@ -343,14 +357,14 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Background color of normal text.
 		/// </summary>
-		/// <exception cref="System.ArgumentException">Set value is Color.Transparent.</exception>
+		/// <exception cref="System.ArgumentException">Color.Transparent was set.</exception>
 		public Color BackColor
 		{
 			get{ return _BackColors[0]; }
 			set
 			{
 				if( value == Color.Transparent )
-					throw new ArgumentException( "back-ground color for CharClass.Normal must not be Color.Transparent." );
+					throw new ArgumentException( "background color for CharClass.Normal must not be Color.Transparent." );
 				_BackColors[0] = value;
 			}
 		}

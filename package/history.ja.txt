@@ -24,6 +24,7 @@
  * mod: Azuki にフォーカスが無い間は、カーソル行を表すアンダーラインを表示しないように
  * mod: ダブルクリックで単語を選択する処理を改善
  * mod: Document.FindMatchedBracket に CDATA（コメント、文字列リテラルなど）中のインデックスを指定すると -1 を返すように
+ * mod: Sgry.Azuki.Windows 名前空間の名前を Sgry.Azuki.WinForms に変更
  * fix: GDI デバイスコンテキストを正しく使うように（使い方が正しくないとグラフィック描画が不正になることがある）
  * add: [Ann] 現在の編集モードをメニュー上でチェックするように
  * add: [Ann] ステータスバーを追加（.NET Compact Framework 環境では無効）

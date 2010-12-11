@@ -399,7 +399,7 @@ namespace Sgry.Azuki
 			else
 				dirtyState = LineDirtyState.Clean;
 
-			// choose back-ground color
+			// choose background color
 			if( dirtyState == LineDirtyState.Cleaned )
 			{
 				backColor = ColorScheme.CleanedLineBar;

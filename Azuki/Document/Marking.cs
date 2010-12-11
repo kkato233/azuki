@@ -1,5 +1,5 @@
 ﻿// file: Marking.cs
-// brief: Classes related to marking which indicates attributes apart from syntax and grammer.
+// brief: Classes related to marking which indicates attributes apart from syntax and grammar.
 // author: YAMAMOTO Suguru
 // update: 2010-11-28
 //=========================================================
@@ -111,15 +111,19 @@ namespace Sgry.Azuki
 
 	/// <summary>
 	/// Manager of marking information
-	/// which is to indicate attributes apart from syntax or grammer.
+	/// which is to indicate attributes apart from syntax or grammar.
 	/// </summary>
 	/// <remarks>
 	/// <para>
 	/// The 'marking' feature is provided for putting
 	/// additional (meta) information on text ranges
-	/// which is not related to syntax or grammer of document type.
-	/// Typical usage is to indicate misspelled words
-	/// or words where syntax error was detected.
+	/// which is not related to syntax or grammar of document type
+	/// such as XML file or C/C++ source.
+	/// One of the typical usages is to mark (put meta information on)
+	/// misspelled words as 'this word seems to be misspelled.'
+	/// Another typical usage is to mark
+	/// words at where compile error was detected as
+	/// 'compile error has been occurred here.'
 	/// </para>
 	/// <para>
 	/// Multiple markings can be put on any text part independently.
@@ -206,19 +210,48 @@ namespace Sgry.Azuki
 		/// <exception cref="System.ArgumentNullException">
 		///		Parameter <paramref name="info"/> is null.
 		///	</exception>
-		/// <exception cref="System.ArgumentException">
+		/// <exception cref="System.ArgumentOutOfRangeException">
 		///		ID of parameter <paramref name="info"/> is out of range.
 		///	</exception>
+		///	<seealso cref="Sgry.Azuki.Marking.Unregister">Marking.Unregister method</seealso>
 		public static void Register( MarkingInfo info )
 		{
 			if( info == null )
 				throw new ArgumentNullException( "info" );
 			if( info.ID <= 1 )
-				throw new ArgumentException( "Marking ID must be greater than 1. (info.ID:"+info.ID+")" );
+				throw new ArgumentOutOfRangeException( "Marking ID must be greater than 1. (info.ID:"+info.ID+")" );
 			if( MaxID <= info.ID )
-				throw new ArgumentException( "Marking ID must be less than "+MaxID+". (info.ID:"+info.ID+")" );
+				throw new ArgumentOutOfRangeException( "Marking ID must be less than "+MaxID+". (info.ID:"+info.ID+")" );
 
 			_MarkingInfoAry[info.ID] = info;
+		}
+
+		/// <summary>
+		/// Removes registation of a marking ID.
+		/// </summary>
+		/// <param name="id">The ID of the marking to be removed.</param>
+		/// <remarks>
+		/// <para>
+		/// This method removes registration of a marking information.
+		/// To register new marking information,
+		/// use <see cref="Sgry.Azuki.Marking.Register">Register</see> method.
+		/// </para>
+		/// <para>
+		/// This method cannot remove reserved marking IDs.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		///		ID of parameter <paramref name="info"/> is out of range.
+		///	</exception>
+		///	<seealso cref="Sgry.Azuki.Marking.Register">Marking.Register method</seealso>
+		public static void Unregister( int id )
+		{
+			if( id <= 1 )
+				throw new ArgumentOutOfRangeException( "Marking ID must be greater than 1. (id:"+id+")" );
+			if( MaxID <= id )
+				throw new ArgumentOutOfRangeException( "Marking ID must be less than "+MaxID+". (id:"+id+")" );
+
+			_MarkingInfoAry[id] = null;
 		}
 
 		/// <summary>

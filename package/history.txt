@@ -1,4 +1,4 @@
-== 1.6.0 (    -  -  ) ==
+== 1.6.0 (2010-12-11) ==
  * add: supported word wrap including kinsoku shori
  * add: supported marking feature
  * add: supported clickable URL feature (through marking feature)
@@ -32,6 +32,7 @@
  * fix: [Ann] font settings is not saved properly if the font is not TrueType font
  * fix: [Ann] now Ann can open files opened by other processes which allows to read it
  * fix: [Ann] corrected usage of 'GDI device context' which is system shared resource (incorrect usage might make graphics totally invalid)
+ * fix: [Ann] tagged as version 1.6.0
 
 == 1.5.8 (2010-11-27) ==
  * fix: in visual designer, ForeColor and BackColor property of AzukiControl cannot be changed

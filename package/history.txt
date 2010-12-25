@@ -1,3 +1,6 @@
+== 1.6.1 (    -  -  ) ==
+ * fix: improved logic to detect URI
+
 == 1.6.0 (2010-12-11) ==
  * add: supported word wrap including kinsoku shori
  * add: supported marking feature

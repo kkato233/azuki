@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2010-02-07
+// update: 2010-12-25
 //=========================================================
 using System;
 using System.IO;
@@ -458,6 +458,11 @@ namespace Sgry
 		{
 			if( obj.GetType() != typeof(T) )
 				throw new AssertException( "object type is not "+typeof(T).Name+" but "+obj.GetType()+"." );
+		}
+
+		public static void AssertExceptionType<T>( Exception ex )
+		{
+			AssertExceptionType( ex, typeof(T) );
 		}
 
 		public static void AssertExceptionType( Exception ex, Type type )

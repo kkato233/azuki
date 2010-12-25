@@ -15,6 +15,7 @@ namespace Sgry.Azuki.Test
 			LineLogicTest.Test();
 			DocumentTest.Test();
 			KeywordHighlighterTest.Test();
+			UriMarkerTest.Test();
 			
 			if( TestUtl.ErrorOccured )
 			{

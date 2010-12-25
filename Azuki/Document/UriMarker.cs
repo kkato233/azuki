@@ -1,11 +1,12 @@
 ﻿// file: UriMarker.cs
 // brief: a singleton class which marks URIs up in document.
 // author: YAMAMOTO Suguru
-// update: 2010-11-28
+// update: 2010-12-25
 //=========================================================
 using System;
 using System.Text;
 using System.Collections.Generic;
+using UnicodeCategory = System.Globalization.UnicodeCategory;
 
 namespace Sgry.Azuki
 {
@@ -17,7 +18,7 @@ namespace Sgry.Azuki
 		#region Fields
 		static UriMarker _Inst = null;
 		static DefaultWordProc _WordProc = new DefaultWordProc();
-		static string[] _SchemeTriggers = new string[] { "ftp://", "http://", "https://", "mailto:" };
+		static string[] _SchemeTriggers = new string[] { "file://", "ftp://", "http://", "https://", "mailto:" };
 		#endregion
 
 		#region Static members
@@ -172,9 +173,10 @@ namespace Sgry.Azuki
 
 		public int GetUriEnd( Document doc, int startIndex, out bool isMailAddress )
 		{
-			DebugUtl.Assert( doc != null );
-			DebugUtl.Assert( 0 <= startIndex );
-			DebugUtl.Assert( startIndex < doc.Length );
+			if( doc == null )
+				throw new ArgumentNullException( "doc" );
+			if( startIndex < 0 || doc.Length < startIndex )
+				throw new ArgumentOutOfRangeException( "startIndex" );
 
 			int index = startIndex;
 			int lineEnd;
@@ -188,14 +190,34 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( lineEnd <= doc.Length );
 
 		//scheme:
-			// parse scheme part
+			// parse first character of scheme part
+			if( index < lineEnd )
+			{
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
+				{
+					return -1;
+				}
+				if( ch == '/' || ch == '?' || ch == '#' || ch == ':' )
+				{
+					return -1;
+				}
+				scheme.Append( ch );
+
+				index++;
+			}
+			else
+			{
+				return -1;
+			}
+
+			// parse remainings of scheme part
 			while( index < lineEnd )
 			{
-				ch = doc[index++];
-				if( GetUriEnd_ValidChar(ch) )
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
 				{
-					scheme.Append( ch );
-					continue;
+					return -1;
 				}
 				if( ch == '/' || ch == '?' || ch == '#' )
 				{
@@ -205,50 +227,83 @@ namespace Sgry.Azuki
 				{
 					break;
 				}
-			}
+				scheme.Append( ch );
 
-			// if scheme is mailto, switch to mail address specific logic
-			if( index+1 < lineEnd
-				&& scheme.ToString() == "mailto" )
+				index++;
+			}
+			if( lineEnd <= index )
 			{
-				isMailAddress = true;
-				return GetMailToEnd( doc, index+1 );
+				return -1;
 			}
 
 		//colon:
 			// parse colon part
+			DebugUtl.Assert( doc[index] == ':' );
+			index++;
+
+			// if scheme is mailto, switch to mail address specific logic
+			if( scheme.ToString() == "mailto" )
+			{
+				isMailAddress = true;
+				return GetMailToEnd( doc, index );
+			}
+
+		//slash-1:
+			// parse slash part
 			if( index < lineEnd )
 			{
-				ch = doc[index++];
-				if( GetUriEnd_ValidChar(ch) == false
-					&& ch != '/' )
+				ch = doc[ index ];
+				if( ch != '/' )
 				{
 					return -1;
 				}
-			}
 
-		//slash:
-			// parse slash part
-			if( NextChar(doc, index++, out ch) == false )
+				index++;
+			}
+			else
 			{
 				return -1;
 			}
-			if( ch != '/' )
+
+		//slash-2:
+			// parse slash part
+			if( index < lineEnd )
+			{
+				ch = doc[ index ];
+				if( ch != '/' )
+				{
+					return -1;
+				}
+
+				index++;
+			}
+			else
 			{
 				return -1;
 			}
 
 		//authority:
 			// parse first character of authority part
-			if( NextChar(doc, index++, out ch) == false )
+			if( index < lineEnd )
+			{
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
+				{
+					return -1;
+				}
+
+				index++;
+			}
+			else
 			{
 				return -1;
 			}
 
 			// parse remainings of authority part
-			for( ; index<lineEnd; index++ )
+			while( index < lineEnd )
 			{
-				if( NextChar(doc, index, out ch) == false )
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
 				{
 					return index;
 				}
@@ -264,13 +319,16 @@ namespace Sgry.Azuki
 				{
 					goto fragment;
 				}
+
+				index++;
 			}
 
 		//path:
 			// parse path part
-			for( ; index<lineEnd; index++ )
+			while( index < lineEnd )
 			{
-				if( NextChar(doc, index, out ch) == false )
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
 				{
 					return index;
 				}
@@ -282,13 +340,16 @@ namespace Sgry.Azuki
 				{
 					goto fragment;
 				}
+
+				index++;
 			}
 
 		query:
 			// parse query part
-			for( ; index<lineEnd; )
+			while( index < lineEnd )
 			{
-				if( NextChar(doc, index++, out ch) == false )
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
 				{
 					return index;
 				}
@@ -296,16 +357,21 @@ namespace Sgry.Azuki
 				{
 					break; //goto fragment;
 				}
+
+				index++;
 			}
 
 		fragment:
 			// parse fragment part
-			for( ; index<lineEnd; index++ )
+			while( index < lineEnd )
 			{
-				if( NextChar(doc, index, out ch) == false )
+				ch = doc[ index ];
+				if( GetUriEnd_ValidChar(ch) == false )
 				{
 					return index;
 				}
+				 
+				index++;
 			}
 
 			return index;
@@ -313,53 +379,45 @@ namespace Sgry.Azuki
 
 		static bool GetUriEnd_ValidChar( char ch )
 		{
-			return ( 0x7f < ch
-					|| 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' // alpha
-					|| '0' <= ch && ch <= '9' // digit
-					|| ch == '-' || ch == '.' || ch == '_' || ch == '~' // 'unreserved' remainings
-					|| ch == '%' // pct-encoded
-					);//|| ch == ':' || ch == '/' || ch == '?' || ch == '#' );
-		}
-
-		/// <summary>
-		/// Gets next character.
-		/// </summary>
-		/// <returns>Whether next character was valid as part of URI and successfully retrieved.</returns>
-		bool NextChar( Document doc, int index, out char ch )
-		{
-			DebugUtl.Assert( doc != null );
-			DebugUtl.Assert( 0 <= index );
-			DebugUtl.Assert( index < doc.Length );
-
-			if( doc.Length <= index )
+			if( ch <= 0x7f )
 			{
-				ch = '\0';
+				if( 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' // alpha
+					|| '0' <= ch && ch <= '9' // digit
+					|| 0 <= "./_-?&=#%~!$*+,:;@\\^|".IndexOf(ch) )
+				{
+					return true;
+				}
 				return false;
 			}
-
-			ch = doc[index];
-			if( 0x7f < ch
-				|| 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' // alpha
-				|| '0' <= ch && ch <= '9' // digit
-				|| ch == '-' || ch == '.' || ch == '_' || ch == '~' // 'unreserved' remainings
-				|| ch == '%' // pct-encoded
-				|| ch == ':' || ch == '/' || ch == '?' || ch == '#' )
+			else
 			{
+				UnicodeCategory cat = Char.GetUnicodeCategory( ch );
+				if( cat == UnicodeCategory.ClosePunctuation
+					|| cat == UnicodeCategory.OpenPunctuation
+					|| cat == UnicodeCategory.ParagraphSeparator
+					|| cat == UnicodeCategory.SpaceSeparator
+					|| cat == UnicodeCategory.Format
+					|| 0 <= "\x3001\x3002".IndexOf(ch) )
+				{
+					return false;
+				}
 				return true;
 			}
-
-			return false;
 		}
 
-		int GetMailToEnd( Document doc, int startIndex )
+		public int GetMailToEnd( Document doc, int startIndex )
 		{
-			DebugUtl.Assert( doc != null );
-			DebugUtl.Assert( 0 <= startIndex );
-			DebugUtl.Assert( startIndex < doc.Length );
+			if( doc == null )
+				throw new ArgumentNullException( "doc" );
+			if( startIndex < 0 || doc.Length < startIndex )
+				throw new ArgumentOutOfRangeException( "startIndex" );
 
 			int index = startIndex;
 			int lineEnd;
 			char ch;
+
+			if( doc.Length <= startIndex )
+				return -1;
 
 			// prepare parsing
 			int lineHeadIndex = doc.GetLineHeadIndexFromCharIndex( startIndex );
@@ -367,30 +425,52 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( lineEnd <= doc.Length );
 
 		//local-part:
+			if( index < lineEnd )
+			{
+				ch = doc[index];
+				if( GetMailToEnd_IsLocalPartChar(ch) == false )
+				{
+					return -1;
+				}
+
+				index++;
+			}
 			while( index < lineEnd )
 			{
-				ch = doc[index++];
-				if( GetMailToEnd_IsLocalPartChar(ch) )
-				{
-					continue;
-				}
+				ch = doc[index];
 				if( ch == '@' )
 				{
 					break;
 				}
-				return -1;
-			}
+				if( GetMailToEnd_IsLocalPartChar(ch) == false )
+				{
+					return -1;
+				}
 
-			// do not mark if all characters consumed before starting domain part
+				index++;
+			}
 			if( lineEnd <= index )
 			{
 				return -1;
 			}
 
+		//at-mark:
+			DebugUtl.Assert( doc[index] == '@' );
+			index++;
+
 		//domain:
 			// parse first character of domain part
-			ch = doc[index];
-			if( GetMailToEnd_IsDomainChar(ch) == false )
+			if( index < lineEnd )
+			{
+				ch = doc[index];
+				if( GetMailToEnd_IsDomainChar(ch) == false )
+				{
+					return -1;
+				}
+
+				index++;
+			}
+			else
 			{
 				return -1;
 			}
@@ -404,7 +484,6 @@ namespace Sgry.Azuki
 					return index;
 				}
 
-				// go to next char
 				index++;
 			}
 
@@ -416,7 +495,7 @@ namespace Sgry.Azuki
 			return ('0' <= ch && ch <= '9')
 					|| ('A' <= ch && ch <= 'Z')
 					|| 'a' <= ch && ch <= 'z'
-					|| 0 <= "!#$%&'*+-/=?^_`{|}~".IndexOf(ch);
+					|| 0 <= ".-_!#$%&'*+/=?^`{|}~".IndexOf(ch);
 		}
 
 		static bool GetMailToEnd_IsDomainChar( char ch )

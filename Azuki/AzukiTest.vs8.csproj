@@ -81,6 +81,7 @@
     <Compile Include="Test\LineLogicTest.cs" />
     <Compile Include="Test\SplitArrayTest.cs" />
     <Compile Include="Test\TestDriver.cs" />
+    <Compile Include="Test\UriMarkerTest.cs" />
     <Compile Include="UiImpl.cs" />
     <Compile Include="UserPref.cs" />
     <Compile Include="View\ColorScheme.cs" />

@@ -147,6 +147,7 @@ namespace Sgry.Azuki
 		/// will be avoided to be placed at the end of a screen line.
 		/// </para>
 		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Null was specified.</exception>
 		/// <seealso cref="Sgry.Azuki.DefaultWordProc.EnableLineEndRestriction">DefaultWordProc.EnableLineEndRestriction property</seealso>
 		public virtual char[] CharsForbiddenToEndLine
 		{
@@ -154,9 +155,10 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value == null )
-					throw new InvalidOperationException("DefaultWordProc.CharsForbiddenToEndLine must not be null.");
+					throw new ArgumentNullException( "value", "DefaultWordProc.CharsForbiddenToEndLine must not be null." );
 
-				_CharsForbiddenToEndLine = value;
+				_CharsForbiddenToEndLine = (char[])value.Clone();
+				Array.Sort( _CharsForbiddenToEndLine );
 			}
 		}
 
@@ -190,6 +192,7 @@ namespace Sgry.Azuki
 		/// will be avoided to be placed at start of a screen line.
 		/// </para>
 		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Null was specified.</exception>
 		/// <seealso cref="Sgry.Azuki.DefaultWordProc.EnableLineHeadRestriction">DefaultWordProc.EnableLineHeadRestriction property</seealso>
 		public virtual char[] CharsForbiddenToStartLine
 		{
@@ -197,9 +200,10 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value == null )
-					throw new InvalidOperationException("DefaultWordProc.CharsForbiddenToStartLine must not be null.");
+					throw new ArgumentNullException( "value", "DefaultWordProc.CharsForbiddenToStartLine must not be null." );
 
-				_CharsForbiddenToStartLine = value;
+				_CharsForbiddenToStartLine = (char[])value.Clone();
+				Array.Sort( _CharsForbiddenToStartLine );
 			}
 		}
 
@@ -252,6 +256,8 @@ namespace Sgry.Azuki
 		/// <see cref="Sgry.Azuki.DefaultWordProc.EnableEolHanging">EnableEolHanging</see>.
 		/// </para>
 		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Null was specified.</exception>
+		/// <exception cref="System.ArgumentException">Specified value contains one or more EOL characters.</exception>
 		/// <seealso cref="Sgry.Azuki.DefaultWordProc.EnableCharacterHanging">DefaultWordProc.EnableCharacterHanging property</seealso>
 		/// <seealso cref="Sgry.Azuki.DefaultWordProc.EnableEolHanging">DefaultWordProc.EnableEolHanging property</seealso>
 		public virtual char[] CharsToBeHanged
@@ -260,9 +266,9 @@ namespace Sgry.Azuki
 			set
 			{
 				if( value == null )
-					throw new ArgumentNullException("value");
+					throw new ArgumentNullException( "value", "DefaultWordProc.CharsToBeHanged must not be null." );
 				if( 0 <= new String(value).IndexOfAny(LineLogic.EolChars) )
-					throw new ArgumentException("DefaultWordProc.CharsToBeHanged must not contains EOL codes.", "value");
+					throw new ArgumentException( "DefaultWordProc.CharsToBeHanged must not contain EOL codes.", "value" );
 
 				// keep a sorted copy of the value
 				_CharsToBeHanged = (char[])value.Clone();

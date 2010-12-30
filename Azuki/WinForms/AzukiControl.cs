@@ -20,6 +20,30 @@ namespace Sgry.Azuki.WinForms
 	/// Azuki user interface for Windows.Forms framework
 	/// (.NET Compact Framework compatible).
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// AzukiControl class is a GUI component class provided for Windows.Forms framework.
+	/// In programming of Windows.Forms framework,
+	/// this class will be the most important class
+	/// and thus very basic operations in Azuki can be done through this class.
+	/// </para>
+	/// <para>
+	/// AzukiControl class is designed to cooperate with Microsoft Visual Studio
+	/// so that it can be added to toolbox of visual designer.
+	/// Once AzukiControl was added to toolbox,
+	/// it can be used like standard GUI components such as System.Windows.Forms.Button;
+	/// placing and layout with drag&amp;drop or resizing by dragging edge of component and so on.
+	/// </para>
+	/// <para>
+	/// AzukiControl is an implementation of IUserInterface
+	/// which expresses the user interface
+	/// (front-end which directly interact with user action)
+	/// of Azuki engine.
+	/// Although currently there is no other implementation for other framework or platform,
+	/// If programmer want to make platform independent program,
+	/// using AzukiControl through IUserInterface will be much appropriate.
+	/// </para>
+	/// </remarks>
 	public class AzukiControl : Control, IUserInterface
 	{
 		#region Types, Constants and Fields
@@ -956,7 +980,7 @@ namespace Sgry.Azuki.WinForms
 		}
 		#endregion
 
-		#region IUserInterface - Behavior
+		#region IUserInterface - Behavior and Modes
 		/// <summary>
 		/// Gets or sets whether this document is read-only or not.
 		/// </summary>
@@ -1211,6 +1235,11 @@ namespace Sgry.Azuki.WinForms
 		/// where the caret was placed before user typed text.
 		/// </para>
 		/// </remarks>
+#		if !PocketPC
+		[Category("Behavior")]
+		[DefaultValue(false)]
+		[Description("If this is true, carets tries to keep its desired column position unless user explicitly changes it.")]
+#		endif
 		public bool UsesStickyCaret
 		{
 			get{ return _Impl.UsesStickyCaret; }
@@ -1419,9 +1448,9 @@ namespace Sgry.Azuki.WinForms
 		/// the desired column.
 		/// </para>
 		/// <para>
-		/// The desired column is the column index
-		/// that Azuki tries to set next caret position
-		/// when the caret moves up or down.
+		/// Normally the caret tries to keep its x-coordinate
+		/// on moving line to line unless user explicitly changes x-coordinate of it.
+		/// The term 'Desired Column' means this x-coordinate which the caret tries to stick close to.
 		/// </para>
 		/// </remarks>
 		public void SetSelection( int anchor, int caret )

@@ -1,4 +1,4 @@
-// 2010-12-04
+// 2010-12-26
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1171,7 +1171,14 @@ namespace Sgry.Ann
 						);
 					if( result == DialogResult.OK )
 					{
-						Process.Start( uriString, "" );
+						try
+						{
+							Process.Start( uriString, "" );
+						}
+						catch( Exception ex )
+						{
+							MessageBox.Show( ex.Message );
+						}
 					}
 					mea.Handled = true;
 				}

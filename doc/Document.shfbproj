@@ -62,7 +62,7 @@
       <NamespaceSummaryItem name="Sgry" isDocumented="False" xmlns="" />
       <NamespaceSummaryItem name="Sgry.Azuki" isDocumented="True" xmlns="">This namespace contains platform-independent classes of Azuki.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Sgry.Azuki.Highlighter" isDocumented="True" xmlns="">This namespace contains classes for syntax highlighter.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Sgry.Azuki.Windows" isDocumented="True" xmlns="">This namespace contains Windows specific classes.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Sgry.Azuki.WinForms" isDocumented="True" xmlns="">This namespace contains Windows.Forms framework specific classes.</NamespaceSummaryItem>
     </NamespaceSummaries>
     <FeedbackEMailAddress>sgryjp%40gmail.com</FeedbackEMailAddress>
   </PropertyGroup>

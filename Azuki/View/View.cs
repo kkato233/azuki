@@ -711,10 +711,12 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// When the caret moves up or down,
-		/// Azuki tries to set next caret's column index to this value.
-		/// Note that "desired column" is associated with each document
-		/// so this value may change when Document property was set to another document.
+		/// Normally the caret tries to keep its x-coordinate
+		/// on moving line to line unless user explicitly changes x-coordinate of it.
+		/// The term 'Desired Column' means this x-coordinate which the caret tries to stick close to.
+		/// </para>
+		/// <para>
+		/// Note that the desired column is associated with each document.
 		/// </para>
 		/// </remarks>
 		public void SetDesiredColumn( IGraphics g )
@@ -727,8 +729,12 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// When the caret moves up or down,
-		/// Azuki tries to set next caret's column index to this value.
+		/// Normally the caret tries to keep its x-coordinate
+		/// on moving line to line unless user explicitly changes x-coordinate of it.
+		/// The term 'Desired Column' means this x-coordinate which the caret tries to stick close to.
+		/// </para>
+		/// <para>
+		/// Note that the desired column is associated with each document.
 		/// </para>
 		/// </remarks>
 		public int GetDesiredColumn()

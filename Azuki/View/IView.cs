@@ -211,8 +211,14 @@ namespace Sgry.Azuki
 		/// Sets column index of the current caret position to "desired column" value.
 		/// </summary>
 		/// <remarks>
-		/// When the caret moves up or down,
-		/// Azuki tries to set next caret's column index to this value.
+		/// <para>
+		/// Normally the caret tries to keep its x-coordinate
+		/// on moving line to line unless user explicitly changes x-coordinate of it.
+		/// The term 'Desired Column' means this x-coordinate which the caret tries to stick close to.
+		/// </para>
+		/// <para>
+		/// Note that the desired column is associated with each document.
+		/// </para>
 		/// </remarks>
 		void SetDesiredColumn();
 
@@ -220,8 +226,14 @@ namespace Sgry.Azuki
 		/// Gets current "desired column" value.
 		/// </summary>
 		/// <remarks>
-		/// When the caret moves up or down,
-		/// Azuki tries to set next caret's column index to this value.
+		/// <para>
+		/// Normally the caret tries to keep its x-coordinate
+		/// on moving line to line unless user explicitly changes x-coordinate of it.
+		/// The term 'Desired Column' means this x-coordinate which the caret tries to stick close to.
+		/// </para>
+		/// <para>
+		/// Note that the desired column is associated with each document.
+		/// </para>
 		/// </remarks>
 		int GetDesiredColumn();
 		#endregion

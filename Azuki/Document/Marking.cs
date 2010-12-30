@@ -1,7 +1,7 @@
 ﻿// file: Marking.cs
 // brief: Classes related to marking which indicates attributes apart from syntax and grammar.
 // author: YAMAMOTO Suguru
-// update: 2010-11-28
+// update: 2010-12-30
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -130,10 +130,9 @@ namespace Sgry.Azuki
 	/// To mark up text parts or remove already marked IDs from text parts,
 	/// use <see cref="Sgry.Azuki.Document.Mark">Document.Mark method</see>
 	/// and <see cref="Sgry.Azuki.Document.Unmark(int, int, int)">Document.Unmark method</see>.
-	/// 
 	/// Once a text part was marked, it will graphically be decorated
 	/// as specified by <see cref="Sgry.Azuki.ColorScheme"/> class.
-	/// To get or set how marked text will be decorated, use method next.
+	/// To get or set how marked text will be decorated, use methods next.
 	/// </para>
 	/// <list type="bullet">
 	///		<item><see cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(int[])">ColorScheme.GetMarkingDecorations(int[]) method</see></item>
@@ -150,8 +149,11 @@ namespace Sgry.Azuki
 	/// ColorScheme.GetMarkingDecorations method</see>.
 	/// </para>
 	/// <para>
-	/// Marking ID '0' is reserved and used to mark URI internally.
-	/// Users can use ID from 1 to 7 for any use.
+	/// Note that marking ID '0' is used by built-in URI marker to mark URIs.
+	/// Although the meaning of ID 0 can be overwritten
+	/// with <see cref="Sgry.Azuki.Marking.Register">Register</see> method,
+	/// doing so is discouraged
+	/// unless the programmer wants to create and use URI marker by his/her own.
 	/// </para>
 	/// </remarks>
 	/// <seealso cref="Sgry.Azuki.MarkingInfo">MarkingInfo class</seealso>
@@ -199,13 +201,12 @@ namespace Sgry.Azuki
 		/// If specified ID was already registered, existing information will be overwritten.
 		/// </para>
 		/// <para>
-		/// Note that there are reserved marking IDs
-		/// which cannot be changed by user.
-		/// Next marking IDs are currently reserved.
+		/// Note that marking ID '0' is used by built-in URI marker to mark URIs.
+		/// Although the meaning of ID 0 can be overwritten
+		/// with this method,
+		/// doing so is discouraged
+		/// unless the programmer wants to create and use URI marker by his/her own.
 		/// </para>
-		/// <list type="bullet">
-		///		<item>0: URI</item>
-		/// </list>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">
 		///		Parameter <paramref name="info"/> is null.
@@ -218,8 +219,8 @@ namespace Sgry.Azuki
 		{
 			if( info == null )
 				throw new ArgumentNullException( "info" );
-			if( info.ID <= 1 )
-				throw new ArgumentOutOfRangeException( "Marking ID must be greater than 1. (info.ID:"+info.ID+")" );
+			if( info.ID < 0 )
+				throw new ArgumentOutOfRangeException( "Marking ID must be equal to or greater than 0. (info.ID:"+info.ID+")" );
 			if( MaxID <= info.ID )
 				throw new ArgumentOutOfRangeException( "Marking ID must be less than "+MaxID+". (info.ID:"+info.ID+")" );
 

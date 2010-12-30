@@ -1,7 +1,7 @@
 ﻿// file: ViewParam.cs
 // brief: Parameters associated with each document used internally by View and UiImpl.
 // author: YAMAMOTO Suguru
-// update: 2010-08-25
+// update: 2010-12-26
 //=========================================================
 using System;
 
@@ -40,6 +40,8 @@ namespace Sgry.Azuki
 		public int MatchedBracketIndex1 = 0;
 		/// <summary>Index of the lastly found matched bracket used to redraw previously highlighted bracket.</summary>
 		public int MatchedBracketIndex2 = -1;
+		/// <summary>Whether to mark URIs in the document with built-in URI marker or not.</summary>
+		public bool MarksUri = true;
 		#endregion
 
 		#region Init / Dispose

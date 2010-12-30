@@ -1,7 +1,7 @@
 ﻿// file: UriMarker.cs
 // brief: a singleton class which marks URIs up in document.
 // author: YAMAMOTO Suguru
-// update: 2010-12-25
+// update: 2010-12-26
 //=========================================================
 using System;
 using System.Text;
@@ -72,6 +72,9 @@ namespace Sgry.Azuki
 			int lineHead, lineEnd;
 			bool shouldBeRedrawn;
 
+			if( doc.ViewParam.MarksUri == false )
+				return;
+
 			// update marking in this line
 			lineIndex = doc.GetLineIndexFromCharIndex( e.Index );
 			shouldBeRedrawn = MarkOneLine( doc, lineIndex );
@@ -88,6 +91,9 @@ namespace Sgry.Azuki
 		public void UI_LineDrawing( object sender, LineDrawEventArgs e )
 		{
 			IUserInterface ui = (IUserInterface)sender;
+
+			if( ui.Document.MarksUri == false )
+				return;
 
 			// scan a logical line only when the event has occurred at 
 			int scrernLineHeadIndex = ui.View.GetLineHeadIndex( e.LineIndex );
@@ -135,7 +141,7 @@ namespace Sgry.Azuki
 				if( SchemeStartsFromHere(doc, seekIndex) )
 				{
 					bool isMailAddress;
-					int uriEnd = UriMarker.Inst.GetUriEnd( doc, seekIndex, out isMailAddress );
+					int uriEnd = GetUriEnd( doc, seekIndex, out isMailAddress );
 					if( 0 < uriEnd )
 					{
 						// clear marking before this URI part

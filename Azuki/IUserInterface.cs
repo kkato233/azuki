@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-11-14
+// update: 2010-12-26
 //=========================================================
 using System;
 using System.Drawing;
@@ -378,6 +378,15 @@ namespace Sgry.Azuki
 		/// </para>
 		/// </remarks>
 		bool UsesStickyCaret
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether URIs in the active document
+		/// should be marked automatically with built-in URI marker or not.
+		/// </summary>
+		bool MarksUri
 		{
 			get; set;
 		}

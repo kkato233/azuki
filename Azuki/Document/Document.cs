@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-11-28
+// update: 2010-12-30
 //=========================================================
 using System;
 using System.Collections;
@@ -1288,6 +1288,29 @@ namespace Sgry.Azuki
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 
 			return (uint)_Buffer.Marks[index];
+		}
+
+		/// <summary>
+		/// Gets or sets whether URIs in this document
+		/// should be marked automatically with built-in URI marker or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Note that built-in URI marker marks URIs in document
+		/// and then Azuki shows the URIs as 'looks like URI,'
+		/// but (1) clicking mouse button on them, or
+		/// (2) pressing keys when the caret is at middle of a URI,
+		/// makes NO ACTION BY DEFAULT.
+		/// To define action on such event,
+		/// programmer must implement such action as a part of 
+		/// event handler of standard mouse event or keyboard event.
+		/// Please refer to the <see cref="Sgry.Azuki.Marking">document of marking feature</see> for details.
+		/// </para>
+		/// </remarks>
+		public bool MarksUri
+		{
+			get{ return _ViewParam.MarksUri; }
+			set{ _ViewParam.MarksUri = value; }
 		}
 		#endregion
 

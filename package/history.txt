@@ -1,5 +1,6 @@
 == 1.6.1 (    -  -  ) ==
  * fix: improved logic to detect URI
+ * fix: built-in URI marker now can be disabled through AzukiControl.MarksUri property or Document.MarksUri property
  * fix: bug of kinsoku shori: some of the characters in CharsForbiddenToStartLine or CharsForbiddenToEndLine of DefaultWordProcforbidden can be ignored if unsorted character array was set to them
 
 == 1.6.0 (2010-12-11) ==

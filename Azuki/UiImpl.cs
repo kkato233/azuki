@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-12-04
+// update: 2010-12-30
 //=========================================================
 using System;
 using System.Text;
@@ -249,6 +249,37 @@ namespace Sgry.Azuki
 		{
 			get{ return _UsesStickyCaret; }
 			set{ _UsesStickyCaret = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether URIs in the active document
+		/// should be marked automatically with built-in URI marker or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Note that built-in URI marker marks URIs in document
+		/// and then Azuki shows the URIs as 'looks like URI,'
+		/// but (1) clicking mouse button on them, or
+		/// (2) pressing keys when the caret is at middle of a URI,
+		/// makes NO ACTION BY DEFAULT.
+		/// To define action on such event,
+		/// programmer must implement such action as a part of
+		/// event handler of standard mouse event or keyboard event.
+		/// </para>
+		/// </remarks>
+		public bool MarksUri
+		{
+			get{ return _Document.MarksUri; }
+			set
+			{
+				_Document.MarksUri = value;
+				if( value )
+				{
+					// force mark URIs on drawing area
+					// by invalidating whole area and invoking owner draw events
+					_UI.Invalidate();
+				}
+			}
 		}
 
 		/// <summary>
@@ -1102,7 +1133,10 @@ namespace Sgry.Azuki
 			Debug.Assert( _IsDisposed == false );
 
 			// delegate to URI marker object
-			UriMarker.Inst.HandleContentChanged( this, e );
+			if( _Document.MarksUri )
+			{
+				UriMarker.Inst.HandleContentChanged( this, e );
+			}
 
 			// delegate to view object
 			View.HandleContentChanged( sender, e );

@@ -170,12 +170,15 @@ namespace Sgry.Azuki
 		/// THIS MUST BE CALLED BEFORE ACTUAL INSERTION.
 		/// </summary>
 		public static void LHI_Insert(
-				SplitArray<int> lhi, SplitArray<LineDirtyState> lms, TextBuffer text, string insertText, int insertIndex
+				SplitArray<int> lhi,
+				SplitArray<LineDirtyState> lds,
+				TextBuffer text,
+				string insertText, int insertIndex
 			)
 		{
 			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0, "lhi must have 0 as a first member." );
-			DebugUtl.Assert( lms != null && 0 < lms.Count, "lms must have at one or more items." );
-			DebugUtl.Assert( lhi.Count == lms.Count, "lhi.Count("+lhi.Count+") is not lms.Count("+lms.Count+")" );
+			DebugUtl.Assert( lds != null && 0 < lds.Count, "lds must have at one or more items." );
+			DebugUtl.Assert( lhi.Count == lds.Count, "lhi.Count("+lhi.Count+") is not lds.Count("+lds.Count+")" );
 			DebugUtl.Assert( insertText != null && 0 < insertText.Length, "insertText must not be null nor empty." );
 			DebugUtl.Assert( 0 <= insertIndex && insertIndex <= text.Count, "insertIndex is out of range ("+insertIndex+")." );
 			int insTargetLine, dummy;
@@ -193,7 +196,7 @@ namespace Sgry.Azuki
 				&& insertIndex < text.Count && text[insertIndex] == '\n' )
 			{
 				lhi.Insert( lineIndex+1, insertIndex );
-				lms.Insert( lineIndex+1, LineDirtyState.Dirty );
+				lds.Insert( lineIndex+1, LineDirtyState.Dirty );
 				lineIndex++;
 			}
 
@@ -203,7 +206,7 @@ namespace Sgry.Azuki
 				&& 0 < insertText.Length && insertText[0] == '\n' )
 			{
 				lhi.RemoveAt( lineIndex );
-				lms.RemoveAt( lineIndex );
+				lds.RemoveAt( lineIndex );
 				lineIndex--;
 			}
 
@@ -221,7 +224,7 @@ namespace Sgry.Azuki
 					break;
 				}
 				lhi.Insert( lineIndex+insLineCount, insertIndex+lineEndIndex+1 );
-				lms.Insert( lineIndex+insLineCount, LineDirtyState.Dirty );
+				lds.Insert( lineIndex+insLineCount, LineDirtyState.Dirty );
 				insLineCount++;
 
 				// find next line head
@@ -236,7 +239,7 @@ namespace Sgry.Azuki
 			{
 				int lastInsertedLine = lineIndex + insLineCount - 1;
 				lhi.RemoveAt( lastInsertedLine );
-				lms.RemoveAt( lastInsertedLine );
+				lds.RemoveAt( lastInsertedLine );
 				lineIndex--;
 			}
 
@@ -258,11 +261,11 @@ namespace Sgry.Azuki
 				// mark not calculated insertion target line
 				// but the line at one line before.
 				DebugUtl.Assert( 0 < insTargetLine );
-				lms[insTargetLine-1] = LineDirtyState.Dirty;
+				lds[insTargetLine-1] = LineDirtyState.Dirty;
 			}
 			else
 			{
-				lms[insTargetLine] = LineDirtyState.Dirty;
+				lds[insTargetLine] = LineDirtyState.Dirty;
 			}
 		}
 		
@@ -271,12 +274,15 @@ namespace Sgry.Azuki
 		/// THIS MUST BE CALLED BEFORE ACTUAL DELETION.
 		/// </summary>
 		public static void LHI_Delete(
-				SplitArray<int> lhi, SplitArray<LineDirtyState> lms, TextBuffer text, int delBegin, int delEnd
+				SplitArray<int> lhi,
+				SplitArray<LineDirtyState> lds,
+				TextBuffer text,
+				int delBegin, int delEnd
 			)
 		{
 			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0, "lhi must have 0 as a first member." );
-			DebugUtl.Assert( lms != null && 0 < lms.Count, "lms must have one or more items." );
-			DebugUtl.Assert( lhi.Count == lms.Count, "lhi.Count("+lhi.Count+") is not lms.Count("+lms.Count+")" );
+			DebugUtl.Assert( lds != null && 0 < lds.Count, "lds must have one or more items." );
+			DebugUtl.Assert( lhi.Count == lds.Count, "lhi.Count("+lhi.Count+") is not lds.Count("+lds.Count+")" );
 			DebugUtl.Assert( 0 <= delBegin && delBegin < text.Count, "delBegin is out of range." );
 			DebugUtl.Assert( delBegin <= delEnd && delEnd <= text.Count, "delEnd is out of range." );
 			int delFirstLine;
@@ -295,7 +301,7 @@ namespace Sgry.Azuki
 				{
 					// if the deletion creates a new CR+LF, delete an entry of the CR
 					lhi.RemoveAt( delToL );
-					lms.RemoveAt( delToL );
+					lds.RemoveAt( delToL );
 					delToL--;
 				}
 				else if( text[delBegin] == '\n' )
@@ -303,7 +309,7 @@ namespace Sgry.Azuki
 					// if the deletion divides a CR+LF at left side of deletion range,
 					// insert an entry for the CR
 					lhi.Insert( delToL, delBegin );
-					lms.Insert( delToL, LineDirtyState.Dirty );
+					lds.Insert( delToL, LineDirtyState.Dirty );
 					delFromL++;
 					delToL++;
 				}
@@ -319,7 +325,7 @@ namespace Sgry.Azuki
 			if( delFromL < delToL )
 			{
 				lhi.RemoveRange( delFromL+1, delToL+1 );
-				lms.RemoveRange( delFromL+1, delToL+1 );
+				lds.RemoveRange( delFromL+1, delToL+1 );
 			}
 
 			// mark the deletion target line as 'dirty'
@@ -333,11 +339,11 @@ namespace Sgry.Azuki
 				// the line containing the existing CR,
 				// mark not calculated deletion target line
 				// but the line at one line before.
-				lms[delFirstLine-1] = LineDirtyState.Dirty;
+				lds[delFirstLine-1] = LineDirtyState.Dirty;
 			}
 			else
 			{
-				lms[delFirstLine] = LineDirtyState.Dirty;
+				lds[delFirstLine] = LineDirtyState.Dirty;
 			}
 		}
 		#endregion

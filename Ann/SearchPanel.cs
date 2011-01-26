@@ -1,4 +1,4 @@
-// 2010-07-13
+// 2011-01-26
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -150,7 +150,6 @@ namespace Sgry.Ann
 		#region UI Properties
 		public void SetFont( Font value )
 		{
-			IGraphics gra;
 			Size labelSize = new Size();
 
 			// apply fonts
@@ -159,28 +158,30 @@ namespace Sgry.Ann
 			_Azuki_Pattern.Font = new Font( value.Name, value.Size-1, value.Style );
 
 			// calculate size of child controls
-			gra = Plat.Inst.GetGraphics( _Label_Pattern );
-			gra.Font = value;
-			labelSize.Width = gra.MeasureText( _Label_Pattern.Text ).Width + 2;
-			labelSize.Height = gra.MeasureText( "Mp" ).Height;
-			_Label_Pattern.Size = labelSize;
-			_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height );
-			_Button_Next.Size = new Size( gra.MeasureText(_Button_Next.Text).Width+2, labelSize.Height );
-			_Button_Prev.Size = new Size( gra.MeasureText(_Button_Prev.Text).Width+2, labelSize.Height );
-			_Check_MatchCase.Size = new Size(
-				gra.MeasureText(_Check_MatchCase.Text).Width + labelSize.Height,
-				labelSize.Height
-			);
-			_Check_Regex.Size = new Size(
-				gra.MeasureText(_Check_Regex.Text).Width + labelSize.Height,
-				labelSize.Height
-			);
-			_Panel_TextBox.Height
-				= _Panel_Options.Height
-				= _Panel_Actions.Height = _Label_Pattern.Height + 2;
-			_Panel_TextBox.Width = _Label_Pattern.Width + _Azuki_Pattern.Width + 2;
-			_Panel_Actions.Width = _Button_Next.Width + _Button_Prev.Width + 4;
-			_Panel_Options.Width = _Check_MatchCase.Width + _Check_Regex.Width + 2;
+			using( IGraphics g = Plat.Inst.GetGraphics(_Label_Pattern) )
+			{
+				g.Font = value;
+				labelSize.Width = g.MeasureText( _Label_Pattern.Text ).Width + 2;
+				labelSize.Height = g.MeasureText( "Mp" ).Height;
+				_Label_Pattern.Size = labelSize;
+				_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height );
+				_Button_Next.Size = new Size( g.MeasureText(_Button_Next.Text).Width+2, labelSize.Height );
+				_Button_Prev.Size = new Size( g.MeasureText(_Button_Prev.Text).Width+2, labelSize.Height );
+				_Check_MatchCase.Size = new Size(
+					g.MeasureText(_Check_MatchCase.Text).Width + labelSize.Height,
+					labelSize.Height
+				);
+				_Check_Regex.Size = new Size(
+					g.MeasureText(_Check_Regex.Text).Width + labelSize.Height,
+					labelSize.Height
+				);
+				_Panel_TextBox.Height
+					= _Panel_Options.Height
+					= _Panel_Actions.Height = _Label_Pattern.Height + 2;
+				_Panel_TextBox.Width = _Label_Pattern.Width + _Azuki_Pattern.Width + 2;
+				_Panel_Actions.Width = _Button_Next.Width + _Button_Prev.Width + 4;
+				_Panel_Options.Width = _Check_MatchCase.Width + _Check_Regex.Width + 2;
+			}
 
 			// layout child controls
 			LayoutComponents();

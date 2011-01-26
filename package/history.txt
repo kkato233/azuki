@@ -3,6 +3,7 @@
  * fix: built-in URI marker now can be disabled through AzukiControl.MarksUri property or Document.MarksUri property
  * fix: now information of marking ID of URI (0) can be changed; it is now not 'reserved ID' but simply 'internally used ID'
  * fix: bug of kinsoku shori: some of the characters in CharsForbiddenToStartLine or CharsForbiddenToEndLine of DefaultWordProcforbidden can be ignored if unsorted character array was set to them
+ * fix: little resource leak in searching GUI of Ann
 
 == 1.6.0 (2010-12-11) ==
  * add: supported word wrap including kinsoku shori

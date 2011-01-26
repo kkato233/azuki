@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2010-12-30
+// update: 2011-01-26
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1265,7 +1265,7 @@ namespace Sgry.Azuki.WinForms
 		/// </remarks>
 #		if !PocketPC
 		[Category("Behavior")]
-		[DefaultValue(true)]
+		[DefaultValue(false)]
 		[Description("If this is true, URIs written in the document will automatically marked.")]
 #		endif
 		public bool MarksUri

@@ -1,6 +1,7 @@
 == 1.6.1 (    -  -  ) ==
+ * add: 内蔵 URI マーカーを使うかどうか選択できるように（AzukiControl.MarksUri プロパティや Document.MarksUri プロパティ）
+ * mod: 内蔵 URI マーカーは標準で使わないように仕様変更
  * fix: URIの解析基準を改善
- * fix: 内蔵URIマーカーを無効化できるように（AzukiControl.MarksUri プロパティや Document.MarksUri プロパティ）
  * fix: URIのマーキングIDの情報を変更禁止としないように
  * fix: 禁則処理の不具合を修正: DefaultWordProc の CharsForbiddenToStartLine または CharsForbiddenToEndLine にソートされていない配列を指定すると一部の文字が無視されうる
  * fix: Ann の検索 GUI パネルでわずかにリソースリークしていた問題を修正
@@ -8,7 +9,7 @@
 == 1.6.0 (2010-12-11) ==
  * add: 禁則処理を含むワードラップ機能に対応
  * add: マーキング機能に対応
- * add: クリッカブルURLに対応（マーキング機構を利用）
+ * add: クリッカブル URL に対応（マーキング機構を利用）
  * add: 選択テキストのドラッグ＆ドロップ編集に対応（箱形選択したテキストはサポート外）
  * add: キャレット位置にあるカッコに対応するカッコをハイライトするように
  * add: Unicode の結合文字シーケンスを、選択・編集時に１文字として扱うように

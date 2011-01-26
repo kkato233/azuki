@@ -118,7 +118,7 @@ namespace Sgry.Azuki
 	/// The 'marking' feature is provided for putting
 	/// additional (meta) information on text ranges
 	/// which is not related to syntax or grammar of document type
-	/// such as XML file or C/C++ source.
+	/// such as XML file or C/C++ source file.
 	/// One of the typical usages is to mark (put meta information on)
 	/// misspelled words as 'this word seems to be misspelled.'
 	/// Another typical usage is to mark

@@ -282,11 +282,53 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Converts a coordinate in virtual space to a coordinate in client area.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Azuki uses two types of coordinate system -
+		/// virtual coordinate system and client coordinate system.
+		/// In client coordinate system,
+		/// all points are relative to origin of upper-left corner of the 'client area.'
+		/// The client area is the entire area used by Azuki
+		/// so coordinate of the origin of text area will change
+		/// depending on whether meta information areas
+		/// (such as line number area) are displayed or not.
+		/// In virtual coordinate system,
+		/// all points are relative to the origin of text area.
+		/// Text area is the main area which displays text content
+		/// and it does not contain areas for displaying meta information.
+		/// </para>
+		/// <para>
+		/// This method converts a coordinate in client coordinate system to
+		/// a coordinate in virtual coordinate system.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.IView.ScreenToVirtual">ScreenToVirtual property</seealso>
 		void VirtualToScreen( ref Point pt );
 
 		/// <summary>
 		/// Converts a coordinate in client area to a coordinate in virtual space.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Azuki uses two types of coordinate system -
+		/// virtual coordinate system and client coordinate system.
+		/// In client coordinate system,
+		/// all points are relative to origin of upper-left corner of the 'client area.'
+		/// The client area is the entire area used by Azuki
+		/// so coordinate of the origin of text area will change
+		/// depending on whether meta information areas
+		/// (such as line number area) are displayed or not.
+		/// In virtual coordinate system,
+		/// all points are relative to the origin of text area.
+		/// Text area is the main area which displays text content
+		/// and it does not contain areas for displaying meta information.
+		/// </para>
+		/// <para>
+		/// This method converts a coordinate in virtual coordinate system to
+		/// a coordinate in client coordinate system.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.IView.VirtualToScreen">VirtualToScreen property</seealso>
 		void ScreenToVirtual( ref Point pt );
 
 		/// <summary>

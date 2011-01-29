@@ -1,5 +1,6 @@
 == 1.6.1 (    -  -  ) ==
  * add: 内蔵 URI マーカーを使うかどうか選択できるように（AzukiControl.MarksUri プロパティや Document.MarksUri プロパティ）
+ * add: IView に情報エリアの矩形を取得するプロパティを追加（DirtBarRectangle、LineNumberAreaRectangle、TextAreaRectangle）
  * mod: 内蔵 URI マーカーは標準で使わないように仕様変更
  * fix: URI の解析基準を改善
  * fix: URI のマーキング ID の情報を変更禁止としないように

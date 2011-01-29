@@ -1,5 +1,6 @@
 == 1.6.1 (    -  -  ) ==
  * add: now built-in URI marker can be enabled or disabled through AzukiControl.MarksUri property or Document.MarksUri property
+ * add: IView now has some properties to get rectangle of informational areas; DirtBarRectangle, LineNumberAreaRectangle, and TextAreaRectangle.
  * mod: built-in URI marker is now disabled by default
  * fix: improved logic to detect URI
  * fix: now information of marking ID of URI (0) can be changed; it is now not 'reserved ID' but simply 'internally used ID'

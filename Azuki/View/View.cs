@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-11-14
+// update: 2011-01-29
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1489,6 +1489,62 @@ namespace Sgry.Azuki
 		public int YofTextArea
 		{
 			get{ return YofTopMargin + TopMargin; }
+		}
+
+		/// <summary>
+		/// Calculates size and location of the dirt bar area.
+		/// </summary>
+		public Rectangle DirtBarRectangle
+		{
+			get
+			{
+				return new Rectangle(
+						XofDirtBar, YofTextArea,
+						DirtBarWidth, VisibleSize.Height - YofTextArea
+					);
+			}
+		}
+
+		/// <summary>
+		/// Gets location and size of the line number area.
+		/// </summary>
+		public Rectangle LineNumberAreaRectangle
+		{
+			get
+			{
+				return new Rectangle(
+						XofLineNumberArea, YofTextArea,
+						LineNumAreaWidth, VisibleSize.Height - YofTextArea
+					);
+			}
+		}
+
+		/// <summary>
+		/// Gets location and size of the horizontal ruler area.
+		/// </summary>
+		public Rectangle HRulerRectangle
+		{
+			get
+			{
+				return new Rectangle(
+						0, YofHRuler, VisibleSize.Width, YofTopMargin
+					);
+			}
+		}
+
+		/// <summary>
+		/// Gets location and size of the visible text area in screen.
+		/// </summary>
+		public Rectangle TextAreaRectangle
+		{
+			get
+			{
+				return new Rectangle(
+						XofTextArea, YofTextArea,
+						VisibleSize.Width - XofTextArea,
+						VisibleSize.Height - YofTextArea
+					);
+			}
 		}
 		#endregion
 

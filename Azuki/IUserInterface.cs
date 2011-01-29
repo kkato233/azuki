@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2010-12-26
+// update: 2011-01-29
 //=========================================================
 using System;
 using System.Drawing;
@@ -150,6 +150,33 @@ namespace Sgry.Azuki
 		/// Whether to show horizontal scroll bar or not.
 		/// </summary>
 		bool ShowsHScrollBar
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether to show 'dirt bar' or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property gets or sets whether to show 'dirt bar' or not.
+		/// The dirt bar is graphically a thin bar at right end of the line number area
+		/// that indicates the dirty state of each text line.
+		/// The state of line is one of the following states.
+		/// </para>
+		/// <list type="bullet">
+		///		<item>LineDirtyState.Clean: the line is not modified yet.</item>
+		///		<item>LineDirtyState.Dirty: the line is modified and not saved.</item>
+		///		<item>LineDirtyState.Cleaned: the line is modified but saved.</item>
+		/// </list>
+		/// <para>
+		/// Color of each line dirty state can be customized by setting
+		/// ColorScheme.DirtyLineBar, ColorScheme.CleanedLineBar.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.LineDirtyState">LineDirtyState enum</seealso>
+		/// <seealso cref="Sgry.Azuki.Document.GetLineDirtyState">Document.GetLineDirtyState method</seealso>
+		bool ShowsDirtBar
 		{
 			get; set;
 		}

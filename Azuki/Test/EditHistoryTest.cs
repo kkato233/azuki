@@ -1,4 +1,4 @@
-﻿// 2008-05-31
+﻿// 2011-01-29
 #if TEST
 using System;
 
@@ -19,6 +19,10 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - case 2", testNum++);
 			TestUtl.Do( Test_Case2 );
 
+			// line dirty state
+			Console.WriteLine("test {0} - line dirty state history", testNum++);
+			TestUtl.Do( Test_LineDirtyStateHistory );
+
 			Console.WriteLine("done.");
 			Console.WriteLine();
 		}
@@ -37,7 +41,7 @@ namespace Sgry.Azuki.Test
 			for( int i=0; i<len; i++ )
 			{
 				history.Add(
-						new EditAction(doc, i, i.ToString(), (i+'a').ToString(), 0, 0)
+						new EditAction(doc, i, i.ToString(), (i+'a').ToString(), 0, 0, null)
 					);
 			}
 			
@@ -73,7 +77,7 @@ namespace Sgry.Azuki.Test
 			for( int i=0; i<len1; i++ )
 			{
 				history.Add(
-						new EditAction(doc, i, i.ToString(), (i+'a').ToString(), 0, 0)
+						new EditAction(doc, i, i.ToString(), (i+'a').ToString(), 0, 0, null)
 					);
 			}
 			
@@ -102,7 +106,7 @@ namespace Sgry.Azuki.Test
 
 			// add one and ensure that it can redo no more
 			history.Add(
-					new EditAction(doc, len3, (len3).ToString(), (len3+'a').ToString(), 0, 0)
+					new EditAction(doc, len3, (len3).ToString(), (len3+'a').ToString(), 0, 0, null)
 				);
 			TestUtl.AssertEquals( true, history.CanUndo );
 			TestUtl.AssertEquals( false, history.CanRedo );
@@ -118,6 +122,104 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( true, history.CanRedo );
 			TestUtl.AssertEquals( null, history.GetUndoAction() );
 			TestUtl.AssertEquals( "[0|0|97]", history.GetRedoAction().ToString() );
+		}
+
+		static void Test_LineDirtyStateHistory()
+		{
+			Document doc = new Document();
+
+			// deletion - single line
+			doc.Text = "keep it\nas simple as\npossible";
+			doc.ClearHistory();
+			doc.Replace( "", 11, 18 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(2) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(1) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(2) );
+
+			// deletion - multiple lines
+			doc.Text = "keep it\nas simple as\npossible";
+			doc.ClearHistory();
+			doc.Replace( "", 11, 21 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(2) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(1) );
+
+			// deletion - creating CR+LF
+			doc.Text = "a\rb\nc";
+			doc.ClearHistory();
+			doc.Replace( "", 2, 3 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(2) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+
+			// deletion - destroying CR+LF (1)
+			doc.Text = "ab\r\nc";
+			doc.ClearHistory();
+			doc.Replace( "", 1, 3 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+
+			// deletion - destroying CR+LF (2)
+			doc.Text = "a\r\nbc";
+			doc.ClearHistory();
+			doc.Replace( "", 2, 4 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(1) );
+
+			// insertion - creating CR+LF (1)
+			doc.Text = "a\nb";
+			doc.ClearHistory();
+			doc.Replace( "\r", 1, 1 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+
+			// insertion - creating CR+LF (2)
+			doc.Text = "a\rb";
+			doc.ClearHistory();
+			doc.Replace( "\n", 2, 2 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(1) );
+
+			// insertion - destroying CR+LF
+			doc.Text = "a\r\nb";
+			doc.ClearHistory();
+			doc.Replace( "X", 2, 2 );
+			doc.Undo();
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(1) );
+			doc.Redo();
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(0) );
+			TestUtl.AssertEquals( LineDirtyState.Dirty, doc.GetLineDirtyState(1) );
+			TestUtl.AssertEquals( LineDirtyState.Clean, doc.GetLineDirtyState(2) );
 		}
 	}
 }

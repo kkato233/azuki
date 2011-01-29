@@ -1,4 +1,5 @@
 == 1.6.1 (    -  -  ) ==
+ * add: now UNDOing text modification also restores modification state of each lines
  * add: now built-in URI marker can be enabled or disabled through AzukiControl.MarksUri property or Document.MarksUri property
  * add: IView now has some properties to get rectangle of informational areas; DirtBarRectangle, LineNumberAreaRectangle, and TextAreaRectangle.
  * mod: built-in URI marker is now disabled by default

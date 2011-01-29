@@ -2,7 +2,7 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-09-21
+// update: 2011-01-29
 //=========================================================
 using System;
 
@@ -110,7 +110,7 @@ namespace Sgry.Azuki
 		{
 			if( _IsGroupingActions == false )
 			{
-				Add( new EditAction(null, 0, null, null, 0, 0) );
+				Add( new EditAction(null, 0, null, null, 0, 0, null) );
 				_IsGroupingActions = true;
 			}
 		}

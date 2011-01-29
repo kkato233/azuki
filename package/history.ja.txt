@@ -1,4 +1,5 @@
 == 1.6.1 (    -  -  ) ==
+ * add: UNDO でテキスト編集結果だけでなく各行の変更有無の状態も復元するように
  * add: 内蔵 URI マーカーを使うかどうか選択できるように（AzukiControl.MarksUri プロパティや Document.MarksUri プロパティ）
  * add: IView に情報エリアの矩形を取得するプロパティを追加（DirtBarRectangle、LineNumberAreaRectangle、TextAreaRectangle）
  * mod: 内蔵 URI マーカーは標準で使わないように仕様変更

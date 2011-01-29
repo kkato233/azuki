@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-10-09
+// update: 2011-01-29
 //=========================================================
 using System;
 using System.Drawing;
@@ -43,7 +43,7 @@ namespace Sgry.Azuki
 				doc.BeginUndo();
 				doc.DeleteRectSelectText();
 				doc.EndUndo();
-				ui.Invalidate();
+				ui.View.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
 			{
@@ -108,7 +108,7 @@ namespace Sgry.Azuki
 				doc.BeginUndo();
 				doc.DeleteRectSelectText();
 				doc.EndUndo();
-				ui.Invalidate();
+				ui.View.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
 			{
@@ -161,7 +161,7 @@ namespace Sgry.Azuki
 				doc.BeginUndo();
 				doc.DeleteRectSelectText();
 				doc.EndUndo();
-				ui.Invalidate();
+				ui.View.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
 			{
@@ -222,7 +222,7 @@ namespace Sgry.Azuki
 				doc.BeginUndo();
 				doc.DeleteRectSelectText();
 				doc.EndUndo();
-				ui.Invalidate();
+				ui.View.Invalidate();
 			}
 			else if( doc.AnchorIndex != doc.CaretIndex )
 			{
@@ -419,7 +419,7 @@ namespace Sgry.Azuki
 				//--- case of rectangle selection ---
 				// delete selected text
 				doc.DeleteRectSelectText();
-				ui.Invalidate();
+				ui.View.Invalidate();
 			}
 			else if( begin != end )
 			{
@@ -521,6 +521,12 @@ namespace Sgry.Azuki
 				view.SetDesiredColumn();
 			}
 			view.ScrollToCaret();
+
+			// redraw graphic of dirt-bar
+			if( ui.ShowsDirtBar )
+			{
+				ui.View.Invalidate( ui.View.DirtBarRectangle );
+			}
 		}
 
 		/// <summary>
@@ -568,7 +574,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void Refresh( IUserInterface ui )
 		{
-			ui.Invalidate();
+			ui.View.Invalidate();
 		}
 
 		/// <summary>

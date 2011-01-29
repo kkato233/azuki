@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2010-12-30
+// update: 2011-01-29
 //=========================================================
 using System;
 using System.Collections;
@@ -166,6 +166,14 @@ namespace Sgry.Azuki
 				return LineDirtyState.Clean;
 			}
 			return _LDS[lineIndex];
+		}
+
+		internal void SetLineDirtyState( int lineIndex, LineDirtyState lds )
+		{
+			Debug.Assert( lineIndex <= _LDS.Count );
+			Debug.Assert( _LDS.Count == _LHI.Count );
+
+			_LDS[lineIndex] = lds;
 		}
 
 		/// <summary>
@@ -887,7 +895,7 @@ namespace Sgry.Azuki
 			if( begin < 0 || _Buffer.Count < begin )
 				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given (begin:"+begin+", this.Length:"+Length+")." );
 			if( end < begin || _Buffer.Count < end )
-				throw new ArgumentOutOfRangeException( "end", "Invalid index was given (end:"+begin+", this.Length:"+Length+")." );
+				throw new ArgumentOutOfRangeException( "end", "Invalid index was given (begin:"+begin+", end:"+end+", this.Length:"+Length+")." );
 			if( text == null )
 				throw new ArgumentNullException( "text" );
 
@@ -896,6 +904,38 @@ namespace Sgry.Azuki
 			int oldCaret, caretDelta;
 			int newAnchor, newCaret;
 			EditAction undo;
+			LineDirtyStateUndoInfo ldsUndoInfo = null;
+			int affectedBeginLI = -1;
+
+			// first of all, remember current dirty state of the lines
+			// which will be modified by this replacement
+			if( _IsRecordingHistory )
+			{
+				ldsUndoInfo = new LineDirtyStateUndoInfo();
+
+				// calculate range of the lines which will be affectd by this replacement
+				affectedBeginLI = GetLineIndexFromCharIndex( begin );
+				if( 0 < begin-1 && _Buffer[begin-1] == '\r' )
+				{
+					if( (0 < text.Length && text[0] == '\n')
+						|| (text.Length == 0 && end < _Buffer.Count && _Buffer[end] == '\n') )
+					{
+						// A new CR+LF will be created by this replacement
+						// so one previous line will also be affected.
+						affectedBeginLI--;
+					}
+				}
+				int affectedEndLI = GetLineIndexFromCharIndex( end );
+				int affectedLineCount = affectedEndLI - affectedBeginLI + 1;
+
+				// store current state of the lines as 'deleted' history
+				ldsUndoInfo.LineIndex = affectedBeginLI;
+				ldsUndoInfo.DeletedStates = new LineDirtyState[ affectedLineCount ];
+				for( int i=0; i<affectedLineCount; i++ )
+				{
+					ldsUndoInfo.DeletedStates[i] = _LDS[ affectedBeginLI + i ];
+				}
+			}
 
 			// keep copy of the part which will be deleted by this replacement
 			if( begin < end )
@@ -960,7 +1000,7 @@ namespace Sgry.Azuki
 			// stack UNDO history
 			if( _IsRecordingHistory )
 			{
-				undo = new EditAction( this, begin, oldText, text, oldAnchor, oldCaret );
+				undo = new EditAction( this, begin, oldText, text, oldAnchor, oldCaret, ldsUndoInfo );
 				_History.Add( undo );
 			}
 			_LastModifiedTime = DateTime.Now;

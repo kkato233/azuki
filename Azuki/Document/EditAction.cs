@@ -2,7 +2,7 @@
 // brief: Recorded editing action for UNDO/REDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2009-09-21
+// update: 2011-01-29
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -28,6 +28,7 @@ namespace Sgry.Azuki
 		string _InsertedText;
 		int _OldAnchorIndex;
 		int _OldCaretIndex;
+		LineDirtyStateUndoInfo _LdsUndoInfo;
 		EditAction _Next = null;
 		#endregion
 
@@ -41,7 +42,8 @@ namespace Sgry.Azuki
 		/// <param name="insertedText">inserted text by the replacement</param>
 		/// <param name="oldAnchorIndex">index of the selection anchor at when the replacement has occured</param>
 		/// <param name="oldCaretIndex">index of the caret at when the replacement has occured</param>
-		public EditAction( Document doc, int index, string deletedText, string insertedText, int oldAnchorIndex, int oldCaretIndex )
+		/// <param name="ldsUndoInfo">line dirty states before the replacement</param>
+		public EditAction( Document doc, int index, string deletedText, string insertedText, int oldAnchorIndex, int oldCaretIndex, LineDirtyStateUndoInfo ldsUndoInfo )
 		{
 			_Document = doc;
 			_Index = index;
@@ -49,6 +51,7 @@ namespace Sgry.Azuki
 			_InsertedText = insertedText;
 			_OldAnchorIndex = oldAnchorIndex;
 			_OldCaretIndex = oldCaretIndex;
+			_LdsUndoInfo = ldsUndoInfo;
 		}
 		#endregion
 
@@ -86,11 +89,26 @@ namespace Sgry.Azuki
 				// invalidation logic of Azuki
 				_Document.SetSelection( _Index, _Index );
 
-				// replace back to old text
+				// set text
 				_Document.Replace( _DeletedText, _Index, _Index+_InsertedText.Length );
 
-				// recover old selection
+				// set selection
 				_Document.SetSelection( _OldAnchorIndex, _OldCaretIndex );
+
+				// set line dirty state
+				if( _LdsUndoInfo != null )
+				{
+					// Note that by executing Document.Replace, number of LDS entries is
+					// already restored. Just overwriting to old state does the work.
+					Debug.Assert( 0 < _LdsUndoInfo.DeletedStates.Length );
+					for( int i=0; i<_LdsUndoInfo.DeletedStates.Length; i++ )
+					{
+						_Document.SetLineDirtyState(
+								_LdsUndoInfo.LineIndex + i,
+								_LdsUndoInfo.DeletedStates[i]
+							);
+					}
+				}
 			}
 			_Document.IsRecordingHistory = true;
 		}
@@ -137,11 +155,15 @@ namespace Sgry.Azuki
 				// invalidation logic of Azuki
 				_Document.SetSelection( _Index, _Index );
 
-				// recover old selection
+				// set selection
 				_Document.SetSelection( _OldAnchorIndex, _OldCaretIndex );
 
-				// replace back to old text
+				// set text
 				_Document.Replace( _InsertedText, _Index, _Index+_DeletedText.Length );
+
+				// set line dirty state
+				// (since effect to LDS by REDOing is same as normal text replacement does,
+				// no special action is needed here)
 			}
 			_Document.IsRecordingHistory = true;
 		}
@@ -181,5 +203,43 @@ namespace Sgry.Azuki
 			return "[" + _Index + "|" + _DeletedText + "|" + _InsertedText + "]";
 		}
 #		endif
+	}
+
+	class LineDirtyStateUndoInfo
+	{
+		public int LineIndex;
+		public LineDirtyState[] DeletedStates = null;
+
+		#region Debug code
+#		if DEBUG
+		/// <summary>ToString for debug</summary>
+		public override string ToString()
+		{
+			System.Text.StringBuilder text = new System.Text.StringBuilder( 64 );
+
+			text.Append( LineIndex );
+			if( 0 < DeletedStates.Length )
+			{
+				text.Append( "-{" + ToChar(DeletedStates[0]) );
+				for( int i=1; i<DeletedStates.Length; i++ )
+				{
+					text.Append( "," + ToChar(DeletedStates[i]) );
+				}
+				text.Append( '}' );
+			}
+
+			return text.ToString();
+		}
+		char ToChar( LineDirtyState lds )
+		{
+			switch( lds )
+			{
+				case LineDirtyState.Clean:	return 'C';
+				case LineDirtyState.Dirty:	return 'D';
+				default:					return 'c';
+			}
+		}
+#		endif
+		#endregion
 	}
 }

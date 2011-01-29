@@ -218,7 +218,7 @@ namespace Sgry.Azuki
 		/// Inserts an element at specified index.
 		/// </summary>
 		/// <exception cref="ArgumentException">invalid index was given</exception>
-		public virtual void Insert( int index, T value )
+		public virtual void Insert( int insertIndex, T value )
 		{
 			// [case 1: Insert(1, "#")]
 			// ABCDE___FGHI     (gappos:5, gaplen:3)
@@ -226,21 +226,21 @@ namespace Sgry.Azuki
 			// ABCDEFGHI_______ (gappos:9, gaplen:7)
 			// A_______BCDEFGHI (gappos:1, gaplen:7)
 			// A#______BCDEFGHI (gappos:5, gaplen:3)
-			DebugUtl.Assert( 0 <= index, "Invalid index was given (index:"+index+")." );
+			DebugUtl.Assert( 0 <= insertIndex, "Invalid index was given (insertIndex:"+insertIndex+")." );
 			DebugUtl.Assert( value != null, "Null was given to 'values'." );
 
 			// make sufficient gap for insertion
 			EnsureSpaceForInsertion( 1 );
-			MoveGapTo( index );
+			MoveGapTo( insertIndex );
 
 			// insert
-			_Data[index] = value;
+			_Data[insertIndex] = value;
 
 			// update info
 			_Count += 1;
 			_GapPos += 1;
 			_GapLen -= 1;
-			__dump__( String.Format("Insert({0}, {1})", index, value) );
+			__dump__( String.Format("Insert({0}, {1})", insertIndex, value) );
 			__check_sanity__();
 		}
 

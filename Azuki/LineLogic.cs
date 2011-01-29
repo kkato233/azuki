@@ -4,8 +4,6 @@
 // update: 2010-04-18
 //=========================================================
 using System;
-using System.Collections;
-using System.Text;
 
 namespace Sgry.Azuki
 {
@@ -289,7 +287,7 @@ namespace Sgry.Azuki
 			int delFromL, delToL;
 			int dummy;
 			int delLen = delEnd - delBegin;
-			
+
 			// calculate line indexes of both ends of the range
 			GetLineColumnIndexFromCharIndex( text, lhi, delBegin, out delFromL, out dummy );
 			GetLineColumnIndexFromCharIndex( text, lhi, delEnd, out delToL, out dummy );
@@ -321,7 +319,7 @@ namespace Sgry.Azuki
 				lhi[i] -= delLen;
 			}
 
-			// if deletion decrease line count, delete entries
+			// if deletion decreases line count, delete entries
 			if( delFromL < delToL )
 			{
 				lhi.RemoveRange( delFromL+1, delToL+1 );
@@ -333,12 +331,11 @@ namespace Sgry.Azuki
 				&& delEnd < text.Count && text[delEnd] == '\n'
 				&& 0 < delFirstLine )
 			{
-				// there is a CR (not CR+LF) at left of the deletion beginning position
-				// and there is a LF (not CR+LF) at right of the deletion ending position.
-				// because in this case deletion target line should be
-				// the line containing the existing CR,
-				// mark not calculated deletion target line
-				// but the line at one line before.
+				// In this case, there is a CR (not CR+LF) at left of the deletion range,
+				// and there is a LF (not CR+LF) at right of the deletion range;
+				// so deletion combines the CR and the LF and the target line disappears.
+				// Because the target line does not exist any more,
+				// mark the line at one previous index as 'dirty.'
 				lds[delFirstLine-1] = LineDirtyState.Dirty;
 			}
 			else
@@ -362,7 +359,7 @@ namespace Sgry.Azuki
 			return false;
 		}
 
-		public static int CountLine( string text )
+		public static int CountLines( string text )
 		{
 			int count = 0;
 			int lineHead = 0;

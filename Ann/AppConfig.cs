@@ -1,4 +1,4 @@
-﻿// 2010-04-30
+﻿// 2011-02-05
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -76,7 +76,11 @@ namespace Sgry.Ann
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
 				AppConfig.HRulerIndicatorType	= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
 				AppConfig.ScrollsBeyondLastLine	= Ini.Get( "Default", "ScrollsBeyondLastLine", true );
-				UserPref.Antialias				= Ini.Get( "Default", "Antialias", Antialias.Default );
+
+				UserPref.Antialias					= Ini.Get( "Default", "Antialias", UserPref.Antialias );
+				UserPref.AutoScrollMargin			= Ini.Get( "Default", "AutoScrollMargin", UserPref.AutoScrollMargin );
+				UserPref.CopyLineWhenNoSelection	= Ini.Get( "Default", "CopyLineWhenNoSelection", UserPref.CopyLineWhenNoSelection );
+				UserPref.UseTextForEofMark			= Ini.Get( "Default", "UseTextForEofMark", UserPref.UseTextForEofMark );
 			}
 			catch
 			{}

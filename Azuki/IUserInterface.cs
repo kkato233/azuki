@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2011-01-29
+// update: 2011-02-05
 //=========================================================
 using System;
 using System.Drawing;
@@ -470,16 +470,40 @@ namespace Sgry.Azuki
 		/// Executes cut action.
 		/// </summary>
 		void Cut();
-		
+
+		/// <summary>
+		/// Gets whether cut action can be executed or not.
+		/// </summary>
+		bool CanCut
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Executes copy action.
 		/// </summary>
 		void Copy();
+
+		/// <summary>
+		/// Gets whether copy action can be executed or not.
+		/// </summary>
+		bool CanCopy
+		{
+			get;
+		}
 		
 		/// <summary>
 		/// Executes paste action.
 		/// </summary>
 		void Paste();
+
+		/// <summary>
+		/// Gets whether paste action can be executed or not.
+		/// </summary>
+		bool CanPaste
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Executes delete action.

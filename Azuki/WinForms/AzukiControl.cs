@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-01-26
+// update: 2011-02-05
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1375,13 +1375,37 @@ namespace Sgry.Azuki.WinForms
 		{
 			Actions.Cut( this );
 		}
-		
+
+		/// <summary>
+		/// Gets whether cut action can be executed or not.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public bool CanCut
+		{
+			get{ return _Impl.CanCut; }
+		}
+
 		/// <summary>
 		/// Executes copy action.
 		/// </summary>
 		public void Copy()
 		{
 			Actions.Copy( this );
+		}
+
+		/// <summary>
+		/// Gets whether copy action can be executed or not.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public bool CanCopy
+		{
+			get{ return _Impl.CanCut; }
 		}
 		
 		/// <summary>
@@ -1390,6 +1414,18 @@ namespace Sgry.Azuki.WinForms
 		public void Paste()
 		{
 			Actions.Paste( this );
+		}
+
+		/// <summary>
+		/// Gets whether paste action can be executed or not.
+		/// </summary>
+#		if !PocketPC
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+#		endif
+		public bool CanPaste
+		{
+			get{ return _Impl.CanPaste; }
 		}
 
 		/// <summary>

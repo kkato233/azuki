@@ -1,4 +1,4 @@
-// 2010-08-21
+// 2011-02-05
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -335,6 +335,26 @@ namespace Sgry.Ann
 		#endregion
 
 		#region GUI Event Handlers
+		void _MI_File_Popup( object sender, EventArgs e )
+		{
+			_MI_File_Save.Enabled = _Azuki.Document.IsDirty;
+		}
+
+		void _MI_Edit_Popup( object sender, EventArgs e )
+		{
+			_MI_Edit_Undo.Enabled = _Azuki.CanUndo;
+			_MI_Edit_Redo.Enabled = _Azuki.CanRedo;
+			_MI_Edit_Cut.Enabled = _Azuki.CanCut;
+			_MI_Edit_Copy.Enabled = _Azuki.CanCopy;
+			_MI_Edit_Paste.Enabled = _Azuki.CanPaste;
+		}
+
+		void _MI_Window_Popup( object sender, EventArgs e )
+		{
+			_MI_Window_Next.Enabled
+				= _MI_Window_Prev.Enabled = (1 < _App.Documents.Count);
+		}
+
 #		if !PocketPC
 		void Form_DragDrop( object sender, DragEventArgs e )
 		{
@@ -498,6 +518,18 @@ namespace Sgry.Ann
 			//
 			_Status_Message.AutoSize = StatusBarPanelAutoSize.Spring;
 #			endif
+			//
+			// _MI_File
+			//
+			_MI_File.Popup += _MI_File_Popup;
+			//
+			// _MI_Edit
+			//
+			_MI_Edit.Popup += _MI_Edit_Popup;
+			//
+			// _MI_Window
+			//
+			_MI_Window.Popup += _MI_Window_Popup;
 			//
 			// AnnForm
 			// 

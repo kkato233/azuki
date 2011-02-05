@@ -1,8 +1,10 @@
 == 1.6.1 (    -  -  ) ==
  * add: now Document.IsDirty will be False automatically when UNDO/REDO restores document to the state of when the Document.IsDirty was set False by application code
  * add: now UNDOing text modification also restores modification state of each lines
+ * add: added CanCut, CanCopy, CanPaste properties to AzukiControl (IUserInterface.)
  * add: now built-in URI marker can be enabled or disabled through AzukiControl.MarksUri property or Document.MarksUri property
  * add: IView now has some properties to get rectangle of informational areas; DirtBarRectangle, LineNumberAreaRectangle, and TextAreaRectangle.
+ * add: [Ann] disables menu items which are not usable or effectless according to the situation
  * mod: Document.IsDirty cannot be set as True by application code
  * mod: built-in URI marker is now disabled by default
  * fix: improved logic to detect URI

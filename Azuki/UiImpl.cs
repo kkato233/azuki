@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2010-12-30
+// update: 2011-02-05
 //=========================================================
 using System;
 using System.Text;
@@ -101,6 +101,55 @@ namespace Sgry.Azuki
 
 			// set disposed flag on
 			_IsDisposed = true;
+		}
+		#endregion
+
+		#region State
+		/// <summary>
+		/// Gets whether cut action can be executed or not.
+		/// </summary>
+		public bool CanCut
+		{
+			get{ return CanCopy; }
+		}
+
+		/// <summary>
+		/// Gets whether copy action can be executed or not.
+		/// </summary>
+		public bool CanCopy
+		{
+			get
+			{
+				int begin, end;
+
+				if( UserPref.CopyLineWhenNoSelection )
+				{
+					return true;
+				}
+				else
+				{
+					Document.GetSelection( out begin, out end );
+					return (begin == end);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets whether paste action can be executed or not.
+		/// </summary>
+		public bool CanPaste
+		{
+			get
+			{
+				TextDataType dataType;
+				string text;
+
+				// get text from clipboard
+				text = Plat.Inst.GetClipboardText( out dataType );
+
+				// there is no text available, paste cannot be done
+				return (text != null);
+			}
 		}
 		#endregion
 

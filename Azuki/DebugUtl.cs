@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2010-12-25
+// update: 2011-02-05
 //=========================================================
 using System;
 using System.IO;
@@ -158,7 +158,7 @@ namespace Sgry
 		string _OldLogFilePath = null;
 		static StringBuilder _IndentStr = new StringBuilder( 8 );
 		bool _HeaderNotWritten = true;
-		TextWriter _SecondOutput = Console.Error;
+		TextWriter _SecondOutput = Console.Out;
 #		if !PocketPC
 		public const string LogDateHeader = "[yyyy-MM-dd hh:mm:ss.fff] ";
 #		else

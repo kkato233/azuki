@@ -29,7 +29,7 @@ namespace Sgry.Azuki
 		/// Gets content of the system clipboard.
 		/// </summary>
 		/// <param name="dataType">The type of the text data in the clipboard</param>
-		/// <returns>Text content in the clipboard.</returns>
+		/// <returns>Text content retrieved from the clipboard if available. Otherwise null.</returns>
 		/// <remarks>
 		/// This method gets text from the system clipboard.
 		/// If stored text data is a special format (line or rectangle,)

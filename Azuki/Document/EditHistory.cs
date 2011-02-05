@@ -40,26 +40,26 @@ namespace Sgry.Azuki
 		{
 			if( _GroupingUndoChain != null )
 			{
-				//--- executing group UNDO ---
 				// put given action to the head of the chain
 				action.Next = _GroupingUndoChain;
-				_GroupingUndoChain = action;
-				return;
+					_GroupingUndoChain = action;
 			}
-
-			// if there is no more space, expand buffer
-			if( _Capacity <= _NextIndex )
+			else
 			{
-				Utl.ResizeArray( ref _Stack, _Capacity + GrowSize );
-				_Capacity = _Capacity + GrowSize;
-			}
-
-			// stack up this action
-			_Stack[ _NextIndex ] = action;
-			_NextIndex++;
-			if( _NextIndex < _Stack.Length )
-			{
-				_Stack[ _NextIndex ] = null;
+				// if there is no more space, expand buffer
+				if( _Capacity <= _NextIndex )
+				{
+					Utl.ResizeArray( ref _Stack, _Capacity + GrowSize );
+					_Capacity = _Capacity + GrowSize;
+				}
+	
+				// stack up this action
+				_Stack[ _NextIndex ] = action;
+				_NextIndex++;
+				if( _NextIndex < _Stack.Length )
+				{
+					_Stack[ _NextIndex ] = null;
+				}
 			}
 		}
 
@@ -130,9 +130,6 @@ namespace Sgry.Azuki
 			}
 		}
 
-		/// <summary>
-		/// Gets whether the current state is lastly saved state or not.
-		/// </summary>
 		public bool IsSavedState
 		{
 			get
@@ -157,9 +154,6 @@ namespace Sgry.Azuki
 			}
 		}
 
-		/// <summary>
-		/// Remembers the current state as 'saved-state.'
-		/// </summary>
 		public void SetSavedState()
 		{
 			if( 0 < _NextIndex )

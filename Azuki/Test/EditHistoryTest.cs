@@ -1,4 +1,4 @@
-﻿// 2011-01-29
+﻿// 2011-02-05
 #if TEST
 using System;
 
@@ -19,9 +19,17 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - case 2", testNum++);
 			TestUtl.Do( Test_Case2 );
 
+			// case 3 (group undo/redo)
+			Console.WriteLine("test {0} - group UNDO/REDO", testNum++);
+			TestUtl.Do( Test_GroupUndoRedo );
+
+			// case 3 (group undo/redo)
+			Console.WriteLine("test {0} - dirty state of document", testNum++);
+			TestUtl.Do( Test_DocumentDirtyState );
+
 			// line dirty state
-			Console.WriteLine("test {0} - line dirty state history", testNum++);
-			TestUtl.Do( Test_LineDirtyStateHistory );
+			Console.WriteLine("test {0} - dirty state of lines", testNum++);
+			TestUtl.Do( Test_LineDirtyState );
 
 			Console.WriteLine("done.");
 			Console.WriteLine();
@@ -51,7 +59,7 @@ namespace Sgry.Azuki.Test
 			for( int i=len-1; 0<=i; i-- )
 			{
 				action = history.GetUndoAction();
-				TestUtl.AssertEquals( "["+i+"|"+i+"|"+(i+'a')+"]", action.ToString() );
+				TestUtl.AssertEquals( i+"-["+i+"]+["+(i+'a')+"]", action.ToString() );
 			}
 
 			TestUtl.AssertEquals( null, history.GetUndoAction() );
@@ -88,7 +96,7 @@ namespace Sgry.Azuki.Test
 			for( int i=len1-1; len2<=i; i-- )
 			{
 				action = history.GetUndoAction();
-				TestUtl.AssertEquals( "["+i+"|"+i+"|"+(i+'a')+"]", action.ToString() );
+				TestUtl.AssertEquals( i+"-["+i+"]+["+(i+'a')+"]", action.ToString() );
 			}
 
 			TestUtl.AssertEquals( true, history.CanUndo );
@@ -98,7 +106,7 @@ namespace Sgry.Azuki.Test
 			for( int i=len2; i<len3; i++ )
 			{
 				action = history.GetRedoAction();
-				TestUtl.AssertEquals( "["+i+"|"+i+"|"+(i+'a')+"]", action.ToString() );
+				TestUtl.AssertEquals( i+"-["+i+"]+["+(i+'a')+"]", action.ToString() );
 			}
 
 			TestUtl.AssertEquals( true, history.CanUndo );
@@ -115,16 +123,185 @@ namespace Sgry.Azuki.Test
 			for( int i=len3; 0<=i; i-- )
 			{
 				action = history.GetUndoAction();
-				TestUtl.AssertEquals( "["+i+"|"+i+"|"+(i+'a')+"]", action.ToString() );
+				TestUtl.AssertEquals( i+"-["+i+"]+["+(i+'a')+"]", action.ToString() );
 			}
 
 			TestUtl.AssertEquals( false, history.CanUndo );
 			TestUtl.AssertEquals( true, history.CanRedo );
 			TestUtl.AssertEquals( null, history.GetUndoAction() );
-			TestUtl.AssertEquals( "[0|0|97]", history.GetRedoAction().ToString() );
+			TestUtl.AssertEquals( "0-[0]+[97]", history.GetRedoAction().ToString() );
 		}
 
-		static void Test_LineDirtyStateHistory()
+		static void Test_GroupUndoRedo()
+		{
+			// end before begin
+			{
+				EditHistory history = new EditHistory();
+				history.EndUndo();
+			}
+
+			// double call of begin
+			{
+				EditHistory history = new EditHistory();
+				history.BeginUndo();
+				history.BeginUndo();
+				history.EndUndo();
+			}
+
+			// double call of end
+			{
+				EditHistory history = new EditHistory();
+				history.EndUndo();
+				history.EndUndo();
+			}
+
+			// grouping actions
+			{
+				Document doc = new Document();
+				doc.Replace( "a", 0, 0 );
+				doc.BeginUndo();
+				doc.Replace( "b", 1, 1 );
+				doc.Replace( "c", 2, 2 );
+				doc.EndUndo();
+				doc.Replace( "d", 3, 3 );
+
+				TestUtl.AssertEquals( "abcd", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "a", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "a", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "abcd", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "abcd", doc.Text );
+			}
+
+			// undo during grouping actions
+			{
+				Document doc = new Document();
+				doc.Replace( "abc", 0, 0 );
+				doc.BeginUndo();
+				doc.Replace( "X", 1, 1 );
+				TestUtl.AssertEquals( "aXbc", doc.Text );
+				doc.Replace( "Y", 2, 2 );
+				TestUtl.AssertEquals( "aXYbc", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+				doc.EndUndo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+			}
+
+			// redo during grouping actions
+			{
+				Document doc = new Document();
+				doc.Replace( "abc", 0, 0 );
+				doc.Replace( "X", 1, 1 );
+				TestUtl.AssertEquals( "aXbc", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+				doc.BeginUndo();
+				doc.Redo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+				doc.EndUndo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+			}
+			{
+				Document doc = new Document();
+				doc.Replace( "abc", 0, 0 );
+				doc.Replace( "X", 1, 1 );
+				TestUtl.AssertEquals( "aXbc", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "abc", doc.Text );
+				doc.BeginUndo();
+				doc.Replace( "Y", 1, 1 );
+				doc.Redo();
+				TestUtl.AssertEquals( "aYbc", doc.Text );
+				doc.EndUndo();
+				TestUtl.AssertEquals( "aYbc", doc.Text );
+			}
+		}
+
+
+		static void Test_DocumentDirtyState()
+		{
+			// dirty state
+			{
+				Document doc = new Document();
+				TestUtl.AssertEquals( false, doc.IsDirty );
+
+				doc.Replace( "a", 0, 0 );
+				TestUtl.AssertEquals( true, doc.IsDirty );
+				TestUtl.AssertEquals( "a", doc.Text );
+
+				doc.IsDirty = false;
+				TestUtl.AssertEquals( false, doc.IsDirty );
+				TestUtl.AssertEquals( "a", doc.Text );
+
+				doc.BeginUndo();
+				TestUtl.AssertEquals( false, doc.IsDirty );
+				TestUtl.AssertEquals( "a", doc.Text );
+
+				doc.Replace( "b", 1, 1 );
+				TestUtl.AssertEquals( true, doc.IsDirty );
+				TestUtl.AssertEquals( "ab", doc.Text );
+
+				doc.Replace( "c", 2, 2 );
+				TestUtl.AssertEquals( true, doc.IsDirty );
+				TestUtl.AssertEquals( "abc", doc.Text );
+
+				doc.EndUndo();
+				TestUtl.AssertEquals( true, doc.IsDirty );
+				TestUtl.AssertEquals( "abc", doc.Text );
+
+				doc.Undo();
+				TestUtl.AssertEquals( false, doc.IsDirty );
+				TestUtl.AssertEquals( "a", doc.Text );
+
+				doc.Undo();
+				TestUtl.AssertEquals( true, doc.IsDirty );
+				TestUtl.AssertEquals( "", doc.Text );
+
+				doc.Redo();
+				TestUtl.AssertEquals( false, doc.IsDirty );
+				TestUtl.AssertEquals( "a", doc.Text );
+
+				doc.Undo();
+				doc.Replace( "a", 0, 0 );
+				TestUtl.AssertEquals( true, doc.IsDirty );
+				TestUtl.AssertEquals( "a", doc.Text );
+			}
+
+			// change IsDirty flag while recording group UNDO
+			{
+				Document doc = new Document();
+				doc.BeginUndo();
+				try{ doc.IsDirty = true; throw new Exception(); }
+				catch( Exception ex ){ TestUtl.AssertExceptionType<InvalidOperationException>(ex); }
+			}
+
+			// special case; BeginUndo at initial state
+			// ([*] goes exceptional 'if' code in EditHistory.IsSavedState)
+			{
+				Document doc = new Document();
+				TestUtl.AssertEquals( false, doc.IsDirty );
+				doc.BeginUndo();
+				TestUtl.AssertEquals( false, doc.IsDirty );
+				doc.Replace( "a", 0, 0 );
+				TestUtl.AssertEquals( true, doc.IsDirty ); // [*]
+				doc.EndUndo();
+				TestUtl.AssertEquals( true, doc.IsDirty );
+			}
+		}
+
+		static void Test_LineDirtyState()
 		{
 			Document doc = new Document();
 

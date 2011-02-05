@@ -2,7 +2,7 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-01-29
+// update: 2011-02-05
 //=========================================================
 using System;
 
@@ -18,7 +18,8 @@ namespace Sgry.Azuki
 		EditAction[] _Stack;
 		int _Capacity = 32;
 		int _NextIndex = 0;
-		bool _IsGroupingActions = false;
+		EditAction _GroupingUndoChain = null;
+		EditAction _LastSavedAction = null;
 		#endregion
 
 		#region Init / Dispose
@@ -37,11 +38,13 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void Add( EditAction action )
 		{
-			if( _IsGroupingActions )
+			if( _GroupingUndoChain != null )
 			{
 				//--- executing group UNDO ---
-				// chain given action to latest action
-				action.Next = GetUndoAction();
+				// put given action to the head of the chain
+				action.Next = _GroupingUndoChain;
+				_GroupingUndoChain = action;
+				return;
 			}
 
 			// if there is no more space, expand buffer
@@ -108,10 +111,9 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void BeginUndo()
 		{
-			if( _IsGroupingActions == false )
+			if( _GroupingUndoChain == null )
 			{
-				Add( new EditAction(null, 0, null, null, 0, 0, null) );
-				_IsGroupingActions = true;
+				_GroupingUndoChain = new EditAction( null, 0, null, null, 0, 0, null );
 			}
 		}
 
@@ -120,7 +122,54 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void EndUndo()
 		{
-			_IsGroupingActions = false;
+			if( _GroupingUndoChain != null )
+			{
+				EditAction groupedAction = _GroupingUndoChain;
+				_GroupingUndoChain = null; // nullify this, otherwise Add() adds it to the end of the chain again
+				Add( groupedAction );
+			}
+		}
+
+		/// <summary>
+		/// Gets whether the current state is lastly saved state or not.
+		/// </summary>
+		public bool IsSavedState
+		{
+			get
+			{
+				// if Azuki is grouping one or more actions,
+				// it is safe to say the state must change
+				// regardless whether current (before concluding grouped UNDO) state
+				// is saved-state or not.
+				if( _GroupingUndoChain != null && _GroupingUndoChain.Next != null )
+				{
+					return false;
+				}
+
+				if( 0 < _NextIndex )
+				{
+					return (_LastSavedAction == _Stack[_NextIndex-1]);
+				}
+				else
+				{
+					return (_LastSavedAction == null);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Remembers the current state as 'saved-state.'
+		/// </summary>
+		public void SetSavedState()
+		{
+			if( 0 < _NextIndex )
+			{
+				_LastSavedAction = _Stack[_NextIndex-1];
+			}
+			else
+			{
+				_LastSavedAction = null;
+			}
 		}
 		#endregion
 
@@ -143,6 +192,14 @@ namespace Sgry.Azuki
 				return (_NextIndex < _Stack.Length
 					&& _Stack[_NextIndex] != null);
 			}
+		}
+
+		/// <summary>
+		/// Whether group UNDO/REDO is executing or not.
+		/// </summary>
+		public bool IsGroupingActions
+		{
+			get{ return (_GroupingUndoChain != null); }
 		}
 
 		/// <summary>

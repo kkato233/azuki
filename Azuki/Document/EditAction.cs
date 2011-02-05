@@ -2,7 +2,7 @@
 // brief: Recorded editing action for UNDO/REDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-01-29
+// update: 2011-02-05
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -82,6 +82,7 @@ namespace Sgry.Azuki
 			Debug.Assert( _Index <= _Document.Length, "Invalid state; _Index:"+_Index+", _Document.Length:"+_Document.Length );
 
 			// execute UNDO actions during stopping to record actions.
+			bool wasRecordingHistory = _Document.IsRecordingHistory;
 			_Document.IsRecordingHistory = false;
 			{
 				// release selection to ensure that the graphic will be properly updated.
@@ -110,7 +111,7 @@ namespace Sgry.Azuki
 					}
 				}
 			}
-			_Document.IsRecordingHistory = true;
+			_Document.IsRecordingHistory = wasRecordingHistory;
 		}
 
 		/// <summary>
@@ -200,7 +201,38 @@ namespace Sgry.Azuki
 		/// <summary>ToString for debug :)</summary>
 		public override string ToString()
 		{
-			return "[" + _Index + "|" + _DeletedText + "|" + _InsertedText + "]";
+			System.Text.StringBuilder text = new System.Text.StringBuilder( 64 );
+			EditAction action = this;
+
+			do
+			{
+				text.Append( action._Index );
+				if( action._DeletedText != null && 0 < action._DeletedText.Length )
+				{
+					text.AppendFormat( null, "-[{0}]",
+							action._DeletedText
+							.Substring( 0, Math.Min(16, action._DeletedText.Length) )
+							.Replace("\r", "<CR>")
+							.Replace("\n", "<LF>")
+						);
+				}
+				if( action._InsertedText != null && 0 < action._InsertedText.Length )
+				{
+					text.AppendFormat( null, "+[{0}]",
+							action._InsertedText
+							.Substring( 0, Math.Min(16, action._InsertedText.Length) )
+							.Replace("\r", "<CR>")
+							.Replace("\n", "<LF>")
+						);
+				}
+				text.Append( '_' );
+
+				action = action.Next;
+			}
+			while( action != null );
+
+			text.Length--;
+			return text.ToString();
 		}
 #		endif
 	}

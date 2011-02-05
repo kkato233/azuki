@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-01-29
+// update: 2011-02-05
 //=========================================================
 using System;
 using System.Collections;
@@ -31,9 +31,9 @@ namespace Sgry.Azuki
 		EditHistory _History = new EditHistory();
 		SelectionManager _SelMan;
 		bool _IsRecordingHistory = true;
+		bool _IsSuppressingDirtyStateChangedEvent = false;
 		string _EolCode = "\r\n";
 		bool _IsReadOnly = false;
-		bool _IsDirty = false;
 		IHighlighter _Highlighter = null;
 		IWordProc _WordProc = new DefaultWordProc();
 		ViewParam _ViewParam = new ViewParam();
@@ -78,43 +78,59 @@ namespace Sgry.Azuki
 
 		#region States
 		/// <summary>
-		/// Gets or sets the flag that is true if there are any unsaved modifications.
+		/// Gets or sets whether any unsaved modifications exist or not.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Dirty flag is the flag that is true if there are any unsaved modifications.
-		/// Although any changes occured in Azuki sets this flag true automatically,
-		/// setting this flag back to false must be done by user manually.
-		/// Application is responsible to do so after saving content.
+		/// This property will be true if there is any unsaved modifications.
+		/// Although Azuki maintains almost all modification history in itself,
+		/// it cannot detect when the content was saved
+		/// because saving content to file or other means is done outside of it;
+		/// done by the application using Azuki.
+		/// Because of this, application is responsible to set this property to False
+		/// on saving content manually.
+		/// </para>
+		/// <para>
+		/// Note that attempting to set this property True by application code
+		/// will raise an InvalidOperationException.
+		/// Because any document cannot be turned 'dirty' without modification,
+		/// and modification by Document.Replace automatically set this property True
+		/// so doing so in application code is not needed.
 		/// </para>
 		/// </remarks>
+		/// <exception cref="System.InvalidOperationException">
+		/// True was set as a new value.
+		/// - OR -
+		/// Modified while grouping UNDO actions.
+		/// </exception>
 		public bool IsDirty
 		{
-			get{ return _IsDirty; }
+			get{ return !_History.IsSavedState; }
 			set
 			{
-				bool valueChanged = (_IsDirty != value);
-				
-				// apply value
-				_IsDirty = value;
+				if( value == true )
+					throw new InvalidOperationException( "Document.IsDirty must not be set True by application code." );
 
-				// 'clean' up dirty state of modified lines
-				if( _IsDirty == false )
+				if( _History.IsGroupingActions )
+					throw new InvalidOperationException( "dirty state must not be modified while grouping UNDO actions." );
+
+				if( _History.IsSavedState != value )
+					return;
+
+				// clean up dirty state of all modified lines
+				for( int i=0; i<_LDS.Count; i++ )
 				{
-					for( int i=0; i<_LDS.Count; i++ )
+					if( _LDS[i] == LineDirtyState.Dirty )
 					{
-						if( _LDS[i] == LineDirtyState.Dirty )
-						{
-							_LDS[i] = LineDirtyState.Cleaned;
-						}
+						_LDS[i] = LineDirtyState.Cleaned;
 					}
 				}
 
+				// remember current state as lastly saved state
+				_History.SetSavedState();
+
 				// invoke event
-				if( valueChanged )
-				{
-					InvokeDirtyStateChanged();
-				}
+				InvokeDirtyStateChanged();
 			}
 		}
 
@@ -906,9 +922,11 @@ namespace Sgry.Azuki
 			EditAction undo;
 			LineDirtyStateUndoInfo ldsUndoInfo = null;
 			int affectedBeginLI = -1;
+			bool wasSavedState;
 
 			// first of all, remember current dirty state of the lines
 			// which will be modified by this replacement
+			wasSavedState = _History.IsSavedState;
 			if( _IsRecordingHistory )
 			{
 				ldsUndoInfo = new LineDirtyStateUndoInfo();
@@ -1019,7 +1037,11 @@ namespace Sgry.Azuki
 			Debug.Assert( _LHI.Count == _LDS.Count, "LHI.Count("+_LHI.Count+") is not LDS.Count("+_LDS.Count+")" );
 
 			// cast event
-			IsDirty = true;
+			if( _IsSuppressingDirtyStateChangedEvent == false
+				&& _History.IsSavedState != wasSavedState )
+			{
+				InvokeDirtyStateChanged();
+			}
 			InvokeContentChanged( begin, oldText, text );
 			InvokeSelectionChanged( oldAnchor, oldCaret, null, true );
 		}
@@ -1400,7 +1422,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This method restores the modification lastly done to this document.
+		/// This method reverses the effect of lastly done modification to this document.
 		/// If there is no UNDOable action, this method will do nothing.
 		/// </para>
 		/// <para>
@@ -1411,10 +1433,37 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Document.CanUndo">Document.CanUndo property</seealso>
 		public void Undo()
 		{
-			if( CanUndo )
+			// first of all, stop grouping actions
+			if( _History.IsGroupingActions )
+				EndUndo();
+
+			if( CanUndo == false )
+				return;
+
+			bool wasSavedState = _History.IsSavedState;
+
+			// Get the action to be undone.
+			EditAction action = _History.GetUndoAction();
+			Debug.Assert( action != null );
+
+			// Undo the action.
+			// Note that an UNDO may includes multiple actions
+			// so executing it may call Document.Replace multiple times.
+			// Because Document.Replace also invokes DirtyStateChanged event by itself,
+			// designing to make sure Document.Replace called in UNDO is rather complex.
+			// So here I use a special flag to supress invoking event in Document.Replace
+			// ... to make sure unnecessary events will never be invoked.
+			_IsSuppressingDirtyStateChangedEvent = true;
 			{
-				EditAction action = _History.GetUndoAction();
 				action.Undo();
+			}
+			_IsSuppressingDirtyStateChangedEvent = false;
+
+			// Invoke event if this operation
+			// changes dirty state of this document
+			if( _History.IsSavedState != wasSavedState )
+			{
+				InvokeDirtyStateChanged();
 			}
 		}
 
@@ -1435,7 +1484,7 @@ namespace Sgry.Azuki
 		public void ClearHistory()
 		{
 			_History.Clear();
-			_IsDirty = false;
+			_History.SetSavedState();
 			for( int i=0; i<_LDS.Count; i++ )
 			{
 				_LDS[i] = LineDirtyState.Clean;
@@ -1453,10 +1502,38 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public void Redo()
 		{
-			if( CanRedo )
+			// first of all, stop grouping actions
+			// (this must be done before evaluating CanRedo because EndUndo changes it)
+			if( _History.IsGroupingActions )
+				EndUndo();
+
+			if( CanRedo == false )
+				return;
+
+			bool wasSavedState = _History.IsSavedState;
+
+			// Get the action to be done again.
+			EditAction action = _History.GetRedoAction();
+			Debug.Assert( action != null );
+
+			// Redo the action.
+			// Note that an REDO may includes multiple actions
+			// so executing it may call Document.Replace multiple times.
+			// Because Document.Replace also invokes DirtyStateChanged event by itself,
+			// designing to make sure Document.Replace called in REDO is rather complex.
+			// So here I use a special flag to supress invoking event in Document.Replace
+			// ... to make sure unnecessary events will never be invoked.
+			_IsSuppressingDirtyStateChangedEvent = true;
 			{
-				EditAction action = _History.GetRedoAction();
 				action.Redo();
+			}
+			_IsSuppressingDirtyStateChangedEvent = false;
+
+			// Invoke event if this operation
+			// changes dirty state of this document
+			if( _History.IsSavedState != wasSavedState )
+			{
+				InvokeDirtyStateChanged();
 			}
 		}
 

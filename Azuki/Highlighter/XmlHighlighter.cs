@@ -1,7 +1,7 @@
 ﻿// file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2009-10-31
+// update: 2011-02-19
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,26 @@ namespace Sgry.Azuki.Highlighter
 		#region Fields
 		static readonly string DefaultWordCharSet = null;
 		List<Enclosure> _Enclosures = new List<Enclosure>();
+		#endregion
+
+		#region Properties
+		/// <summary>
+		/// Gets or sets whether a highlighter hook procedure can be installed or not.
+		/// </summary>
+		public bool CanUseHook
+		{
+			get{ return false; }
+		}
+
+		/// <summary>
+		/// Gets or sets highlighter hook procedure.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">This highlighter does not support hook procedure.</exception>
+		public HighlightHook HookProc
+		{
+			get{ throw new NotSupportedException(); }
+			set{ throw new NotSupportedException(); }
+		}
 		#endregion
 
 		#region Init / Dispose

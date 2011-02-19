@@ -39,11 +39,21 @@ class Parser {
 
 int sectionLevel = 0;
 	int curlyBracketDepth = 0;
+	internal Sgry.Azuki.Highlighter.HighlightHook _Hook = null;
 
 	void Highlight( Token t, CharClass klass )
 	{
 		CharClass k;
 		
+		// use hook procedure if installed
+		if( _Hook != null
+			&& _Hook(doc, t.val, t.pos, klass) == true )
+		{
+			return;
+		}
+
+		// no hook was installed or the hook did nothing.
+		// highlight this word normally
 		k = klass;
 		if( 0 < curlyBracketDepth )
 		{

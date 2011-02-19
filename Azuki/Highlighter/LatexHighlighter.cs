@@ -1,7 +1,7 @@
 // file: LatexHighlighter.cs
 // brief: Highlighter for LaTeX.
 // author: YAMAMOTO Suguru
-// update: 2009-06-17
+// update: 2011-02-19
 //=========================================================
 using System;
 using Sgry.Azuki.Highlighter.Coco.Latex;
@@ -13,7 +13,27 @@ namespace Sgry.Azuki.Highlighter
 	/// </summary>
 	class LatexHighlighter : IHighlighter
 	{
-		Parser _Parser;
+		HighlightHook _Hook = null;
+
+		#region Properties
+		/// <summary>
+		/// Gets or sets whether a highlighter hook procedure can be installed or not.
+		/// </summary>
+		public bool CanUseHook
+		{
+			get{ return true; }
+		}
+
+		/// <summary>
+		/// Gets or sets highlighter hook procedure.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">This highlighter does not support hook procedure.</exception>
+		public HighlightHook HookProc
+		{
+			get{ return _Hook; }
+			set{ _Hook = value; }
+		}
+		#endregion
 
 		/// <summary>
 		/// Creates a new instance.
@@ -45,10 +65,11 @@ namespace Sgry.Azuki.Highlighter
 			dirtyEnd = doc.Length;
 
 			// highlight with generated parser
-			_Parser = new Parser( doc, dirtyBegin );
+			Parser parser = new Parser( doc, dirtyBegin );
+			parser._Hook = this._Hook;
 			try
 			{
-				_Parser.Parse();
+				parser.Parse();
 			}
 			catch( FatalError )
 			{}

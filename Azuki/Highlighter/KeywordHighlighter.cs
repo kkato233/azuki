@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2010-04-18
+// update: 2011-02-19
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -29,8 +29,9 @@ namespace Sgry.Azuki.Highlighter
 	/// </list>
 	/// <para>
 	/// Keyword set is a set of keywords.
-	/// KeywordHighlighter scans document and highlight all registered keywords found,
-	/// as char-class associated with the keyword set.
+	/// KeywordHighlighter searches document for registered keywords and,
+	/// for each found word, applies char-class associated with the keyword set
+	/// to the characters consisting the word.
 	/// For example, C/C++ source code includes keywords and pre-processor macro keywords
 	/// so user may define one keyword set containing all C/C++ keywords and associate
 	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>.Keyword,
@@ -42,15 +43,16 @@ namespace Sgry.Azuki.Highlighter
 	/// </para>
 	/// <para>
 	/// Line highlight is a text pattern that begins with particular pattern at anywhere in a line
-	/// and must ends at the end of the line.
+	/// and ends at the end of the line.
 	/// Line highlight is designed to highlight single line comment syntax
 	/// that very many programming language defines.
-	/// To register line highlight target, use
-	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddLineHighlight">AddLineHighlight</see> method.
+	/// To register targets of line highlight, use
+	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddLineHighlight"
+	/// >AddLineHighlight</see> method.
 	/// </para>
 	/// <para>
-	/// Enclosure is a text pattern that is enclosed with beginning pattern and ending pattern.
-	/// Typical example of enclosure type is &quot;string literal&quot; and &quot;single line comment&quot;
+	/// Enclosure is a text pattern that is enclosed with a beginning pattern and an ending pattern.
+	/// Typical example of enclosure type is &quot;string literal&quot; and &quot;multiple line comment&quot;
 	/// in programming languages.
 	/// To register enclosure target, use
 	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddEnclosure(String, String, CharClass, Boolean, Char)">
@@ -112,6 +114,7 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		const string DefaultWordCharSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+		HighlightHook _HookProc = null;
 		string _WordCharSet = null;
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
 		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
@@ -123,6 +126,25 @@ namespace Sgry.Azuki.Highlighter
 		#endregion
 
 		#region Highlight Settings
+		/// <summary>
+		/// Gets or sets whether a highlighter hook procedure can be installed or not.
+		/// </summary>
+		public bool CanUseHook
+		{
+			get{ return true; }
+		}
+
+		/// <summary>
+		/// Gets or sets highlighter hook procedure.
+		/// </summary>
+		/// <seealso cref="Sgry.Azuki.Highlighter.IHighlighter.CanUseHook">IHighlighter.CanUseHook property</seealso>
+		/// <seealso cref="Sgry.Azuki.Highlighter.HighlightHook">HighlightHook delegate</seealso>
+		public HighlightHook HookProc
+		{
+			get{ return _HookProc; }
+			set{ _HookProc = value; }
+		}
+
 		/// <summary>
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
@@ -516,10 +538,7 @@ dirtyEnd = doc.Length;
 				
 				// this token is normal class; reset classes and seek to next token
 				nextIndex = HighlighterUtl.FindNextToken( doc, index, _WordCharSet );
-				for( int i=index; i<nextIndex; i++ )
-				{
-					doc.SetCharClass( i, CharClass.Normal );
-				}
+				Highlight( doc, index, nextIndex, CharClass.Normal );
 //				lastChangedCharIndex = nextIndex-1;
 				index = nextIndex;
 			}
@@ -529,7 +548,7 @@ dirtyEnd = doc.Length;
 		/// Highlight part between a enclosing pair registered.
 		/// </summary>
 		/// <returns>Index of next parse point if a pair was highlighted or startIndex</returns>
-		static int TryHighlightEnclosure( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
+		int TryHighlightEnclosure( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
 		{
 			Enclosure pair;
 			int closePos;
@@ -549,8 +568,7 @@ dirtyEnd = doc.Length;
 				// if this is an opener without closer, highlight
 				if( endIndex == doc.Length )
 				{
-					for( int i=startIndex; i<doc.Length; i++ )
-						doc.SetCharClass( i, pair.klass );
+					Highlight( doc, startIndex, doc.Length, pair.klass );
 					return doc.Length;
 				}
 				else
@@ -560,10 +578,7 @@ dirtyEnd = doc.Length;
 			}
 
 			// highlight enclosed part
-			for( int i = 0; i < closePos + pair.closer.Length - startIndex; i++ )
-			{
-				doc.SetCharClass( startIndex+i, pair.klass );
-			}
+			Highlight( doc, startIndex, closePos + pair.closer.Length, pair.klass );
 			return closePos + pair.closer.Length;
 		}
 
@@ -571,7 +586,7 @@ dirtyEnd = doc.Length;
 		/// Highlight line comment.
 		/// </summary>
 		/// <returns>Index of next parse point if highlight succeeded or startIndex</returns>
-		static int TryHighlightLineComment( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
+		int TryHighlightLineComment( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
 		{
 			int closePos;
 			Enclosure pair;
@@ -587,17 +602,14 @@ dirtyEnd = doc.Length;
 			closePos = HighlighterUtl.GetLineEndIndexFromCharIndex( doc, startIndex );
 
 			// highlight the line
-			for( int i=startIndex; i<closePos; i++ )
-			{
-				doc.SetCharClass( i, pair.klass );
-			}
+			Highlight( doc, startIndex, closePos, pair.klass );
 			return closePos;
 		}
 
 		/// <summary>
 		/// Do keyword matching in [startIndex, endIndex) through keyword char-tree.
 		/// </summary>
-		static bool TryHighlightKeyword( Document doc, List<KeywordSet> keywords, string wordCharSet, int startIndex, int endIndex, out int nextSeekIndex )
+		bool TryHighlightKeyword( Document doc, List<KeywordSet> keywords, string wordCharSet, int startIndex, int endIndex, out int nextSeekIndex )
 		{
 			bool highlighted = false;
 
@@ -614,7 +626,7 @@ dirtyEnd = doc.Length;
 			return highlighted;
 		}
 
-		static bool TryHighlightKeyword_One(
+		bool TryHighlightKeyword_One(
 				Document doc, KeywordSet set, string wordCharSet,
 				int startIndex, int endIndex, out int nextSeekIndex
 			)
@@ -654,7 +666,7 @@ dirtyEnd = doc.Length;
 						// (at least the keyword was partially matched,
 						// and the token in document at this place ends exactly)
 						// highlight and exit
-						Utl.Highlight( doc, index, node, set.klass );
+						Highlight( doc, index-node.depth+1, index+1, set.klass );
 						nextSeekIndex = index + 1;
 						return true;
 					}
@@ -787,6 +799,25 @@ dirtyEnd = doc.Length;
 			return false;
 		}
 
+		void Highlight( Document doc, int begin, int end, CharClass klass )
+		{
+			// try to use hook if installed
+			if( _HookProc != null )
+			{
+				string token = doc.GetTextInRange( begin, end );
+				if( _HookProc(doc, token, begin, klass) == true )
+				{
+					return; // hook did something to this token.
+				}
+			}
+
+			// normally highlight this token
+			for( int i=begin; i<end; i++ )
+			{
+				doc.SetCharClass( i, klass );
+			}
+		}
+
 		static class Utl
 		{
 			public static int FindLeastMaximum( SplitArray<int> numbers, int value )
@@ -805,14 +836,6 @@ dirtyEnd = doc.Length;
 				}
 
 				return numbers.Count - 1;
-			}
-
-			public static void Highlight( Document doc, int index, CharTreeNode node, CharClass klass )
-			{
-				for( int i=0; i<node.depth; i++ )
-				{
-					doc.SetCharClass( index-i, klass );
-				}
 			}
 		}
 		#endregion

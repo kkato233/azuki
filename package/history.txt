@@ -10,6 +10,7 @@
  * mod: built-in URI marker is now disabled by default
  * fix: improved logic to detect URI
  * fix: now information of marking ID of URI (0) can be changed; it is now not 'reserved ID' but simply 'internally used ID'
+ * fix: built-in highlighter for C/C++ now highlights preprocessor macros properly if there are spaces between '#' and keyword of it (31 spaces at maximum)
  * fix: bug of kinsoku shori: some of the characters in CharsForbiddenToStartLine or CharsForbiddenToEndLine of DefaultWordProcforbidden can be ignored if unsorted character array was set to them
  * fix: added ShowsDirBar property to IUserInterface
  * fix: [Ann] little resource leak in searching GUI of Ann

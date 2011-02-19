@@ -1,9 +1,10 @@
 ﻿// file: CppHighlighter.cs
 // brief: C/C++ highlighter.
 // author: YAMAMOTO Suguru
-// update: 2009-09-05
+// update: 2011-02-19
 //=========================================================
 using System;
+using System.Collections.Generic;
 using Color = System.Drawing.Color;
 
 namespace Sgry.Azuki.Highlighter
@@ -13,6 +14,12 @@ namespace Sgry.Azuki.Highlighter
 	/// </summary>
 	class CppHighlighter : KeywordHighlighter
 	{
+		static readonly List<string> MacroKeywords = new List<string>( new string[] {
+				"define", "elif", "else", "endif", "error",
+				"if", "ifdef", "ifndef", "import", "include",
+				"line", "pragma", "undef"
+			} );
+
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
@@ -34,7 +41,8 @@ namespace Sgry.Azuki.Highlighter
 			}, CharClass.Keyword );
 
 			AddKeywordSet( new string[] {
-				"NULL", "offsetof", "ptrdiff_t", "size_t", "wchar_t"
+				"__FILE__", "__LINE__", "NULL", "offsetof", "ptrdiff_t", "size_t",
+				"u_char", "u_int", "u_long", "u_short", "wchar_t"
 			}, CharClass.Keyword2 );
 
 			AddKeywordSet( new string[] {
@@ -43,17 +51,54 @@ namespace Sgry.Azuki.Highlighter
 				"WORD", "WPARAM"
 			}, CharClass.Keyword3 );
 
-			AddKeywordSet( new string[] {
-				"#define", "#elif", "#else", "#endif", "#error",
-				"#if", "#ifdef", "#ifndef", "#import", "#include",
-				"#line", "#pragma", "#undef",
-				"__FILE__", "__LINE__"
-			}, CharClass.Macro );
-
 			AddEnclosure( "'", "'", CharClass.String, false, '\\' );
 			AddEnclosure( "\"", "\"", CharClass.String, false, '\\' );
 			AddEnclosure( "/*", "*/", CharClass.Comment, true );
 			AddLineHighlight( "//", CharClass.Comment );
+
+			base.HookProc = HighlightMacro;
+		}
+
+		bool HighlightMacro( Document doc, string token, int index, CharClass klass )
+		{
+			int foundIndex;
+
+			// if one previous character is not a space or '#', ignore it
+			if( index <= 0 || "# \t".IndexOf(doc[index-1]) < 0 )
+			{
+				return false;
+			}
+
+			// if this token is not a macro keyword, ignore it
+			foundIndex = MacroKeywords.BinarySearch( token );
+			if( foundIndex < 0 )
+			{
+				return false;
+			}
+
+			// a suspicious token found.
+			// search for '#' for 32 characters back,
+			// and highlight it if found
+			for( int i=index-1; 0<=i && index-32<=i; --i )
+			{
+				if( doc[i] == '#' )
+				{
+					// found a sharp.
+					// highlight from the sharp to the end of the keyword
+					for( int j=i; j<index+token.Length; j++ )
+					{
+						doc.SetCharClass( j, CharClass.Macro );
+					}
+					return true;
+				}
+				else if( doc[i] != ' ' && doc[i] != '\t' )
+				{
+					// not a sharp nor a space found so this token is not a macro.
+					break;
+				}
+			}
+
+			return false;
 		}
 	}
 }

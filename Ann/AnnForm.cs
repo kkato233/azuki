@@ -48,7 +48,6 @@ namespace Sgry.Ann
 			_Azuki.UseCtrlTabToMoveFocus = false;
 			_Azuki.CaretMoved += _Azuki_CaretMoved;
 #			endif
-			_Azuki.OverwriteModeChanged += _Azuki_OverwriteModeChanged;
 
 			_SearchPanel.SetFont( this.Font );
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;
@@ -491,6 +490,7 @@ namespace Sgry.Ann
 			_Azuki.GotFocus += delegate {
 				DeactivateSearchPanel();
 			};
+			_Azuki.OverwriteModeChanged += _Azuki_OverwriteModeChanged;
 			//
 			// _TabPanel
 			//

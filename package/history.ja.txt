@@ -16,6 +16,7 @@
  * fix: テキストエリア外でのダブルクリックに対して Azuki 自身は何もしないように修正
  * fix: IUserInterface に ShowsDirBar プロパティを追加
  * fix: 直前のマウスボタン押し下げ位置から遠い場所で発生した押し下げ解放イベントの発生時に、AzukiControl.Click や AzukiControl.MouseClick イベントを発生しないように
+ * fix: AzukiControl.Click と AzukiControl.MouseClick イベント時に渡される IMouseEventArgs の Location プロパティがマウスボタンが放された位置ではなくマウスボタン押し下げ位置だった問題を修正
  * fix: [Ann] Ann の検索 GUI パネルでわずかにリソースリークしていた問題を修正
 
 == 1.6.0 (2010-12-11) ==

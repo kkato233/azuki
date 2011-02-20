@@ -16,6 +16,7 @@
  * fix: added ShowsDirBar property to IUserInterface
  * fix: now Azuki do nothing for double click in other areas than text area
  * fix: now AzukiControl.Click nor AzukiControl.MouseClick event will not be invoked on a MouseUp event which was occurred at far place from where preceding MouseDown event occurred at
+ * fix: now IMouseEventArgs.Location for AzukiControl.Click and AzukiControl.MouseClick event is not the position of last MouseDown event but the position of the last MouseUp event
  * fix: [Ann] little resource leak in searching GUI of Ann
 
 == 1.6.0 (2010-12-11) ==

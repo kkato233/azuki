@@ -2071,7 +2071,7 @@ namespace Sgry.Azuki.WinForms
 
 			// gather information about the event
 			MouseEventArgs mea = new MouseEventArgs(
-					MouseButtons.Left, 2, _LastMouseDownPos.X, _LastMouseDownPos.Y, 0
+					MouseButtons.Left, 2, currentPos.X, currentPos.Y, 0
 				);
 
 			// invoke event
@@ -2092,7 +2092,7 @@ namespace Sgry.Azuki.WinForms
 
 			// gather information about the event
 			MouseEventArgs mea = new MouseEventArgs(
-					MouseButtons.Left, 2, _LastMouseDownPos.X, _LastMouseDownPos.Y, 0
+					MouseButtons.Left, 2, currentPos.X, currentPos.Y, 0
 				);
 
 			// invoke event

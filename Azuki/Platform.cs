@@ -1,7 +1,7 @@
 // file: Platform.cs
 // brief: Platform API caller.
 // author: YAMAMOTO Suguru
-// update: 2010-12-04
+// update: 2011-02-20
 //=========================================================
 using System;
 using System.Text;
@@ -53,10 +53,23 @@ namespace Sgry.Azuki
 		void SetClipboardText( string text, TextDataType dataType );
 		#endregion
 
+		#region UI parameters
+		/// <summary>
+		/// It will be regarded as a drag operation by the system
+		/// if mouse cursor moved beyond this rectangle.
+		/// </summary>
+		Size DragSize
+		{
+			get;
+		}
+		#endregion
+
+		#region Graphic Interface
 		/// <summary>
 		/// Gets a graphic device context from a window.
 		/// </summary>
 		IGraphics GetGraphics( object window );
+		#endregion
 	}
 
 	/// <summary>

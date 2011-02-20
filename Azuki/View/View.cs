@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-01-29
+// update: 2011-02-20
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,6 @@ namespace Sgry.Azuki
 		int _LinePadding = 1;
 		int _TabWidth = DefaultTabWidth;
 		int _TabWidthInPx;
-		int _LCharWidth;
 		int _XCharWidth;
 		int _DirtBarWidth;
 		int _HRulerHeight;	// height of the largest lines of the horizontal ruler
@@ -245,7 +244,6 @@ namespace Sgry.Azuki
 
 			// update other metrics
 			_SpaceWidth = g.MeasureText( " " ).Width;
-			_LCharWidth = g.MeasureText( "l" ).Width;
 			_XCharWidth = g.MeasureText( "x" ).Width;
 			_FullSpaceWidth = g.MeasureText( "\x3000" ).Width;
 			_LineHeight = g.MeasureText( "Mp" ).Height;
@@ -572,11 +570,6 @@ namespace Sgry.Azuki
 		public int SpaceWidthInPx
 		{
 			get{ return _SpaceWidth; }
-		}
-
-		internal int DragThresh
-		{
-			get{ return _LCharWidth; }
 		}
 		#endregion
 

@@ -2,12 +2,13 @@
 // brief: Platform API caller for Windows.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2010-07-13
+// update: 2011-02-20
 //=========================================================
 using System;
 using System.Drawing;
 using System.Text;
 using Control = System.Windows.Forms.Control;
+using SystemInformation = System.Windows.Forms.SystemInformation;
 using Marshal = System.Runtime.InteropServices.Marshal;
 using Debug = Sgry.DebugUtl;
 
@@ -192,6 +193,24 @@ namespace Sgry.Azuki.WinForms
 				{
 					WinApi.CloseClipboard();
 				}
+			}
+		}
+		#endregion
+
+		#region UI parameters
+		/// <summary>
+		/// It will be regarded as a drag operation by the system
+		/// if mouse cursor moved beyond this rectangle.
+		/// </summary>
+		public Size DragSize
+		{
+			get
+			{
+#				if !PocketPC
+				return SystemInformation.DragSize;
+#				else
+				return new Size( 4, 4 );
+#				endif
 			}
 		}
 		#endregion

@@ -940,7 +940,8 @@ namespace Sgry.Azuki
 			{
 				int xOffset = Math.Abs( pos.X - _MouseDownVirPos.X );
 				int yOffset = Math.Abs( pos.Y - _MouseDownVirPos.Y );
-				if( xOffset <= View.DragThresh && yOffset <= View.DragThresh )
+				if( xOffset <= Plat.Inst.DragSize.Width
+					&& yOffset <= Plat.Inst.DragSize.Height )
 				{
 					return;
 				}

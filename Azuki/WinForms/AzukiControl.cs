@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-02-05
+// update: 2011-02-20
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -2030,6 +2030,12 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		protected override void OnMouseClick( MouseEventArgs e )
 		{
+			Point currentPos = PointToClient( Control.MousePosition );
+			if( Utl.IsClick(currentPos, _LastMouseDownPos) )
+			{
+				return;
+			}
+
 			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
 			base.OnMouseClick( amea );
 		}
@@ -2041,6 +2047,12 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		protected override void OnMouseDoubleClick( MouseEventArgs e )
 		{
+			Point currentPos = PointToClient( Control.MousePosition );
+			if( Utl.IsClick(currentPos, _LastMouseDownPos) )
+			{
+				return;
+			}
+
 			WinFormsMouseEventArgs amea = Utl.CreateWinFormsMouseEventArgs( View, e );
 			base.OnMouseDoubleClick( amea );
 		}
@@ -2051,6 +2063,12 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		protected override void OnClick( EventArgs e )
 		{
+			Point currentPos = PointToClient( Control.MousePosition );
+			if( Utl.IsClick(currentPos, _LastMouseDownPos) )
+			{
+				return;
+			}
+
 			// gather information about the event
 			MouseEventArgs mea = new MouseEventArgs(
 					MouseButtons.Left, 2, _LastMouseDownPos.X, _LastMouseDownPos.Y, 0
@@ -2066,6 +2084,12 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		protected override void OnDoubleClick( EventArgs e )
 		{
+			Point currentPos = PointToClient( Control.MousePosition );
+			if( Utl.IsClick(currentPos, _LastMouseDownPos) )
+			{
+				return;
+			}
+
 			// gather information about the event
 			MouseEventArgs mea = new MouseEventArgs(
 					MouseButtons.Left, 2, _LastMouseDownPos.X, _LastMouseDownPos.Y, 0
@@ -2876,6 +2900,17 @@ namespace Sgry.Azuki.WinForms
 		#region Utilities
 		static class Utl
 		{
+			public static bool IsClick( Point lastMouseUpPos, Point lastMouseDownPos )
+			{
+				if( Math.Abs(lastMouseUpPos.X - lastMouseDownPos.X) <= Plat.Inst.DragSize.Width
+					&& Math.Abs(lastMouseUpPos.Y - lastMouseDownPos.Y) <= Plat.Inst.DragSize.Height )
+				{
+					return false;
+				}
+
+				return true;
+			}
+
 			public static WinFormsMouseEventArgs CreateWinFormsMouseEventArgs( IView view, MouseEventArgs e )
 			{
 				Point pt = new Point( e.X, e.Y );

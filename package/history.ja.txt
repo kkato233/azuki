@@ -5,6 +5,7 @@
  * add: 内蔵 URI マーカーを使うかどうか選択できるように（AzukiControl.MarksUri プロパティや Document.MarksUri プロパティ）
  * add: IView に情報エリアの矩形を取得するプロパティを追加（DirtBarRectangle、LineNumberAreaRectangle、TextAreaRectangle）
  * add: [Ann] 状況に応じて使用できないメニュー項目を無効化するように
+ * add: [Ann] すでに選択された URI をクリックすると選択を解除してクリック位置にキャレットを置くように
  * mod: Document.IsDirty プロパティを、コードで True に変更できないよう変更
  * mod: IHighlighter に標準のハイライト処理を差し替える「フック」機能用のプロパティを追加
  * mod: 内蔵 URI マーカーは標準で使わないように仕様変更

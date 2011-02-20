@@ -1,4 +1,4 @@
-// 2011-02-19
+// 2011-02-20
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1135,14 +1135,23 @@ namespace Sgry.Ann
 			AzukiControl azuki = MainForm.Azuki;
 			AzukiDocument doc = azuki.Document;
 			IMouseEventArgs mea = (IMouseEventArgs)e;
-			int begin, end;
+			int urlBegin, urlEnd, selBegin, selEnd;
 
 			if( mea.Index < doc.Length
-				&& doc.IsMarked(mea.Index, Marking.Uri) )
+				&& doc.IsMarked(mea.Index, Marking.Uri)
+				&& azuki.View.TextAreaRectangle.Contains(mea.Location) )
 			{
-				// select entire URI
-				doc.GetMarkedRange( mea.Index, Marking.Uri, out begin, out end );
-				doc.SetSelection( begin, end );
+				// select entire URI if not selected, or deselect if selected.
+				doc.GetMarkedRange( mea.Index, Marking.Uri, out urlBegin, out urlEnd );
+				doc.GetSelection( out selBegin, out selEnd );
+				if( selBegin != urlBegin && selEnd != urlEnd )
+				{
+					doc.SetSelection( urlBegin, urlEnd );
+				}
+				else
+				{
+					doc.SetSelection( mea.Index, mea.Index );
+				}
 				mea.Handled = true;
 			}
 		}

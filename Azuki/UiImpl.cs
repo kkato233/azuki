@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-02-05
+// update: 2011-02-20
 //=========================================================
 using System;
 using System.Text;
@@ -893,25 +893,25 @@ namespace Sgry.Azuki
 
 		internal void HandleDoubleClick( IMouseEventArgs e )
 		{
-			Point pos = e.Location;
-
 			if( _IsDisposed )
 				return;
-			if( pos.X < 0 || pos.Y < 0 )
+			if( e.Location.X < 0 || e.Location.Y < 0 )
 				return;
 
-			int clickedIndex;
-
 			// remember mouse down screen position and convert it to virtual view's coordinate
-			_MouseDownVirPos = pos;
-			View.ScreenToVirtual( ref pos );
+			_MouseDownVirPos = e.Location;
 
-			// calculate index of the clicked position
-			clickedIndex = View.GetIndexFromVirPos( pos );
+			// select a word there if it is in the text area
+			if( _View.TextAreaRectangle.Contains(_MouseDownVirPos) )
+			{
+				int clickedIndex;
+				Point pos = e.Location;
 
-			// select a word there
-			_UI.SelectionMode = TextDataType.Words;
-			Document.SetSelection( clickedIndex, clickedIndex, View );
+				View.ScreenToVirtual( ref pos );
+				clickedIndex = View.GetIndexFromVirPos( pos );
+				_UI.SelectionMode = TextDataType.Words;
+				Document.SetSelection( clickedIndex, clickedIndex, View );
+			}
 		}
 
 		internal void HandleMouseMove( IMouseEventArgs e )

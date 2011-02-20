@@ -1,4 +1,4 @@
-== 1.6.1 (    -  -  ) ==
+== 1.6.1 (2011-02-20) ==
  * add: Document.IsDirty が False に設定された状態に UNDO/REDO で戻ると自動的に同プロパティが False に戻るように
  * add: UNDO でテキスト編集結果だけでなく各行の変更有無の状態も復元するように
  * add: AzukiControl (IUserInterface) に CanCut、CanCopy、CanPaste プロパティを追加

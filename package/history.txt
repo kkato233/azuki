@@ -1,4 +1,4 @@
-== 1.6.1 (    -  -  ) ==
+== 1.6.1 (2011-02-20) ==
  * add: now Document.IsDirty will be False automatically when UNDO/REDO restores document to the state of when the Document.IsDirty was set False by application code
  * add: now UNDOing text modification also restores modification state of each lines
  * add: added CanCut, CanCopy, CanPaste properties to AzukiControl (IUserInterface.)

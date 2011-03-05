@@ -322,12 +322,10 @@ namespace Sgry.Azuki
 			set
 			{
 				_Document.MarksUri = value;
-				if( value )
-				{
-					// force mark URIs on drawing area
-					// by invalidating whole area and invoking owner draw events
-					_UI.Invalidate();
-				}
+
+				// force mark URIs on drawing area
+				// by invalidating whole area and invoking owner draw events
+				_UI.Invalidate();
 			}
 		}
 

@@ -1,7 +1,7 @@
 ﻿// file: UriMarker.cs
 // brief: a singleton class which marks URIs up in document.
 // author: YAMAMOTO Suguru
-// update: 2010-12-26
+// update: 2011-03-05
 //=========================================================
 using System;
 using System.Text;
@@ -72,12 +72,12 @@ namespace Sgry.Azuki
 			int lineHead, lineEnd;
 			bool shouldBeRedrawn;
 
-			if( doc.ViewParam.MarksUri == false )
+			if( doc.MarksUri == false )
 				return;
 
 			// update marking in this line
 			lineIndex = doc.GetLineIndexFromCharIndex( e.Index );
-			shouldBeRedrawn = MarkOneLine( doc, lineIndex );
+			shouldBeRedrawn = MarkOrUnmarkOneLine( doc, lineIndex, true );
 			if( shouldBeRedrawn )
 			{
 				// update entire graphic of the logical line
@@ -92,22 +92,19 @@ namespace Sgry.Azuki
 		{
 			IUserInterface ui = (IUserInterface)sender;
 
-			if( ui.Document.MarksUri == false )
-				return;
-
-			// scan a logical line only when the event has occurred at 
+			// mark up all URIs in the logical line
 			int scrernLineHeadIndex = ui.View.GetLineHeadIndex( e.LineIndex );
 			int logicalLineIndex = ui.Document.GetLineIndexFromCharIndex( scrernLineHeadIndex );
-			e.ShouldBeRedrawn = MarkOneLine( ui.Document, logicalLineIndex );
+			e.ShouldBeRedrawn = MarkOrUnmarkOneLine( ui.Document, logicalLineIndex, ui.MarksUri );
 		}
 		#endregion
 
 		#region Marking logic
 		/// <summary>
-		/// Mark one or more URIs in a logical line.
+		/// Marks URIs in a logical line.
 		/// </summary>
 		/// <returns>Whether specified line should be redrawn or not.</returns>
-		bool MarkOneLine( Document doc, int logicalLineIndex )
+		bool MarkOrUnmarkOneLine( Document doc, int logicalLineIndex, bool marks )
 		{
 			DebugUtl.Assert( doc != null );
 			DebugUtl.Assert( 0 <= logicalLineIndex );
@@ -116,12 +113,12 @@ namespace Sgry.Azuki
 			int lineBegin, lineEnd;
 			int lastMarkedIndex;
 			int seekIndex;
-			bool shouldUpdate = false;
+			int changeCount = 0;
 
 			// first of all, do nothing if document is empty.
 			if( doc.Length == 0 )
 			{
-				return shouldUpdate;
+				return false;
 			}
 
 			// prepare scanning
@@ -147,11 +144,18 @@ namespace Sgry.Azuki
 						// clear marking before this URI part
 						if( lastMarkedIndex < seekIndex )
 						{
-							doc.Unmark( lastMarkedIndex, seekIndex, Marking.Uri );
+							changeCount += doc.Unmark( lastMarkedIndex, seekIndex, Marking.Uri ) ? 1 : 0;
 						}
 
 						// mark the URI part
-						shouldUpdate = doc.Mark( seekIndex, uriEnd, Marking.Uri );
+						if( marks )
+						{
+							changeCount += doc.Mark( seekIndex, uriEnd, Marking.Uri ) ? 1 : 0;
+						}
+						else
+						{
+							changeCount += doc.Unmark( seekIndex, uriEnd, Marking.Uri ) ? 1 : 0;
+						}
 
 						// update seek position
 						lastMarkedIndex = uriEnd;
@@ -171,13 +175,13 @@ namespace Sgry.Azuki
 			// clear marking of remaining characters
 			if( lastMarkedIndex < lineEnd )
 			{
-				shouldUpdate = doc.Unmark( lastMarkedIndex, lineEnd, Marking.Uri );
+				changeCount += doc.Unmark( lastMarkedIndex, lineEnd, Marking.Uri ) ? 1 : 0;
 			}
 
-			return shouldUpdate;
+			return (0 < changeCount);
 		}
 
-		public int GetUriEnd( Document doc, int startIndex, out bool isMailAddress )
+		int GetUriEnd( Document doc, int startIndex, out bool isMailAddress )
 		{
 			if( doc == null )
 				throw new ArgumentNullException( "doc" );

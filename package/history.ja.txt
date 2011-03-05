@@ -1,6 +1,7 @@
 == 1.6.2 (2011-  -  ) ==
  * mod: マウスカーソルが水平ルーラーの上にある場合は矢印のカーソル画像を使うように
  * fix: マーク済み URI 文字列のマーキング情報が IUserInterface(AzukiControl) の MarksUri プロパティを false にすれば消去されるように修正
+ * fix: IUserInterface(AzukiControl) の CanUndo プロパティが、最初の変更による ContentChanged イベント発生時点で true に更新されていない問題を修正
  * fix: [Ann] 新規作成したドキュメントでは URI がマークされない問題を修正
 
 == 1.6.1 (2011-02-20) ==

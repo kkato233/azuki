@@ -1,6 +1,7 @@
 == 1.6.2 (2011-  -  ) ==
  * mod: Azuki uses 'Arrow' mouse cursor graphic when the cursor is on horizontal ruler area
  * fix: URIs already marked up will be unmarked when MarksUri property of IUserInterface (AzukiControl) is changed to false
+ * fix: CanUndo property of IUserInterface(AzukiControl) is not updated to True yet in ContentChanged event handler which is invoked when the document is firstly modified
  * fix: [Ann] URIs in newly created document will never be marked
 
 == 1.6.1 (2011-02-20) ==

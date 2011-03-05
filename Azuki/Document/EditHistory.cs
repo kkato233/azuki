@@ -2,7 +2,7 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-02-05
+// update: 2011-03-05
 //=========================================================
 using System;
 
@@ -42,7 +42,7 @@ namespace Sgry.Azuki
 			{
 				// put given action to the head of the chain
 				action.Next = _GroupingUndoChain;
-					_GroupingUndoChain = action;
+				_GroupingUndoChain = action;
 			}
 			else
 			{
@@ -173,7 +173,21 @@ namespace Sgry.Azuki
 		/// </summary>
 		public bool CanUndo
 		{
-			get{ return (0 < _NextIndex); }
+			get
+			{
+				if( 0 < _NextIndex )
+				{
+					// UNDOable action exists
+					return true;
+				}
+				else if( IsGroupingActions )
+				{
+					// group UNDO is going on
+					// so there will be an UNDOable action when it ends
+					return true;
+				}
+				return false;
+			}
 		}
 
 		/// <summary>

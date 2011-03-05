@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-02-20
+// update: 2011-03-05
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1198,18 +1198,8 @@ namespace Sgry.Azuki.WinForms
 			set
 			{
 				Document.SelectionMode = value;
-
-#				if !PocketPC
-				// update mouse cursor graphic
-				if( SelectionMode == TextDataType.Rectangle )
-				{
-					Cursor = Cursors.Arrow;
-				}
-				else
-				{
-					Cursor = Cursors.IBeam;
-				}
-#				endif
+				Point cursorPos = PointToClient( Cursor.Position );
+				_Impl.ResetCursorGraphic( cursorPos );
 			}
 		}
 

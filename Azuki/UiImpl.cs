@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-02-20
+// update: 2011-03-05
 //=========================================================
 using System;
 using System.Text;
@@ -1063,11 +1063,12 @@ namespace Sgry.Azuki
 			ResetCursorGraphic( cursorScreenPos );
 		}
 
-		void ResetCursorGraphic( Nullable<Point> cursorScreenPos )
+		public void ResetCursorGraphic( Nullable<Point> cursorScreenPos )
 		{
 #			if !PocketPC
 			// check state
 			bool onLineNumberArea = false;
+			bool onHRulerArea = false;
 			bool onSelectedText = false;
 			MouseCursor? cursorType = null;
 			if( cursorScreenPos != null )
@@ -1077,6 +1078,10 @@ namespace Sgry.Azuki
 				if( cursorScreenPos.Value.X < View.XofLeftMargin )
 				{
 					onLineNumberArea = true;
+				}
+				else if( cursorScreenPos.Value.Y < View.YofTopMargin )
+				{
+					onHRulerArea = true;
 				}
 				else if( Document.RectSelectRanges == null )
 				{
@@ -1109,6 +1114,10 @@ namespace Sgry.Azuki
 				_UI.SetCursorGraphic( MouseCursor.Arrow );
 			}
 			else if( onLineNumberArea )
+			{
+				_UI.SetCursorGraphic( MouseCursor.Arrow );
+			}
+			else if( onHRulerArea )
 			{
 				_UI.SetCursorGraphic( MouseCursor.Arrow );
 			}

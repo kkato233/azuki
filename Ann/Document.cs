@@ -1,4 +1,4 @@
-// 2010-02-13
+// 2010-03-05
 using System;
 using System.Text;
 using Sgry.Azuki;
@@ -25,6 +25,7 @@ namespace Sgry.Ann
 		public Document()
 		{
 			_FileType = FileType.TextFileType;
+			base.MarksUri = true;
 		}
 		#endregion
 

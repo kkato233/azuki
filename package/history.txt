@@ -1,3 +1,6 @@
+== 1.6.2 (2011-  -  ) ==
+ * fix: [Ann] URIs in newly created document will never be marked
+
 == 1.6.1 (2011-02-20) ==
  * add: now Document.IsDirty will be False automatically when UNDO/REDO restores document to the state of when the Document.IsDirty was set False by application code
  * add: now UNDOing text modification also restores modification state of each lines
@@ -18,11 +21,12 @@
  * fix: now AzukiControl.Click nor AzukiControl.MouseClick event will not be invoked on a MouseUp event which was occurred at far place from where preceding MouseDown event occurred at
  * fix: now IMouseEventArgs.Location for AzukiControl.Click and AzukiControl.MouseClick event is not the position of last MouseDown event but the position of the last MouseUp event
  * fix: [Ann] little resource leak in searching GUI of Ann
+ * fix: [Ann] tagged as version 1.6.1
 
 == 1.6.0 (2010-12-11) ==
  * add: supported word wrap including kinsoku shori
  * add: supported marking feature
- * add: supported clickable URL feature (through marking feature)
+ * add: supported clickable URI feature (through marking feature)
  * add: supported drag and drop editing of selected text (dragging rectangular selection is not supported)
  * add: now Azuki highlights a bracket which is matched to (is considered to be a counter-part of) a bracket at caret position
  * add: now Unicode combining character sequence can be treated as one character on selecting or editing

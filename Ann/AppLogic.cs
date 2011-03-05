@@ -1,4 +1,4 @@
-// 2011-02-20
+// 2011-03-05
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -792,7 +792,6 @@ namespace Sgry.Ann
 			}
 
 			// set document properties
-			doc.MarksUri = true;
 			doc.ClearHistory();
 			doc.FilePath = filePath;
 			doc.EolCode = Utl.AnalyzeEolCode( doc );

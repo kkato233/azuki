@@ -181,7 +181,7 @@ namespace Sgry.Azuki
 			return (0 < changeCount);
 		}
 
-		int GetUriEnd( Document doc, int startIndex, out bool isMailAddress )
+		public int GetUriEnd( Document doc, int startIndex, out bool isMailAddress )
 		{
 			if( doc == null )
 				throw new ArgumentNullException( "doc" );

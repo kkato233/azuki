@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2011-02-05
+// update: 2011-03-19
 //=========================================================
 using System;
 using System.IO;
@@ -446,11 +446,14 @@ namespace Sgry
 			if( expected == null )
 			{
 				if( actual != null )
-					throw new AssertException( "Objects were not equal.\nExpected: null\nActual: "+actual );
+					throw new AssertException( "Objects were not equal.\nExpected: null\nActual: " + actual.ToString() );
 			}
 			else if( !expected.Equals(actual) )
 			{
-				throw new AssertException( "Objects were not equal.\nExpected: "+expected+"\nActual:   "+actual );
+				if( actual != null )
+					throw new AssertException( "Objects were not equal.\nExpected: " + expected.ToString() + "\nActual:   "+actual.ToString() );
+				else
+					throw new AssertException( "Objects were not equal.\nExpected: " + expected.ToString() + "\nActual:   null" );
 			}
 		}
 

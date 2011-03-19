@@ -945,6 +945,7 @@ namespace Sgry.Azuki
 				}
 				int affectedEndLI = GetLineIndexFromCharIndex( end );
 				int affectedLineCount = affectedEndLI - affectedBeginLI + 1;
+				Debug.Assert( 0 < affectedLineCount );
 
 				// store current state of the lines as 'deleted' history
 				ldsUndoInfo.LineIndex = affectedBeginLI;

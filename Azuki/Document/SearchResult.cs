@@ -1,7 +1,7 @@
 // file: SearchResult.cs
 // brief: Result of a text search.
 // author: YAMAMOTO Suguru
-// update: 2009-02-22
+// update: 2011-03-19
 //=========================================================
 using System;
 
@@ -38,6 +38,14 @@ namespace Sgry.Azuki
 		public int End
 		{
 			get{ return _End; }
+		}
+
+		/// <summary>
+		/// Gets a string that represents the found range by a search.
+		/// </summary>
+		public override string ToString()
+		{
+			return String.Format( "[{0}, {1})", _Begin, _End );
 		}
 	}
 }

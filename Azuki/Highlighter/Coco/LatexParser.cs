@@ -3,6 +3,7 @@
 // (see 'misc/parsers' directory in source distribution)
 using System;
 using Sgry.Azuki.Highlighter.Coco;
+using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki.Highlighter.Coco.Latex {
 
@@ -51,7 +52,7 @@ int sectionLevel = 0;
 		{
 			return;
 		}
-
+		
 		// no hook was installed or the hook did nothing.
 		// highlight this word normally
 		k = klass;
@@ -147,7 +148,10 @@ int sectionLevel = 0;
 			Get();
 			Highlight( t, CharClass.LatexCommand );
 			if( curlyBracketDepth <= 0 )
+			{
+				Debug.Assert( curlyBracketDepth == 0 );
 				sectionLevel = 0;
+			}
 			
 			break;
 		}
@@ -192,6 +196,11 @@ int sectionLevel = 0;
 		case 8: {
 			Get();
 			curlyBracketDepth--;
+			if( curlyBracketDepth <= 0 )
+			{
+				Debug.Assert( curlyBracketDepth == 0 );
+				sectionLevel = 0;
+			}
 			Highlight( t, CharClass.LatexCurlyBracket );
 			
 			break;

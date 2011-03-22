@@ -32,6 +32,7 @@ This file was modified by YAMAMOTO Suguru to adapt Azuki.
 // (see 'misc/parsers' directory in source distribution)
 using System;
 using Sgry.Azuki.Highlighter.Coco;
+using Debug = System.Diagnostics.Debug;
 
 -->namespace
 

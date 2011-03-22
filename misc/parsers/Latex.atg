@@ -1,4 +1,4 @@
-/* 2011-02-19 */
+/* 2011-03-22 */
 COMPILER Tex
 
 /*-------------------------------------------------------
@@ -81,7 +81,10 @@ PRODUCTIONS
 			(.
 				Highlight( t, CharClass.LatexCommand );
 				if( curlyBracketDepth <= 0 )
+				{
+					Debug.Assert( curlyBracketDepth == 0 );
 					sectionLevel = 0;
+				}
 			.)
 		| heading1
 			(.
@@ -108,6 +111,11 @@ PRODUCTIONS
 		| closeCurlyBracket
 			(.
 				curlyBracketDepth--;
+				if( curlyBracketDepth <= 0 )
+				{
+					Debug.Assert( curlyBracketDepth == 0 );
+					sectionLevel = 0;
+				}
 				Highlight( t, CharClass.LatexCurlyBracket );
 			.)
 		| comment		(.	Highlight( t, CharClass.Comment );	.)

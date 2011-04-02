@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-03-05
+// update: 2011-04-02
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1198,8 +1198,10 @@ namespace Sgry.Azuki.WinForms
 			set
 			{
 				Document.SelectionMode = value;
+#				if !PocketPC
 				Point cursorPos = PointToClient( Cursor.Position );
 				_Impl.ResetCursorGraphic( cursorPos );
+#				endif
 			}
 		}
 

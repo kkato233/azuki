@@ -1,9 +1,10 @@
-== 1.6.2 (2011-  -  ) ==
+== 1.6.2 (2011-04-02) ==
  * mod: Azuki uses 'Arrow' mouse cursor graphic when the cursor is on horizontal ruler area
  * fix: URIs already marked up will be unmarked when MarksUri property of IUserInterface (AzukiControl) is changed to false
  * fix: CanUndo property of IUserInterface(AzukiControl) is not updated to True yet in ContentChanged event handler which is invoked when the document is firstly modified
  * fix: a bug of built-in LaTeX Highlighter (if a pair of curly brackets appears after a \section command and before other command, then its content will be highlighted as a heading)
  * fix: [Ann] URIs in newly created document will never be marked
+ * fix: [Ann] tagged as version 1.6.2
 
 == 1.6.1 (2011-02-20) ==
  * add: now Document.IsDirty will be False automatically when UNDO/REDO restores document to the state of when the Document.IsDirty was set False by application code

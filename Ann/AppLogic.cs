@@ -1,4 +1,4 @@
-// 2011-03-05
+// 2011-04-03
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -406,6 +406,7 @@ namespace Sgry.Ann
 		{
 			Debug.Assert( filePath != null );
 			Document doc;
+			string errorMessage = null;
 
 			// if specified file was already opened, just return the document
 			foreach( Document d in Documents )
@@ -423,27 +424,35 @@ namespace Sgry.Ann
 				LoadFileContentToDocument( doc, filePath, encoding, withBom );
 				return doc;
 			}
+			catch( ArgumentException ex )
+			{
+				// the path is "wild?cards.txt" for example.
+				errorMessage = String.Format( "{0}\n\nPath: {1}", ex.Message, filePath );
+			}
 			catch( NotSupportedException ex )
 			{
-				Alert( ex );
+				// the path is "http://sgry.jp/" for example.
+				errorMessage = String.Format( "{0}\n\nPath: {1}", ex.Message, filePath );
 			}
 			catch( UnauthorizedAccessException ex )
 			{
-				Alert( ex );
+				// the path is a directory or a file which the user has no permission to read
+				errorMessage = ex.Message;
 			}
 			catch( IOException ex )
 			{
-				Alert( ex );
+				errorMessage = String.Format( "{0}\n\nPath: {1}", ex.Message, filePath );
 			}
 			catch( System.Security.SecurityException ex )
 			{
-				Alert( ex );
+				errorMessage = ex.Message;
 			}
 			catch( OutOfMemoryException ex )
 			{
-				Alert( ex );
+				errorMessage = ex.Message;
 			}
 			
+			Alert( errorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error );
 			return null;
 		}
 
@@ -744,9 +753,19 @@ namespace Sgry.Ann
 			}
 		}
 
+		/// <exception cref="System.ArgumentException">Specified path is too long.</exception>
+		/// <exception cref="System.IO.PathTooLongException">Specified path is too long.</exception>
+		/// <exception cref="System.IO.DirectoryNotFoundException">Specified path string contains unexisting directory.</exception>
+		/// <exception cref="System.IO.IOException">An I/O error occurred.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Specified file was not found.</exception>
+		/// <exception cref="System.NotSupportedException">Format of the path string is not supported.</exception>
+		/// <exception cref="System.UnauthorizedAccessException">The path indicates a directory. -or- The caller does not have the required permission to read the file.</exception>
 		/// <exception cref="System.OutOfMemoryException">There is no enough memory to operate.</exception>
 		void LoadFileContentToDocument( Document doc, string filePath, Encoding encoding, bool withBom )
 		{
+			FileStream stream = null;
+			StreamReader file = null;
+
 			Debug.Assert( doc != null );
 			Debug.Assert( filePath != null );
 
@@ -759,11 +778,14 @@ namespace Sgry.Ann
 			doc.WithBom = withBom;
 
 			// load file content
-			using( FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) )
-			using( StreamReader file = new StreamReader(stream, encoding) )
+			try
 			{
 				char[] buf = null;
 				int readCount = 0;
+
+				// open the file
+				stream = File.Open( filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
+				file = new StreamReader( stream, encoding );
 
 				// make the document content empty first
 				doc.Replace( "", 0, doc.Length );
@@ -789,6 +811,13 @@ namespace Sgry.Ann
 					readCount = file.Read( buf, 0, buf.Length );
 					doc.Replace( new String(buf, 0, readCount), doc.Length, doc.Length );
 				}
+			}
+			finally
+			{
+				if( file != null )
+					file.Dispose();
+				if( stream != null )
+					stream.Dispose();
 			}
 
 			// set document properties
@@ -1307,15 +1336,10 @@ namespace Sgry.Ann
 			/// <summary>
 			/// Analyzes encoding.
 			/// </summary>
-			/// <exception cref="System.UnauthorizedAccessException">Reading the file associated with this document was not permitted.</exception>
-			/// <exception cref="System.NotSupportedException">Specified format of the path is not supported.</exception>
-			/// <exception cref="System.IO.PathTooLongException">Specified file path is too long.</exception>
-			/// <exception cref="System.IO.FileNotFoundException">The associated file of the document does not exist.</exception>
-			/// <exception cref="System.IO.DirectoryNotFoundException">Specified path is pointing to a file which is in non-existing directory.</exception>
-			/// <exception cref="System.IO.IOException">Other I/O error was occurred.</exception>
 			public static void AnalyzeEncoding( string filePath, out Encoding encoding, out bool withBom )
 			{
 				Debug.Assert( filePath != null );
+
 				const int MaxSize = 50 * 1024;
 				Stream file = null;
 				byte[] data;
@@ -1340,13 +1364,24 @@ namespace Sgry.Ann
 							encoding = Encoding.Default;
 							withBom = false;
 						}
+
+						return;
 					}
 				}
+				catch( ArgumentException )
+				{}
+				catch( NotSupportedException )
+				{}
+				catch( UnauthorizedAccessException )
+				{}
 				catch( IOException )
-				{
-					encoding = Encoding.Default;
-					withBom = false;
-				}
+				{}
+				catch( System.Security.SecurityException )
+				{}
+				catch( OutOfMemoryException )
+				{}
+				encoding = Encoding.Default;
+				withBom = false;
 			}
 
 			public static string AnalyzeEolCode( Document doc )

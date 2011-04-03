@@ -47,10 +47,11 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AzukiCompact">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\package\AzukiCompact.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Azuki\AzukiCompact.vs8.csproj">
+      <Project>{107C8620-2549-48C3-B709-69075C3382E8}</Project>
+      <Name>AzukiCompact.vs8</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set version=%1
+set version=%~1
 set sevenzip=a
 set msbuild_opt=-nologo -v:m -t:Build -clp:ForceNoAlign;ShowCommandLine
 
@@ -62,10 +62,12 @@ echo.
 echo ========================================
 echo   [3/4] generating API document
 echo ========================================
-call doc.bat
-::if not "%ERRORLEVEL%" == "0" (
-::	goto ERROR
-::)
+pushd doc
+	msbuild  /p:Configuration=Release  /p:CleanIntermediates=True  Document.shfbproj
+popd
+if not "%ERRORLEVEL%" == "0" (
+	goto ERROR
+)
 
 :PHASE4
 echo.

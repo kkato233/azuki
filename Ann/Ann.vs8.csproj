@@ -39,10 +39,11 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Azuki">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\package\Azuki.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Azuki\Azuki.vs8.csproj">
+      <Project>{9910474A-AA51-4DFF-8499-CB661216B200}</Project>
+      <Name>Azuki.vs8</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

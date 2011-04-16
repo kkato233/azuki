@@ -1,4 +1,4 @@
-﻿// 2010-06-26
+﻿// 2011-04-17
 #if TEST
 using System;
 
@@ -16,6 +16,7 @@ namespace Sgry.Azuki.Test
 			DocumentTest.Test();
 			KeywordHighlighterTest.Test();
 			UriMarkerTest.Test();
+			FixedBugsTest.Test();
 			
 			if( TestUtl.ErrorOccured )
 			{

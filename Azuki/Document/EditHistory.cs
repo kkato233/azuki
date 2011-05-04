@@ -2,7 +2,7 @@
 // brief: History managemer for UNDO.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-03-05
+// update: 2011-05-04
 //=========================================================
 using System;
 
@@ -16,7 +16,6 @@ namespace Sgry.Azuki
 		#region Fields
 		const int GrowSize = 32;
 		EditAction[] _Stack;
-		int _Capacity = 32;
 		int _NextIndex = 0;
 		EditAction _GroupingUndoChain = null;
 		EditAction _LastSavedAction = null;
@@ -28,7 +27,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public EditHistory()
 		{
-			_Stack = new EditAction[ _Capacity ];
+			_Stack = new EditAction[ GrowSize ];
 		}
 		#endregion
 
@@ -47,10 +46,9 @@ namespace Sgry.Azuki
 			else
 			{
 				// if there is no more space, expand buffer
-				if( _Capacity <= _NextIndex )
+				if( _Stack.Length <= _NextIndex )
 				{
-					Utl.ResizeArray( ref _Stack, _Capacity + GrowSize );
-					_Capacity = _Capacity + GrowSize;
+					Utl.ResizeArray( ref _Stack, _Stack.Length + GrowSize );
 				}
 	
 				// stack up this action
@@ -100,7 +98,7 @@ namespace Sgry.Azuki
 			_NextIndex = 0;
 
 			// (all references must be nullified to allow GC collecting them)
-			for( int i=0; i<_Capacity; i++ )
+			for( int i=0; i<_Stack.Length; i++ )
 			{
 				_Stack[i] = null;
 			}

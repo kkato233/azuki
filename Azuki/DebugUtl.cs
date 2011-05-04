@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2011-03-19
+// update: 2011-05-04
 //=========================================================
 using System;
 using System.IO;
@@ -105,19 +105,25 @@ namespace Sgry
 		{
 			get
 			{
+#				if PocketPC
 				long count;
 				long freq;
 				QueryPerformanceCounter( out count );
 				QueryPerformanceFrequency( out freq );
 				return count / (double)freq * 1000;
+#				else
+				return (double)Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
+#				endif
 			}
 		}
 
+#		if PocketPC
 		[DllImport(kernel32_dll)]
 		static extern Int32 QueryPerformanceCounter( out Int64 count );
 
 		[DllImport(kernel32_dll)]
 		static extern Int32 QueryPerformanceFrequency( out Int64 count );
+#		endif
 		#endregion
 
 		#region Testable Assertion

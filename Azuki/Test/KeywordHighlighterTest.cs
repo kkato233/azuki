@@ -110,7 +110,7 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			for( ; i<4; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(4); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "-int"
@@ -125,7 +125,7 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
 			for( ; i<4; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(4); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// in --> int
@@ -138,7 +138,7 @@ ho//ge";
 			TestUtl.AssertEquals( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(3); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// it --> int
@@ -151,7 +151,7 @@ ho//ge";
 			TestUtl.AssertEquals( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(3); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// nt --> int
@@ -164,7 +164,7 @@ ho//ge";
 			TestUtl.AssertEquals( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(3); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "insert at" --> int
@@ -177,7 +177,7 @@ ho//ge";
 			TestUtl.AssertEquals( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(3); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "hoge" --> "h int e"
@@ -194,7 +194,7 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			for( ; i<7; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(7); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(7); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "if!"
@@ -209,7 +209,7 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
 			for( ; i<3; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(3); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(3); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "inte"
@@ -222,7 +222,7 @@ ho//ge";
 			TestUtl.AssertEquals( "inte", doc.Text );
 			for( i=0; i<4; i++ )
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(4); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// "int" --> "interface"
@@ -235,7 +235,7 @@ ho//ge";
 			TestUtl.AssertEquals( "interface", doc.Text );
 			for( i=0; i<9; i++ )
 				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(i) );
-			try{ doc.GetCharClass(10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetCharClass(10); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 

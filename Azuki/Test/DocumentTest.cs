@@ -104,7 +104,7 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( i-49, column );
 
 			// out of range
-			try{ doc.GetLineColumnIndexFromCharIndex(50, out line, out column); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetLineColumnIndexFromCharIndex(50, out line, out column); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
@@ -134,7 +134,7 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( 3, doc.GetLineIndexFromCharIndex(49) );
 
 			// out of range
-			try{ doc.GetLineIndexFromCharIndex(50); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetLineIndexFromCharIndex(50); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
@@ -169,7 +169,7 @@ namespace Sgry.Azuki.Test
 			// char-index type
 			{
 				// invalid range (before begin to middle)
-				try{ doc.GetTextInRange(-1, 4); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(-1, 4); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// valid range (begin to middle)
@@ -182,22 +182,22 @@ namespace Sgry.Azuki.Test
 				TestUtl.AssertEquals( "simpler.", doc.GetTextInRange(39, 47) );
 
 				// invalid range (middle to after end)
-				try{ doc.GetTextInRange(39, 48); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(39, 48); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// invalid range (minus range)
-				try{ doc.GetTextInRange(10, 9); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(10, 9); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 			}
 
 			// line/column index type
 			{
 				// invalid range (before begin to middle)
-				try{ doc.GetTextInRange(-1, -1, 1, 1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(-1, -1, 1, 1); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.GetTextInRange(-1, 0, 1, 1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(-1, 0, 1, 1); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.GetTextInRange(1, -1, 1, 1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(1, -1, 1, 1); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 				
 				// valid range (begin to middle)
@@ -212,17 +212,17 @@ namespace Sgry.Azuki.Test
 				TestUtl.AssertEquals( "t\nnot simpler.", doc.GetTextInRange(2, 2, 3, 12) );
 				
 				// invalid range (middle to after end)
-				try{ doc.GetTextInRange(2, 2, 3, 13); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(2, 2, 3, 13); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.GetTextInRange(2, 2, 4, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(2, 2, 4, 0); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.GetTextInRange(2, 2, 4, 13); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(2, 2, 4, 13); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// invalid range (minus range)
-				try{ doc.GetTextInRange(1, 1, 1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(1, 1, 1, 0); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
-				try{ doc.GetTextInRange(1, 1, 0, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.GetTextInRange(1, 1, 0, 0); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 			}
 		}
@@ -302,7 +302,7 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( 11, doc.CaretIndex );
 
 			// invalid range (before begin to middle)
-			try{ doc.Replace("FOO", -1, 10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.Replace("FOO", -1, 10); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 			// valid range (begin to middle)
@@ -431,7 +431,7 @@ namespace Sgry.Azuki.Test
 			}
 			
 			// invalid range (middle to after end)
-			try{ doc.Replace("PIYO", 51, 53); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.Replace("PIYO", 51, 53); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
@@ -574,7 +574,7 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( 3, doc.GetLineLength(4) );
 			TestUtl.AssertEquals( 0, doc.GetLineLength(5) );
 			TestUtl.AssertEquals( 12, doc.GetLineLength(6) );
-			try{ doc.GetLineLength(7); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.GetLineLength(7); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
@@ -586,7 +586,7 @@ namespace Sgry.Azuki.Test
 			doc.Text = "臼と似た形をした文字「\xd85a\xdd51」は、UCS 文字空間の第２面に位置する";
 
 			// before head to head
-			try{ doc.SetSelection(-1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.SetSelection(-1, 0); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 			
 			// head to head
@@ -639,7 +639,7 @@ namespace Sgry.Azuki.Test
 			TestUtl.AssertEquals( end, 33 );
 
 			// end to after end
-			try{ doc.SetSelection(33, 36); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+			try{ doc.SetSelection(33, 36); TestUtl.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 		}
 
@@ -651,19 +651,19 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// null target
-				try{ doc.FindNext((string)null, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext((string)null, 0); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
 
 				// negative index
-				try{ doc.FindNext("a", -1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", -1); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// end index at out of range
-				try{ doc.FindNext("a", 0, doc.Length+1, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", 0, doc.Length+1, true); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// inverted range
-				try{ doc.FindNext("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindNext("a", 1, 0, true); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range
@@ -739,19 +739,19 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// null target
-				try{ doc.FindPrev((string)null, 0, 10, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev((string)null, 0, 10, true); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
 
 				// negative index
-				try{ doc.FindPrev("a", -1, 10, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev("a", -1, 10, true); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// end index at out of range
-				try{ doc.FindPrev("a", 0, doc.Length+1, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev("a", 0, doc.Length+1, true); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// inverted range
-				try{ doc.FindPrev("a", 1, 0, true); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev("a", 1, 0, true); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range
@@ -942,23 +942,23 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// null target
-				try{ doc.FindPrev((Regex)null, 0, 10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev((Regex)null, 0, 10); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentNullException>(ex); }
 
 				// negative index
-				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), -1, 10); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), -1, 10); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// invalid regex option
-				try{ doc.FindPrev(new Regex("a", RegexOptions.None), 0, doc.Length); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev(new Regex("a", RegexOptions.None), 0, doc.Length); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentException>(ex); }
 
 				// end index at out of range
-				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 0, doc.Length+1); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 0, doc.Length+1); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// inverted range
-				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 1, 0); DebugUtl.Fail("Exception wasn't thrown as expected."); }
+				try{ doc.FindPrev(new Regex("a", RegexOptions.RightToLeft), 1, 0); TestUtl.Fail("Exception wasn't thrown as expected."); }
 				catch( Exception ex ){ TestUtl.AssertType<ArgumentOutOfRangeException>(ex); }
 
 				// empty range

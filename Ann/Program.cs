@@ -61,7 +61,7 @@ namespace Sgry.Ann
 		static void Main_ActivateFirstInstance( string initOpenFilePath )
 		{
 			PseudoPipe pipe = new PseudoPipe();
-			
+
 			// write IPC file to tell existing instance what user wants to do
 			try
 			{

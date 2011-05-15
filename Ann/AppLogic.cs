@@ -452,7 +452,7 @@ namespace Sgry.Ann
 				errorMessage = ex.Message;
 			}
 			
-			Alert( errorMessage, MessageBoxButtons.OK, MessageBoxIcon.Error );
+			Alert( errorMessage, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
 			return null;
 		}
 
@@ -814,10 +814,12 @@ namespace Sgry.Ann
 			}
 			finally
 			{
+#				if !PocketPC
 				if( file != null )
 					file.Dispose();
 				if( stream != null )
 					stream.Dispose();
+#				endif
 			}
 
 			// set document properties

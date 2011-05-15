@@ -12,16 +12,32 @@ namespace Sgry.Azuki.Highlighter
 	/// <summary>
 	/// Interface of highlighter object for Azuki.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This interface is commonly used by highlighter objects
+	/// which are used to highlight syntax of documents.
+	/// </para>
+	/// <para>
+	/// If a highlighter object is set for a document,
+	/// <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Sgry.Azuki.Document, ref int, ref int)"
+	/// >IHighlighter.Highlight</see>
+	/// method will be called
+	/// on every time slightly after the user stopped editing.
+	/// Since the method is called with parameters indicating
+	/// where to begin highlighting and where to end highlighting,
+	/// highlighting will not process entire document.
+	/// </para>
+	/// </remarks>
 	public interface IHighlighter
 	{
 		/// <summary>
-		/// Highlight whole document.
+		/// Highlights whole part of a document.
 		/// </summary>
 		/// <param name="doc">Document to highlight.</param>
 		void Highlight( Document doc );
 
 		/// <summary>
-		/// Highlight document part.
+		/// Highlights a part of a document.
 		/// </summary>
 		/// <param name="doc">Document to highlight.</param>
 		/// <param name="dirtyBegin">Index to start highlighting. On return, start index of the range to be invalidated.</param>

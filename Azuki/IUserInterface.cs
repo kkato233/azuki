@@ -266,13 +266,13 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Invalidate and make 'dirty' whole area
+		/// Invalidate graphic of whole area
 		/// (force to be redrawn by next paint event message).
 		/// </summary>
 		void Invalidate();
 
 		/// <summary>
-		/// Invalidate and make 'dirty' specified area
+		/// Invalidate graphic of the specified area
 		/// (force to be redrawn by next paint event message).
 		/// </summary>
 		void Invalidate( Rectangle rect );

@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-04-02
+// update: 2011-05-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -49,6 +49,7 @@ namespace Sgry.Azuki.WinForms
 		#region Types, Constants and Fields
 		static int _ScrollBarWidth = 0;
 		
+		delegate IGraphics GetIGraphicsProc();
 		delegate void InvalidateProc1();
 		delegate void InvalidateProc2( Rectangle rect );
 		
@@ -68,6 +69,7 @@ namespace Sgry.Azuki.WinForms
 		int _ImeCompositionCharCount = 0; // count of chars already input by IME which must be ignored
 #		endif
 		
+		GetIGraphicsProc _getIGraphicsProc = null;
 		InvalidateProc1 _invalidateProc1 = null;
 		InvalidateProc2 _invalidateProc2 = null;
 #		if !PocketPC
@@ -952,7 +954,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Invalidate and make 'dirty' whole area
+		/// Invalidate graphic of whole area
 		/// (force to be redrawn by next paint event message).
 		/// </summary>
 		public new void Invalidate()
@@ -966,7 +968,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Invalidate and make 'dirty' specified area
+		/// Invalidate graphic of the specified area
 		/// (force to be redrawn by next paint event message).
 		/// </summary>
 		public new void Invalidate( Rectangle rect )
@@ -1894,6 +1896,12 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		public IGraphics GetIGraphics()
 		{
+			if( IsHandleCreated && InvokeRequired )
+			{
+				if( _getIGraphicsProc == null )
+					_getIGraphicsProc = GetIGraphics;
+				return (IGraphics)Invoke( _getIGraphicsProc );
+			}
 			return Plat.Inst.GetGraphics( this );
 		}
 
@@ -2547,7 +2555,7 @@ namespace Sgry.Azuki.WinForms
 					return View.ColorScheme.BackColor;
 				else
 					return base.BackColor;
-				}
+			}
 			set
 			{
 				if( View != null )

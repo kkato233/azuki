@@ -1,7 +1,7 @@
 ﻿// file: UriMarker.cs
 // brief: a singleton class which marks URIs up in document.
 // author: YAMAMOTO Suguru
-// update: 2011-03-05
+// update: 2011-06-26
 //=========================================================
 using System;
 using System.Text;
@@ -510,8 +510,10 @@ namespace Sgry.Azuki
 
 		static bool GetMailToEnd_IsDomainChar( char ch )
 		{
-			return ('\x21' <= ch && ch <= '\x5a')
-					|| ('\x5e' <= ch && ch <= '\x7e');
+			return ('A' <= ch && ch <= 'Z')
+				|| ('a' <= ch && ch <= 'z')
+				|| ('0' <= ch && ch <= '9')
+				|| (0 <= "-.:[]".IndexOf(ch));
 		}
 		#endregion
 

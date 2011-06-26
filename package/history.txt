@@ -4,6 +4,7 @@
 
 == 1.6.3 (2011-  -  ) ==
  * fix: [Ann] Ann crashes if a file path which contains a wildcard (? or *) was specified as a command line parameter
+ * fix: URI marking does not stop before a quotation mark nor a 'less than' mark after a URI starting with "mailto:"
 
 == 1.6.2 (2011-04-02) ==
  * mod: Azuki uses 'Arrow' mouse cursor graphic when the cursor is on horizontal ruler area

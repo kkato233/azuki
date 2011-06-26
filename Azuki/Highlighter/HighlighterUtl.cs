@@ -1,7 +1,7 @@
 ﻿// file: HighlighterUtl.cs
 // brief: common utility for built-in highlighters.
 // author: YAMAMOTO Suguru
-// update: 2009-10-24
+// update: 2011-05-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -40,6 +40,8 @@ namespace Sgry.Azuki.Highlighter
 
 	static class HighlighterUtl
 	{
+		public const int ReparsePointMinimumDistance = 1024;
+
 		#region Utilities
 		/// <summary>
 		/// Highlight a token consisted with only digits.
@@ -318,6 +320,52 @@ namespace Sgry.Azuki.Highlighter
 				int index = Array.BinarySearch<char>( wordChars.ToCharArray(), ch );
 				return (0 <= index && index < wordChars.Length);
 			}
+		}
+
+		public static int FindLeastMaximum( IList<int> numbers, int value )
+		{
+			if( numbers.Count == 0 )
+			{
+				return -1;
+			}
+
+			for( int i=0; i<numbers.Count; i++ )
+			{
+				if( value <= numbers[i] )
+				{
+					return i - 1; // this may return -1 but it's okay.
+				}
+			}
+
+			return numbers.Count - 1;
+		}
+
+		public static void EntryReparsePoint( SplitArray<int> reparsePoints, int index )
+		{
+			int count;
+			int leastMaximumIndex;
+
+			// manage reparse point index list
+			count = reparsePoints.Count;
+			if( 0 < count )
+			{
+				// if there are remembered positions larger than current token's one,
+				// drop them
+				if( index < reparsePoints[count-1] )
+				{
+					leastMaximumIndex = HighlighterUtl.FindLeastMaximum(
+							reparsePoints, index
+						);
+					reparsePoints.RemoveRange( leastMaximumIndex+1, reparsePoints.Count );
+				}
+				// if current token is not so far from currently largest position,
+				// position of current token is not worth to remember
+				else if( index < reparsePoints[count-1] + ReparsePointMinimumDistance )
+				{
+					return;
+				}
+			}
+			reparsePoints.Add( index );
 		}
 
 		static class Utl

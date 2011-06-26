@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-03-05
+// update: 2011-05-15
 //=========================================================
 using System;
 using System.Text;
@@ -25,11 +25,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		public const int DefaultCaretWidth = 2;
 		const int MaxMatchedBracketSearchLength = 2048;
-		const int HighlightInterval1 = 250;
 #		if PocketPC
-		const int HighlightInterval2 = 500;
+		const int HighlightDelay = 500 * 10000; // 500[ms]
 #		else
-		const int HighlightInterval2 = 350;
+		const int HighlightDelay = 200 * 10000; // 200[ms]
 #		endif
 		IUserInterface _UI;
 		View _View = null;
@@ -52,9 +51,7 @@ namespace Sgry.Azuki
 		Timer _MouseDragEditDelayTimer = null;
 
 		Thread _HighlighterThread;
-		bool _ShouldBeHighlighted = false;
-		int _DirtyRangeBegin = -1;
-		int _DirtyRangeEnd = -1;
+		ManualResetEvent _HighlightEvent = new ManualResetEvent( false );
 		#endregion
 
 		#region Init / Dispose
@@ -68,12 +65,12 @@ namespace Sgry.Azuki
 			_HighlighterThread.Start();
 		}
 
-#		if DEBUG
-		~UiImpl()
+		public void Dispose()
 		{
 			// dispose highlighter
 			if( _HighlighterThread != null )
 			{
+				_HighlighterThread.Abort();
 				bool timedOut = !( _HighlighterThread.Join(1000) );
 				if( timedOut )
 				{
@@ -81,11 +78,15 @@ namespace Sgry.Azuki
 				}
 				_HighlighterThread = null;
 			}
-		}
-#		endif
 
-		public void Dispose()
-		{
+			// dispose event object
+			if( _HighlightEvent != null )
+			{
+				_HighlightEvent.Set();
+				_HighlightEvent.Close();
+				_HighlightEvent = null;
+			}
+
 			// uninstall document event handlers
 			if( Document != null )
 			{
@@ -166,7 +167,7 @@ namespace Sgry.Azuki
 				Document prevDoc = _Document;
 
 				// uninstall event handlers
-				if( Document != null )
+				if( _Document != null )
 				{
 					UninstallDocumentEventHandlers( Document );
 				}
@@ -577,48 +578,67 @@ namespace Sgry.Azuki
 		{
 			int dirtyBegin, dirtyEnd;
 			Document doc;
+			ViewParam param;
 
 			while( _IsDisposed == false )
 			{
-				// wait while the content is untouched
-				while( _ShouldBeHighlighted == false )
+				// wait until next two conditions are satisfied:
+				// 1) thread was woken up to update highlighting
+				// 2) slight time span was elapsed after the last modification
+				while( _UI.Document == null
+					|| _UI.Document.ViewParam.H_IsInvalid == false
+					|| DateTime.Now.Ticks < _UI.Document.LastModifiedTime.Ticks + HighlightDelay )
 				{
-					Thread.Sleep( HighlightInterval1 );
-					if( _IsDisposed )
-					{
-						return; // quit ASAP
-					}
-				}
-				_ShouldBeHighlighted = false;
-
-				// wait a moment and check if the flag is still up
-				Thread.Sleep( HighlightInterval2 );
-				if( _ShouldBeHighlighted != false || _UI.Document == null )
-				{
-					// flag was set up while this thread are sleeping.
-					// skip this time.
-					continue;
+					_HighlightEvent.WaitOne( 30000, false );
 				}
 
-				// if no highlighter was set to current active document, do nothing.
+				// determine where to start and where to end highlighting
 				doc = _UI.Document;
-				if( doc.Highlighter == null )
+				param = doc.ViewParam;
+				lock( param )
 				{
-					continue;
+					// fit the range
+					dirtyBegin = param.H_InvalidRangeBegin;
+					if( dirtyBegin < 0 )
+					{
+						dirtyBegin = 0;
+					}
+					dirtyEnd = Math.Max( dirtyBegin, param.H_InvalidRangeEnd );
+					if( doc.Length < dirtyEnd )
+					{
+						dirtyEnd = doc.Length;
+					}
+					param.H_InvalidRangeBegin = Int32.MaxValue;
+					param.H_InvalidRangeEnd = Int32.MinValue;
 				}
 
-				// determine where to start highlighting
-				dirtyBegin = Math.Max( 0, _DirtyRangeBegin );
-				dirtyEnd = Math.Max( dirtyBegin, _DirtyRangeEnd );
-				if( doc.Length < dirtyEnd )
-				{
-					dirtyEnd = doc.Length;
-				}
+				// reset wait condition
+				_UI.Document.ViewParam.H_IsInvalid = false;
+				_HighlightEvent.Reset();
 
-				// highlight and refresh view
 				try
 				{
+					// if no highlighter was set to current active document, do nothing.
+					if( doc.Highlighter == null )
+					{
+						continue;
+					}
+
+					// highlight
+					Debug.Assert( 0 <= dirtyBegin );
+					Debug.Assert( dirtyBegin != Int32.MaxValue );
 					doc.Highlighter.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
+
+					// remember highlighted range of text
+					lock( param )
+					{
+						param.H_ValidRangeBegin = dirtyBegin;
+						param.H_ValidRangeEnd = dirtyEnd;
+						//DO_NOT//param.H_InvalidRangeBegin = something;
+						//DO_NOT//param.H_InvalidRangeEnd = something;
+					}
+
+					// then, refresh view
 					View.Invalidate( dirtyBegin, dirtyEnd );
 				}
 				catch( Exception ex )
@@ -629,17 +649,28 @@ namespace Sgry.Azuki
 						break;
 					}
 
+					//DEBUG//DebugUtl.Log.WriteLine( "[thread] ex:[{0}]", ex );
+
 					// For example, contents could be shorten during highlighting
 					// because Azuki does not lock buffers for thread safety.
 					// It is very hard to take care of such cases in highlighters (including user-made ones)
 					// so here I trap any exception except ThreadAbortException
 					// and invalidate whole view in that case.
-					View.Invalidate();
-				}
+					if( View != null )
+					{
+						View.Invalidate();
+					}
 
-				// prepare for next loop
-				_DirtyRangeBegin = -1;
-				_DirtyRangeEnd = -1;
+					// (reset dirty range to stop infinite loop)
+					if( _UI.Document != null )
+					{
+						lock( _UI.Document.ViewParam )
+						{
+							_UI.Document.ViewParam.H_InvalidRangeBegin = Int32.MaxValue;
+							_UI.Document.ViewParam.H_InvalidRangeEnd = Int32.MinValue;
+						}
+					}
+				}
 			}
 		}
 		#endregion
@@ -691,9 +722,33 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
+			// draw view graphic
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
 				_View.Paint( g, clipRect );
+			}
+
+			// If any characters which were not highlighted after last edit were drawn,
+			// expand invalid range to cover the chracters
+			// so that the highlighter thread can highlight them on next run
+			if( Document != null && Document.Highlighter != null )
+			{
+				ViewParam param = Document.ViewParam;
+				int end = GetIndexOfLastVisibleCharacter();
+				lock( param )
+				{
+					if( param.H_ValidRangeEnd < end )
+					{
+						if( param.H_InvalidRangeBegin < 0
+							|| param.H_ValidRangeEnd < param.H_InvalidRangeBegin )
+						{
+							param.H_InvalidRangeBegin = param.H_ValidRangeEnd;
+						}
+						param.H_InvalidRangeEnd = Math.Max( param.H_InvalidRangeEnd, end );
+						param.H_IsInvalid = true;
+						_HighlightEvent.Set();
+					}
+				}
 			}
 		}
 
@@ -1225,16 +1280,30 @@ namespace Sgry.Azuki
 			// update range of scroll bars
 			_UI.UpdateScrollBarRange();
 
-			// set flag to start highlighting
-			if( _DirtyRangeBegin == -1 || e.Index < _DirtyRangeBegin )
+			// update range of text which should be highlighted
+			ViewParam param = Document.ViewParam;
+			lock( param )
 			{
-				_DirtyRangeBegin = e.Index;
+				if( e.Index < param.H_InvalidRangeBegin )
+				{
+					param.H_InvalidRangeBegin = e.Index;
+				}
+				if( param.H_InvalidRangeEnd < e.Index + e.NewText.Length )
+				{
+					param.H_InvalidRangeEnd = e.Index + e.NewText.Length;
+				}
+				param.H_IsInvalid = true;
+
+				// update range of text which should NOT be highlighted until this document was modified
+				param.H_ValidRangeEnd = e.Index;
+				if( param.H_ValidRangeEnd <= param.H_ValidRangeBegin )
+				{
+					param.H_ValidRangeBegin = param.H_ValidRangeEnd;
+				}
 			}
-			if( _DirtyRangeEnd == -1 || _DirtyRangeEnd < e.Index + e.NewText.Length )
-			{
-				_DirtyRangeEnd = e.Index + e.NewText.Length;
-			}
-			_ShouldBeHighlighted = true;
+
+			// resume highlighter thread
+			_HighlightEvent.Set();
 		}
 
 		public void Doc_DirtyStateChanged( object sender, EventArgs e )
@@ -1284,6 +1353,35 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilitites
+		int GetIndexOfLastVisibleCharacter()
+		{
+			int lastDrawnLineIndex;
+			int visibleLineCount;
+			int index;
+
+			// calculate line-index of last visible line
+			visibleLineCount = View.VisibleSize.Height / View.LineSpacing;
+			lastDrawnLineIndex = View.FirstVisibleLine + visibleLineCount + 1;
+			if( View.LineCount <= lastDrawnLineIndex )
+			{
+				lastDrawnLineIndex = View.LineCount - 1;
+			}
+
+			// calculate end index of the line
+			if( lastDrawnLineIndex+1 < View.LineCount )
+			{
+				index = View.GetLineHeadIndex( lastDrawnLineIndex+1 );
+			}
+			else
+			{
+				index = Document.Length;
+			}
+
+			// return it
+			Debug.Assert( 0 <= index && index <= Document.Length );
+			return index;
+		}
+
 		/// <summary>
 		/// Generates appropriate padding characters
 		/// that fills the gap between the target position and actual line-end position.

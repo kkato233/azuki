@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2011-02-19
+// update: 2011-06-26
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -122,7 +122,8 @@ namespace Sgry.Azuki.Highlighter
 #		if DEBUG
 		internal
 #		endif
-		SplitArray<int> _EPI = new SplitArray<int>( 32, 32 );
+		SplitArray<int> _EPI = new SplitArray<int>( 64 );
+		SplitArray<int> _ReparsePoints = new SplitArray<int>( 64 );
 		#endregion
 
 		#region Highlight Settings
@@ -492,21 +493,52 @@ namespace Sgry.Azuki.Highlighter
 
 			int index, nextIndex;
 			bool highlighted;
-//			int lastChangedCharIndex = 0;
 
-			// update EPI and get index to start highlighting
-			UpdateEPI( doc, dirtyBegin, out dirtyBegin, out dirtyEnd );
-dirtyEnd = doc.Length;
+			// determine where to start highlighting
+			index = HighlighterUtl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
+			if( 0 <= index )
+			{
+				dirtyBegin = _ReparsePoints[index];
+			}
+			else
+			{
+				dirtyBegin = 0;
+			}
+
+			// determine where to end highlighting
+			int x = HighlighterUtl.ReparsePointMinimumDistance;
+			dirtyEnd += x - (dirtyEnd % x); // next multiple of x
+			if( doc.Length < dirtyEnd )
+			{
+				dirtyEnd = doc.Length;
+			}
+
+			// clear EPI entries in and after the range of highlighting target
+			// remove entries in EPI-list which will be invalid after the insertion
+			int epiIndex = HighlighterUtl.FindLeastMaximum( _EPI, dirtyBegin ) + 1;
+			if( 0 <= epiIndex && epiIndex < _EPI.Count )
+			{
+				_EPI.RemoveRange( epiIndex, _EPI.Count );
+			}
 
 			// seek each chars and do pattern matching
 			index = dirtyBegin;
 			while( 0 <= index && index < dirtyEnd )
 			{
-				// highlight line-comment if this token is one
+				// if the document has been shrunken while highlighting, shrunk the range too.
+				// (although this is ad-hoc, but surely reduces risk of out-of-range exceptions)
+				if( doc.Length < dirtyEnd )
+				{
+					dirtyEnd = doc.Length;
+				}
+
+				// highlight line-comment if this token starts one
 				nextIndex = TryHighlightLineComment( doc, _LineHighlights, index, dirtyEnd );
 				if( index < nextIndex )
 				{
 					// successfully highlighted. skip to next.
+					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+					Utl.AddEPI( _EPI, index, nextIndex );
 					index = nextIndex;
 					continue;
 				}
@@ -516,6 +548,8 @@ dirtyEnd = doc.Length;
 				if( index < nextIndex )
 				{
 					// successfully highlighted. skip to next.
+					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+					Utl.AddEPI( _EPI, index, nextIndex );
 					index = nextIndex;
 					continue;
 				}
@@ -539,8 +573,13 @@ dirtyEnd = doc.Length;
 				// this token is normal class; reset classes and seek to next token
 				nextIndex = HighlighterUtl.FindNextToken( doc, index, _WordCharSet );
 				Highlight( doc, index, nextIndex, CharClass.Normal );
-//				lastChangedCharIndex = nextIndex-1;
 				index = nextIndex;
+			}
+
+			// report lastly parsed position
+			if( dirtyEnd < index )
+			{
+				dirtyEnd = index;
 			}
 		}
 
@@ -694,82 +733,6 @@ dirtyEnd = doc.Length;
 		}
 		#endregion
 
-		#region Management of Enclosing Pair Indexes
-		/// <summary>
-		/// This method maintains enlosing pair indexes and
-		/// returns range of text to be highlighted.
-		/// </summary>
-		void UpdateEPI( Document doc, int dirtyBegin, out int begin, out int end )
-		{
-			int epiIndex;
-			int closePos;
-			Enclosure pair;
-
-			// calculate re-parse begin index
-			epiIndex = Utl.FindLeastMaximum( _EPI, dirtyBegin );
-			if( epiIndex < 0 )
-			{
-				epiIndex = 0;
-				begin = doc.GetLineHeadIndexFromCharIndex( dirtyBegin );
-			}
-			else if( epiIndex % 2 == 0 )
-			{
-				begin = _EPI[epiIndex];
-			}
-			else
-			{
-				begin = _EPI[epiIndex];
-				epiIndex++;
-			}
-			end = doc.Length;
-
-			// remove deleted pair indexes in removed range
-			if( epiIndex < _EPI.Count )
-			{
-				_EPI.RemoveRange( epiIndex, _EPI.Count );
-			}
-
-			// find pairs
-			for( int i=begin; i<end; i++ )
-			{
-				// ensure a pair begins from here
-				pair = HighlighterUtl.StartsWith( doc, _Enclosures, i );
-				if( pair == null )
-				{
-					pair = HighlighterUtl.StartsWith( doc, _LineHighlights, i );
-					if( pair == null )
-					{
-						continue; // no pair matched
-					}
-				}
-
-				// remember opener index
-				_EPI.Insert( epiIndex, i );
-				epiIndex++;
-
-				// find closing pair
-				closePos = HighlighterUtl.FindCloser( doc, pair, i+pair.opener.Length, end );
-				if( closePos == -1 )
-				{
-					break; // no matching closer
-				}
-
-				// remember closer index and skip to the closer
-				if( pair.closer != null )
-				{
-					_EPI.Insert( epiIndex, closePos + pair.closer.Length );
-					i = closePos + pair.closer.Length;
-				}
-				else
-				{
-					_EPI.Insert( epiIndex, closePos );
-					i = closePos;
-				}
-				epiIndex++;
-			}
-		}
-		#endregion
-
 		#region Utilities
 		static bool Matches( char ch1, char ch2, bool ignoreCase )
 		{
@@ -790,7 +753,7 @@ dirtyEnd = doc.Length;
 			if( index+1 == doc.Length
 				|| (index+1 < doc.Length && HighlighterUtl.IsWordChar(wordChars, doc[index+1]) == false) )
 			{
-				// and, ndoe.child is null or '\0'?
+				// and, node.child is null or '\0'?
 				if( node.child == null || node.child.ch == '\0' )
 				{
 					return true;
@@ -820,22 +783,21 @@ dirtyEnd = doc.Length;
 
 		static class Utl
 		{
-			public static int FindLeastMaximum( SplitArray<int> numbers, int value )
+			public static void AddEPI( SplitArray<int> epi, int pairBeginIndex, int pairEndIndex )
 			{
-				if( numbers.Count == 0 )
-				{
-					return -1;
-				}
+				// insert
+				epi.Add( pairBeginIndex );
+				epi.Add( pairEndIndex );
 
-				for( int i=0; i<numbers.Count; i++ )
+				// ensure all entries are sorted in ascending order
+				// and the count is an even number
+#				if DEBUG
+				DebugUtl.Assert( (epi.Count % 0x01) == 0 );
+				for( int i=1; i<epi.Count; i++ )
 				{
-					if( value <= numbers[i] )
-					{
-						return i - 1; // this may return -1 but it's okay.
-					}
+					DebugUtl.Assert( epi[i-1] <= epi[i] );
 				}
-
-				return numbers.Count - 1;
+#				endif
 			}
 		}
 		#endregion

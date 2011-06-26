@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-02-05
+// update: 2011-05-15
 //=========================================================
 using System;
 using System.Collections;
@@ -2345,12 +2345,8 @@ namespace Sgry.Azuki
 				// clear all highlight information
 				_Buffer.ClearCharClasses();
 
-				// associate with new highlighter object and highlight whole content
+				// associate with new highlighter object
 				_Highlighter = value;
-				if( _Highlighter != null )
-				{
-					_Highlighter.Highlight( this );
-				}
 			}
 		}
 

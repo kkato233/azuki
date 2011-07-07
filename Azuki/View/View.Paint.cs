@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2011-07-07
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -178,15 +178,20 @@ namespace Sgry.Azuki
 			else if( doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
 				&& doc.IsMatchedBracket(tokenIndex) )
 			{
-				Color textColor = ColorScheme.MatchedBracketFore;
-				g.BackColor = ColorScheme.MatchedBracketBack;
-				if( textColor == Color.Transparent )
+				Color fore = ColorScheme.MatchedBracketFore;
+				Color back = ColorScheme.MatchedBracketBack;
+				if( fore == Color.Transparent )
 				{
-					textColor = foreColor;
+					fore = foreColor;
 				}
+				if( back == Color.Transparent )
+				{
+					back = backColor;
+				}
+				g.BackColor = back;
 
 				g.FillRectangle( tokenPos.X, tokenPos.Y, tokenEndPos.X-tokenPos.X, LineSpacing );
-				g.DrawText( token, ref textPos, textColor );
+				g.DrawText( token, ref textPos, fore );
 			}
 			else
 			{

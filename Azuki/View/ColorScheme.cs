@@ -1,7 +1,7 @@
 ﻿// file: ColorScheme.cs
 // brief: color set
 // author: YAMAMOTO Suguru
-// update: 2010-11-28
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -302,7 +302,7 @@ namespace Sgry.Azuki
 			SetColor( CharClass.AttributeValue, Color.Navy, Color.Transparent );
 			SetColor( CharClass.EmbededScript, Color.Gray, Color.Transparent );
 			SetColor( CharClass.Delimiter, Color.Blue, Color.Transparent );
-			SetColor( CharClass.CDataSection, Color.Silver, Color.Transparent );
+			SetColor( CharClass.CDataSection, Color.Purple, Color.Transparent );
 			SetColor( CharClass.LatexBracket, Color.Teal, Color.Transparent );
 			SetColor( CharClass.LatexCommand, sax_blue, Color.Transparent );
 			SetColor( CharClass.LatexCurlyBracket, Color.Maroon, Color.Transparent );

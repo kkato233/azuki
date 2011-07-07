@@ -1,7 +1,7 @@
 ﻿// file: XmlHighlighter.cs
 // brief: Highlighter for XML.
 // author: YAMAMOTO Suguru
-// update: 2011-02-19
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,8 @@ namespace Sgry.Azuki.Highlighter
 		#region Fields
 		static readonly string DefaultWordCharSet = null;
 		List<Enclosure> _Enclosures = new List<Enclosure>();
+		SplitArray<int> _ReparsePoints = new SplitArray<int>( 64 );
+		Enclosure _CDataEnclosure;
 		#endregion
 
 		#region Properties
@@ -58,6 +60,13 @@ namespace Sgry.Azuki.Highlighter
 			singleQuote.multiLine = true;
 			_Enclosures.Add( singleQuote );
 
+			_CDataEnclosure = new Enclosure();
+			_CDataEnclosure.opener = "<![CDATA[";
+			_CDataEnclosure.closer = "]]>";
+			_CDataEnclosure.klass = CharClass.CDataSection;
+			_CDataEnclosure.multiLine = true;
+			_Enclosures.Add( _CDataEnclosure );
+
 			Enclosure comment = new Enclosure();
 			comment.opener = "<!--";
 			comment.closer = "-->";
@@ -95,19 +104,24 @@ namespace Sgry.Azuki.Highlighter
 			char nextCh;
 			int index, nextIndex;
 
-			// if there are no characters to be highlighted, do nothing
-			if( dirtyBegin == doc.Length )
+			// determine where to start highlighting
+			index = HighlighterUtl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
+			if( 0 <= index )
 			{
-				return;
+				dirtyBegin = _ReparsePoints[index];
 			}
-
-			// get index to start highlighting
-			dirtyBegin = HighlighterUtl.FindLast( doc, "<", dirtyBegin );
-			if( dirtyBegin == -1 )
+			else
 			{
 				dirtyBegin = 0;
 			}
-			dirtyEnd = doc.Length;
+
+			// determine where to end highlighting
+			int x = HighlighterUtl.ReparsePointMinimumDistance;
+			dirtyEnd += x - (dirtyEnd % x); // next multiple of x
+			if( doc.Length < dirtyEnd )
+			{
+				dirtyEnd = doc.Length;
+			}
 
 			// seek each tags
 			index = 0;
@@ -115,18 +129,64 @@ namespace Sgry.Azuki.Highlighter
 			{
 				if( HighlighterUtl.StartsWith(doc, "<!--", index) )
 				{
+					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+
 					// highlight enclosing part if this token begins a part
 					nextIndex = TryHighlightEnclosure( doc, _Enclosures, index, dirtyEnd );
 					if( index < nextIndex )
 					{
 						// successfully highlighted. skip to next.
+						HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
 						index = nextIndex;
 						continue;
 					}
 				}
 
+				if( HighlighterUtl.StartsWith(doc, "<![CDATA[", index) )
+				{
+					int closePos;
+
+					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+
+					// highlight the tag which starts this CDATA section
+					for( int i=0; i<_CDataEnclosure.opener.Length; i++ )
+					{
+						doc.SetCharClass( index+i, CharClass.CDataSection );
+					}
+					index += 9;
+
+					// highlight enclosing part if this token begins a part
+					closePos = HighlighterUtl.FindCloser(
+							doc, _CDataEnclosure, index, dirtyEnd
+						);
+					if( closePos == -1 )
+					{
+						// not found.
+						for( int i=index; i<doc.Length; i++ )
+							doc.SetCharClass( i, CharClass.Normal );
+						index = doc.Length;
+						return;
+					}
+
+					// highlight CDATA content as normal text
+					for( int i=index; i<closePos; i++ )
+					{
+						doc.SetCharClass( i, CharClass.Normal );
+					}
+					index = closePos;
+
+					// highlight the tag which ends CDATA section
+					for( int i=index; i<index+_CDataEnclosure.closer.Length; i++ )
+					{
+						doc.SetCharClass( i, CharClass.CDataSection );
+					}
+					index += _CDataEnclosure.closer.Length;
+				}
+
 				if( doc[index] == '<' )
 				{
+					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+
 					// set class for '<'
 					doc.SetCharClass( index, CharClass.Delimiter );
 					index++;

@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-05-15
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Text;
@@ -1318,15 +1318,19 @@ namespace Sgry.Azuki
 
 		void UpdateMatchedBracketPosition()
 		{
-			// find matched bracket
+			// reset matched bracket positions
 			int oldMbi1 = _Document.ViewParam.MatchedBracketIndex1;
 			int oldMbi2 = _Document.ViewParam.MatchedBracketIndex2;
-			int newMbi1 = _Document.CaretIndex;
-			int newMbi2 = _Document.FindMatchedBracket( newMbi1, MaxMatchedBracketSearchLength );
-
-			// reset matched bracket positions
 			_Document.ViewParam.MatchedBracketIndex1 = -1;
 			_Document.ViewParam.MatchedBracketIndex2 = -1;
+			if( View.HighlightsMatchedBracket == false )
+			{
+				return;
+			}
+
+			// find matched bracket
+			int newMbi1 = _Document.CaretIndex;
+			int newMbi2 = _Document.FindMatchedBracket( newMbi1, MaxMatchedBracketSearchLength );
 
 			// update matched bracket positions and graphics
 			if( (0 <= newMbi2) != (0 <= oldMbi2) // ON --> OFF, OFF --> ON

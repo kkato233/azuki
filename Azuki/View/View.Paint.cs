@@ -175,7 +175,8 @@ namespace Sgry.Azuki
 				}
 			}
 			// matched bracket
-			else if( doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
+			else if( HighlightsMatchedBracket
+				&& doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
 				&& doc.IsMatchedBracket(tokenIndex) )
 			{
 				Color fore = ColorScheme.MatchedBracketFore;

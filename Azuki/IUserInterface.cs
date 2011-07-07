@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2011-02-05
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -182,9 +182,17 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Whether the current line would be drawn with underline or not.
+		/// Gets or sets whether the current line would be drawn with underline or not.
 		/// </summary>
 		bool HighlightsCurrentLine
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether to highlight matched bracket or not.
+		/// </summary>
+		bool HighlightsMatchedBracket
 		{
 			get; set;
 		}

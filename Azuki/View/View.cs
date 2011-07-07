@@ -1,7 +1,7 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-02-20
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -61,7 +61,8 @@ namespace Sgry.Azuki
 			| DrawingOption.DrawsEol
 			| DrawingOption.HighlightCurrentLine
 			| DrawingOption.ShowsLineNumber
-			| DrawingOption.ShowsDirtBar;
+			| DrawingOption.ShowsDirtBar
+			| DrawingOption.HighlightsMatchedBracket;
 		bool _ScrollsBeyondLastLine = true;
 		#endregion
 
@@ -377,6 +378,22 @@ namespace Sgry.Azuki
 					DrawingOption |= DrawingOption.HighlightCurrentLine;
 				else
 					DrawingOption &= ~DrawingOption.HighlightCurrentLine;
+				Invalidate();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets whether to highlight matched bracket or not.
+		/// </summary>
+		public bool HighlightsMatchedBracket
+		{
+			get{ return (DrawingOption & DrawingOption.HighlightsMatchedBracket) != 0; }
+			set
+			{
+				if( value )
+					DrawingOption |= DrawingOption.HighlightsMatchedBracket;
+				else
+					DrawingOption &= ~DrawingOption.HighlightsMatchedBracket;
 				Invalidate();
 			}
 		}

@@ -1,7 +1,7 @@
 // file: DrawingOption.cs
 // brief: Enum to describe view's option.
 // author: YAMAMOTO Suguru
-// update: 2009-11-01
+// update: 2011-07-07
 //=========================================================
 using System;
 
@@ -38,6 +38,9 @@ namespace Sgry.Azuki
 		DrawsEof				= 0x0080,
 
 		/// <summary>Shows 'dirt bar'.</summary>
-		ShowsDirtBar			= 0x0100
+		ShowsDirtBar			= 0x0100,
+
+		/// <summary>Highlights matched bracket.</summary>
+		HighlightsMatchedBracket= 0x0200
 	}
 }

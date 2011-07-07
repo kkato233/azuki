@@ -1,4 +1,4 @@
-// 2011-01-26
+// 2011-07-07
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -281,6 +281,7 @@ namespace Sgry.Ann
 
 			// setup text field
 			_Azuki_Pattern.HighlightsCurrentLine = false;
+			_Azuki_Pattern.HighlightsMatchedBracket = false;
 			_Azuki_Pattern.ShowsHScrollBar = false;
 			_Azuki_Pattern.ShowsLineNumber = false;
 			_Azuki_Pattern.ShowsDirtBar = false;

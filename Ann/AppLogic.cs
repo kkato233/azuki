@@ -1,4 +1,4 @@
-// 2011-04-03
+// 2011-07-07
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -956,26 +956,27 @@ namespace Sgry.Ann
 			{
 				MainForm.WindowState = FormWindowState.Maximized;
 			}
-			MainForm.TabPanelEnabled			= AppConfig.TabPanelEnabled;
+			MainForm.TabPanelEnabled				= AppConfig.TabPanelEnabled;
 
-			MainForm.Azuki.DrawsEolCode			= AppConfig.DrawsEolCode;
-			MainForm.Azuki.DrawsFullWidthSpace	= AppConfig.DrawsFullWidthSpace;
-			MainForm.Azuki.DrawsSpace			= AppConfig.DrawsSpace;
-			MainForm.Azuki.DrawsTab				= AppConfig.DrawsTab;
-			MainForm.Azuki.DrawsEofMark			= AppConfig.DrawsEofMark;
-			MainForm.Azuki.HighlightsCurrentLine= AppConfig.HighlightsCurrentLine;
-			MainForm.Azuki.ShowsLineNumber		= AppConfig.ShowsLineNumber;
-			MainForm.Azuki.ShowsHRuler			= AppConfig.ShowsHRuler;
-			MainForm.Azuki.ShowsDirtBar			= AppConfig.ShowsDirtBar;
-			MainForm.Azuki.TabWidth				= AppConfig.TabWidth;
-			MainForm.Azuki.LinePadding			= AppConfig.LinePadding;
-			MainForm.Azuki.LeftMargin			= AppConfig.LeftMargin;
-			MainForm.Azuki.TopMargin			= AppConfig.TopMargin;
-			MainForm.Azuki.ViewType				= AppConfig.ViewType;
-			MainForm.Azuki.UsesTabForIndent		= AppConfig.UsesTabForIndent;
+			MainForm.Azuki.DrawsEolCode				= AppConfig.DrawsEolCode;
+			MainForm.Azuki.DrawsFullWidthSpace		= AppConfig.DrawsFullWidthSpace;
+			MainForm.Azuki.DrawsSpace				= AppConfig.DrawsSpace;
+			MainForm.Azuki.DrawsTab					= AppConfig.DrawsTab;
+			MainForm.Azuki.DrawsEofMark				= AppConfig.DrawsEofMark;
+			MainForm.Azuki.HighlightsCurrentLine	= AppConfig.HighlightsCurrentLine;
+			MainForm.Azuki.HighlightsMatchedBracket	= AppConfig.HighlightsMatchedBracket;
+			MainForm.Azuki.ShowsLineNumber			= AppConfig.ShowsLineNumber;
+			MainForm.Azuki.ShowsHRuler				= AppConfig.ShowsHRuler;
+			MainForm.Azuki.ShowsDirtBar				= AppConfig.ShowsDirtBar;
+			MainForm.Azuki.TabWidth					= AppConfig.TabWidth;
+			MainForm.Azuki.LinePadding				= AppConfig.LinePadding;
+			MainForm.Azuki.LeftMargin				= AppConfig.LeftMargin;
+			MainForm.Azuki.TopMargin				= AppConfig.TopMargin;
+			MainForm.Azuki.ViewType					= AppConfig.ViewType;
+			MainForm.Azuki.UsesTabForIndent			= AppConfig.UsesTabForIndent;
 			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
-			MainForm.Azuki.HRulerIndicatorType	= AppConfig.HRulerIndicatorType;
-			MainForm.Azuki.ScrollsBeyondLastLine= AppConfig.ScrollsBeyondLastLine;
+			MainForm.Azuki.HRulerIndicatorType		= AppConfig.HRulerIndicatorType;
+			MainForm.Azuki.ScrollsBeyondLastLine	= AppConfig.ScrollsBeyondLastLine;
 
 			// update UI
 			MainForm.UpdateUI();
@@ -990,26 +991,27 @@ namespace Sgry.Ann
 			{
 				AppConfig.WindowSize = MainForm.ClientSize;
 			}
-			AppConfig.TabPanelEnabled		= MainForm.TabPanelEnabled;
+			AppConfig.TabPanelEnabled			= MainForm.TabPanelEnabled;
 
-			AppConfig.DrawsEolCode			= MainForm.Azuki.DrawsEolCode;
-			AppConfig.DrawsFullWidthSpace	= MainForm.Azuki.DrawsFullWidthSpace;
-			AppConfig.DrawsSpace			= MainForm.Azuki.DrawsSpace;
-			AppConfig.DrawsTab				= MainForm.Azuki.DrawsTab;
-			AppConfig.DrawsEofMark			= MainForm.Azuki.DrawsEofMark;
-			AppConfig.HighlightsCurrentLine	= MainForm.Azuki.HighlightsCurrentLine;
-			AppConfig.ShowsLineNumber		= MainForm.Azuki.ShowsLineNumber;
-			AppConfig.ShowsHRuler			= MainForm.Azuki.ShowsHRuler;
-			AppConfig.ShowsDirtBar			= MainForm.Azuki.ShowsDirtBar;
-			AppConfig.TabWidth				= MainForm.Azuki.TabWidth;
-			AppConfig.LinePadding			= MainForm.Azuki.LinePadding;
-			AppConfig.LeftMargin			= MainForm.Azuki.LeftMargin;
-			AppConfig.TopMargin				= MainForm.Azuki.TopMargin;
-			AppConfig.ViewType				= MainForm.Azuki.ViewType;
-			AppConfig.UsesTabForIndent		= MainForm.Azuki.UsesTabForIndent;
+			AppConfig.DrawsEolCode				= MainForm.Azuki.DrawsEolCode;
+			AppConfig.DrawsFullWidthSpace		= MainForm.Azuki.DrawsFullWidthSpace;
+			AppConfig.DrawsSpace				= MainForm.Azuki.DrawsSpace;
+			AppConfig.DrawsTab					= MainForm.Azuki.DrawsTab;
+			AppConfig.DrawsEofMark				= MainForm.Azuki.DrawsEofMark;
+			AppConfig.HighlightsCurrentLine		= MainForm.Azuki.HighlightsCurrentLine;
+			AppConfig.HighlightsMatchedBracket	= MainForm.Azuki.HighlightsMatchedBracket;
+			AppConfig.ShowsLineNumber			= MainForm.Azuki.ShowsLineNumber;
+			AppConfig.ShowsHRuler				= MainForm.Azuki.ShowsHRuler;
+			AppConfig.ShowsDirtBar				= MainForm.Azuki.ShowsDirtBar;
+			AppConfig.TabWidth					= MainForm.Azuki.TabWidth;
+			AppConfig.LinePadding				= MainForm.Azuki.LinePadding;
+			AppConfig.LeftMargin				= MainForm.Azuki.LeftMargin;
+			AppConfig.TopMargin					= MainForm.Azuki.TopMargin;
+			AppConfig.ViewType					= MainForm.Azuki.ViewType;
+			AppConfig.UsesTabForIndent			= MainForm.Azuki.UsesTabForIndent;
 			AppConfig.ConvertsFullWidthSpaceToSpace = MainForm.Azuki.ConvertsFullWidthSpaceToSpace;
-			AppConfig.HRulerIndicatorType	= MainForm.Azuki.HRulerIndicatorType;
-			AppConfig.ScrollsBeyondLastLine	= MainForm.Azuki.ScrollsBeyondLastLine;
+			AppConfig.HRulerIndicatorType		= MainForm.Azuki.HRulerIndicatorType;
+			AppConfig.ScrollsBeyondLastLine		= MainForm.Azuki.ScrollsBeyondLastLine;
 
 			// save to file
 			AppConfig.Save();

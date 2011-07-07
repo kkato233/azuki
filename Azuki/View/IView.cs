@@ -1,7 +1,7 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
 // author: YAMAMOTO Suguru
-// update: 2011-01-29
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -86,6 +86,14 @@ namespace Sgry.Azuki
 		/// Gets or sets whether the current line would be drawn with underline or not.
 		/// </summary>
 		bool HighlightsCurrentLine
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether to highlight matched bracket or not.
+		/// </summary>
+		bool HighlightsMatchedBracket
 		{
 			get; set;
 		}

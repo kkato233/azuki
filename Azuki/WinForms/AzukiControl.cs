@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-05-15
+// update: 2011-07-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -791,6 +791,19 @@ namespace Sgry.Azuki.WinForms
 		{
 			get{ return View.HighlightsCurrentLine; }
 			set{ View.HighlightsCurrentLine = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether to highlight matched bracket or not.
+		/// </summary>
+#		if !PocketPC
+		[Category("Appearance")]
+		[DefaultValue(true)]
+#		endif
+		public bool HighlightsMatchedBracket
+		{
+			get{ return View.HighlightsMatchedBracket; }
+			set{ View.HighlightsMatchedBracket = value; }
 		}
 
 		/// <summary>

@@ -1,4 +1,4 @@
-﻿// 2011-02-05
+﻿// 2011-07-07
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,6 +23,7 @@ namespace Sgry.Ann
 		public static bool DrawsTab = true;
 		public static bool DrawsEofMark = false;
 		public static bool HighlightsCurrentLine = true;
+		public static bool HighlightsMatchedBracket = true;
 		public static bool ShowsLineNumber = true;
 		public static bool ShowsHRuler = false;
 		public static bool ShowsDirtBar = true;
@@ -54,28 +55,29 @@ namespace Sgry.Ann
 				width = Ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, 300 );
 				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 400 );
 
-				AppConfig.FontInfo				= new FontInfo( str, fontSize, FontStyle.Regular );
-				AppConfig.WindowSize			= new Size( width, height );
-				AppConfig.WindowMaximized		= Ini.Get( "Default", "WindowMaximized", false );
-				AppConfig.TabPanelEnabled		= Ini.Get( "Default", "TabPanelEnabled", false );
-				AppConfig.DrawsEolCode			= Ini.Get( "Default", "DrawsEolCode", true );
-				AppConfig.DrawsFullWidthSpace	= Ini.Get( "Default", "DrawsFullWidthSpace", true );
-				AppConfig.DrawsSpace			= Ini.Get( "Default", "DrawsSpace", true );
-				AppConfig.DrawsTab				= Ini.Get( "Default", "DrawsTab", true );
-				AppConfig.DrawsEofMark			= Ini.Get( "Default", "DrawsEofMark", false );
-				AppConfig.HighlightsCurrentLine	= Ini.Get( "Default", "HighlightsCurrentLine", true );
-				AppConfig.ShowsLineNumber		= Ini.Get( "Default", "ShowsLineNumber", true );
-				AppConfig.ShowsHRuler			= Ini.Get( "Default", "ShowsHRuler", false );
-				AppConfig.ShowsDirtBar			= Ini.Get( "Default", "ShowsDirtBar", false );
-				AppConfig.TabWidth				= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
-				AppConfig.LinePadding			= Ini.GetInt( "Default", "LinePadding", 1, 100, 1 );
-				AppConfig.LeftMargin			= Ini.GetInt( "Default", "LeftMargin", 0, 100, 1 );
-				AppConfig.TopMargin				= Ini.GetInt( "Default", "TopMargin", 0, 100, 1 );
-				AppConfig.ViewType				= Ini.Get( "Default", "ViewType", ViewType.Proportional );
-				AppConfig.UsesTabForIndent		= Ini.Get( "Default", "UsesTabForIndent", true );
+				AppConfig.FontInfo					= new FontInfo( str, fontSize, FontStyle.Regular );
+				AppConfig.WindowSize				= new Size( width, height );
+				AppConfig.WindowMaximized			= Ini.Get( "Default", "WindowMaximized", false );
+				AppConfig.TabPanelEnabled			= Ini.Get( "Default", "TabPanelEnabled", false );
+				AppConfig.DrawsEolCode				= Ini.Get( "Default", "DrawsEolCode", true );
+				AppConfig.DrawsFullWidthSpace		= Ini.Get( "Default", "DrawsFullWidthSpace", true );
+				AppConfig.DrawsSpace				= Ini.Get( "Default", "DrawsSpace", true );
+				AppConfig.DrawsTab					= Ini.Get( "Default", "DrawsTab", true );
+				AppConfig.DrawsEofMark				= Ini.Get( "Default", "DrawsEofMark", false );
+				AppConfig.HighlightsCurrentLine		= Ini.Get( "Default", "HighlightsCurrentLine", true );
+				AppConfig.HighlightsMatchedBracket	= Ini.Get( "Default", "HighlightsMatchedBracket", true );
+				AppConfig.ShowsLineNumber			= Ini.Get( "Default", "ShowsLineNumber", true );
+				AppConfig.ShowsHRuler				= Ini.Get( "Default", "ShowsHRuler", false );
+				AppConfig.ShowsDirtBar				= Ini.Get( "Default", "ShowsDirtBar", false );
+				AppConfig.TabWidth					= Ini.GetInt( "Default", "TabWidth", 0, 100, 8 );
+				AppConfig.LinePadding				= Ini.GetInt( "Default", "LinePadding", 1, 100, 1 );
+				AppConfig.LeftMargin				= Ini.GetInt( "Default", "LeftMargin", 0, 100, 1 );
+				AppConfig.TopMargin					= Ini.GetInt( "Default", "TopMargin", 0, 100, 1 );
+				AppConfig.ViewType					= Ini.Get( "Default", "ViewType", ViewType.Proportional );
+				AppConfig.UsesTabForIndent			= Ini.Get( "Default", "UsesTabForIndent", true );
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
-				AppConfig.HRulerIndicatorType	= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
-				AppConfig.ScrollsBeyondLastLine	= Ini.Get( "Default", "ScrollsBeyondLastLine", true );
+				AppConfig.HRulerIndicatorType		= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
+				AppConfig.ScrollsBeyondLastLine		= Ini.Get( "Default", "ScrollsBeyondLastLine", true );
 
 				UserPref.Antialias					= Ini.Get( "Default", "Antialias", UserPref.Antialias );
 				UserPref.AutoScrollMargin			= Ini.Get( "Default", "AutoScrollMargin", UserPref.AutoScrollMargin );
@@ -93,31 +95,32 @@ namespace Sgry.Ann
 		{
 			try
 			{
-				Ini.Set( "Default", "FontSize",				AppConfig.FontInfo.Size );
-				Ini.Set( "Default", "Font",					AppConfig.FontInfo.Name );
-				Ini.Set( "Default", "WindowWidth",			AppConfig.WindowSize.Width );
-				Ini.Set( "Default", "WindowHeight",			AppConfig.WindowSize.Height );
-				Ini.Set( "Default", "WindowMaximized",		AppConfig.WindowMaximized );
-				Ini.Set( "Default", "TabPanelEnabled",		AppConfig.TabPanelEnabled );
-				Ini.Set( "Default", "DrawsEolCode",			AppConfig.DrawsEolCode );
-				Ini.Set( "Default", "DrawsFullWidthSpace",	AppConfig.DrawsFullWidthSpace );
-				Ini.Set( "Default", "DrawsSpace",			AppConfig.DrawsSpace );
-				Ini.Set( "Default", "DrawsTab",				AppConfig.DrawsTab );
-				Ini.Set( "Default", "DrawsEofMark",			AppConfig.DrawsEofMark );
-				Ini.Set( "Default", "HighlightsCurrentLine",AppConfig.HighlightsCurrentLine );
-				Ini.Set( "Default", "ShowsLineNumber",		AppConfig.ShowsLineNumber );
-				Ini.Set( "Default", "ShowsHRuler",			AppConfig.ShowsHRuler );
-				Ini.Set( "Default", "ShowsDirtBar",			AppConfig.ShowsDirtBar );
-				Ini.Set( "Default", "TabWidth",				AppConfig.TabWidth );
-				Ini.Set( "Default", "LinePadding",			AppConfig.LinePadding );
-				Ini.Set( "Default", "LeftMargin",			AppConfig.LeftMargin );
-				Ini.Set( "Default", "TopMargin",			AppConfig.TopMargin );
-				Ini.Set( "Default", "ViewType",				AppConfig.ViewType );
-				Ini.Set( "Default", "UsesTabForIndent",		AppConfig.UsesTabForIndent );
+				Ini.Set( "Default", "FontSize",					AppConfig.FontInfo.Size );
+				Ini.Set( "Default", "Font",						AppConfig.FontInfo.Name );
+				Ini.Set( "Default", "WindowWidth",				AppConfig.WindowSize.Width );
+				Ini.Set( "Default", "WindowHeight",				AppConfig.WindowSize.Height );
+				Ini.Set( "Default", "WindowMaximized",			AppConfig.WindowMaximized );
+				Ini.Set( "Default", "TabPanelEnabled",			AppConfig.TabPanelEnabled );
+				Ini.Set( "Default", "DrawsEolCode",				AppConfig.DrawsEolCode );
+				Ini.Set( "Default", "DrawsFullWidthSpace",		AppConfig.DrawsFullWidthSpace );
+				Ini.Set( "Default", "DrawsSpace",				AppConfig.DrawsSpace );
+				Ini.Set( "Default", "DrawsTab",					AppConfig.DrawsTab );
+				Ini.Set( "Default", "DrawsEofMark",				AppConfig.DrawsEofMark );
+				Ini.Set( "Default", "HighlightsCurrentLine",	AppConfig.HighlightsCurrentLine );
+				Ini.Set( "Default", "HighlightsMatchedBracket",	AppConfig.HighlightsMatchedBracket );
+				Ini.Set( "Default", "ShowsLineNumber",			AppConfig.ShowsLineNumber );
+				Ini.Set( "Default", "ShowsHRuler",				AppConfig.ShowsHRuler );
+				Ini.Set( "Default", "ShowsDirtBar",				AppConfig.ShowsDirtBar );
+				Ini.Set( "Default", "TabWidth",					AppConfig.TabWidth );
+				Ini.Set( "Default", "LinePadding",				AppConfig.LinePadding );
+				Ini.Set( "Default", "LeftMargin",				AppConfig.LeftMargin );
+				Ini.Set( "Default", "TopMargin",				AppConfig.TopMargin );
+				Ini.Set( "Default", "ViewType",					AppConfig.ViewType );
+				Ini.Set( "Default", "UsesTabForIndent",			AppConfig.UsesTabForIndent );
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );
-				Ini.Set( "Default", "HRulerIndicatorType",	AppConfig.HRulerIndicatorType );
-				Ini.Set( "Default", "ScrollsBeyondLastLine",AppConfig.ScrollsBeyondLastLine );
-				Ini.Set( "Default", "Antialias",			UserPref.Antialias );
+				Ini.Set( "Default", "HRulerIndicatorType",		AppConfig.HRulerIndicatorType );
+				Ini.Set( "Default", "ScrollsBeyondLastLine",	AppConfig.ScrollsBeyondLastLine );
+				Ini.Set( "Default", "Antialias",				UserPref.Antialias );
 
 				Ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );
 			}

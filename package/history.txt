@@ -2,6 +2,7 @@
  * add: speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
  * add: improved performance of all keyword based highlighters (now it never scan characters beyond end of the range to be highlighted)
  * add: now XML highlighter recognizes CDATA sections
+ * add: the feature to highlight matching bracket can be disabled through AzukiControl.HighlightsMatchedBracket
  * fix: now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
 
 == 1.6.3 (2011-  -  ) ==

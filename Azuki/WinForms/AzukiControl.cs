@@ -2153,9 +2153,9 @@ namespace Sgry.Azuki.WinForms
 			else if( control && !alt && !shift )
 			{
 				if( 0 < scrollOffset )
-					View.ZoomIn();
-				else
 					View.ZoomOut();
+				else
+					View.ZoomIn();
 			}
 			else if( !control && !alt && !shift )
 			{

@@ -1,9 +1,10 @@
 == 1.7.0 (2011-  -  ) ==
- * add: speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
- * add: improved performance of all keyword based highlighters (now it never scan characters beyond end of the range to be highlighted)
- * add: now XML highlighter recognizes CDATA sections
- * add: the feature to highlight matching bracket can be disabled through AzukiControl.HighlightsMatchedBracket
- * fix: now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
+ * add: Speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
+ * add: Improved performance of all keyword based highlighters (now it never scan characters beyond end of the range to be highlighted)
+ * add: Now XML highlighter recognizes CDATA sections
+ * add: The feature to highlight matching bracket can be disabled through AzukiControl.HighlightsMatchedBracket
+ * mod: Rotating mouse wheel towards the user while pressing Ctrl key now means zoom-out (previously it meant zoom-in)
+ * fix: Now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
 
 == 1.6.3 (2011-  -  ) ==
  * fix: [Ann] Ann crashes if a file path which contains a wildcard (? or *) was specified as a command line parameter
@@ -12,7 +13,7 @@
 == 1.6.2 (2011-04-02) ==
  * mod: Azuki uses 'Arrow' mouse cursor graphic when the cursor is on horizontal ruler area
  * fix: URIs already marked up will be unmarked when MarksUri property of IUserInterface (AzukiControl) is changed to false
- * fix: CanUndo property of IUserInterface(AzukiControl) is not updated to True yet in ContentChanged event handler which is invoked when the document is firstly modified
+ * fix: CanUndo property of IUserInterface (AzukiControl) is not updated to True yet in ContentChanged event handler which is invoked when the document is firstly modified
  * fix: a bug of built-in LaTeX highlighter (if a pair of curly brackets appears after a \section command and before other command, then its content will be highlighted as a heading)
  * fix: [Ann] URIs in newly created document will never be marked
  * fix: [Ann] tagged as version 1.6.2

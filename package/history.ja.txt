@@ -3,6 +3,7 @@
  * add: キーワードベースのハイライターのパフォーマンスを改善（ハイライトすべき範囲より後ろにある文字をスキャンしないように）
  * add: XML ハイライターが CDATA セクションを解釈するように
  * add: AzukiControl.HighlightsMatchedBracket プロパティで対カッコのハイライト機能を無効化できるように
+ * mod: Ctrl キーを押しながらマウスホイールをユーザに向かって回転させると画面を縮小するように（これまでは拡大していた）
  * fix: ColorScheme.MatchedBracketBack を Color.Transparent に設定した場合、通常文字列用の背景色を対カッコのハイライト時使うように
 
 == 1.6.3 (2011-  -  ) ==

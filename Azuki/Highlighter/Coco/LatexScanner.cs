@@ -46,10 +46,10 @@ class Scanner {
 	char[] tval = new char[128]; // text of current token
 	int tlen;         // length of current token
 	
-	public Scanner( Document doc, int startIndex )
+	public Scanner( Document doc, int startIndex, int endIndex )
 	{
 		instanceCount++;
-		buffer = new Buffer( doc, startIndex );
+		buffer = new Buffer( doc, startIndex, endIndex );
 		Init();
 	}
 	

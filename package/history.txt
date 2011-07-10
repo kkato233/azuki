@@ -1,6 +1,6 @@
 == 1.7.0 (2011-  -  ) ==
  * add: Speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
- * add: Improved performance of all keyword based highlighters (now it never scan characters beyond end of the range to be highlighted)
+ * add: Improved performance of built-in highlighters (now they never scan characters beyond end of the range to be highlighted)
  * add: Now XML highlighter recognizes CDATA sections
  * add: The feature to highlight matching bracket can be disabled through AzukiControl.HighlightsMatchedBracket
  * mod: Rotating mouse wheel towards the user while pressing Ctrl key now means zoom-out (previously it meant zoom-in)

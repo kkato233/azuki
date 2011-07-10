@@ -77,8 +77,8 @@ int sectionLevel = 0;
 
 
 
-	public Parser( Document doc, int startIndex ) {
-		this.scanner = new Scanner( doc, startIndex );
+	public Parser( Document doc, int startIndex, int endIndex ) {
+		this.scanner = new Scanner( doc, startIndex, endIndex );
 		errors = new Errors();
 		this.doc = doc;
 	}

@@ -176,20 +176,20 @@ namespace Sgry.Azuki.Test
 			doc.Text = "mailto:a";
 			TestUtl.AssertEquals( -1, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
-			doc.Text = "mailto:[";
+			doc.Text = "mailto:'";
 			TestUtl.AssertEquals( -1, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
 			doc.Text = "mailto:ab";
 			TestUtl.AssertEquals( -1, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
-			doc.Text = "mailto:a[";
+			doc.Text = "mailto:a'";
 			TestUtl.AssertEquals( -1, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
 			// domain (first char)
 			doc.Text = "mailto:a@";
 			TestUtl.AssertEquals( -1, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
-			doc.Text = "mailto:a@[";
+			doc.Text = "mailto:a@'";
 			TestUtl.AssertEquals( -1, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
 			doc.Text = "mailto:a@a";
@@ -199,7 +199,7 @@ namespace Sgry.Azuki.Test
 			doc.Text = "mailto:a@a";
 			TestUtl.AssertEquals( 10, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
-			doc.Text = "mailto:a@a[";
+			doc.Text = "mailto:a@a'";
 			TestUtl.AssertEquals( 10, UriMarker.Inst.GetUriEnd(doc, 0, out isMailAddress) );
 
 			doc.Text = "mailto:a@aa";

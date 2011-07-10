@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-05-15
+// update: 2011-07-10
 //=========================================================
 using System;
 using System.Collections;
@@ -2347,6 +2347,12 @@ namespace Sgry.Azuki
 
 				// associate with new highlighter object
 				_Highlighter = value;
+
+				// clear highlighter related parameters
+				ViewParam.H_InvalidRangeBegin = Int32.MaxValue;
+				ViewParam.H_InvalidRangeEnd = Int32.MinValue;
+				ViewParam.H_ValidRangeBegin = 0;
+				ViewParam.H_ValidRangeEnd = 0;
 			}
 		}
 

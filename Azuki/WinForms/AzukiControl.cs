@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-07-07
+// update: 2011-07-10
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1579,20 +1579,60 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
+		/// Gets number of characters currently selected.
+		/// </summary>
+		/// <returns>Number of characters currently selected.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method gets number of characters currently selected,
+		/// properly even if the selection mode is rectangle selection.
+		/// </para>
+		/// <para>
+		/// Note that the difference between the end of selection and the beginning of selection
+		/// is not a number of selected characters if they are selected by rectangle selection.
+		/// </para>
+		/// </remarks>
+		public int GetSelectedTextLength()
+		{
+			return _Impl.GetSelectedTextLength();
+		}
+
+		/// <summary>
 		/// Gets currently selected text.
 		/// </summary>
 		/// <returns>Currently selected text.</returns>
 		/// <remarks>
 		/// <para>
 		/// This method gets currently selected text.
+		/// </para>
+		/// <para>
 		/// If current selection is rectangle selection,
-		/// return value will be a text that are consisted with selected partial lines (rows)
-		/// joined with CR-LF.
+		/// return value will be a string that are consisted with selected partial lines (rows)
+		/// joined with CR+LF.
 		/// </para>
 		/// </remarks>
 		public string GetSelectedText()
 		{
 			return _Impl.GetSelectedText();
+		}
+
+		/// <summary>
+		/// Gets currently selected text.
+		/// </summary>
+		/// <returns>Currently selected text.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method gets currently selected text.
+		/// </para>
+		/// <para>
+		/// If current selection is rectangle selection,
+		/// return value will be a string that are consisted with selected partial lines (rows)
+		/// joined with specified string.
+		/// </para>
+		/// </remarks>
+		public string GetSelectedText( string separator )
+		{
+			return _Impl.GetSelectedText( separator );
 		}
 
 		/// <summary>

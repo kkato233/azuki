@@ -3,6 +3,7 @@
  * add: Improved performance of built-in highlighters (now they never scan characters beyond end of the range to be highlighted)
  * add: Now XML highlighter recognizes CDATA sections
  * add: The feature to highlight matching bracket can be disabled through AzukiControl.HighlightsMatchedBracket
+ * add: [Ann] When user selects text, Ann displays number of char/bytes currently selected on status-bar
  * mod: Rotating mouse wheel towards the user while pressing Ctrl key now means zoom-out (previously it meant zoom-in)
  * fix: Now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
 

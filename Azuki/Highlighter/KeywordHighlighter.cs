@@ -1,7 +1,7 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
 // author: YAMAMOTO Suguru
-// update: 2011-06-26
+// update: 2011-07-10
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -122,7 +122,6 @@ namespace Sgry.Azuki.Highlighter
 #		if DEBUG
 		internal
 #		endif
-		SplitArray<int> _EPI = new SplitArray<int>( 64 );
 		SplitArray<int> _ReparsePoints = new SplitArray<int>( 64 );
 		#endregion
 
@@ -513,14 +512,6 @@ namespace Sgry.Azuki.Highlighter
 				dirtyEnd = doc.Length;
 			}
 
-			// clear EPI entries in and after the range of highlighting target
-			// remove entries in EPI-list which will be invalid after the insertion
-			int epiIndex = HighlighterUtl.FindLeastMaximum( _EPI, dirtyBegin ) + 1;
-			if( 0 <= epiIndex && epiIndex < _EPI.Count )
-			{
-				_EPI.RemoveRange( epiIndex, _EPI.Count );
-			}
-
 			// seek each chars and do pattern matching
 			index = dirtyBegin;
 			while( 0 <= index && index < dirtyEnd )
@@ -538,7 +529,6 @@ namespace Sgry.Azuki.Highlighter
 				{
 					// successfully highlighted. skip to next.
 					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
-					Utl.AddEPI( _EPI, index, nextIndex );
 					index = nextIndex;
 					continue;
 				}
@@ -549,7 +539,6 @@ namespace Sgry.Azuki.Highlighter
 				{
 					// successfully highlighted. skip to next.
 					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
-					Utl.AddEPI( _EPI, index, nextIndex );
 					index = nextIndex;
 					continue;
 				}
@@ -778,26 +767,6 @@ namespace Sgry.Azuki.Highlighter
 			for( int i=begin; i<end; i++ )
 			{
 				doc.SetCharClass( i, klass );
-			}
-		}
-
-		static class Utl
-		{
-			public static void AddEPI( SplitArray<int> epi, int pairBeginIndex, int pairEndIndex )
-			{
-				// insert
-				epi.Add( pairBeginIndex );
-				epi.Add( pairEndIndex );
-
-				// ensure all entries are sorted in ascending order
-				// and the count is an even number
-#				if DEBUG
-				DebugUtl.Assert( (epi.Count % 0x01) == 0 );
-				for( int i=1; i<epi.Count; i++ )
-				{
-					DebugUtl.Assert( epi[i-1] <= epi[i] );
-				}
-#				endif
 			}
 		}
 		#endregion

@@ -3,6 +3,7 @@
  * add: 組み込みハイライターのパフォーマンスを改善（ハイライトすべき範囲より後ろにある文字をスキャンしないように）
  * add: XML ハイライターが CDATA セクションを解釈するように
  * add: AzukiControl.HighlightsMatchedBracket プロパティで対カッコのハイライト機能を無効化できるように
+ * add: 垂直スクロールバーの表示・非表示を決定する ShowsVScrollBar プロパティを AzukiControl に追加
  * add: [Ann] テキスト選択中に、選択している文字数・バイト数をステータスバーで表示するように
  * mod: Ctrl キーを押しながらマウスホイールをユーザに向かって回転させると画面を縮小するように（これまでは拡大していた）
  * fix: ColorScheme.MatchedBracketBack を Color.Transparent に設定した場合、通常文字列用の背景色を対カッコのハイライト時使うように

@@ -1,4 +1,4 @@
-// 2011-07-07
+// 2011-07-31
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -164,7 +164,7 @@ namespace Sgry.Ann
 				labelSize.Width = g.MeasureText( _Label_Pattern.Text ).Width + 2;
 				labelSize.Height = g.MeasureText( "Mp" ).Height;
 				_Label_Pattern.Size = labelSize;
-				_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height );
+				_Azuki_Pattern.Size = new Size( labelSize.Width*3, labelSize.Height+4 );
 				_Button_Next.Size = new Size( g.MeasureText(_Button_Next.Text).Width+2, labelSize.Height );
 				_Button_Prev.Size = new Size( g.MeasureText(_Button_Prev.Text).Width+2, labelSize.Height );
 				_Check_MatchCase.Size = new Size(
@@ -175,9 +175,9 @@ namespace Sgry.Ann
 					g.MeasureText(_Check_Regex.Text).Width + labelSize.Height,
 					labelSize.Height
 				);
-				_Panel_TextBox.Height
-					= _Panel_Options.Height
-					= _Panel_Actions.Height = _Label_Pattern.Height + 2;
+				_Panel_TextBox.Height = _Azuki_Pattern.Height + 2;
+				_Panel_Options.Height = _Label_Pattern.Height + 2;
+				_Panel_Actions.Height = _Label_Pattern.Height + 2;
 				_Panel_TextBox.Width = _Label_Pattern.Width + _Azuki_Pattern.Width + 2;
 				_Panel_Actions.Width = _Button_Next.Width + _Button_Prev.Width + 4;
 				_Panel_Options.Width = _Check_MatchCase.Width + _Check_Regex.Width + 2;
@@ -283,6 +283,7 @@ namespace Sgry.Ann
 			_Azuki_Pattern.HighlightsCurrentLine = false;
 			_Azuki_Pattern.HighlightsMatchedBracket = false;
 			_Azuki_Pattern.ShowsHScrollBar = false;
+			_Azuki_Pattern.ShowsVScrollBar = false;
 			_Azuki_Pattern.ShowsLineNumber = false;
 			_Azuki_Pattern.ShowsDirtBar = false;
 			_Azuki_Pattern.AcceptsTab = false;

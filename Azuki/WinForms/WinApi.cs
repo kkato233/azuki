@@ -1,7 +1,7 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
 // author: YAMAMOTO Suguru
-// update: 2010-02-13
+// update: 2011-07-31
 //=========================================================
 using System;
 using System.Text;
@@ -70,6 +70,7 @@ namespace Sgry.Azuki.WinForms
 		public const int IGP_SETCOMPSTR = 0x00000014;
 
 		public const long WS_HSCROLL = 0x00100000L;
+		public const long WS_VSCROLL = 0x00200000L;
 		public const long WS_BORDER = 0x00800000L;
 		public const long WS_EX_CLIENTEDGE = 0x00000200L;
 		public const int GWL_STYLE = -16;

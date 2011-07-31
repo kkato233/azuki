@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-07-10
+// update: 2011-07-31
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -58,6 +58,7 @@ namespace Sgry.Azuki.WinForms
 		bool _AcceptsReturn = true;
 		bool _AcceptsTab = true;
 		bool _ShowsHScrollBar = true;
+		bool _ShowsVScrollBar = true;
 		bool _UseCtrlTabToMoveFocus = true;
 		int _WheelPos = 0;
 		BorderStyle _BorderStyle = BorderStyle.Fixed3D;
@@ -739,6 +740,35 @@ namespace Sgry.Azuki.WinForms
 					style |= WinApi.WS_HSCROLL;
 				else
 					style &= ~(WinApi.WS_HSCROLL);
+
+				// apply
+				WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
+				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
+				UpdateScrollBarRange();
+			}
+		}
+
+		/// <summary>
+		/// Whether to show vertical scroll bar or not.
+		/// </summary>
+#		if !PocketPC
+		[Category("Appearance")]
+		[DefaultValue(true)]
+		[Description("Set true to show vertical scroll bar.")]
+#		endif
+		public bool ShowsVScrollBar
+		{
+			get{ return _ShowsVScrollBar; }
+			set
+			{
+				_ShowsVScrollBar = value;
+
+				// make new style bits
+				long style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
+				if( _ShowsVScrollBar )
+					style |= WinApi.WS_VSCROLL;
+				else
+					style &= ~(WinApi.WS_VSCROLL);
 
 				// apply
 				WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );

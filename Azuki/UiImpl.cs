@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-07-10
+// update: 2011-07-31
 //=========================================================
 using System;
 using System.Text;
@@ -42,6 +42,7 @@ namespace Sgry.Azuki
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
 		bool _UsesStickyCaret = false;
+		bool _IsSingleLineMode = false;
 
 		// X coordinate of this also be used as a flag to determine
 		// whether the mouse button is down or not.
@@ -302,6 +303,15 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets whether the content should be limited to a single line.
+		/// </summary>
+		public bool IsSingleLineMode
+		{
+			get{ return _IsSingleLineMode; }
+			set{ _IsSingleLineMode = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets whether URIs in the active document
 		/// should be marked automatically with built-in URI marker or not.
 		/// </summary>
@@ -468,6 +478,12 @@ namespace Sgry.Azuki
 					// execute built-in hook logic
 					if( LineLogic.IsEolChar(ch) )
 					{
+						// if an EOL code was found, stop consuming and discard following inputs
+						if( IsSingleLineMode )
+						{
+							break;
+						}
+
 						// change all EOL code in the text should changed to the
 						input.Append( doc.EolCode );
 					}

@@ -1169,6 +1169,23 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
+		/// Gets or sets whether the content will be limited to a single line.
+		/// </summary>
+		/// <remarks>
+		/// The default value is false.
+		/// </remarks>
+#		if !PocketPC
+		[Category("Behavior")]
+		[DefaultValue(false)]
+		[Description("If this is true, the content will be limited to a single line.")]
+#		endif
+		public bool IsSingleLineMode
+		{
+			get{ return _Impl.IsSingleLineMode; }
+			set{ _Impl.IsSingleLineMode = value; }
+		}
+
+		/// <summary>
 		/// If this is true, treats Enter key as an input and
 		/// prevent pressing dialog default button.
 		/// </summary>

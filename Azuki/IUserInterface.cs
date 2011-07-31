@@ -1,7 +1,7 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
 // author: YAMAMOTO Suguru
-// update: 2011-07-10
+// update: 2011-07-31
 //=========================================================
 using System;
 using System.Drawing;
@@ -386,6 +386,20 @@ namespace Sgry.Azuki
 		/// Gets or sets currently active selection mode.
 		/// </summary>
 		TextDataType SelectionMode
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether the content should be limited to a single line.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This property determines
+		/// whether the content of Azuki should be kept in single line or not.
+		/// </para>
+		/// </remarks>
+		bool IsSingleLineMode
 		{
 			get; set;
 		}

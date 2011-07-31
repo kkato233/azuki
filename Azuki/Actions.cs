@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-01-29
+// update: 2011-07-31
 //=========================================================
 using System;
 using System.Drawing;
@@ -407,6 +407,16 @@ namespace Sgry.Azuki
 			if( clipboardText == null )
 			{
 				return;
+			}
+
+			// limit the content in a single line if it's in single line mode
+			if( ui.IsSingleLineMode )
+			{
+				int eolIndex = clipboardText.IndexOfAny( new char[]{'\r', '\n'} );
+				if( 0 <= eolIndex )
+				{
+					clipboardText = clipboardText.Remove( eolIndex );
+				}
 			}
 			
 			// begin grouping edit action

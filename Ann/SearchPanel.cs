@@ -288,6 +288,7 @@ namespace Sgry.Ann
 			_Azuki_Pattern.ShowsDirtBar = false;
 			_Azuki_Pattern.AcceptsTab = false;
 			_Azuki_Pattern.AcceptsReturn = false;
+			_Azuki_Pattern.IsSingleLineMode = true;
 			_Azuki_Pattern.BorderStyle = BorderStyle.Fixed3D;
 			_Azuki_Pattern.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 			_Azuki_Pattern.Document.ContentChanged += _Azuki_Pattern_ContentChanged;

@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-07-31
+// update: 2011-08-01
 //=========================================================
 using System;
 using System.Drawing;
@@ -597,7 +597,7 @@ namespace Sgry.Azuki
 			int caretLine;
 			int insIndex;
 
-			if( doc.IsReadOnly )
+			if( doc.IsReadOnly || ui.IsSingleLineMode )
 				return;
 
 			// get index of the head of current line
@@ -633,7 +633,7 @@ namespace Sgry.Azuki
 			int caretLine, caretLineHeadIndex;
 			int insIndex;
 
-			if( doc.IsReadOnly )
+			if( doc.IsReadOnly || ui.IsSingleLineMode )
 				return;
 
 			// get index of the end of current line

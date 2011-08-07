@@ -2,7 +2,7 @@
 // brief: Actions for Azuki engine.
 // author: YAMAMOTO Suguru
 // encoding: UTF-8
-// update: 2011-08-01
+// update: 2011-08-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -415,7 +415,7 @@ namespace Sgry.Azuki
 				int eolIndex = clipboardText.IndexOfAny( new char[]{'\r', '\n'} );
 				if( 0 <= eolIndex )
 				{
-					clipboardText = clipboardText.Remove( eolIndex );
+					clipboardText = clipboardText.Remove( eolIndex, clipboardText.Length-eolIndex );
 				}
 			}
 			

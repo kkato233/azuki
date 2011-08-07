@@ -109,7 +109,9 @@ namespace Sgry.Azuki.WinForms
 			ResetKeyBind();
 
 			// install exit event handler to dispose resources propely
+#			if !PocketPC
 			Application.ThreadExit += OnThreadExit;
+#			endif
 		}
 
 		/// <summary>
@@ -122,16 +124,20 @@ namespace Sgry.Azuki.WinForms
 			{
 				_Impl.Dispose();
 				_Impl = null;
+#				if !PocketPC
 				Application.ThreadExit -= OnThreadExit;
+#				endif
 			}
 		}
 
+#		if !PocketPC
 		void OnThreadExit( object sender, EventArgs e )
 		{
 			// if the GUI thread ended before this AzukiControl was disposed,
 			// dispose this to ensure that the child threads are terminated.
 			Dispose( true );
 		}
+#		endif
 
 		/// <summary>
 		/// Invokes HandleCreated event.

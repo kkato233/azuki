@@ -278,9 +278,7 @@ namespace Sgry.Azuki
 			else if( decoration.LineStyle == LineStyle.Waved )
 			{
 				int lineWidthSize = (_Font.Size / 24) + 1;
-				int lineLength = lineWidthSize + (lineWidthSize << 2);
 				int waveHeight = (_Font.Size / 6) + 1;
-				int lineSpacing = lineWidthSize << 3;
 				int offsetX = tokenPos.X % (waveHeight << 1);
 
 				int valleyY = tokenPos.Y + LineHeight - lineWidthSize;

@@ -1390,8 +1390,6 @@ namespace Sgry.Azuki
 		{
 			Debug.Assert( _IsDisposed == false );
 
-			Document doc = (Document)sender;
-
 			// delegate to view object
 			View.HandleDirtyStateChanged( sender, e );
 		}

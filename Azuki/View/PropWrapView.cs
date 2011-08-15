@@ -809,8 +809,6 @@ namespace Sgry.Azuki
 			Point tokenEndPos = pos;
 			bool inSelection;
 
-			int physTextAreaRight = XofTextArea + (TextAreaWidth - ScrollPosX);
-
 			// calc position of head/end of this line
 			lineHead = PLHI[ lineIndex ];
 			if( lineIndex+1 < PLHI.Count )

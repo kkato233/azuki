@@ -34,7 +34,6 @@ namespace Sgry
 #		else
 		public const string kernel32_dll = "coredll";
 #		endif
-		static Object LockKey = new Object();
 		static AutoLogger _AutoLogger = null;
 		#endregion
 

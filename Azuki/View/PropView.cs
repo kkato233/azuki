@@ -840,7 +840,6 @@ namespace Sgry.Azuki
 			CharClass klass;
 			Point tokenEndPos = pos;
 			bool inSelection;
-			int lastlyDrawnTokenEndIndex;
 
 			// calc position of head/end of this line
 			lineHead = Document.GetLineHeadIndex( lineIndex );
@@ -929,7 +928,6 @@ namespace Sgry.Azuki
 				begin = end;
 				end = NextPaintToken( Document, begin, lineEnd, out klass, out inSelection );
 			}
-			lastlyDrawnTokenEndIndex = end;
 
 			// draw EOF mark
 			if( DrawsEofMark && lineEnd == Document.Length )

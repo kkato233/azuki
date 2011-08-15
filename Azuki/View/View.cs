@@ -47,7 +47,6 @@ namespace Sgry.Azuki
 		int _HRulerHeight;	// height of the largest lines of the horizontal ruler
 		int _HRulerY_5;		// height of the middle lines of the horizontal ruler
 		int _HRulerY_1;		// height of the smallest lines of the horizontal ruler
-		int _HRulerTextHeight;
 		HRulerIndicatorType _HRulerIndicatorType = HRulerIndicatorType.Segment;
 
 		ColorScheme _ColorScheme = ColorScheme.Default;
@@ -261,7 +260,6 @@ namespace Sgry.Azuki
 			_HRulerY_5 = (int)( _HRulerHeight / (GoldenRatio * GoldenRatio) );
 			_HRulerY_1 = (int)( _HRulerHeight / (GoldenRatio) );
 			g.FontInfo = _HRulerFont;
-			_HRulerTextHeight = (int)( g.MeasureText("Mp").Height * 0.97 );
 			g.FontInfo = _Font;
 
 			// calculate minimum text area width

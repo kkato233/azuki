@@ -629,7 +629,6 @@ namespace Sgry.Azuki
 		{
 			Document doc = ui.Document;
 			IView view = ui.View;
-			string eol = doc.EolCode;
 			int caretLine, caretLineHeadIndex;
 			int insIndex;
 

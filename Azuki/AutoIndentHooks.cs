@@ -124,7 +124,6 @@ namespace Sgry.Azuki
 			if( LineLogic.IsEolChar(ch) )
 			{
 				int i;
-				int firstNonWsCharIndex;
 				bool extraPaddingNeeded = false;
 
 				// do nothing if it's in single line mode
@@ -149,7 +148,6 @@ namespace Sgry.Azuki
 					else
 						break;
 				}
-				firstNonWsCharIndex = i;
 
 				// if there are following white spaces, remove them
 				for( i=selEnd; i<lineEnd; i++ )

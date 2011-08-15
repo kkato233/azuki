@@ -3,6 +3,7 @@
  * add: Improved performance of built-in highlighters (now they never scan characters beyond end of the range to be highlighted)
  * add: Now XML highlighter recognizes CDATA sections
  * add: The feature to highlight matching bracket can be disabled through AzukiControl.HighlightsMatchedBracket
+ * add: Now 32 different marker IDs can be used at same time (in previous version, 8 marker IDs can be used at most)
  * add: Added IsSingleLineMode property to AzukiControl (IUserInterface) which determines whether to limit the content to a single line or not
  * add: Added ShowsVScrollBar property to AzukiControl to change visibility of vertical scroll bar
  * add: [Ann] When user selects text, Ann displays number of char/bytes currently selected on status-bar

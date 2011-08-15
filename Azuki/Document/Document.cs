@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-07-10
+// update: 2011-08-15
 //=========================================================
 using System;
 using System.Collections;
@@ -1086,16 +1086,16 @@ namespace Sgry.Azuki
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
-			byte bitMask;
+			uint bitMask;
 			bool changed = false;
 
 			// store the marking ID in form of bit mask
-			bitMask = (byte)( 0x01 << markingID );
+			bitMask = (uint)( 0x01 << markingID );
 			for( int i=begin; i<end; i++ )
 			{
 				if( (_Buffer.Marks[i] & bitMask) == 0 )
 				{
-					_Buffer.Marks[i] |= (byte)bitMask;
+					_Buffer.Marks[i] |= (uint)bitMask;
 					changed = true;
 				}
 			}
@@ -1141,16 +1141,16 @@ namespace Sgry.Azuki
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
-			byte bitMask;
+			uint bitMask;
 			bool changed = false;
 
 			// clears bit of the marking
-			bitMask = (byte)( 0x01 << markingID );
+			bitMask = (uint)( 0x01 << markingID );
 			for( int i=begin; i<end; i++ )
 			{
 				if( (_Buffer.Marks[i] & bitMask) != 0 )
 				{
-					_Buffer.Marks[i] &= (byte)( ~bitMask );
+					_Buffer.Marks[i] &= (uint)( ~bitMask );
 					changed = true;
 				}
 			}
@@ -1182,10 +1182,10 @@ namespace Sgry.Azuki
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
-			byte markingBitMask;
+			uint markingBitMask;
 
 			// make bit mask
-			markingBitMask = (byte)( 1 << markingID );
+			markingBitMask = (uint)( 1 << markingID );
 			if( (_Buffer.Marks[index] & markingBitMask) == 0 )
 			{
 				begin = index;
@@ -1271,7 +1271,7 @@ namespace Sgry.Azuki
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
-			byte markingBitMask = (byte)( GetMarkingBitMaskAt(index) & 0xff );
+			uint markingBitMask = (uint)( GetMarkingBitMaskAt(index) & 0xff );
 			return ( (markingBitMask >> markingID) & 0x01) != 0;
 		}
 
@@ -1296,7 +1296,7 @@ namespace Sgry.Azuki
 			if( index < 0 || _Buffer.Count < index )
 				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
 
-			byte markingBitMask;
+			uint markingBitMask;
 			List<int> result = new List<int>( 8 );
 
 			// if specified index is end of document, no marking will be found anyway

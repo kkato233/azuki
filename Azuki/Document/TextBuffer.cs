@@ -1,11 +1,12 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2011-08-15
 //=========================================================
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
@@ -17,7 +18,7 @@ namespace Sgry.Azuki
 	{
 		#region Fields
 		SplitArray<CharClass> _Classes;
-		SplitArray<byte> _MarkingBitMasks;
+		RleArray<uint> _MarkingBitMasks;
 		#endregion
 
 		#region Init / Dispose
@@ -28,7 +29,7 @@ namespace Sgry.Azuki
 			: base( initGapSize, growSize )
 		{
 			_Classes = new SplitArray<CharClass>( initGapSize, growSize );
-			_MarkingBitMasks = new SplitArray<byte>( initGapSize, growSize );
+			_MarkingBitMasks = new RleArray<uint>();
 		}
 		#endregion
 
@@ -62,7 +63,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Marking
-		public SplitArray<byte> Marks
+		public RleArray<uint> Marks
 		{
 			get{ return _MarkingBitMasks; }
 		}
@@ -80,7 +81,7 @@ namespace Sgry.Azuki
 			{
 				base.Capacity = value;
 				_Classes.Capacity = value;
-				_MarkingBitMasks.Capacity = value;
+				//NO_NEED//_MarkingBitMasks.Xxx = value;
 			}
 		}
 
@@ -106,7 +107,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( insertIndex, values, converter );
 			_Classes.Insert( insertIndex, new CharClass[values.Length] );
-			_MarkingBitMasks.Insert( insertIndex, new byte[values.Length] );
+			_MarkingBitMasks.Insert( insertIndex, new uint[values.Length] );
 		}
 
 		/// <summary>
@@ -121,7 +122,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( insertIndex, values, valueBegin, valueEnd );
 			_Classes.Insert( insertIndex, new CharClass[valueEnd - valueBegin] );
-			_MarkingBitMasks.Insert( insertIndex, new byte[valueEnd - valueBegin] );
+			_MarkingBitMasks.Insert( insertIndex, new uint[valueEnd - valueBegin] );
 		}
 
 		/// <summary>
@@ -129,9 +130,16 @@ namespace Sgry.Azuki
 		/// </summary>
 		public override void Replace( int replaceIndex, char[] values, int valueBegin, int valueEnd )
 		{
+			int replaceLen = valueEnd - valueBegin;
+
 			base.Replace( replaceIndex, values, valueBegin, valueEnd );
-			_Classes.Replace( replaceIndex, new CharClass[values.Length], valueBegin, valueEnd );
-			_MarkingBitMasks.Replace( replaceIndex, new byte[values.Length], valueBegin, valueEnd );
+
+			_Classes.Replace( replaceIndex, new CharClass[replaceLen], valueBegin, valueEnd );
+
+			for( int i=0; i<replaceLen; i++ )
+				_MarkingBitMasks.RemoveAt( replaceIndex + i );
+			for( int i=0; i<replaceLen; i++ )
+				_MarkingBitMasks.Insert( replaceIndex + i, values[valueBegin+i] );
 		}
 
 		/// <summary>
@@ -141,7 +149,12 @@ namespace Sgry.Azuki
 		{
 			base.RemoveRange( begin, end );
 			_Classes.RemoveRange( begin, end );
-			_MarkingBitMasks.RemoveRange( begin, end );
+			for( int i=begin; i<end; i++ )
+			{
+				_MarkingBitMasks.RemoveAt( begin );
+			}
+			Debug.Assert( this.Count == _Classes.Count );
+			Debug.Assert( this.Count == _MarkingBitMasks.Count );
 		}
 
 		/// <summary>

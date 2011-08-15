@@ -1,7 +1,7 @@
 ﻿// file: Marking.cs
 // brief: Classes related to marking which indicates attributes apart from syntax and grammar.
 // author: YAMAMOTO Suguru
-// update: 2010-12-30
+// update: 2011-08-15
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -135,18 +135,26 @@ namespace Sgry.Azuki
 	/// To get or set how marked text will be decorated, use methods next.
 	/// </para>
 	/// <list type="bullet">
-	///		<item><see cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(int[])">ColorScheme.GetMarkingDecorations(int[]) method</see></item>
-	///		<item><see cref="Sgry.Azuki.ColorScheme.SetMarkingDecoration">ColorScheme.SetMarkingDecoration method</see></item>
+	///		<item>
+	///			<see cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(int[])">
+	///			ColorScheme.GetMarkingDecorations(int[]) method
+	///			</see>
+	///		</item>
+	///		<item>
+	///			<see cref="Sgry.Azuki.ColorScheme.SetMarkingDecoration">
+	///			ColorScheme.SetMarkingDecoration method
+	///			</see>
+	///		</item>
 	/// </list>
 	/// <para>
-	/// Internally, marking IDs set for each character are stored as bit mask (currently 8-bit).
+	/// Internally, marking IDs set for each character are stored as bit mask (currently 32-bit).
 	/// Although all operations can be done without minding it,
 	/// in some cases, using internal bit mask directly is more efficient than using array of IDs.
 	/// To handle bit mask directly, use
 	/// <see cref="Sgry.Azuki.Document.GetMarkingBitMaskAt">
 	/// Document.GetMarkingBitMaskAt method</see> and
 	/// <see cref="Sgry.Azuki.ColorScheme.GetMarkingDecorations(uint)">
-	/// ColorScheme.GetMarkingDecorations method</see>.
+	/// ColorScheme.GetMarkingDecorations(uint) method</see>.
 	/// </para>
 	/// <para>
 	/// Note that marking ID '0' is used by built-in URI marker to mark URIs.
@@ -162,9 +170,9 @@ namespace Sgry.Azuki
 	{
 		#region Pulic constants and properties
 		/// <summary>
-		/// Maximum number of marking ID currently supported.
+		/// Maximum number of marking IDs currently supported.
 		/// </summary>
-		public const int MaxID = 7;
+		public const int MaxID = 31;
 
 		/// <summary>
 		/// ID of URI marking type.
@@ -176,7 +184,7 @@ namespace Sgry.Azuki
 		#endregion
 		
 		#region Fields
-		static MarkingInfo[] _MarkingInfoAry = new MarkingInfo[MaxID];
+		static MarkingInfo[] _MarkingInfoAry = new MarkingInfo[MaxID+1];
 		#endregion
 
 		#region Init / Dispose
@@ -221,8 +229,8 @@ namespace Sgry.Azuki
 				throw new ArgumentNullException( "info" );
 			if( info.ID < 0 )
 				throw new ArgumentOutOfRangeException( "Marking ID must be equal to or greater than 0. (info.ID:"+info.ID+")" );
-			if( MaxID <= info.ID )
-				throw new ArgumentOutOfRangeException( "Marking ID must be less than "+MaxID+". (info.ID:"+info.ID+")" );
+			if( MaxID < info.ID )
+				throw new ArgumentOutOfRangeException( "Marking ID must not be greater than "+MaxID+". (info.ID:"+info.ID+")" );
 
 			_MarkingInfoAry[info.ID] = info;
 		}
@@ -249,8 +257,8 @@ namespace Sgry.Azuki
 		{
 			if( id <= 1 )
 				throw new ArgumentOutOfRangeException( "Marking ID must be greater than 1. (id:"+id+")" );
-			if( MaxID <= id )
-				throw new ArgumentOutOfRangeException( "Marking ID must be less than "+MaxID+". (id:"+id+")" );
+			if( MaxID < id )
+				throw new ArgumentOutOfRangeException( "Marking ID must not be greater than "+MaxID+". (id:"+id+")" );
 
 			_MarkingInfoAry[id] = null;
 		}
@@ -264,8 +272,8 @@ namespace Sgry.Azuki
 		/// </exception>
 		public static MarkingInfo GetMarkingInfo( int id )
 		{
-			if( id < 0 || MaxID <= id )
-				throw new ArgumentOutOfRangeException( "id", "Marking ID must be greater than 0 and equal or less than Marking.MaxID. (id:"+id+")" );
+			if( id < 0 || MaxID < id )
+				throw new ArgumentOutOfRangeException( "id", "Marking ID must be greater than 0 and not greater than "+MaxID+". (id:"+id+")" );
 
 			return _MarkingInfoAry[id];
 		}

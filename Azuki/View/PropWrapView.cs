@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2010-11-14
+// update: 2011-08-20
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -443,8 +443,14 @@ namespace Sgry.Azuki
 			}
 			bottom.Y += LineSpacing;
 
+			// prevent to draw on horizontal ruler
+			if( top.Y < YofTextArea )
+			{
+				top.Y = YofTextArea;
+			}
+
 			// adjust drawing position for line padding
-			// (move it up, a half of line height)
+			// (move it up, a half of the height of line padding)
 			top.Y -= (LinePadding >> 1);
 			bottom.Y -= (LinePadding >> 1);
 

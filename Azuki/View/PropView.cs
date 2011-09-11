@@ -1,7 +1,7 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
 // author: YAMAMOTO Suguru
-// update: 2010-11-27
+// update: 2011-09-11
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -731,13 +731,10 @@ namespace Sgry.Azuki
 		/// <param name="clipRect">clipping rectangle that covers all invalidated region (in client area coordinate)</param>
 		public override void Paint( IGraphics g, Rectangle clipRect )
 		{
-			// [*1] if graphic of the line should be redrawn by owner draw,
-			// Azuki does not redraw the line at this drawing chance
-			// but just invalidate the area and draw it on next time.
-			// (Because Azuki renders text on an off-screen buffer
-			// which size is same as clipping rectangle,
-			// expanding both clipping rectangle and off-screen buffer
-			// can updates graphic properly but may lead to flickering graphics.)
+			// [*1] if the graphic of a line should be redrawn by owner draw,
+			// Azuki does not redraw the line but invalidate
+			// the area of the line and let it be drawn on next drawing chance
+			// so that the graphic will not flicker.)
 			DebugUtl.Assert( g != null, "invalid argument; IGraphics is null" );
 			DebugUtl.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			DebugUtl.Assert( Document != null, "invalid state; Document is null" );
@@ -884,8 +881,7 @@ namespace Sgry.Azuki
 					{
 						// cut extra (invisible) part of the token
 						token = token.Substring( invisibleCharCount );
-
-						// advance drawing position as if the cut part was actually drawn
+						begin += invisibleCharCount;
 						pos.X += invisibleWidth;
 					}
 				}
@@ -914,9 +910,10 @@ namespace Sgry.Azuki
 					{
 						token = token.Substring( 0, visibleCharCount );
 					}
+					end = begin + token.Length;
 
 					// set token end position to the right limit to terminate loop
-					tokenEndPos.X = clipRect.Right;
+					tokenEndPos.X = MeasureTokenEndX( g, token, pos.X );
 				}
 
 				// draw this token

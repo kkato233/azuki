@@ -1,7 +1,7 @@
 // file: View.Paint.cs
 // brief: Common painting logic
 // author: YAMAMOTO Suguru
-// update: 2011-07-07
+// update: 2011-09-11
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -831,7 +831,14 @@ namespace Sgry.Azuki
 		internal int MeasureTokenEndX( IGraphics g, string token, int virX )
 		{
 			int dummy;
-			return MeasureTokenEndX( g, token, virX, Int32.MaxValue, out dummy );
+			int rightLimitX = Int32.MaxValue;
+
+			// ensure "(rightLimitX - virX) < Int32.MaxValue"
+			if( virX < 0 )
+			{
+				rightLimitX = Int32.MaxValue + virX;
+			}
+			return MeasureTokenEndX( g, token, virX, rightLimitX, out dummy );
 		}
 
 		/// <summary>

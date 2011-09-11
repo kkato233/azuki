@@ -1,7 +1,7 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
 // author: YAMAMOTO Suguru
-// update: 2011-08-20
+// update: 2011-09-11
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -883,18 +883,17 @@ namespace Sgry.Azuki
 				// if the token area crosses the LEFT boundary of the clip-rect, cut off extra
 				if( pos.X < clipRect.Left )
 				{
-					int invisCharCount, invisWidth; // invisible char count / width
+					int invisibleCharCount, invisibleWidth; // invisible char count / width
 					int rightLimit = clipRect.Left - pos.X;
 
 					// calculate how many chars will not be in the clip-rect
-					invisWidth = MeasureTokenEndX( g, token, 0, rightLimit, out invisCharCount );
-					if( 0 < invisCharCount && invisCharCount < token.Length )
+					invisibleWidth = MeasureTokenEndX( g, token, 0, rightLimit, out invisibleCharCount );
+					if( 0 < invisibleCharCount && invisibleCharCount < token.Length )
 					{
 						// cut extra (invisible) part of the token
-						token = token.Substring( invisCharCount );
-
-						// advance drawing position as if the cut part was actually drawn
-						pos.X += invisWidth;
+						token = token.Substring( invisibleCharCount );
+						begin += invisibleCharCount;
+						pos.X += invisibleWidth;
 					}
 				}
 

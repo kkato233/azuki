@@ -1,7 +1,7 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
 // author: YAMAMOTO Suguru
-// update: 2011-08-15
+// update: 2011-09-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -107,7 +107,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( insertIndex, values, converter );
 			_Classes.Insert( insertIndex, new CharClass[values.Length] );
-			_MarkingBitMasks.Insert( insertIndex, new uint[values.Length] );
+			_MarkingBitMasks.Insert( insertIndex, 0, values.Length );
 		}
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace Sgry.Azuki
 		{
 			base.Insert( insertIndex, values, valueBegin, valueEnd );
 			_Classes.Insert( insertIndex, new CharClass[valueEnd - valueBegin] );
-			_MarkingBitMasks.Insert( insertIndex, new uint[valueEnd - valueBegin] );
+			_MarkingBitMasks.Insert( insertIndex, 0, valueEnd - valueBegin );
 		}
 
 		/// <summary>

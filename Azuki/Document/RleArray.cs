@@ -1,11 +1,13 @@
 ﻿// file: RleArray.cs
 // brief: Array of items which compresses contents with RLE compression method.
 // author: YAMAMOTO Suguru
-// update: 2011-08-15
+// update: 2011-09-23
 //=========================================================
+//#define RLE_ARRAY_ENABLE_SANITY_CHECK
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 using Debug = System.Diagnostics.Debug;
 using StringBuilder = System.Text.StringBuilder;
 
@@ -16,11 +18,10 @@ namespace Sgry.Azuki
 	/// </summary>
 	class RleArray<T> : IList<T>
 	{
-#		if DEBUG
-		internal SplitArray<Node> _Nodes;
-#		else
-		SplitArray<Node> _Nodes;
+#		if TEST
+		internal
 #		endif
+		SplitArray<Node> _Nodes;
 		int _TotalCount = 0;
 
 		#region Init / Dispose
@@ -37,18 +38,7 @@ namespace Sgry.Azuki
 		public RleArray( int initCapacity )
 		{
 			_Nodes = new SplitArray<Node>( Math.Max(32, initCapacity) );
-		}
-		
-		/// <summary>
-		/// Creates a new instance.
-		/// </summary>
-		public RleArray( IEnumerable<T> values )
-			: this( 32 )
-		{
-			foreach( T value in values )
-			{
-				Add( value );
-			}
+			__check_sanity__();
 		}
 		#endregion
 
@@ -78,19 +68,20 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Insert the specified values at specified index.
+		/// Insert specified amount of specific value.
 		/// </summary>
 		/// <exception cref='ArgumentOutOfRangeException'>
 		///   Parameter <paramref name="index"/> is out of valid range.
 		/// </exception>
-		public void Insert( int index, IEnumerable<T> values )
+		public void Insert( int index, T value, int count )
 		{
-			int i = 0;
+			Node insertedNode;
 
-			foreach( T value in values )
-			{
-				Insert( index + i, value );
-			}
+			Insert( index, value, out insertedNode );
+			insertedNode.Length += count - 1;
+			_TotalCount += count - 1;
+
+			__check_sanity__();
 		}
 
 		/// <summary>
@@ -104,6 +95,15 @@ namespace Sgry.Azuki
 			if( index < 0 || _TotalCount < index )
 				throw new ArgumentOutOfRangeException( "index" );
 
+			Node insertedNode;
+			Insert( index, value, out insertedNode );
+		}
+
+		void Insert( int index, T value, out Node insertedNode )
+		{
+			Debug.Assert( 0 <= index && index <= _TotalCount,
+						  "index is out of valid range. (index:"+index+", Count:"+Count+")" );
+
 			int nodeIndex;
 			int indexInNode;
 			Node prevNode, theNode;
@@ -116,26 +116,29 @@ namespace Sgry.Azuki
 				Debug.Assert( index == _TotalCount );
 				if( 0 < _Nodes.Count )
 				{
-					// 
 					prevNode = _Nodes[ _Nodes.Count - 1 ];
 					if( value.Equals(prevNode.Value) )
 					{
+						insertedNode = prevNode;
 						prevNode.Length++;
 						_TotalCount++;
 					}
 					else
 					{
-						_Nodes.Add( new Node(1, value) );
+						insertedNode = new Node( 1, value );
+						_Nodes.Add( insertedNode );
 						_TotalCount++;
 					}
 				}
 				else
 				{
 					// Simply add a new node since the array was empty.
-					_Nodes.Add( new Node(1, value) );
+					insertedNode = new Node( 1, value );
+					_Nodes.Add( insertedNode );
 					_TotalCount++;
 				}
 
+				__check_sanity__();
 				return;
 			}
 
@@ -153,17 +156,20 @@ namespace Sgry.Azuki
 				// Take care of both left and right boundaries
 				if( value.Equals(theNode.Value) )
 				{
+					insertedNode = theNode;
 					theNode.Length++;
 					_TotalCount++;
 				}
 				else if( prevNode != null && value.Equals(prevNode.Value) )
 				{
+					insertedNode = prevNode;
 					prevNode.Length++;
 					_TotalCount++;
 				}
 				else
 				{
-					_Nodes.Insert( nodeIndex, new Node(1, value) );
+					insertedNode = new Node( 1, value );
+					_Nodes.Insert( nodeIndex, insertedNode );
 					_TotalCount++;
 				}
 			}
@@ -172,6 +178,7 @@ namespace Sgry.Azuki
 				// Take care of both right boundary
 				if( value.Equals(theNode.Value) )
 				{
+					insertedNode = theNode;
 					theNode.Length++;
 					_TotalCount++;
 				}
@@ -179,12 +186,19 @@ namespace Sgry.Azuki
 				{
 					int orgNodeLen = theNode.Length;
 
+					// split the node
 					theNode.Length = indexInNode;
 					_Nodes.Insert( nodeIndex+1, new Node(orgNodeLen - indexInNode, theNode.Value) );
-					_Nodes.Insert( nodeIndex+1, new Node(1, value) );
+
+					// insert a new node holding the new value
+					insertedNode = new Node( 1, value );
+					_Nodes.Insert( nodeIndex+1, insertedNode );
+
 					_TotalCount++;
 				}
 			}
+
+			__check_sanity__();
 		}
 		
 		/// <summary>
@@ -197,7 +211,9 @@ namespace Sgry.Azuki
 		public void RemoveAt( int index )
 		{
 			if( index < 0 || _TotalCount <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", this.Count:"+Count+")" );
+				throw new ArgumentOutOfRangeException( "index",
+													   "Specified index is out of valid range."
+													   + " (index:"+index+", this.Count:"+Count+")" );
 			
 			int nodeIndex;
 			int indexInNode;
@@ -225,6 +241,8 @@ namespace Sgry.Azuki
 				_Nodes[ nodeIndex ].Length--;
 			}
 			_TotalCount--;
+
+			__check_sanity__();
 		}
 
 		/// <summary>
@@ -237,9 +255,11 @@ namespace Sgry.Azuki
 			{
 				if( index < 0 || _TotalCount <= index )
 					throw new ArgumentOutOfRangeException();
-				
+
 				int nodeIndex = FindNodeIndex( index );
-				Debug.Assert( 0 <= nodeIndex );
+				Debug.Assert( 0 <= nodeIndex,
+							  "no node for the specified index was found!"
+							  + " (index:"+index+", Count:"+Count+")" );
 
 				return _Nodes[ nodeIndex ].Value;
 			}
@@ -355,23 +375,13 @@ namespace Sgry.Azuki
 					// insert a new node which holds the same value as this node
 					_Nodes.Insert( nodeIndex+2, new Node(followingNodeLength, thisNode.Value) );
 				}
+
+				__check_sanity__();
 			}
 		}
 		#endregion
 
 		#region ICollection<T> + alpha
-		/// <summary>
-		/// Add the specified values.
-		/// </summary>
-		/// <param name='values'>The values to add.</param>
-		public void Add( IEnumerable<T> values )
-		{
-			foreach( T value in values )
-			{
-				Add( value );
-			}
-		}
-
 		/// <summary>
 		/// Add the specified value.
 		/// </summary>
@@ -388,6 +398,7 @@ namespace Sgry.Azuki
 		{
 			_Nodes.Clear();
 			_TotalCount = 0;
+			__check_sanity__();
 		}
 
 		/// <summary>
@@ -431,18 +442,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public int Count
 		{
-			get
-			{
-#				if DEBUG
-				int count = 0;
-				foreach( Node item in _Nodes )
-				{
-					count += item.Length;
-				}
-				Debug.Assert( count == _TotalCount );
-#				endif
-				return _TotalCount;
-			}
+			get{ return _TotalCount; }
 		}
 		
 		/// <summary>
@@ -475,6 +475,10 @@ namespace Sgry.Azuki
 
 		#endregion
 
+		#region Behavior as an object
+		/// <summary>
+		/// THIS METHOD IS NOT SUPPORTED.
+		/// </summary>
 		public IEnumerator<T> GetEnumerator()
 		{
 			throw new NotImplementedException();
@@ -501,7 +505,8 @@ namespace Sgry.Azuki
 			}
 			return str.ToString();
 		}
-		
+		#endregion
+
 		#region Utilities
 		int FindNodeIndex( int index )
 		{
@@ -534,11 +539,21 @@ namespace Sgry.Azuki
 			nodeIndex = -1;
 			indexInNode = -1;
 		}
-		
-#		if DEBUG
-		internal
-#		endif
-		class Node
+
+		[Conditional("RLE_ARRAY_ENABLE_SANITY_CHECK")]
+		void __check_sanity__()
+		{
+			int count = 0;
+
+			foreach( Node item in _Nodes )
+			{
+				count += item.Length;
+			}
+
+			Debug.Assert( count == _TotalCount );
+		}
+
+		internal class Node
 		{
 			public Node( int length, T value )
 			{

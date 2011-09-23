@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-07-31
+// update: 2011-09-23
 //=========================================================
 using System;
 using System.Text;
@@ -60,6 +60,8 @@ namespace Sgry.Azuki
 		{
 			_UI = ui;
 			_View = new PropView( ui );
+
+			_UI.LineDrawing += UriMarker.Inst.UI_LineDrawing;
 
 			_HighlighterThread = new Thread( HighlighterThreadProc );
 			_HighlighterThread.Priority = ThreadPriority.BelowNormal;

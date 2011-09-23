@@ -4,6 +4,7 @@
 // update: 2010-04-18
 //=========================================================
 using System;
+using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
@@ -132,6 +133,8 @@ namespace Sgry.Azuki
 
 		public static void GetLineRange( TextBuffer text, SplitArray<int> lhi, int lineIndex, out int begin, out int end )
 		{
+			DebugUtl.Assert( text != null );
+			DebugUtl.Assert( lhi != null );
 			DebugUtl.Assert( 0 <= lineIndex && lineIndex < lhi.Count, "argument out of range; given lineIndex is "+lineIndex+" but lhi.Count is "+lhi.Count );
 			int length;
 
@@ -145,17 +148,19 @@ namespace Sgry.Azuki
 			{
 				end = text.Count;
 			}
+			Debug.Assert( 0 <= begin && begin <= end );
+			Debug.Assert( end <= text.Count );
 
 			// subtract length of the trailing EOL code
 			length = end - begin;
-			if( 1 <= length && text.GetAt(end-1) == '\n' )
+			if( 1 <= length && text[end-1] == '\n' )
 			{
-				if( 2 <= length && text.GetAt(end-2) == '\r' )
+				if( 2 <= length && text[end-2] == '\r' )
 					end -= 2;
 				else
 					end--;
 			}
-			else if( 1 <= length && text.GetAt(end-1) == '\r' )
+			else if( 1 <= length && text[end-1] == '\r' )
 			{
 				end--;
 			}

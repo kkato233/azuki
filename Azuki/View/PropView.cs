@@ -734,7 +734,7 @@ namespace Sgry.Azuki
 			// [*1] if the graphic of a line should be redrawn by owner draw,
 			// Azuki does not redraw the line but invalidate
 			// the area of the line and let it be drawn on next drawing chance
-			// so that the graphic will not flicker.)
+			// so that the graphic will not flicker.
 			DebugUtl.Assert( g != null, "invalid argument; IGraphics is null" );
 			DebugUtl.Assert( FontInfo != null, "invalid state; FontInfo is null" );
 			DebugUtl.Assert( Document != null, "invalid state; Document is null" );

@@ -81,7 +81,7 @@ namespace Sgry.Azuki
 		/// Insert the specified values at specified index.
 		/// </summary>
 		/// <exception cref='ArgumentOutOfRangeException'>
-		/// Parameter <paramref name="index"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
 		/// </exception>
 		public void Insert( int index, IEnumerable<T> values )
 		{
@@ -97,7 +97,7 @@ namespace Sgry.Azuki
 		/// Insert the specified value at specified index.
 		/// </summary>
 		/// <exception cref='ArgumentOutOfRangeException'>
-		/// Parameter <paramref name="index"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
 		/// </exception>
 		public void Insert( int index, T value )
 		{
@@ -192,7 +192,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name='index'>Index of the item to be removed.</param>
 		/// <exception cref='ArgumentOutOfRangeException'>
-		/// <paramref name="index"/> is out of valid range.
+		///   <paramref name="index"/> is out of valid range.
 		/// </exception>
 		public void RemoveAt( int index )
 		{
@@ -401,13 +401,17 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Copies the items of this object to an array, starting at the specified index.
 		/// </summary>
-		/// <param name="array">An array the items will be copied to.</param>
-		/// <param name="arrayIndex">The index in <param name="array"> at which copying begins.</param>
+		/// <param name="array">
+		///   An array the items will be copied to.
+		/// </param>
+		/// <param name="arrayIndex">
+		///   The index in <paramref name="array"/> at which copying begins.
+		/// </param>
 		/// <exception cref="ArgumentNullException">
-		/// <param name="array"> is null.
+		///   <paramref name="array"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// <param name="arrayIndex"> is less than zero.
+		///   <paramref name="arrayIndex"/> is less than zero.
 		/// </exception>
 		public void CopyTo( T[] array, int arrayIndex )
 		{
@@ -445,11 +449,11 @@ namespace Sgry.Azuki
 		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
 		/// <value>
-		/// <c>false</c> always since this class can not be read-only.
+		///   <c>false</c> always since this class can not be read-only.
 		/// </value>
 		public bool IsReadOnly
 		{
-			get { return false; }
+			get{ return false; }
 		}
 		
 		/// <summary>

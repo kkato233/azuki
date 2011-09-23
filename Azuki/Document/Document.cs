@@ -81,27 +81,27 @@ namespace Sgry.Azuki
 		/// Gets or sets whether any unsaved modifications exist or not.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property will be true if there is any unsaved modifications.
-		/// Although Azuki maintains almost all modification history in itself,
-		/// it cannot detect when the content was saved
-		/// because saving content to file or other means is done outside of it;
-		/// done by the application using Azuki.
-		/// Because of this, application is responsible to set this property to False
-		/// on saving content manually.
-		/// </para>
-		/// <para>
-		/// Note that attempting to set this property True by application code
-		/// will raise an InvalidOperationException.
-		/// Because any document cannot be turned 'dirty' without modification,
-		/// and modification by Document.Replace automatically set this property True
-		/// so doing so in application code is not needed.
-		/// </para>
+		///   <para>
+		///   This property will be true if there is any unsaved modifications.
+		///   Although Azuki maintains almost all modification history in itself,
+		///   it cannot detect when the content was saved
+		///   because saving content to file or other means is done outside of it;
+		///   done by the application using Azuki.
+		///   Because of this, application is responsible to set this property to False
+		///   on saving content manually.
+		///   </para>
+		///   <para>
+		///   Note that attempting to set this property True by application code
+		///   will raise an InvalidOperationException.
+		///   Because any document cannot be turned 'dirty' without modification,
+		///   and modification by Document.Replace automatically set this property True
+		///   so doing so in application code is not needed.
+		///   </para>
 		/// </remarks>
 		/// <exception cref="System.InvalidOperationException">
-		/// True was set as a new value.
-		/// - OR -
-		/// Modified while grouping UNDO actions.
+		///   True was set as a new value.
+		///   - OR -
+		///   Modified while grouping UNDO actions.
 		/// </exception>
 		public bool IsDirty
 		{
@@ -140,32 +140,32 @@ namespace Sgry.Azuki
 		/// <param name="lineIndex">Index of the line that to get dirty state of.</param>
 		/// <returns>Dirty state of the specified line.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method gets dirty state of specified line.
-		/// Dirty state of lines will changed as below.
-		/// </para>
-		/// <list type="bullet">
-		///		<item>
-		///		If a line was not modified yet, the dirty state of the line is
-		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Clean.
-		///		</item>
-		///		<item>
-		///		If a line was modified, its dirty state will be changed to
-		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Dirty
-		///		</item>
-		///		<item>
-		///		Setting false to
-		///		<see cref="Sgry.Azuki.Document.IsDirty">Document.IsDirty</see>
-		///		property will set all states of modified lines to
-		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Cleaned.
-		///		</item>
-		///		<item>
-		///		Calling
-		///		<see cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory</see>
-		///		to reset all states of lines to
-		///		<see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Clean.
-		///		</item>
-		/// </list>
+		///   <para>
+		///   This method gets dirty state of specified line.
+		///   Dirty state of lines will changed as below.
+		///   </para>
+		///   <list type="bullet">
+		///	    <item>
+		///	      If a line was not modified yet, the dirty state of the line is
+		///	      <see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Clean.
+		///	    </item>
+		///	    <item>
+		///	      If a line was modified, its dirty state will be changed to
+		///	      <see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Dirty
+		///	    </item>
+		///	    <item>
+		///	      Setting false to
+		///	      <see cref="Sgry.Azuki.Document.IsDirty">Document.IsDirty</see>
+		///	      property will set all states of modified lines to
+		///	      <see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Cleaned.
+		///	    </item>
+		///	    <item>
+		///	      Calling
+		///	      <see cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory</see>
+		///	      to reset all states of lines to
+		///	      <see cref="Sgry.Azuki.LineDirtyState">LineDirtyState</see>.Clean.
+		///	    </item>
+		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.LineDirtyState">LineDirtyState enum</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.IsDirty">Document.IsDirty property</seealso>
@@ -214,12 +214,12 @@ namespace Sgry.Azuki
 		/// Gets whether an available UNDO action exists or not.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets whether one or more UNDOable action exists or not.
-		/// </para>
-		/// <para>
-		/// To execute UNDO, use <see cref="Sgry.Azuki.Document.Undo">Undo</see> method.
-		/// </para>
+		///   <para>
+		///   This property gets whether one or more UNDOable action exists or not.
+		///   </para>
+		///   <para>
+		///   To execute UNDO, use <see cref="Sgry.Azuki.Document.Undo">Undo</see> method.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.Undo">Document.Undo method</seealso>
 		public bool CanUndo
@@ -257,11 +257,11 @@ namespace Sgry.Azuki
 		/// Gets view specific parameters associated with this document.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// There are some parameters that are dependent on each document
-		/// but are not parameters about document content.
-		/// This property contains such parameters.
-		/// </para>
+		///   <para>
+		///   There are some parameters that are dependent on each document
+		///   but are not parameters about document content.
+		///   This property contains such parameters.
+		///   </para>
 		/// </remarks>
 		internal ViewParam ViewParam
 		{
@@ -274,17 +274,17 @@ namespace Sgry.Azuki
 		/// Gets index of where the caret is at (in char-index).
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets the index of the 'caret;' the text insertion point.
-		/// </para>
-		/// <para>
-		/// In Azuki, selection always exists and is expressed by the range from anchor index to caret index.
-		/// If there is nothing selected, it means that both anchor index and caret index is set to same value.
-		/// </para>
-		/// <para>
-		/// To set value of anchor or caret, use
-		/// <see cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection</see> method.
-		/// </para>
+		///   <para>
+		///   This property gets the index of the 'caret;' the text insertion point.
+		///   </para>
+		///   <para>
+		///   In Azuki, selection always exists and is expressed by the range from anchor index to caret index.
+		///   If there is nothing selected, it means that both anchor index and caret index is set to same value.
+		///   </para>
+		///   <para>
+		///   To set value of anchor or caret, use
+		///   <see cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection</see> method.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.AnchorIndex">Document.AnchorIndex Property</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection Method</seealso>
@@ -297,17 +297,17 @@ namespace Sgry.Azuki
 		/// Gets index of the position where the selection starts (in char-index).
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets the index of the 'selection anchor;' where the selection starts.
-		/// </para>
-		/// <para>
-		/// In Azuki, selection always exists and is expressed by the range from anchor index to caret index.
-		/// If there is nothing selected, it means that both anchor index and caret index is set to same value.
-		/// </para>
-		/// <para>
-		/// To set value of anchor or caret, use
-		/// <see cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection</see> method.
-		/// </para>
+		///   <para>
+		///   This property gets the index of the 'selection anchor;' where the selection starts.
+		///   </para>
+		///   <para>
+		///   In Azuki, selection always exists and is expressed by the range from anchor index to caret index.
+		///   If there is nothing selected, it means that both anchor index and caret index is set to same value.
+		///   </para>
+		///   <para>
+		///   To set value of anchor or caret, use
+		///   <see cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection</see> method.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.CaretIndex">Document.CaretIndex Property</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection Method</seealso>
@@ -359,18 +359,18 @@ namespace Sgry.Azuki
 		/// <param name="caret">new index of the caret</param>
 		/// <exception cref="System.ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method sets selection range and invokes
-		/// <see cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged</see> event.
-		/// If given index is at middle of an undividable character sequence such as surrogate pair,
-		/// selection range will be automatically expanded to avoid dividing the it.
-		/// </para>
-		/// <para>
-		/// This method always selects text as a sequence of character.
-		/// To select text by lines or by rectangle, use
-		/// <see cref="Sgry.Azuki.Document.SetSelection(int, int, IView)">other overload</see>
-		/// method instead.
-		/// </para>
+		///   <para>
+		///   This method sets selection range and invokes
+		///   <see cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged</see> event.
+		///   If given index is at middle of an undividable character sequence such as surrogate pair,
+		///   selection range will be automatically expanded to avoid dividing the it.
+		///   </para>
+		///   <para>
+		///   This method always selects text as a sequence of character.
+		///   To select text by lines or by rectangle, use
+		///   <see cref="Sgry.Azuki.Document.SetSelection(int, int, IView)">other overload</see>
+		///   method instead.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged event</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.SetSelection(int, int, IView)">Document.SetSelection method (another overloaded method)</seealso>
@@ -389,47 +389,47 @@ namespace Sgry.Azuki
 		/// <exception cref="System.ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <exception cref="System.ArgumentNullException">Parameter 'view' is null but current SelectionMode is not TextDataType.Normal.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method sets selection range and invokes
-		/// <see cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged</see> event.
-		/// </para>
-		/// <para>
-		/// How text will be selected depends on the value of current
-		/// <see cref="Sgry.Azuki.Document.SelectionMode">SelectionMode</see> as below.
-		/// </para>
-		/// <list type="bullet">
-		///		<item>
-		///			<para>
-		///			If SelectionMode is TextDataType.Normal,
-		///			characters from <paramref name="anchor"/> to <paramref name="caret"/>
-		///			will be selected.
-		///			</para>
-		///			<para>
-		///			Note that if given index is at middle of an undividable character sequence such as surrogate pair,
-		///			selection range will be automatically expanded to avoid dividing it.
-		///			</para>
-		///		</item>
-		///		<item>
-		///			<para>
-		///			If SelectionMode is TextDataType.Line, lines between
-		///			the line containing <paramref name="anchor"/> position
-		///			and the line containing <paramref name="caret"/> position
-		///			will be selected.
-		///			</para>
-		///			<para>
-		///			Note that if caret is just at beginning of a line,
-		///			the line will not be selected.
-		///			</para>
-		///		</item>
-		///		<item>
-		///			<para>
-		///			If SelectionMode is TextDataType.Rectangle,
-		///			text covered by the rectangle which is graphically made by
-		///			<paramref name="anchor"/> position and <paramref name="caret"/> position
-		///			will be selected.
-		///			</para>
-		///		</item>
-		/// </list>
+		///   <para>
+		///   This method sets selection range and invokes
+		///   <see cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged</see> event.
+		///   </para>
+		///   <para>
+		///   How text will be selected depends on the value of current
+		///   <see cref="Sgry.Azuki.Document.SelectionMode">SelectionMode</see> as below.
+		///   </para>
+		///   <list type="bullet">
+		///	    <item>
+		///	      <para>
+		///	      If SelectionMode is TextDataType.Normal,
+		///	      characters from <paramref name="anchor"/> to <paramref name="caret"/>
+		///	      will be selected.
+		///	      </para>
+		///	      <para>
+		///	      Note that if given index is at middle of an undividable character sequence such as surrogate pair,
+		///	      selection range will be automatically expanded to avoid dividing it.
+		///	      </para>
+		///	    </item>
+		///	    <item>
+		///	      <para>
+		///	      If SelectionMode is TextDataType.Line, lines between
+		///	      the line containing <paramref name="anchor"/> position
+		///	      and the line containing <paramref name="caret"/> position
+		///	      will be selected.
+		///	      </para>
+		///	      <para>
+		///	      Note that if caret is just at beginning of a line,
+		///	      the line will not be selected.
+		///	      </para>
+		///	    </item>
+		///	    <item>
+		///	      <para>
+		///	      If SelectionMode is TextDataType.Rectangle,
+		///	      text covered by the rectangle which is graphically made by
+		///	      <paramref name="anchor"/> position and <paramref name="caret"/> position
+		///	      will be selected.
+		///	      </para>
+		///	    </item>
+		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.SelectionChanged">Document.SelectionChanged event</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.SelectionMode">Document.SelectionMode property</seealso>
@@ -461,17 +461,17 @@ namespace Sgry.Azuki
 		/// Gets or sets text ranges selected by rectangle selection.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// (This property is basically for internal use only
-		/// so using this is not recommended.)
-		/// </para>
-		/// <para>
-		/// The value of this method is an array of text indexes
-		/// that is consisted with beginning index of first text range (row),
-		/// ending index of first text range,
-		/// beginning index of second text range,
-		/// ending index of second text range and so on.
-		/// </para>
+		///   <para>
+		///   (This property is basically for internal use only.
+		///   Using this method from outside of Azuki assembly is not recommended.)
+		///   </para>
+		///   <para>
+		///   The value of this method is an array of text indexes
+		///   that is consisted with beginning index of first text range (row),
+		///   ending index of first text range,
+		///   beginning index of second text range,
+		///   ending index of second text range and so on.
+		///   </para>
 		/// </remarks>
 		public int[] RectSelectRanges
 		{
@@ -490,11 +490,11 @@ namespace Sgry.Azuki
 		/// Gets or sets currently inputted text.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Getting text content through this property
-		/// will copy all characters from internal buffer
-		/// to a string object and returns it.
-		/// </para>
+		///   <para>
+		///   Getting text content through this property
+		///   will copy all characters from internal buffer
+		///   to a string object and returns it.
+		///   </para>
 		/// </remarks>
 		public string Text
 		{
@@ -592,10 +592,12 @@ namespace Sgry.Azuki
 		/// Note that a surrogate pair or combining characters will be counted as two characters.
 		/// </summary>
 		/// <remarks>
-		/// This property is the number of characters currently held in this document.
-		/// Since Azuki stores characters in form of UTF-16,
-		/// surrogate pairs or combining characters will not be counted as
-		/// "1 character" in this property.
+		///   <para>
+		///   This property is the number of characters currently held in this document.
+		///   Since Azuki stores characters in form of UTF-16,
+		///   surrogate pairs or combining characters will not be counted as
+		///   "1 character" in this property.
+		///   </para>
 		/// </remarks>
 		public int Length
 		{
@@ -606,14 +608,16 @@ namespace Sgry.Azuki
 		/// Gets number of the logical lines.
 		/// </summary>
 		/// <remarks>
-		/// Through this property,
-		/// number of the logical lines in this document can be retrieved.
-		/// "Logical line" here means a string simply separated by EOL codes.
-		/// and differs from "screen line" (a text line drawn as a graphc).
-		/// To retrieve count of the logical lines,
-		/// use <see cref="Sgry.Azuki.IView.LineCount">IView.LineCount</see> or
-		/// <see cref="Sgry.Azuki.IUserInterface.LineCount">
-		/// IUserInterface.LineCount</see> instead.
+		///   <para>
+		///   Through this property,
+		///   number of the logical lines in this document can be retrieved.
+		///   "Logical line" here means a string simply separated by EOL codes.
+		///   and differs from "screen line" (a text line drawn as a graphc).
+		///   To retrieve count of the logical lines,
+		///   use <see cref="Sgry.Azuki.IView.LineCount">IView.LineCount</see> or
+		///   <see cref="Sgry.Azuki.IUserInterface.LineCount">
+		///   IUserInterface.LineCount</see> instead.
+		///   </para>
 		/// </remarks>
 		public int LineCount
 		{
@@ -628,10 +632,10 @@ namespace Sgry.Azuki
 		/// <returns>Length of the specified logical line in character count.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method retrieves length of logical line.
-		/// Note that this method does not count EOL codes.
-		/// </para>
+		///   <para>
+		///   This method retrieves length of logical line.
+		///   Note that this method does not count EOL codes.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.GetLineLengthFromCharIndex(int,bool)">Document.GetLineLengthFromCharIndex(int, bool) method</seealso>
 		public int GetLineLengthFromCharIndex( int charIndex )
@@ -648,10 +652,10 @@ namespace Sgry.Azuki
 		/// <returns>Length of the specified logical line in character count.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method retrieves length of logical line.
-		/// Note that this method does not count EOL codes.
-		/// </para>
+		///   <para>
+		///   This method retrieves length of logical line.
+		///   Note that this method does not count EOL codes.
+		///   </para>
 		/// </remarks>
 		public int GetLineLengthFromCharIndex( int charIndex, bool includesEolCode )
 		{
@@ -669,10 +673,10 @@ namespace Sgry.Azuki
 		/// <returns>Length of the specified line in character count.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method retrieves length of logical line.
-		/// Note that this method does not count EOL codes.
-		/// </para>
+		///   <para>
+		///   This method retrieves length of logical line.
+		///   Note that this method does not count EOL codes.
+		///   </para>
 		/// </remarks>
 		public int GetLineLength( int lineIndex )
 		{
@@ -687,11 +691,11 @@ namespace Sgry.Azuki
 		/// <returns>Length of the specified line in character count.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method retrieves length of logical line.
-		/// If <paramref name="includesEolCode"/> was true,
-		/// this method count EOL code as line content.
-		/// </para>
+		///   <para>
+		///   This method retrieves length of logical line.
+		///   If <paramref name="includesEolCode"/> was true,
+		///   this method count EOL code as line content.
+		///   </para>
 		/// </remarks>
 		public int GetLineLength( int lineIndex, bool includesEolCode )
 		{
@@ -767,14 +771,14 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// If given index is at middle of an undividable character sequence such as surrogate pair,
-		/// given range will be automatically expanded to avoid dividing the pair.
-		/// </para>
-		/// <para>
-		/// If expanded range is needed, use
-		/// <see cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">another overload</see>.
-		/// </para>
+		///   <para>
+		///   If given index is at middle of an undividable character sequence such as surrogate pair,
+		///   given range will be automatically expanded to avoid dividing the pair.
+		///   </para>
+		///   <para>
+		///   If expanded range is needed, use
+		///   <see cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">another overload</see>.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">Document.GetTextInRange(ref int, ref int) method</seealso>.
 		public string GetTextInRange( int begin, int end )
@@ -787,15 +791,15 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// If given index is at middle of an undividable character sequence such as surrogate pair,
-		/// given range will be automatically expanded to avoid dividing the pair.
-		/// </para>
-		/// <para>
-		/// This method returns the expanded range by setting parameter
-		/// <paramref name="begin"/> and <paramref name="end"/>
-		/// to actually used values.
-		/// </para>
+		///   <para>
+		///   If given index is at middle of an undividable character sequence such as surrogate pair,
+		///   given range will be automatically expanded to avoid dividing the pair.
+		///   </para>
+		///   <para>
+		///   This method returns the expanded range by setting parameter
+		///   <paramref name="begin"/> and <paramref name="end"/>
+		///   to actually used values.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(int, int)">Document.GetTextInRange(int, int) method</seealso>.
 		public string GetTextInRange( ref int begin, ref int end )
@@ -1057,21 +1061,21 @@ namespace Sgry.Azuki
 		/// <param name="markingID">ID of marking to be set.</param>
 		/// <returns>Whether the operation changed previous marking data or not.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
-		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///   - OR - Parameter <paramref name="markingID"/> is out of valid range.
 		///	</exception>
 		/// <exception cref="System.ArgumentException">
-		///		Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
-		///		- OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
+		///   Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
+		///   - OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
 		///	</exception>
 		/// <remarks>
-		/// <para>
-		/// This method marks up a range of text with ID of 'marking'.
-		/// </para>
-		///	<para>
-		///	For detail of marking feature, please refer to the document of
-		///	<see cref="Sgry.Azuki.Marking"/> class.
-		///	</para>
+		///   <para>
+		///   This method marks up a range of text with ID of 'marking'.
+		///   </para>
+		///	  <para>
+		///	  For detail of marking feature, please refer to the document of
+		///	  <see cref="Sgry.Azuki.Marking"/> class.
+		///	  </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.Unmark">Document.Unmark method</seealso>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
@@ -1085,6 +1089,8 @@ namespace Sgry.Azuki
 				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+
+			Debug.Assert( _Buffer.Marks.Count == this.Length, "sync failed." );
 
 			uint bitMask;
 			bool changed = false;
@@ -1111,22 +1117,22 @@ namespace Sgry.Azuki
 		/// <param name="markingID">The ID of the marking to be removed.</param>
 		/// <returns>Whether any marking data was removed or not.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
-		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///   - OR - Parameter <paramref name="markingID"/> is out of valid range.
 		///	</exception>
 		/// <exception cref="System.ArgumentException">
-		///		Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
-		///		- OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
+		///   Parameter <paramref name="begin"/> is equal or greater than <paramref name="end"/>.
+		///   - OR - Parameter <paramref name="markingID"/> is not registered to Marking class.
 		///	</exception>
 		///	<remarks>
-		///	<para>
-		///	This method scans range of [<paramref name="begin"/>, <paramref name="end"/>)
-		///	and removes specified marking ID.
-		///	</para>
-		///	<para>
-		///	For detail of marking feature, please refer to the document of
-		///	<see cref="Sgry.Azuki.Marking"/> class.
-		///	</para>
+		///	  <para>
+		///	  This method scans range of [<paramref name="begin"/>, <paramref name="end"/>)
+		///	  and removes specified marking ID.
+		///	  </para>
+		///	  <para>
+		///	  For detail of marking feature, please refer to the document of
+		///	  <see cref="Sgry.Azuki.Marking"/> class.
+		///	  </para>
 		///	</remarks>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
@@ -1140,6 +1146,8 @@ namespace Sgry.Azuki
 				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+
+			Debug.Assert( _Buffer.Marks.Count == this.Length, "sync failed." );
 
 			uint bitMask;
 			bool changed = false;
@@ -1168,11 +1176,11 @@ namespace Sgry.Azuki
 		/// <param name="end">When this method returns, contains the ending index of the text range.</param>
 		/// <returns>Whether a text range marked with specified marking ID was retrieved or not.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of valid range.
-		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
+		///   - OR - Parameter <paramref name="markingID"/> is out of valid range.
 		/// </exception>
 		/// <exception cref="System.ArgumentException">
-		///		Parameter <paramref name="markingID"/> is not registered in Marking class.
+		///   Parameter <paramref name="markingID"/> is not registered in Marking class.
 		/// </exception>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		public bool GetMarkedRange( int index, int markingID, out int begin, out int end )
@@ -1219,11 +1227,11 @@ namespace Sgry.Azuki
 		/// <param name="markingID">The text part marked with this ID will be retrieved.</param>
 		/// <returns>The text if found, otherwise null.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of valid range.
-		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
+		///   - OR - Parameter <paramref name="markingID"/> is out of valid range.
 		/// </exception>
 		/// <exception cref="System.ArgumentException">
-		///		Parameter <paramref name="markingID"/> is not registered in Marking class.
+		///   Parameter <paramref name="markingID"/> is not registered in Marking class.
 		/// </exception>
 		public string GetMarkedText( int index, int markingID )
 		{
@@ -1251,18 +1259,18 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="index">The index to examine.</param>
 		/// <param name="markingID">
-		///		Whether specified index is marked with this ID will be retrieved.
+		///   Whether specified index is marked with this ID will be retrieved.
 		///	</param>
 		/// <returns>
-		///		Whether a character at <paramref name="index"/> is
-		///		marked with <paramref name="markingID"/> or not.
+		///   Whether a character at <paramref name="index"/> is
+		///   marked with <paramref name="markingID"/> or not.
 		/// </returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of valid range.
-		///		- OR - Parameter <paramref name="markingID"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
+		///   - OR - Parameter <paramref name="markingID"/> is out of valid range.
 		/// </exception>
 		/// <exception cref="System.ArgumentException">
-		///		Parameter <paramref name="markingID"/> is not registered in Marking class.
+		///   Parameter <paramref name="markingID"/> is not registered in Marking class.
 		/// </exception>
 		public bool IsMarked( int index, int markingID )
 		{
@@ -1281,15 +1289,15 @@ namespace Sgry.Azuki
 		/// <param name="index">The index of the position to examine.</param>
 		/// <returns>Array of marking IDs if any marking found, or an empty array if no marking found.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method does not throw exception
-		/// but returns an empty array if end index of the document
-		/// (index equal to length of document) was specified.
-		/// </para>
+		///   <para>
+		///   This method does not throw exception
+		///   but returns an empty array if end index of the document
+		///   (index equal to length of document) was specified.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
 		/// </exception>
 		public int[] GetMarkingsAt( int index )
 		{
@@ -1331,19 +1339,19 @@ namespace Sgry.Azuki
 		/// <param name="index">The marking IDs put on the character at this index will be returned.</param>
 		/// <returns>Bit mask represents markings which covers the character.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method gets a bit-masked integer representing
-		/// which marking IDs are put on that position.
-		/// </para>
-		///	<para>
-		///	For detail of marking feature, please refer to the document of
-		///	<see cref="Sgry.Azuki.Marking"/> class.
-		///	</para>
+		///   <para>
+		///   This method gets a bit-masked integer representing
+		///   which marking IDs are put on that position.
+		///   </para>
+		///	  <para>
+		///	  For detail of marking feature, please refer to the document of
+		///	  <see cref="Sgry.Azuki.Marking"/> class.
+		///	  </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.GetMarkingsAt">Document.GetMarkingsAt method</seealso>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///		Parameter <paramref name="index"/> is out of valid range.
+		///   Parameter <paramref name="index"/> is out of valid range.
 		/// </exception>
 		public uint GetMarkingBitMaskAt( int index )
 		{
@@ -1358,17 +1366,18 @@ namespace Sgry.Azuki
 		/// should be marked automatically with built-in URI marker or not.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Note that built-in URI marker marks URIs in document
-		/// and then Azuki shows the URIs as 'looks like URI,'
-		/// but (1) clicking mouse button on them, or
-		/// (2) pressing keys when the caret is at middle of a URI,
-		/// makes NO ACTION BY DEFAULT.
-		/// To define action on such event,
-		/// programmer must implement such action as a part of 
-		/// event handler of standard mouse event or keyboard event.
-		/// Please refer to the <see cref="Sgry.Azuki.Marking">document of marking feature</see> for details.
-		/// </para>
+		///   <para>
+		///   Note that built-in URI marker marks URIs in document
+		///   and then Azuki shows the URIs as 'looks like URI,'
+		///   but (1) clicking mouse button on them, or
+		///   (2) pressing keys when the caret is at middle of a URI,
+		///   makes NO ACTION BY DEFAULT.
+		///   To define action on such event,
+		///   programmer must implement such action as a part of
+		///   event handler of standard mouse event or keyboard event.
+		///   Please refer to the
+		///   <see cref="Sgry.Azuki.Marking">document of marking feature</see> for details.
+		///   </para>
 		/// </remarks>
 		public bool MarksUri
 		{
@@ -1382,17 +1391,17 @@ namespace Sgry.Azuki
 		/// Begins grouping up editing actions into a single UNDO action.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Call of this method creates a new group of actions in UNDO history
-		/// and collect modification to this document until call of
-		/// <see cref="Sgry.Azuki.Document.EndUndo">EndUndo method</see>.
-		/// </para>
-		/// <para>
-		/// If no actions has been executed between call of BeginUndo and EndUndo,
-		/// an UNDO action which do nothing will be stored in UNDO history.
-		/// After call of this method, this method does nothing until EndUndo method was called
-		/// so calling this method multiple times in a row happens nothing.
-		/// </para>
+		///   <para>
+		///   Call of this method creates a new group of actions in UNDO history
+		///   and collect modification to this document until call of
+		///   <see cref="Sgry.Azuki.Document.EndUndo">EndUndo method</see>.
+		///   </para>
+		///   <para>
+		///   If no actions has been executed between call of BeginUndo and EndUndo,
+		///   an UNDO action which do nothing will be stored in UNDO history.
+		///   After call of this method, this method does nothing until EndUndo method was called
+		///   so calling this method multiple times in a row happens nothing.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.EndUndo">Document.EndUndo method</seealso>
 		public void BeginUndo()
@@ -1404,13 +1413,13 @@ namespace Sgry.Azuki
 		/// Ends grouping up editing actions.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Call of this method stops grouping up editing actions.
-		/// After call of this method,
-		/// this method does nothing until
-		/// <see cref="Sgry.Azuki.Document.BeginUndo">BeginUndo</see>.
-		/// method was called.
-		/// </para>
+		///   <para>
+		///   Call of this method stops grouping up editing actions.
+		///   After call of this method,
+		///   this method does nothing until
+		///   <see cref="Sgry.Azuki.Document.BeginUndo">BeginUndo</see>.
+		///   method was called.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.BeginUndo">Document.BeginUndo method</seealso>
 		public void EndUndo()
@@ -1422,14 +1431,14 @@ namespace Sgry.Azuki
 		/// Executes UNDO.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This method reverses the effect of lastly done modification to this document.
-		/// If there is no UNDOable action, this method will do nothing.
-		/// </para>
-		/// <para>
-		/// To get whether any UNDOable action exists or not,
-		/// use <see cref="Sgry.Azuki.Document.CanUndo">CanUndo</see> property.
-		/// </para>
+		///   <para>
+		///   This method reverses the effect of lastly done modification to this document.
+		///   If there is no UNDOable action, this method will do nothing.
+		///   </para>
+		///   <para>
+		///   To get whether any UNDOable action exists or not,
+		///   use <see cref="Sgry.Azuki.Document.CanUndo">CanUndo</see> property.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.CanUndo">Document.CanUndo property</seealso>
 		public void Undo()
@@ -1472,14 +1481,14 @@ namespace Sgry.Azuki
 		/// Clears all stacked edit histories.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This method clears all editing histories for
-		/// UNDO or REDO action in this document.
-		/// </para>
-		/// <para>
-		/// Note that calling this method will not invalidate graphics.
-		/// To update graphic, use IUserInterface.ClearHistory or update manually.
-		/// </para>
+		///   <para>
+		///   This method clears all editing histories for
+		///   UNDO or REDO action in this document.
+		///   </para>
+		///   <para>
+		///   Note that calling this method will not invalidate graphics.
+		///   To update graphic, use IUserInterface.ClearHistory or update manually.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.IUserInterface.ClearHistory">IUserInterface.ClearHistory method</seealso>
 		public void ClearHistory()
@@ -1496,10 +1505,10 @@ namespace Sgry.Azuki
 		/// Executes REDO.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This method 'replays' the lastly UNDOed action if available.
-		/// If there is no REDOable action, this method will do nothing.
-		/// </para>
+		///   <para>
+		///   This method 'replays' the lastly UNDOed action if available.
+		///   If there is no REDOable action, this method will do nothing.
+		///   </para>
 		/// </remarks>
 		public void Redo()
 		{
@@ -1543,8 +1552,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Specified EOL code is not supported.</exception>
 		/// <remarks>
-		/// This value will be used when an Enter key was pressed,
-		/// but setting this property itself does nothing to the content.
+		///   <para>
+		///   This value will be used when an Enter key was pressed,
+		///   but setting this property itself does nothing to the content.
+		///   </para>
 		/// </remarks>
 		public string EolCode
 		{
@@ -1650,32 +1661,32 @@ namespace Sgry.Azuki
 		/// <param name="startIndex">The search starting position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is greater than character count in this document.
+		///   Parameter <paramref name="startIndex"/> is greater than character count in this document.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the first occurrence of the pattern for the range of
-		/// [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
-		/// The text matching process continues for the document end
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before EOD,
-		/// use <see cref="Sgry.Azuki.Document.FindNext(string, int, int)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// This method searches the text pattern case-sensitively.
-		/// If the matching should be case-insensitively,
-		/// use <see cref="Sgry.Azuki.Document.FindNext(string, int, bool)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of
-		/// [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the first occurrence of the pattern for the range of
+		///   [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
+		///   The text matching process continues for the document end
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before EOD,
+		///   use <see cref="Sgry.Azuki.Document.FindNext(string, int, int)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   This method searches the text pattern case-sensitively.
+		///   If the matching should be case-insensitively,
+		///   use <see cref="Sgry.Azuki.Document.FindNext(string, int, bool)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of
+		///   [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindNext( string value, int startIndex )
 		{
@@ -1690,30 +1701,30 @@ namespace Sgry.Azuki
 		/// <param name="end">The search terminating position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is
-		/// out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is
+		///   out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the first occurrence of the pattern in the range of
-		/// [<paramref name="begin"/>, <paramref name="end"/>).
-		/// The text matching process continues for the document end
-		/// and does not stop at line ends nor null-characters.
-		/// </para>
-		/// <para>
-		/// This method searches the text pattern case-sensitively.
-		/// If the matching should be case-insensitively,
-		/// use <see cref="Sgry.Azuki.Document.FindNext(string, int, int, bool)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of
-		/// [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the first occurrence of the pattern in the range of
+		///   [<paramref name="begin"/>, <paramref name="end"/>).
+		///   The text matching process continues for the document end
+		///   and does not stop at line ends nor null-characters.
+		///   </para>
+		///   <para>
+		///   This method searches the text pattern case-sensitively.
+		///   If the matching should be case-insensitively,
+		///   use <see cref="Sgry.Azuki.Document.FindNext(string, int, int, bool)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of
+		///   [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindNext( string value, int begin, int end )
 		{
@@ -1728,31 +1739,31 @@ namespace Sgry.Azuki
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is greater than character count in this document.
+		///   Parameter <paramref name="startIndex"/> is greater than character count in this document.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the first occurrence of the pattern for the range of
-		/// [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
-		/// The text matching process continues for the document end
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before EOD,
-		/// use <see cref="Sgry.Azuki.Document.FindNext(string, int, int, bool)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// If <paramref name="matchCase"/> is true,
-		/// the text pattern will be matched case-sensitively
-		/// otherwise case will be ignored.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of
-		/// [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the first occurrence of the pattern for the range of
+		///   [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
+		///   The text matching process continues for the document end
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before EOD,
+		///   use <see cref="Sgry.Azuki.Document.FindNext(string, int, int, bool)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   If <paramref name="matchCase"/> is true,
+		///   the text pattern will be matched case-sensitively
+		///   otherwise case will be ignored.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of
+		///   [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindNext( string value, int startIndex, bool matchCase )
 		{
@@ -1768,28 +1779,28 @@ namespace Sgry.Azuki
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is
-		/// out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is
+		///   out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the first occurrence of the pattern in the range of
-		/// [<paramref name="begin"/>, <paramref name="end"/>).
-		/// The text matching process continues for the index specified by <paramref name="end"/> parameter
-		/// and does not stop at line ends nor null-characters.
-		/// </para>
-		/// <para>
-		/// If <paramref name="matchCase"/> is true,
-		/// the text pattern will be matched case-sensitively
-		/// otherwise case will be ignored.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of [<paramref name="begin"/>, <paramref name="begin"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the first occurrence of the pattern in the range of
+		///   [<paramref name="begin"/>, <paramref name="end"/>).
+		///   The text matching process continues for the index specified by <paramref name="end"/> parameter
+		///   and does not stop at line ends nor null-characters.
+		///   </para>
+		///   <para>
+		///   If <paramref name="matchCase"/> is true,
+		///   the text pattern will be matched case-sensitively
+		///   otherwise case will be ignored.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of [<paramref name="begin"/>, <paramref name="begin"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindNext( string value, int begin, int end, bool matchCase )
 		{
@@ -1812,35 +1823,35 @@ namespace Sgry.Azuki
 		/// <param name="startIndex">The search starting position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentException">
-		/// Parameter <paramref name="regex"/> is a Regex object with RegexOptions.RightToLeft option.
+		///   Parameter <paramref name="regex"/> is a Regex object with RegexOptions.RightToLeft option.
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="regex"/> is null.
+		///   Parameter <paramref name="regex"/> is null.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds a text pattern
-		/// expressed by a regular expression in the range of
-		/// [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
-		/// The text matching process continues for the index
-		/// specified with the <paramref name="end"/> parameter
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before EOD,
-		/// use <see cref="Sgry.Azuki.Document.FindNext(Regex, int, int)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
-		/// RegexOptions.RightToLeft</see> option MUST NOT be set to
-		/// the Regex object given as parameter <paramref name="regex"/>
-		/// otherwise an ArgumentException will be thrown.
-		/// </para>
-		/// <para>
-		/// If an empty string was used for a regular expression pattern,
-		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// The text matching process continues for the end of document
-		/// and does not stop at line ends nor null-characters.
-		/// </para>
+		///   <para>
+		///   This method finds a text pattern
+		///   expressed by a regular expression in the range of
+		///   [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document.
+		///   The text matching process continues for the index
+		///   specified with the <paramref name="end"/> parameter
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before EOD,
+		///   use <see cref="Sgry.Azuki.Document.FindNext(Regex, int, int)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
+		///   RegexOptions.RightToLeft</see> option MUST NOT be set to
+		///   the Regex object given as parameter <paramref name="regex"/>
+		///   otherwise an ArgumentException will be thrown.
+		///   </para>
+		///   <para>
+		///   If an empty string was used for a regular expression pattern,
+		///   search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   The text matching process continues for the end of document
+		///   and does not stop at line ends nor null-characters.
+		///   </para>
 		/// </remarks>
 		public SearchResult FindNext( Regex regex, int startIndex )
 		{
@@ -1855,33 +1866,33 @@ namespace Sgry.Azuki
 		/// <param name="end">The end index of the search range.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentException">
-		/// Parameter <paramref name="regex"/> is a Regex object with RegexOptions.RightToLeft option.
+		///   Parameter <paramref name="regex"/> is a Regex object with RegexOptions.RightToLeft option.
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="regex"/> is null.
+		///   Parameter <paramref name="regex"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the first ocurrence of a pattern
-		/// expressed by a regular expression in the range of
-		/// [<paramref name="begin"/>, <paramref name="end"/>).
-		/// The text matching process continues for the index
-		/// specified with the <paramref name="end"/> parameter
-		/// and does not stop at line ends nor null-characters.
-		/// </para>
-		/// <para>
-		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
-		/// RegexOptions.RightToLeft</see> option MUST NOT be set to
-		/// the Regex object given as parameter <paramref name="regex"/>
-		/// otherwise an ArgumentException will be thrown.
-		/// </para>
-		/// <para>
-		/// If an empty string was used for a regular expression pattern,
-		/// search result will be the range of [<paramref name="begin"/>, <paramref name="begin"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the first ocurrence of a pattern
+		///   expressed by a regular expression in the range of
+		///   [<paramref name="begin"/>, <paramref name="end"/>).
+		///   The text matching process continues for the index
+		///   specified with the <paramref name="end"/> parameter
+		///   and does not stop at line ends nor null-characters.
+		///   </para>
+		///   <para>
+		///   <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
+		///   RegexOptions.RightToLeft</see> option MUST NOT be set to
+		///   the Regex object given as parameter <paramref name="regex"/>
+		///   otherwise an ArgumentException will be thrown.
+		///   </para>
+		///   <para>
+		///   If an empty string was used for a regular expression pattern,
+		///   search result will be the range of [<paramref name="begin"/>, <paramref name="begin"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindNext( Regex regex, int begin, int end )
 		{
@@ -1906,31 +1917,31 @@ namespace Sgry.Azuki
 		/// <param name="startIndex">The search starting position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is out of valid range.
+		///   Parameter <paramref name="startIndex"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the last occurrence of the pattern in the range
-		/// of [0, <paramref name="startIndex"/>).
-		/// The text matching process continues for the document head
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before document head,
-		/// use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// This method searches the text pattern case-sensitively.
-		/// If the matching should be case-insensitively,
-		/// use <see cref="Sgry.Azuki.Document.FindPrev(string, int, bool)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the last occurrence of the pattern in the range
+		///   of [0, <paramref name="startIndex"/>).
+		///   The text matching process continues for the document head
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before document head,
+		///   use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   This method searches the text pattern case-sensitively.
+		///   If the matching should be case-insensitively,
+		///   use <see cref="Sgry.Azuki.Document.FindPrev(string, int, bool)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindPrev( string value, int startIndex )
 		{
@@ -1945,30 +1956,30 @@ namespace Sgry.Azuki
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is out of valid range.
+		///   Parameter <paramref name="startIndex"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the last occurrence of the pattern in the range
-		/// of [0, <paramref name="startIndex"/>).
-		/// The text matching process continues for the document head
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before document head,
-		/// use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// If <paramref name="matchCase"/> is true,
-		/// the text pattern will be matched case-sensitively
-		/// otherwise case will be ignored.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the last occurrence of the pattern in the range
+		///   of [0, <paramref name="startIndex"/>).
+		///   The text matching process continues for the document head
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before document head,
+		///   use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   If <paramref name="matchCase"/> is true,
+		///   the text pattern will be matched case-sensitively
+		///   otherwise case will be ignored.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindPrev( string value, int startIndex, bool matchCase )
 		{
@@ -1983,31 +1994,31 @@ namespace Sgry.Azuki
 		/// <param name="end">The end index of the search range.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the last occurrence of the pattern in the range
-		/// of [<paramref name="begin"/>, <paramref name="end"/>).
-		/// The text matching process continues for the document head
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before document head,
-		/// use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// This method searches the text pattern case-sensitively.
-		/// If the matching should be case-insensitively,
-		/// use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int, bool)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the last occurrence of the pattern in the range
+		///   of [<paramref name="begin"/>, <paramref name="end"/>).
+		///   The text matching process continues for the document head
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before document head,
+		///   use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   This method searches the text pattern case-sensitively.
+		///   If the matching should be case-insensitively,
+		///   use <see cref="Sgry.Azuki.Document.FindPrev(string, int, int, bool)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be the range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindPrev( string value, int begin, int end )
 		{
@@ -2023,27 +2034,27 @@ namespace Sgry.Azuki
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="value"/> is null.
+		///   Parameter <paramref name="value"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the last occurrence of the pattern in the range of
-		/// [<paramref name="begin"/>, <paramref name="end"/>).
-		/// The text matching process continues for the index specified by <paramref name="begin"/> parameter
-		/// and does not stop at line ends nor null-characters.
-		/// </para>
-		/// <para>
-		/// If <paramref name="matchCase"/> is true,
-		/// the text pattern will be matched case-sensitively
-		/// otherwise case will be ignored.
-		/// </para>
-		/// <para>
-		/// If parameter <paramref name="value"/> is an empty string,
-		/// search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the last occurrence of the pattern in the range of
+		///   [<paramref name="begin"/>, <paramref name="end"/>).
+		///   The text matching process continues for the index specified by <paramref name="begin"/> parameter
+		///   and does not stop at line ends nor null-characters.
+		///   </para>
+		///   <para>
+		///   If <paramref name="matchCase"/> is true,
+		///   the text pattern will be matched case-sensitively
+		///   otherwise case will be ignored.
+		///   </para>
+		///   <para>
+		///   If parameter <paramref name="value"/> is an empty string,
+		///   search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindPrev( string value, int begin, int end, bool matchCase )
 		{
@@ -2066,35 +2077,35 @@ namespace Sgry.Azuki
 		/// <param name="startIndex">The search starting position.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentException">
-		/// Parameter <paramref name="regex"/> is a Regex object without RegexOptions.RightToLeft option.
+		///   Parameter <paramref name="regex"/> is a Regex object without RegexOptions.RightToLeft option.
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="regex"/> is null.
+		///   Parameter <paramref name="regex"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="startIndex"/> is out of valid range.
+		///   Parameter <paramref name="startIndex"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the last occurrence of a pattern
-		/// expressed by a regular expression in the range of
-		/// [0, <paramref name="startIndex"/>).
-		/// The text matching process continues for the document head
-		/// and does not stop at line ends nor null-characters.
-		/// If the search range should end before EOD,
-		/// use <see cref="Sgry.Azuki.Document.FindPrev(Regex, int, int)">
-		/// other overload method</see>.
-		/// </para>
-		/// <para>
-		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
-		/// RegexOptions.RightToLeft</see> option MUST be set to
-		/// the Regex object given as parameter <paramref name="regex"/>
-		/// otherwise an ArgumentException will be thrown.
-		/// </para>
-		/// <para>
-		/// If an empty string was used for a regular expression pattern,
-		/// search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the last occurrence of a pattern
+		///   expressed by a regular expression in the range of
+		///   [0, <paramref name="startIndex"/>).
+		///   The text matching process continues for the document head
+		///   and does not stop at line ends nor null-characters.
+		///   If the search range should end before EOD,
+		///   use <see cref="Sgry.Azuki.Document.FindPrev(Regex, int, int)">
+		///   other overload method</see>.
+		///   </para>
+		///   <para>
+		///   <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
+		///   RegexOptions.RightToLeft</see> option MUST be set to
+		///   the Regex object given as parameter <paramref name="regex"/>
+		///   otherwise an ArgumentException will be thrown.
+		///   </para>
+		///   <para>
+		///   If an empty string was used for a regular expression pattern,
+		///   search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindPrev( Regex regex, int startIndex )
 		{
@@ -2109,33 +2120,33 @@ namespace Sgry.Azuki
 		/// <param name="end">The end index of the search range.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
 		/// <exception cref="ArgumentException">
-		/// Parameter <paramref name="regex"/> is a Regex object without RegexOptions.RightToLeft option.
+		///   Parameter <paramref name="regex"/> is a Regex object without RegexOptions.RightToLeft option.
 		/// </exception>
 		/// <exception cref="ArgumentNullException">
-		/// Parameter <paramref name="regex"/> is null.
+		///   Parameter <paramref name="regex"/> is null.
 		/// </exception>
 		/// <exception cref="ArgumentOutOfRangeException">
-		/// Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
+		///   Parameter <paramref name="begin"/> or <paramref name="end"/> is out of valid range.
 		/// </exception>
 		/// <remarks>
-		/// <para>
-		/// This method finds the last occurrence of a pattern
-		/// expressed by a regular expression in the range of
-		/// [<paramref name="begin"/>, <paramref name="end"/>).
-		/// The text matching process continues for the index
-		/// specified with the <paramref name="begin"/> parameter
-		/// and does not stop at line ends nor null-characters.
-		/// </para>
-		/// <para>
-		/// <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
-		/// RegexOptions.RightToLeft</see> option MUST be set to
-		/// the Regex object given as parameter <paramref name="regex"/>
-		/// otherwise an ArgumentException will be thrown.
-		/// </para>
-		/// <para>
-		/// If an empty string was used for a regular expression pattern,
-		/// search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
-		/// </para>
+		///   <para>
+		///   This method finds the last occurrence of a pattern
+		///   expressed by a regular expression in the range of
+		///   [<paramref name="begin"/>, <paramref name="end"/>).
+		///   The text matching process continues for the index
+		///   specified with the <paramref name="begin"/> parameter
+		///   and does not stop at line ends nor null-characters.
+		///   </para>
+		///   <para>
+		///   <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">
+		///   RegexOptions.RightToLeft</see> option MUST be set to
+		///   the Regex object given as parameter <paramref name="regex"/>
+		///   otherwise an ArgumentException will be thrown.
+		///   </para>
+		///   <para>
+		///   If an empty string was used for a regular expression pattern,
+		///   search result will be a range of [<paramref name="end"/>, <paramref name="end"/>).
+		///   </para>
 		/// </remarks>
 		public SearchResult FindPrev( Regex regex, int begin, int end )
 		{
@@ -2159,13 +2170,13 @@ namespace Sgry.Azuki
 		/// <param name="index">The index to start searching matched bracket.</param>
 		/// <returns>Index of the matched bracket if found. Otherwise -1.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method searches the matched bracket from specified index.
-		/// If the character at specified index was not a sort of bracket,
-		/// or if specified index points to a character
-		/// which has no meaning on grammar (such as comment block, string literal, etc.),
-		/// this method returns -1.
-		/// </para>
+		///   <para>
+		///   This method searches the matched bracket from specified index.
+		///   If the character at specified index was not a sort of bracket,
+		///   or if specified index points to a character
+		///   which has no meaning on grammar (such as comment block, string literal, etc.),
+		///   this method returns -1.
+		///   </para>
 		/// </remarks>
 		public int FindMatchedBracket( int index )
 		{
@@ -2179,13 +2190,13 @@ namespace Sgry.Azuki
 		/// <param name="maxSearchLength">Maximum number of characters to search matched bracket for.</param>
 		/// <returns>Index of the matched bracket if found. Otherwise -1.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method searches the matched bracket from specified index.
-		/// If the character at specified index was not a sort of bracket,
-		/// or if specified index points to a character
-		/// which has no meaning on grammar (such as comment block, string literal, etc.),
-		/// this method returns -1.
-		/// </para>
+		///   <para>
+		///   This method searches the matched bracket from specified index.
+		///   If the character at specified index was not a sort of bracket,
+		///   or if specified index points to a character
+		///   which has no meaning on grammar (such as comment block, string literal, etc.),
+		///   this method returns -1.
+		///   </para>
 		/// </remarks>
 		public int FindMatchedBracket( int index, int maxSearchLength )
 		{
@@ -2304,37 +2315,37 @@ namespace Sgry.Azuki
 		/// or null to disable highlighting.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets or sets highlighter for this document.
-		/// </para>
-		/// <para>
-		/// Highlighter objects are used to highlight syntax of documents.
-		/// They implements
-		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
-		/// interface and called
-		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Sgry.Azuki.Document, ref int, ref int)">Highlight</see>
-		/// method every time slightly after user input stopped to execute own highlighting logic.
-		/// If null was set to this property, highlighting feature will be disabled.
-		/// </para>
-		/// <para>
-		/// Azuki provides some built-in highlighters. See
-		/// <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see>
-		/// class members.
-		/// </para>
-		/// <para>
-		/// User can create and use custom highlighter object.
-		/// If you want to create a keyword-based highlighter,
-		/// you can extend
-		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>.
-		/// If you want to create not a keyword based one,
-		/// create a class which implements
-		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
-		/// and write your own highlighting logic.
-		/// </para>
-		/// <para>
-		/// Note that setting new value to this property will not invalidate graphics.
-		/// To update graphic, set value via IUserInterface.Highlighter.
-		/// </para>
+		///   <para>
+		///   This property gets or sets highlighter for this document.
+		///   </para>
+		///   <para>
+		///   Highlighter objects are used to highlight syntax of documents.
+		///   They implements
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
+		///   interface and called
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Sgry.Azuki.Document, ref int, ref int)">Highlight</see>
+		///   method every time slightly after user input stopped to execute own highlighting logic.
+		///   If null was set to this property, highlighting feature will be disabled.
+		///   </para>
+		///   <para>
+		///   Azuki provides some built-in highlighters. See
+		///   <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see>
+		///   class members.
+		///   </para>
+		///   <para>
+		///   User can create and use custom highlighter object.
+		///   If you want to create a keyword-based highlighter,
+		///   you can extend
+		///   <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>.
+		///   If you want to create not a keyword based one,
+		///   create a class which implements
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
+		///   and write your own highlighting logic.
+		///   </para>
+		///   <para>
+		///   Note that setting new value to this property will not invalidate graphics.
+		///   To update graphic, set value via IUserInterface.Highlighter.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.IUserInterface.Highlighter">IUserInterface.Highlighter</seealso>
 		public IHighlighter Highlighter
@@ -2363,12 +2374,12 @@ namespace Sgry.Azuki
 		/// <param name="index">The index of the character to examine.</param>
 		/// <returns>Whether the character is part of a character data or not.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method gets whether the character at specified index
-		/// is just a character data without meaning on grammar.
-		/// 'Character data' here means text data which is not a part of the grammar.
-		/// Example of character data is comment or string literal in programming languages.
-		/// </para>
+		///   <para>
+		///   This method gets whether the character at specified index
+		///   is just a character data without meaning on grammar.
+		///   'Character data' here means text data which is not a part of the grammar.
+		///   Example of character data is comment or string literal in programming languages.
+		///   </para>
 		/// </remarks>
 		public bool IsCDATA( int index )
 		{
@@ -2389,10 +2400,10 @@ namespace Sgry.Azuki
 		/// Gets or sets word processor object which determines how Azuki handles 'words.'
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets or sets word processor object.
-		/// Please refer to the document of IWordProc interface for detail.
-		/// </para>
+		///   <para>
+		///   This property gets or sets word processor object.
+		///   Please refer to the document of IWordProc interface for detail.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.IWordProc">IWordProc interface</seealso>
 		/// <seealso cref="Sgry.Azuki.DefaultWordProc">DefaultWordProc class</seealso>
@@ -2489,25 +2500,25 @@ namespace Sgry.Azuki
 		/// <returns>The index of the character which starts next grapheme cluster.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method searches document for a grapheme cluster
-		/// from given <paramref name="index"/> forward.
-		/// Note that this method always return an index greater than given '<paramref name="index"/>'.
-		/// </para>
-		/// <para>
-		/// 'Grapheme cluster' is a sequence of characters
-		/// which consists one 'user perceived character'
-		/// such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
-		/// In most cases, such sequence should not be divided unless user wishes to do so.
-		/// </para>
-		/// <para>
-		/// This method determines an index pointing the middle of character sequences next as undividable:
-		/// </para>
-		/// <list type="bullet">
-		///		<item>CR+LF</item>
-		///		<item>Surrogate pair</item>
-		///		<item>Combining character sequence</item>
-		/// </list>
+		///   <para>
+		///   This method searches document for a grapheme cluster
+		///   from given <paramref name="index"/> forward.
+		///   Note that this method always return an index greater than given '<paramref name="index"/>'.
+		///   </para>
+		///   <para>
+		///   'Grapheme cluster' is a sequence of characters
+		///   which consists one 'user perceived character'
+		///   such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
+		///   In most cases, such sequence should not be divided unless user wishes to do so.
+		///   </para>
+		///   <para>
+		///   This method determines an index pointing the middle of character sequences next as undividable:
+		///   </para>
+		///   <list type="bullet">
+		///     <item>CR+LF</item>
+		///     <item>Surrogate pair</item>
+		///     <item>Combining character sequence</item>
+		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
@@ -2532,25 +2543,25 @@ namespace Sgry.Azuki
 		/// <returns>The index of the character which starts previous grapheme cluster.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
 		/// <remarks>
-		/// <para>
-		/// This method searches document for a grapheme cluster
-		/// from given <paramref name="index"/> backward.
-		/// Note that this method always return an index less than given '<paramref name="index"/>'.
-		/// </para>
-		/// <para>
-		/// 'Grapheme cluster' is a sequence of characters
-		/// which consists one 'user perceived character'
-		/// such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
-		/// In most cases, such sequence should not be divided unless user wishes to do so.
-		/// </para>
-		/// <para>
-		/// This method determines an index pointing the middle of character sequences next as undividable:
-		/// </para>
-		/// <list type="bullet">
-		///		<item>CR+LF</item>
-		///		<item>Surrogate pair</item>
-		///		<item>Combining character sequence</item>
-		/// </list>
+		///   <para>
+		///   This method searches document for a grapheme cluster
+		///   from given <paramref name="index"/> backward.
+		///   Note that this method always return an index less than given '<paramref name="index"/>'.
+		///   </para>
+		///   <para>
+		///   'Grapheme cluster' is a sequence of characters
+		///   which consists one 'user perceived character'
+		///   such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
+		///   In most cases, such sequence should not be divided unless user wishes to do so.
+		///   </para>
+		///   <para>
+		///   This method determines an index pointing the middle of character sequences next as undividable:
+		///   </para>
+		///   <list type="bullet">
+		///     <item>CR+LF</item>
+		///     <item>Surrogate pair</item>
+		///     <item>Combining character sequence</item>
+		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
@@ -2610,28 +2621,28 @@ namespace Sgry.Azuki
 		/// <param name="index">The index to determine whether it points to middle of an undividable character sequence or not.</param>
 		/// <returns>Whether charcter sequence can not be divided at the index or not.</returns>
 		/// <remarks>
-		/// <para>
-		/// This method determines whether text can not be divided at given index or not.
-		/// To seek document through grapheme cluster by grapheme cluster,
-		/// please consider to use
-		/// <see cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</see>
-		/// or
-		/// <see cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</see>.
-		/// </para>
-		/// <para>
-		/// This method determines an index pointing the middle of character sequences next as undividable:
-		/// </para>
-		/// <para>
-		/// 'Grapheme cluster' is a sequence of characters
-		/// which consists one 'user perceived character'
-		/// such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
-		/// In most cases, such sequence should not be divided unless user wishes to do so.
-		/// </para>
-		/// <list type="bullet">
-		///		<item>CR+LF</item>
-		///		<item>Surrogate pair</item>
-		///		<item>Combining character sequence</item>
-		/// </list>
+		///   <para>
+		///   This method determines whether text can not be divided at given index or not.
+		///   To seek document through grapheme cluster by grapheme cluster,
+		///   please consider to use
+		///   <see cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</see>
+		///   or
+		///   <see cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</see>.
+		///   </para>
+		///   <para>
+		///   This method determines an index pointing the middle of character sequences next as undividable:
+		///   </para>
+		///   <para>
+		///   'Grapheme cluster' is a sequence of characters
+		///   which consists one 'user perceived character'
+		///   such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
+		///   In most cases, such sequence should not be divided unless user wishes to do so.
+		///   </para>
+		///   <list type="bullet">
+		///     <item>CR+LF</item>
+		///     <item>Surrogate pair</item>
+		///     <item>Combining character sequence</item>
+		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
@@ -2649,13 +2660,13 @@ namespace Sgry.Azuki
 		/// <param name="text">The text to be examined.</param>
 		/// <param name="index">The index to determine whether it points to middle of an undividable character sequence or not.</param>
 		/// <remarks>
-		/// <para>
-		/// This method determines whether a string can not be divided at given index or not.
-		/// This is only an utility method.
-		/// Please refer to the document of
-		/// <see cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex instance method</see>
-		/// for detail.
-		/// </para>
+		///   <para>
+		///   This method determines whether a string can not be divided at given index or not.
+		///   This is only an utility method.
+		///   Please refer to the document of
+		///   <see cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex instance method</see>
+		///   for detail.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
 		public static bool IsNotDividableIndex( string text, int index )

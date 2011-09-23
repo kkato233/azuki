@@ -1,7 +1,7 @@
 ﻿// file: AzukiControl.cs
 // brief: User interface for WinForms framework (both Desktop and CE).
 // author: YAMAMOTO Suguru
-// update: 2011-08-07
+// update: 2011-09-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -103,7 +103,6 @@ namespace Sgry.Azuki.WinForms
 			_Impl = new UiImpl( this );
 			Document = new Document();
 			ViewType = ViewType.Proportional; // (setting ViewType installs document event handlers)
-			LineDrawing += UriMarker.Inst.UI_LineDrawing;
 
 			// setup default keybind
 			ResetKeyBind();

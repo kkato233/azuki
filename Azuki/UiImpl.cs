@@ -97,6 +97,7 @@ namespace Sgry.Azuki
 			}
 
 			// dispose view
+			_UI.LineDrawing -= UriMarker.Inst.UI_LineDrawing;
 			if( _View != null )
 			{
 				_View.Dispose();

@@ -1,7 +1,7 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
 // author: YAMAMOTO Suguru
-// update: 2011-08-15
+// update: 2011-09-23
 //=========================================================
 using System;
 using System.Collections;
@@ -1081,14 +1081,21 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Marking">Marking class</seealso>
 		public bool Mark( int begin, int end, int markingID )
 		{
-			if( begin < 0 || _Buffer.Count <= begin )
-				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given. (begin:"+begin+", this.Length:"+Length+")" );
+			if( begin < 0 || _Buffer.Count < begin )
+				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given."
+													   + " (begin:" + begin + ","
+													   + " this.Length:" + Length + ")" );
 			if( end < 0 || _Buffer.Count < end )
-				throw new ArgumentOutOfRangeException( "end", "Invalid index was given. (end:"+end+", this.Length:"+Length+")" );
-			if( end <= begin )
-				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
+				throw new ArgumentOutOfRangeException( "end", "Invalid index was given."
+													   + " (end:" + end + ","
+													   + " this.Length:" + Length + ")" );
+			if( end < begin )
+				throw new ArgumentException( "Parameter 'begin' must not be greater than 'end'."
+											 + " (begin:" + begin + ", end:" + end + ")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+				throw new ArgumentException( "Specified marking ID is not registered."
+											 + " (markingID:" + markingID + ")",
+											 "markingID" );
 
 			Debug.Assert( _Buffer.Marks.Count == this.Length, "sync failed." );
 
@@ -1138,14 +1145,20 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Document.Mark">Document.Mark method</seealso>
 		public bool Unmark( int begin, int end, int markingID )
 		{
-			if( begin < 0 || _Buffer.Count <= begin )
-				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given. (begin:"+begin+", this.Length:"+Length+")" );
+			if( begin < 0 || _Buffer.Count < begin )
+				throw new ArgumentOutOfRangeException( "begin", "Invalid index was given."
+													   + " (begin:" + begin
+													   + ", this.Length:" + Length + ")" );
 			if( end < 0 || _Buffer.Count < end )
-				throw new ArgumentOutOfRangeException( "end", "Invalid index was given. (end:"+end+", this.Length:"+Length+")" );
-			if( end <= begin )
-				throw new ArgumentException( "Parameter 'begin' must be less than 'end'. (begin:"+begin+", end:"+end+")" );
+				throw new ArgumentOutOfRangeException( "end", "Invalid index was given."
+													   + " (end:" + end
+													   + ", this.Length:" + Length + ")" );
+			if( end < begin )
+				throw new ArgumentException( "Parameter 'begin' must not be greater than 'end'."
+											 + " (begin:" + begin + ", end:" + end + ")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+				throw new ArgumentException( "Specified marking ID is not registered."
+											 + " (markingID:" + markingID + ")", "markingID" );
 
 			Debug.Assert( _Buffer.Marks.Count == this.Length, "sync failed." );
 

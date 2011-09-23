@@ -1,4 +1,4 @@
-// 2011-07-10
+// 2011-09-23
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -533,9 +533,6 @@ namespace Sgry.Ann
 			//
 			_SearchPanel.Dock = DockStyle.Bottom;
 			_SearchPanel.Enabled = false;
-			_SearchPanel.PatternFixed += delegate {
-				DeactivateSearchPanel();
-			};
 #			if !PocketPC
 			//
 			// _StatusBar

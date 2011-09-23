@@ -1,4 +1,4 @@
-// 2011-07-07
+// 2011-09-23
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +12,7 @@ using Sgry.Azuki.Highlighter;
 using Sgry.Azuki.WinForms;
 using Assembly = System.Reflection.Assembly;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
+using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 using Debug = System.Diagnostics.Debug;
 using AzukiDocument = Sgry.Azuki.Document;
 
@@ -119,9 +120,22 @@ namespace Sgry.Ann
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.Azuki.Click += Azuki_Click;
 				_MainForm.Azuki.DoubleClick += Azuki_DoubleClick;
-				_MainForm.SearchPanel.PatternUpdated += SearchPanel_PatternUpdated;
 				_MainForm.TabPanel.Items = Documents;
 				_MainForm.TabPanel.TabSelected += TabPanel_TabSelected;
+				_SearchContext.PropertyChanged += delegate( object sender, PropertyChangedEventArgs e ) {
+					if( e.PropertyName == "PatternFixed"
+						&& _SearchContext.PatternFixed == true )
+					{
+						MainForm.DeactivateSearchPanel();
+					}
+					else if( e.PropertyName == "MatchCase"
+						|| e.PropertyName == "Regex"
+						|| e.PropertyName == "TextPattern"
+						|| e.PropertyName == "UseRegex" )
+					{
+						OnSearchContextChanged( _SearchContext.Forward );
+					}
+				};
 
 				// handle initially set document
 				Document doc = new Document();
@@ -835,8 +849,14 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Text Search
-		void SearchPanel_PatternUpdated( bool forward )
+		void OnSearchContextChanged( bool forward )
 		{
+			if( _MainForm.SearchPanel.Enabled == false )
+			{
+				return;
+			}
+
+			// search incrementally
 			if( forward )
 				FindNext();
 			else

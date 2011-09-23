@@ -1,7 +1,7 @@
 ﻿// file: TextDecoration.cs
 // brief: Text decoration classes.
 // author: YAMAMOTO Suguru
-// update: 2010-11-28
+// update: 2011-09-23
 //=========================================================
 using System;
 using System.Drawing;
@@ -110,7 +110,6 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Indicates style of line for text decoration.
 	/// </summary>
-	[Flags]
 	public enum LineStyle
 	{
 		/// <summary>Does not draw line.</summary>

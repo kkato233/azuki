@@ -1292,7 +1292,7 @@ namespace Sgry.Azuki
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
 
-			uint markingBitMask = (uint)( GetMarkingBitMaskAt(index) & 0xff );
+			uint markingBitMask = (uint)GetMarkingBitMaskAt( index );
 			return ( (markingBitMask >> markingID) & 0x01) != 0;
 		}
 

@@ -1,7 +1,7 @@
 ﻿// file: Marking.cs
 // brief: Classes related to marking which indicates attributes apart from syntax and grammar.
 // author: YAMAMOTO Suguru
-// update: 2011-08-15
+// update: 2011-09-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -147,9 +147,11 @@ namespace Sgry.Azuki
 	///     </item>
 	///   </list>
 	///   <para>
-	///   Internally, marking IDs set for each character are stored as bit mask (currently 32-bit).
+	///   Internally, marking IDs set for each character are stored as bit mask
+	///   (currently 32-bit).
 	///   Although all operations can be done without minding it,
-	///   in some cases, using internal bit mask directly is more efficient than using array of IDs.
+	///   in some cases, using internal bit mask directly
+	///   is more efficient than using array of IDs.
 	///   To handle bit mask directly, use
 	///   <see cref="Sgry.Azuki.Document.GetMarkingBitMaskAt">
 	///   Document.GetMarkingBitMaskAt method</see> and
@@ -157,8 +159,8 @@ namespace Sgry.Azuki
 	///   ColorScheme.GetMarkingDecorations(uint) method</see>.
 	///   </para>
 	///   <para>
-	///   Note that marking ID '0' is used by built-in URI marker to mark URIs.
-	///   Although the meaning of ID 0 can be overwritten
+	///   Note that marking ID '31' is used by built-in URI marker to mark URIs.
+	///   Although the meaning of ID 31 can be overwritten
 	///   with <see cref="Sgry.Azuki.Marking.Register">Register</see> method,
 	///   doing so is discouraged
 	///   unless the programmer wants to create and use URI marker by his/her own.
@@ -179,7 +181,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static int Uri
 		{
-			get{ return 0; }
+			get{ return 31; }
 		}
 		#endregion
 		
@@ -190,11 +192,7 @@ namespace Sgry.Azuki
 		#region Init / Dispose
 		static Marking()
 		{
-			_MarkingInfoAry[0] = new MarkingInfo( 0, "URI", MouseCursor.Hand );
-			_MarkingInfoAry[1] = new MarkingInfo( 1, "Warning" );
-			_MarkingInfoAry[2] = new MarkingInfo( 2, "Error" );
-			_MarkingInfoAry[3] = new MarkingInfo( 3, "Syntax error" );
-			_MarkingInfoAry[4] = new MarkingInfo( 4, "Misspelling" );
+			Register( new MarkingInfo(Marking.Uri, "URI", MouseCursor.Hand) );
 		}
 		#endregion
 
@@ -209,8 +207,8 @@ namespace Sgry.Azuki
 		///   If specified ID was already registered, existing information will be overwritten.
 		///   </para>
 		///   <para>
-		///   Note that marking ID '0' is used by built-in URI marker to mark URIs.
-		///   Although the meaning of ID 0 can be overwritten
+		///   Note that marking ID '31' is used by built-in URI marker to mark URIs.
+		///   Although the meaning of ID 31 can be overwritten
 		///   with this method,
 		///   doing so is discouraged
 		///   unless the programmer wants to create and use URI marker by his/her own.
@@ -220,17 +218,17 @@ namespace Sgry.Azuki
 		///   Parameter <paramref name="info"/> is null.
 		///	</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">
-		///   ID of parameter <paramref name="info"/> is out of range.
+		///   ID of parameter <paramref name="info"/> is out of valid range.
 		///	</exception>
 		///	<seealso cref="Sgry.Azuki.Marking.Unregister">Marking.Unregister method</seealso>
 		public static void Register( MarkingInfo info )
 		{
 			if( info == null )
 				throw new ArgumentNullException( "info" );
-			if( info.ID < 0 )
-				throw new ArgumentOutOfRangeException( "Marking ID must be equal to or greater than 0. (info.ID:"+info.ID+")" );
-			if( MaxID < info.ID )
-				throw new ArgumentOutOfRangeException( "Marking ID must not be greater than "+MaxID+". (info.ID:"+info.ID+")" );
+			if( info.ID < 0 || MaxID < info.ID )
+				throw new ArgumentOutOfRangeException( "Marking ID must be positive number and"
+													   + " less than " + MaxID + "."
+													   + " (info.ID:" + info.ID + ")" );
 
 			_MarkingInfoAry[info.ID] = info;
 		}
@@ -255,10 +253,10 @@ namespace Sgry.Azuki
 		///	<seealso cref="Sgry.Azuki.Marking.Register">Marking.Register method</seealso>
 		public static void Unregister( int id )
 		{
-			if( id <= 1 )
-				throw new ArgumentOutOfRangeException( "Marking ID must be greater than 1. (id:"+id+")" );
-			if( MaxID < id )
-				throw new ArgumentOutOfRangeException( "Marking ID must not be greater than "+MaxID+". (id:"+id+")" );
+			if( id < 0 || MaxID < id )
+				throw new ArgumentOutOfRangeException( "Marking ID must be positive number and"
+													   + " less than " + MaxID + "."
+													   + " (id:" + id + ")" );
 
 			_MarkingInfoAry[id] = null;
 		}
@@ -273,7 +271,9 @@ namespace Sgry.Azuki
 		public static MarkingInfo GetMarkingInfo( int id )
 		{
 			if( id < 0 || MaxID < id )
-				throw new ArgumentOutOfRangeException( "id", "Marking ID must be greater than 0 and not greater than "+MaxID+". (id:"+id+")" );
+				throw new ArgumentOutOfRangeException( "Marking ID must be positive number and"
+													   + " less than " + MaxID + "."
+													   + " (id:" + id + ")" );
 
 			return _MarkingInfoAry[id];
 		}

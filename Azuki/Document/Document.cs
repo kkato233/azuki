@@ -32,6 +32,8 @@ namespace Sgry.Azuki
 		SelectionManager _SelMan;
 		bool _IsRecordingHistory = true;
 		bool _IsSuppressingDirtyStateChangedEvent = false;
+		List<WatchPattern> _WatchPatterns = new List<WatchPattern>();
+		WatchPatternMarker _WatchPatternMarker;
 		string _EolCode = "\r\n";
 		bool _IsReadOnly = false;
 		IHighlighter _Highlighter = null;
@@ -65,6 +67,7 @@ namespace Sgry.Azuki
 		public Document()
 		{
 			_SelMan = new SelectionManager( this );
+			_WatchPatternMarker = new WatchPatternMarker( this );
 
 			// initialize LHI
 			_LHI.Clear();
@@ -251,6 +254,22 @@ namespace Sgry.Azuki
 		public DateTime LastModifiedTime
 		{
 			get{ return _LastModifiedTime; }
+		}
+
+		/// <summary>
+		/// Gets the list of watching patterns.
+		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   Please refer to the
+		///   <see cref="Sgry.Azuki.WatchPattern">document of WatchPattern class</see>
+		///   for details.
+		///   </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.WatchPattern">WatchPattern class</seealso>
+		public IList<WatchPattern> WatchPatterns
+		{
+			get{ return _WatchPatterns; }
 		}
 
 		/// <summary>
@@ -1183,11 +1202,21 @@ namespace Sgry.Azuki
 		/// Gets range of text part which includes specified index
 		/// which is marked with specified ID.
 		/// </summary>
-		/// <param name="index">The text range including a character at this index will be retrieved.</param>
-		/// <param name="markingID">The text range marked with this ID will be retrieved.</param>
-		/// <param name="begin">When this method returns, contains the beginning index of the text range.</param>
-		/// <param name="end">When this method returns, contains the ending index of the text range.</param>
-		/// <returns>Whether a text range marked with specified marking ID was retrieved or not.</returns>
+		/// <param name="index">
+		///   The text range including a character at this index will be retrieved.
+		/// </param>
+		/// <param name="markingID">
+		///   The text range marked with this ID will be retrieved.
+		/// </param>
+		/// <param name="begin">
+		///   When this method returns, contains the beginning index of the text range.
+		/// </param>
+		/// <param name="end">
+		///   When this method returns, contains the ending index of the text range.
+		/// </param>
+		/// <returns>
+		///   Whether a text range marked with specified marking ID was retrieved or not.
+		/// </returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">
 		///   Parameter <paramref name="index"/> is out of valid range.
 		///   - OR - Parameter <paramref name="markingID"/> is out of valid range.
@@ -1199,9 +1228,14 @@ namespace Sgry.Azuki
 		public bool GetMarkedRange( int index, int markingID, out int begin, out int end )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index",
+													   "Specified index is out of valid range."
+													   + " (index:" + index
+													   + ", Document.Length:" + Length + ")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+				throw new ArgumentException( "Specified marking ID is not registered."
+											 + " (markingID:" + markingID + ")",
+											 "markingID" );
 
 			uint markingBitMask;
 
@@ -1249,9 +1283,14 @@ namespace Sgry.Azuki
 		public string GetMarkedText( int index, int markingID )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index",
+													   "Specified index is out of valid range."
+													   + " (index:" + index + ", Document.Length:"
+													   + Length + ")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+				throw new ArgumentException( "Specified marking ID is not registered."
+											 + " (markingID:" + markingID + ")",
+											 "markingID" );
 
 			int begin, end;
 			bool found;
@@ -1288,9 +1327,14 @@ namespace Sgry.Azuki
 		public bool IsMarked( int index, int markingID )
 		{
 			if( index < 0 || _Buffer.Count <= index )
-				throw new ArgumentOutOfRangeException( "index", "Specified index is out of valid range. (index:"+index+", Document.Length:"+Length+")" );
+				throw new ArgumentOutOfRangeException( "index",
+													   "Specified index is out of valid range."
+													   + " (index:" + index
+													   + ", Document.Length:" + Length + ")" );
 			if( Marking.GetMarkingInfo(markingID) == null )
-				throw new ArgumentException( "Specified marking ID is not registered. (markingID:"+markingID+")", "markingID" );
+				throw new ArgumentException( "Specified marking ID is not registered."
+											 + " (markingID:" + markingID + ")",
+											 "markingID" );
 
 			uint markingBitMask = (uint)GetMarkingBitMaskAt( index );
 			return ( (markingBitMask >> markingID) & 0x01) != 0;
@@ -1396,6 +1440,11 @@ namespace Sgry.Azuki
 		{
 			get{ return _ViewParam.MarksUri; }
 			set{ _ViewParam.MarksUri = value; }
+		}
+
+		internal WatchPatternMarker WatchPatternMarker
+		{
+			get{ return _WatchPatternMarker; }
 		}
 		#endregion
 

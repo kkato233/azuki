@@ -78,6 +78,8 @@
     <Compile Include="Document\TextDataType.cs" />
     <Compile Include="Document\UriMarker.cs" />
     <Compile Include="Document\ViewParam.cs" />
+    <Compile Include="Document\WatchPattern.cs" />
+    <Compile Include="Document\WatchPatternMarker.cs" />
     <Compile Include="Highlighter\Coco\Buffer.cs" />
     <Compile Include="Highlighter\Coco\LatexParser.cs" />
     <Compile Include="Highlighter\Coco\LatexScanner.cs" />
@@ -111,9 +113,9 @@
     <Compile Include="WinForms\AzukiControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WinForms\WinFormsMouseEventArgs.cs" />
     <Compile Include="WinForms\PlatWin.cs" />
     <Compile Include="WinForms\WinApi.cs" />
+    <Compile Include="WinForms\WinFormsMouseEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Azuki.snk" />

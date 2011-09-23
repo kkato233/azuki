@@ -1292,6 +1292,7 @@ namespace Sgry.Azuki
 			doc.SelectionChanged += Doc_SelectionChanged;
 			doc.ContentChanged += Doc_ContentChanged;
 			doc.DirtyStateChanged += Doc_DirtyStateChanged;
+			_UI.LineDrawing += doc.WatchPatternMarker.UI_LineDrawing;
 		}
 
 		void UninstallDocumentEventHandlers( Document doc )
@@ -1300,6 +1301,7 @@ namespace Sgry.Azuki
 			doc.SelectionChanged -= Doc_SelectionChanged;
 			doc.ContentChanged -= Doc_ContentChanged;
 			doc.DirtyStateChanged -= Doc_DirtyStateChanged;
+			_UI.LineDrawing -= doc.WatchPatternMarker.UI_LineDrawing;
 		}
 
 		void Doc_SelectionChanged( object sender, SelectionChangedEventArgs e )
@@ -1327,11 +1329,12 @@ namespace Sgry.Azuki
 		{
 			Debug.Assert( _IsDisposed == false );
 
-			// delegate to URI marker object
+			// delegate to marker objects
 			if( _Document.MarksUri )
 			{
 				UriMarker.Inst.HandleContentChanged( this, e );
 			}
+			_Document.WatchPatternMarker.HandleContentChanged( this, e );
 
 			// delegate to view object
 			View.HandleContentChanged( sender, e );

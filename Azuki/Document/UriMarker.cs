@@ -92,6 +92,13 @@ namespace Sgry.Azuki
 		{
 			IUserInterface ui = (IUserInterface)sender;
 
+			// Even if the URI marking is disabled, scanning procedure must be done because
+			// characters marked as URI already must be unmarked after disabling URI marking.
+			/*DO_NOT -->
+			if( doc.MarksUri == false )
+				return;
+			<-- DO_NOT*/
+
 			// mark up all URIs in the logical line
 			int scrernLineHeadIndex = ui.View.GetLineHeadIndex( e.LineIndex );
 			int logicalLineIndex = ui.Document.GetLineIndexFromCharIndex( scrernLineHeadIndex );
@@ -144,17 +151,20 @@ namespace Sgry.Azuki
 						// clear marking before this URI part
 						if( lastMarkedIndex < seekIndex )
 						{
-							changeCount += doc.Unmark( lastMarkedIndex, seekIndex, Marking.Uri ) ? 1 : 0;
+							changeCount += doc.Unmark( lastMarkedIndex, seekIndex, Marking.Uri )
+										   ? 1 : 0;
 						}
 
 						// mark the URI part
 						if( marks )
 						{
-							changeCount += doc.Mark( seekIndex, uriEnd, Marking.Uri ) ? 1 : 0;
+							changeCount += doc.Mark( seekIndex, uriEnd, Marking.Uri )
+										   ? 1 : 0;
 						}
 						else
 						{
-							changeCount += doc.Unmark( seekIndex, uriEnd, Marking.Uri ) ? 1 : 0;
+							changeCount += doc.Unmark( seekIndex, uriEnd, Marking.Uri )
+										   ? 1 : 0;
 						}
 
 						// update seek position
@@ -175,7 +185,8 @@ namespace Sgry.Azuki
 			// clear marking of remaining characters
 			if( lastMarkedIndex < lineEnd )
 			{
-				changeCount += doc.Unmark( lastMarkedIndex, lineEnd, Marking.Uri ) ? 1 : 0;
+				changeCount += doc.Unmark( lastMarkedIndex, lineEnd, Marking.Uri )
+							   ? 1 : 0;
 			}
 
 			return (0 < changeCount);

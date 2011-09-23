@@ -63,6 +63,8 @@
     <Compile Include="Document\TextDataType.cs" />
     <Compile Include="Document\UriMarker.cs" />
     <Compile Include="Document\ViewParam.cs" />
+    <Compile Include="Document\WatchPattern.cs" />
+    <Compile Include="Document\WatchPatternMarker.cs" />
     <Compile Include="Highlighter\Coco\Buffer.cs" />
     <Compile Include="Highlighter\Coco\LatexParser.cs" />
     <Compile Include="Highlighter\Coco\LatexScanner.cs" />
@@ -84,13 +86,13 @@
     <Compile Include="Test\DefaultWordProcTest.cs" />
     <Compile Include="Test\DocumentTest.cs" />
     <Compile Include="Test\EditHistoryTest.cs" />
+    <Compile Include="Test\FixedBugsTest.cs" />
     <Compile Include="Test\KeywordHighlighterTest.cs" />
     <Compile Include="Test\LineLogicTest.cs" />
     <Compile Include="Test\RleArrayTest.cs" />
     <Compile Include="Test\SplitArrayTest.cs" />
     <Compile Include="Test\TestDriver.cs" />
     <Compile Include="Test\UriMarkerTest.cs" />
-    <Compile Include="Test\FixedBugsTest.cs" />
     <Compile Include="UiImpl.cs" />
     <Compile Include="UserPref.cs" />
     <Compile Include="View\ColorScheme.cs" />

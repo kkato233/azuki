@@ -211,7 +211,7 @@ namespace Sgry.Azuki
 				LineLogic.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, out begin, out end );
 				line = Document.GetTextInRange( begin, end );
 				if( end+1 < Document.Length
-					&& !LineLogic.IsEolChar(Document.GetTextInRange(end, end+1)[0]) )
+					&& !LineLogic.IsEolChar(Document[end]) )
 				{
 					isWrapLine = true;
 				}

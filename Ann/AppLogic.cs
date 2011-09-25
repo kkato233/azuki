@@ -1,19 +1,19 @@
-// 2011-09-23
+// 2011-09-25
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using Sgry.Azuki;
 using Sgry.Azuki.Highlighter;
 using Sgry.Azuki.WinForms;
 using Assembly = System.Reflection.Assembly;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
-using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 using Debug = System.Diagnostics.Debug;
+using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 using AzukiDocument = Sgry.Azuki.Document;
 
 namespace Sgry.Ann
@@ -66,9 +66,6 @@ namespace Sgry.Ann
 		public AppLogic( string initOpenFilePath )
 		{
 			_InitOpenFilePath = initOpenFilePath;
-			_MonitorThreadCanContinue = true;
-			_MonitorThread = new Thread( MonitorThreadProc );
-			_MonitorThread.Start();
 		}
 
 		~AppLogic()
@@ -122,6 +119,11 @@ namespace Sgry.Ann
 				_MainForm.Azuki.DoubleClick += Azuki_DoubleClick;
 				_MainForm.TabPanel.Items = Documents;
 				_MainForm.TabPanel.TabSelected += TabPanel_TabSelected;
+				_MainForm.Load += delegate {
+					_MonitorThreadCanContinue = true;
+					_MonitorThread = new Thread( MonitorThreadProc );
+					_MonitorThread.Start();
+				};
 				_SearchContext.PropertyChanged += delegate( object sender, PropertyChangedEventArgs e ) {
 					if( e.PropertyName == "PatternFixed"
 						&& _SearchContext.PatternFixed == true )

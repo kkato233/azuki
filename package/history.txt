@@ -15,6 +15,7 @@
  * fix: Now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
  * fix: In line-wrapping mode, horizontal ruler will be drawn as if it is a part of the dirt-bar when the first visible screen line is not the fisrt screen line of a logical line
  * fix: [Ann] Now text searching GUI only accepts the first line of the pasted text
+ * fix: [Ann] An exception occurs if two processes of Ann.exe were created in a very short duration
 
 == 1.6.3 (2011-  -  ) ==
  * fix: [Ann] Ann crashes if a file path which contains a wildcard (? or *) was specified as a command line parameter

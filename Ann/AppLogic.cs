@@ -12,6 +12,7 @@ using Sgry.Azuki.Highlighter;
 using Sgry.Azuki.WinForms;
 using Assembly = System.Reflection.Assembly;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
+using Color = System.Drawing.Color;
 using Debug = System.Diagnostics.Debug;
 using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 using AzukiDocument = Sgry.Azuki.Document;
@@ -128,7 +129,7 @@ namespace Sgry.Ann
 					if( e.PropertyName == "PatternFixed"
 						&& _SearchContext.PatternFixed == true )
 					{
-						MainForm.DeactivateSearchPanel();
+						OnSearchContextFixed();
 					}
 					else if( e.PropertyName == "MatchCase"
 						|| e.PropertyName == "Regex"
@@ -139,12 +140,18 @@ namespace Sgry.Ann
 					}
 				};
 
+				// register watching pattern for text search
+				Marking.Register( new MarkingInfo(0, "Text searching target") );
+				_MainForm.Azuki.ColorScheme.SetMarkingDecoration(
+						0, new OutlineTextDecoration( Color.Red )
+					);
+
 				// handle initially set document
 				Document doc = new Document();
 				AddDocument( doc );
 				ActiveDocument = doc;
 
-				// give find panel reference to find context object 
+				// give the search context object to text search UI
 				_MainForm.SearchPanel.SetContextRef( _SearchContext );
 			}
 		}
@@ -851,6 +858,30 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Text Search
+		public void UpdateWatchPatternForTextSearch()
+		{
+			if( _SearchContext.UseRegex )
+			{
+				ActiveDocument.SearchingPattern = _SearchContext.Regex;
+			}
+			else
+			{
+				ActiveDocument.SearchingPattern = new Regex(
+						Regex.Escape(_SearchContext.TextPattern),
+						_SearchContext.MatchCase ? RegexOptions.None : RegexOptions.IgnoreCase
+					);
+			}
+		}
+
+		void OnSearchContextFixed()
+		{
+			// set text pattern to emphasize
+			UpdateWatchPatternForTextSearch();
+
+			// deactivate search panel
+			MainForm.DeactivateSearchPanel();
+		}
+
 		void OnSearchContextChanged( bool forward )
 		{
 			if( _MainForm.SearchPanel.Enabled == false )

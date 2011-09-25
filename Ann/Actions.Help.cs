@@ -19,11 +19,11 @@ namespace Sgry.Ann
 			StringBuilder message = new StringBuilder( 256 );
 
 			// make message (getting total memory also invokes GC)
-			message.AppendFormat( null, "Total memory: {0} KB\n", GC.GetTotalMemory(true)/1024 );
+			message.AppendFormat( null, "Total memory: {0:#,#} Bytes\n", GC.GetTotalMemory(true) );
 			message.AppendFormat( null, "----\n" );
 			foreach( Document doc in app.Documents )
 			{
-				message.AppendFormat( null, "  {0}: {1} KB\n", doc.DisplayName, doc.MemoryUsage/1024 );
+				message.AppendFormat( null, "  {0}: {1:#,#} Bytes\n", doc.DisplayName, doc.MemoryUsage );
 			}
 
 			// show usage

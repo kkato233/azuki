@@ -7,6 +7,7 @@
  * add: Now 32 different marker IDs can be used at same time (in previous version, 8 marker IDs can be used at most)
  * add: Added IsSingleLineMode property to AzukiControl (IUserInterface) which determines whether to limit the content to a single line or not
  * add: Added ShowsVScrollBar property to AzukiControl to change visibility of vertical scroll bar
+ * add: [Ann] Text search targets in the document is now emphasized visually (after the search condition was fixed)
  * add: [Ann] When user selects text, Ann displays number of char/bytes currently selected on status-bar
  * add: [Ann] Ann opens all file paths which were given as command line arguments
  * mod: Rotating mouse wheel towards the user while pressing Ctrl key now means zoom-out (previously it meant zoom-in)

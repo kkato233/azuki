@@ -1,7 +1,7 @@
 ﻿// file: WatchPattern.cs
 // brief: Represents watching text pattern.
 // author: YAMAMOTO Suguru
-// update: 2011-09-23
+// update: 2011-09-25
 //=========================================================
 using System;
 using Regex = System.Text.RegularExpressions.Regex;
@@ -84,17 +84,12 @@ namespace Sgry.Azuki
 		/// <exception cref="System.ArgumentException">
 		///   Parameter '<paramref name="markingID"/>' is invalid or not registered.
 		/// </exception>
-		/// <exception cref="System.ArgumentNullException">
-		///   Parameter '<paramref name="patternToBeWatched"/>' is null.
-		/// </exception>
 		public WatchPattern( int markingID, Regex patternToBeWatched )
 		{
 			if( Marking.GetMarkingInfo(markingID) == null )
 				throw new ArgumentException( "Specified marking ID (" + markingID + ") is"
 											 + " not registered.",
 											 "markingID" );
-			if( patternToBeWatched == null )
-				throw new ArgumentNullException( "patternToBeWatched" );
 
 			MarkingID = markingID;
 			Pattern = patternToBeWatched;
@@ -113,7 +108,15 @@ namespace Sgry.Azuki
 
 		/// <summary>
 		/// The pattern to be watched and to be marked automatically.
+		/// (accepts null.)
 		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   This property gets or sets the pattern to be watched.
+		///   If the pattern is null or regular expression is an empty string,
+		///   Azuki simply ignores the watch pattern.
+		///   </para>
+		/// </remarks>
 		public Regex Pattern
 		{
 			get{ return _Pattern; }

@@ -1,8 +1,9 @@
-// 2010-03-05
+// 2011-09-25
 using System;
 using System.Text;
 using Sgry.Azuki;
 using Debug = System.Diagnostics.Debug;
+using Regex = System.Text.RegularExpressions.Regex;
 using Path = System.IO.Path;
 
 namespace Sgry.Ann
@@ -26,6 +27,7 @@ namespace Sgry.Ann
 		{
 			_FileType = FileType.TextFileType;
 			base.MarksUri = true;
+			base.WatchPatterns.Add( new WatchPattern(0, null) );
 		}
 		#endregion
 
@@ -114,6 +116,15 @@ namespace Sgry.Ann
 		{
 			get{ return _LastSavedTime; }
 			set{ _LastSavedTime = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets searching text pattern.
+		/// </summary>
+		public Regex SearchingPattern
+		{
+			get{ return base.WatchPatterns[0].Pattern; }
+			set{ base.WatchPatterns[0].Pattern = value; }
 		}
 		#endregion
 

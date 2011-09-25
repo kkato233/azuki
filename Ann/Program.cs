@@ -1,5 +1,6 @@
-// 2010-02-13
+// 2011-09-25
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ namespace Sgry.Ann
 		{
 			MyMutex mutex;
 			bool owned;
-			string initOpenFilePath = null;
+			List<string> initOpenFilePaths = new List<string>();
 
 			// get mutex object to control application instance
 			using( mutex = new MyMutex(true, AppLogic.AppInstanceMutexName) )
@@ -23,30 +24,30 @@ namespace Sgry.Ann
 				owned = mutex.WaitOne( 0 );
 
 				// parse arguments
-				if( 1 <= args.Length )
+				for( int i=0; i<args.Length; i++ )
 				{
-					initOpenFilePath = args[0];
+					initOpenFilePaths.Add( args[i] );
 				}
 
 				// if another instance already exists, activate it and exit
 				if( owned )
 				{
-					Main_LaunchFirstInstance( initOpenFilePath );
+					Main_LaunchFirstInstance( initOpenFilePaths.ToArray() );
 					mutex.ReleaseMutex();
 				}
 				else
 				{
-					Main_ActivateFirstInstance( initOpenFilePath );
+					Main_ActivateFirstInstance( initOpenFilePaths.ToArray() );
 				}
 			}
 		}
 
-		static void Main_LaunchFirstInstance( string initOpenFilePath )
+		static void Main_LaunchFirstInstance( string[] initOpenFilePaths )
 		{
 			AppLogic app;
 
 			// launch new application instance
-			using( app = new AppLogic(initOpenFilePath) )
+			using( app = new AppLogic(initOpenFilePaths) )
 			{
 				app.MainForm = new AnnForm( app );
 				app.LoadConfig();
@@ -58,7 +59,7 @@ namespace Sgry.Ann
 			}
 		}
 
-		static void Main_ActivateFirstInstance( string initOpenFilePath )
+		static void Main_ActivateFirstInstance( string[] initOpenFilePaths )
 		{
 			PseudoPipe pipe = new PseudoPipe();
 
@@ -67,9 +68,9 @@ namespace Sgry.Ann
 			{
 				pipe.Connect( AppLogic.IpcFilePath );
 				pipe.WriteLine( "Activate", 1000 );
-				if( initOpenFilePath != null )
+				foreach( string path in initOpenFilePaths )
 				{
-					pipe.WriteLine( "OpenDocument,"+initOpenFilePath, 1000 );
+					pipe.WriteLine( "OpenDocument," + path, 1000 );
 				}
 			}
 			catch

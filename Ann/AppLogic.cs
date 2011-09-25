@@ -53,7 +53,7 @@ namespace Sgry.Ann
 		List<Document> _DAD_Documents = new List<Document>(); // Don't Access Directly
 		Document _DAD_ActiveDocument = null; // Don't Access Directly
 		int _UntitledFileCount = 1;
-		string _InitOpenFilePath = null;
+		string[] _InitOpenFilePaths = null;
 		SearchContext _SearchContext = new SearchContext();
 		Thread _MonitorThread;
 		bool _MonitorThreadCanContinue;
@@ -63,9 +63,9 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Init / Dispose
-		public AppLogic( string initOpenFilePath )
+		public AppLogic( string[] initOpenFilePaths )
 		{
-			_InitOpenFilePath = initOpenFilePath;
+			_InitOpenFilePaths = initOpenFilePaths;
 		}
 
 		~AppLogic()
@@ -1043,19 +1043,25 @@ namespace Sgry.Ann
 		#region UI Event Handlers
 		void MainForm_Load( object sender, EventArgs e )
 		{
-			if( _InitOpenFilePath == null )
+			if( _InitOpenFilePaths == null || _InitOpenFilePaths.Length < 1 )
 				return;
 
 			Document prevActiveDoc;
 
-			// try to open initial document
+			// try to open the first file
 			prevActiveDoc = ActiveDocument;
-			OpenDocument( _InitOpenFilePath );
+			OpenDocument( _InitOpenFilePaths[0] );
 
 			// close default empty document if successfully opened
 			if( prevActiveDoc != ActiveDocument )
 			{
 				CloseDocument( prevActiveDoc );
+			}
+
+			// open second or later files
+			for( int i=1; i<_InitOpenFilePaths.Length; i++ )
+			{
+				OpenDocument( _InitOpenFilePaths[i] );
 			}
 		}
 

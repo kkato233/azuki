@@ -1,4 +1,4 @@
-== 1.7.0 (2011-  -  ) ==
+== 1.7.0 (2012-  -  ) ==
  * add: Speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
  * add: Improved performance of built-in highlighters (now they never scan characters beyond end of the range to be highlighted)
  * add: Added feature to watch for text patterns and mark them automatically with specified marking ID (text patterns can be specified with regular expression)
@@ -18,6 +18,7 @@
  * fix: In line-wrapping mode, horizontal ruler will be drawn as if it is a part of the dirt-bar when the first visible screen line is not the fisrt screen line of a logical line
  * fix: [Ann] Now text searching GUI only accepts the first line of the pasted text
  * fix: [Ann] An exception occurs if two processes of Ann.exe were created in a very short duration
+ * fix: [Ann] Now the area on a status bar which shows the number of selected characters will automatically adjust its width so that the content is always visible
 
 == 1.6.3 (2011-  -  ) ==
  * fix: [Ann] Ann crashes if a file path which contains a wildcard (? or *) was specified as a command line parameter

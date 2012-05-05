@@ -1,6 +1,6 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2011-05-04
+// update: 2012-05-05
 //=========================================================
 using System;
 using System.IO;
@@ -155,13 +155,13 @@ namespace Sgry
 	{
 		#region Fields
 		const long MaxLogFileSize = 8 * 1024 * 1024;
-		StringBuilder _Buffer = new StringBuilder( 4096 );
+		readonly StringBuilder _Buffer = new StringBuilder( 4096 );
 		bool _Realtime = true;
 		bool _WriteProcessID = false;
 		bool _WriteThreadID = false;
 		string _LogFilePath = null;
 		string _OldLogFilePath = null;
-		static StringBuilder _IndentStr = new StringBuilder( 8 );
+		readonly static StringBuilder _IndentStr = new StringBuilder( 8 );
 		bool _HeaderNotWritten = true;
 		TextWriter _SecondOutput = Console.Out;
 #		if !PocketPC
@@ -307,76 +307,81 @@ namespace Sgry
 		/// </summary>
 		public void Write( string format, params object[] p )
 		{
-			TextWriter writer = null;
-
 			lock( this )
 			{
-				try
+				Write_Impl( format, p );
+			}
+		}
+
+		void Write_Impl( string format, params object[] p )
+		{
+			TextWriter writer = null;
+
+			try
+			{
+				// write header
+				writer = new StringWriter( _Buffer );
+				if( _HeaderNotWritten )
 				{
-					// write header
-					writer = new StringWriter( _Buffer );
-					if( _HeaderNotWritten )
+					int pid;
+					int tid = 0;
+					DateTime now = DateTime.Now;
+					StringBuilder pidPart = new StringBuilder( 32 );
+
+					// append extra header info
+					if( _WriteProcessID )
 					{
-						int pid;
-						int tid = 0;
-						DateTime now = DateTime.Now;
-						StringBuilder pidPart = new StringBuilder( 32 );
-
-						// append extra header info
-						if( _WriteProcessID )
+						pid = Process.GetCurrentProcess().Id;
+						tid = Thread.CurrentThread.ManagedThreadId;
+						pidPart.Append( "[" + pid.ToString("X4") );
+						if( _WriteThreadID )
 						{
-							pid = Process.GetCurrentProcess().Id;
-							tid = Thread.CurrentThread.ManagedThreadId;
-							pidPart.Append( "[" + pid.ToString("X4") );
-							if( _WriteThreadID )
-							{
-								pidPart.Append( "," + tid.ToString("X2") );
-							}
-							pidPart.Append( "] " );
+							pidPart.Append( "," + tid.ToString("X2") );
 						}
-
-						writer.Write( now.ToString(LogDateHeader) );
-						writer.Write( pidPart.ToString() );
-						writer.Write( _IndentStr.ToString() );
-						if( SecondOutput != null )
-						{
-							SecondOutput.Write( now.ToString(LogDateHeader) );
-							SecondOutput.Write( pidPart.ToString() );
-							SecondOutput.Write( _IndentStr.ToString() );
-						}
-
-						_HeaderNotWritten = false;
+						pidPart.Append( "] " );
 					}
 
-					// write message
-					writer.Write( String.Format(format, p) );
+					writer.Write( now.ToString(LogDateHeader) );
+					writer.Write( pidPart.ToString() );
+					writer.Write( _IndentStr.ToString() );
 					if( SecondOutput != null )
 					{
-						SecondOutput.Write( String.Format(format, p) );
+						SecondOutput.Write( now.ToString(LogDateHeader) );
+						SecondOutput.Write( pidPart.ToString() );
+						SecondOutput.Write( _IndentStr.ToString() );
 					}
 
-					// flush
-					if( Realtime )
-					{
-						Flush();
-					}
+					_HeaderNotWritten = false;
 				}
-				catch( IOException )
-				{}
-				catch( UnauthorizedAccessException )
-				{}
-				catch( System.Security.SecurityException )
-				{}
-				catch( Exception ex )
+
+				// write message
+				writer.Write( String.Format(format, p) );
+				if( SecondOutput != null )
 				{
-					Debug.Fail( ex.ToString() );
+					SecondOutput.Write( String.Format(format, p) );
 				}
-				finally
+
+				// flush
+				if( Realtime )
 				{
-					if( writer != null )
-					{
-						writer.Close();
-					}
+					Flush();
+				}
+			}
+			catch( IOException )
+			{}
+			catch( UnauthorizedAccessException )
+			{}
+			catch( System.Security.SecurityException )
+			{}
+			catch( Exception ex )
+			{
+				Debug.Fail( ex.ToString() );
+			}
+			finally
+			{
+				if( writer != null )
+				{
+					writer.Close();
 				}
 			}
 		}
@@ -386,9 +391,12 @@ namespace Sgry
 		/// </summary>
 		public void WriteLine( string format, params object[] p )
 		{
-			Write( format, p );
-			Write( Console.Out.NewLine );
-			_HeaderNotWritten = true;
+			lock( this )
+			{
+				Write( format, p );
+				Write( Console.Out.NewLine );
+				_HeaderNotWritten = true;
+			}
 		}
 
 		/// <summary>
@@ -396,8 +404,11 @@ namespace Sgry
 		/// </summary>
 		public void WriteLineI( string format, params object[] p )
 		{
-			WriteLine( format, p );
-			Indent();
+			lock( this )
+			{
+				WriteLine( format, p );
+				Indent();
+			}
 		}
 
 		/// <summary>
@@ -405,8 +416,11 @@ namespace Sgry
 		/// </summary>
 		public void WriteLineU( string format, params object[] p )
 		{
-			Unindent();
-			WriteLine( format, p );
+			lock( this )
+			{
+				Unindent();
+				WriteLine( format, p );
+			}
 		}
 
 		/// <summary>
@@ -414,7 +428,10 @@ namespace Sgry
 		/// </summary>
 		public void Indent()
 		{
-			_IndentStr.Append( "  " );
+			lock( this )
+			{
+				_IndentStr.Append( "  " );
+			}
 		}
 
 		/// <summary>
@@ -422,7 +439,10 @@ namespace Sgry
 		/// </summary>
 		public void Unindent()
 		{
-			_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
+			lock( this )
+			{
+				_IndentStr.Length = Math.Max( 0, _IndentStr.Length - 2 );
+			}
 		}
 		#endregion
 	}

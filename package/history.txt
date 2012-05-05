@@ -14,6 +14,7 @@
  * mod: Removed meaningless Flags attribute from LineStyle enumeration
  * mod: Now calling Document.Mark and Document.Unmark for an empty range (beginning position equals to endding position) never causes an exception
  * mod: Changed value of the marking ID for built-in URI marker from 0 to 31
+ * fix: Now dragging selected text in a read-only document will do nothing to the document
  * fix: Now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
  * fix: In line-wrapping mode, horizontal ruler will be drawn as if it is a part of the dirt-bar when the first visible screen line is not the fisrt screen line of a logical line
  * fix: [Ann] Now text searching GUI only accepts the first line of the pasted text

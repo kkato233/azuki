@@ -1,7 +1,7 @@
 ﻿// file: UiImpl.cs
 // brief: User interface logic that independent from platform.
 // author: YAMAMOTO Suguru
-// update: 2011-09-23
+// update: 2012-05-05
 //=========================================================
 using System;
 using System.Text;
@@ -888,6 +888,13 @@ namespace Sgry.Azuki
 		{
 			int targetIndex;
 			Point pos = e.Location;
+
+			// do nothing if the document is read-only
+			if( Document.IsReadOnly )
+			{
+				Plat.Inst.MessageBeep();
+				return;
+			}
 
 			// calculate target position where the selected text is moved to
 			View.ScreenToVirtual( ref pos );

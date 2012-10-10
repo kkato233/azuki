@@ -5,7 +5,6 @@
  * add: XML ハイライターが CDATA セクションを解釈するように
  * add: AzukiControl.HighlightsMatchedBracket プロパティで対カッコのハイライト機能を無効化できるように
  * add: マーカーを 32 種類まで同時に使えるように拡張（以前は最大 8 種類）
- * add: Azuki の編集内容を一行だけに制限する IsSingleLineMode プロパティを AzukiControl (IUserInterface) に追加
  * add: 垂直スクロールバーの表示・非表示を決定する ShowsVScrollBar プロパティを AzukiControl に追加
  * add: [Ann] テキスト検索の対象を強調表示するように（検索条件確定後に強調表示）
  * add: [Ann] テキスト選択中に、選択している文字数・バイト数をステータスバーで表示するように
@@ -16,12 +15,13 @@
  * mod: 内蔵 URI マーカーが使う URI 用のマーキング ID の値を 0 から 31 に変更
  * fix: ReadOnly 状態でも選択済みテキストをドラッグすると編集できてしまう問題を修正
  * fix: 折り返しモードで水平ルーラーが DirtBar として描画されてしまう問題を修正（ウィンドウ最上に描画されているスクリーン行が、それを含む論理行のうち最初のスクリーン行でない場合のみ）
- * fix: [Ann] 検索文字列の入力欄に貼り付けされた文字列のうち最初の行だけを受け入れるよう改善
  * fix: [Ann] Annを二つ非常に短い間隔で起動すると例外が発生する問題を修正
  * fix: [Ann] 選択中の文字数が多くなるとステータスバー上の選択文字数表示が隠れてしまう問題を修正
 
 == 1.6.3 (2011-  -  ) ==
+ * add: Azuki の編集内容を一行だけに制限する IsSingleLineMode プロパティを AzukiControl (IUserInterface) に追加
  * fix: [Ann] コマンド引数にワイルドカード（?や*）を含むパスを指定すると例外が発生する問題を修正
+ * fix: [Ann] 検索文字列の入力欄に貼り付けされた文字列のうち最初の行だけを受け入れるよう改善
  * fix: 「mailto:」で始まる URI の後ろに二重引用符や「小なり記号」があっても URI マーキングが止まらない問題を修正
  * fix: 複数のフォームに AzukiControl を配置し、それらの Dispose メソッドを呼ばなかった場合にもアプリケーションが終了できるように改善
  * fix: ColorScheme.MatchedBracketBack を Color.Transparent に設定した場合、通常文字列用の背景色を対カッコのハイライト時使うように

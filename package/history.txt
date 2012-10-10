@@ -15,7 +15,6 @@
  * mod: Now calling Document.Mark and Document.Unmark for an empty range (beginning position equals to endding position) never causes an exception
  * mod: Changed value of the marking ID for built-in URI marker from 0 to 31
  * fix: Now dragging selected text in a read-only document will do nothing to the document
- * fix: Now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
  * fix: In line-wrapping mode, horizontal ruler will be drawn as if it is a part of the dirt-bar when the first visible screen line is not the fisrt screen line of a logical line
  * fix: [Ann] Now text searching GUI only accepts the first line of the pasted text
  * fix: [Ann] An exception occurs if two processes of Ann.exe were created in a very short duration
@@ -25,6 +24,7 @@
  * fix: [Ann] Ann crashes if a file path which contains a wildcard (? or *) was specified as a command line parameter
  * fix: URI marking does not stop before a quotation mark nor a 'less than' mark after a URI starting with "mailto:"
  * fix: Application never exits if AzukiControl instances are used in multiple forms and their Dispose method were not called explicitly
+ * fix: Now for background color of matched bracket, ColorScheme.BackColor will be used if ColorScheme.MatchedBracketBack is Color.Transparent
 
 == 1.6.2 (2011-04-02) ==
  * mod: Azuki uses 'Arrow' mouse cursor graphic when the cursor is on horizontal ruler area

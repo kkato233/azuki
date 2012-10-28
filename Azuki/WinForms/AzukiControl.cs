@@ -9,6 +9,7 @@ using System.Threading;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using WinFormsTimer = System.Windows.Forms.Timer;
 
 namespace Sgry.Azuki.WinForms
 {
@@ -71,6 +72,7 @@ namespace Sgry.Azuki.WinForms
 		GetIGraphicsProc _getIGraphicsProc = null;
 		InvalidateProc1 _invalidateProc1 = null;
 		InvalidateProc2 _invalidateProc2 = null;
+		WinFormsTimer _HighlighterDelayTimer;
 #		if !PocketPC
 		Action<MouseCursor> _SetCursorGraphicDelegate = null;
 #		endif
@@ -147,6 +149,11 @@ namespace Sgry.Azuki.WinForms
 			// remember that handle is associated
 			_IsHandleCreated = true;
 #			endif
+			_HighlighterDelayTimer = new WinFormsTimer();
+			_HighlighterDelayTimer.Tick += delegate {
+				_HighlighterDelayTimer.Enabled = false;
+				_Impl.ExecHighlighter();
+			};
 
 			// rewrite window procedure at first
 			RewriteWndProc();
@@ -2062,6 +2069,17 @@ namespace Sgry.Azuki.WinForms
 		{
 			get{ return _Impl.Highlighter; }
 			set{ _Impl.Highlighter = value; }
+		}
+
+		/// <summary>
+		/// (Internal use only.) Make a highlighter run after a little moment.
+		/// </summary>
+		public void RescheduleHighlighting()
+		{
+			// reset the timer to schedule of re-highlighting
+			_HighlighterDelayTimer.Enabled = false;
+			_HighlighterDelayTimer.Interval = UiImpl.HighlightDelay;
+			_HighlighterDelayTimer.Enabled = true;
 		}
 
 		/// <summary>

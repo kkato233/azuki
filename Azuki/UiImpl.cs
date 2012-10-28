@@ -23,11 +23,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public const int DefaultCaretWidth = 2;
 		const int MaxMatchedBracketSearchLength = 2048;
-#		if PocketPC
-		const int HighlightDelay = 500 * 10000; // 500[ms]
-#		else
-		const int HighlightDelay = 200 * 10000; // 200[ms]
-#		endif
+		internal const int HighlightDelay = 200; // 200[ms]
 		IUserInterface _UI;
 		View _View = null;
 		Document _Document = null;
@@ -48,9 +44,6 @@ namespace Sgry.Azuki
 		bool _MouseDragging = false;
 		bool _MouseDragEditing = false;
 		Timer _MouseDragEditDelayTimer = null;
-
-		Thread _HighlighterThread;
-		ManualResetEvent _HighlightEvent = new ManualResetEvent( false );
 		#endregion
 
 		#region Init / Dispose
@@ -60,34 +53,10 @@ namespace Sgry.Azuki
 			_View = new PropView( ui );
 
 			_UI.LineDrawing += UriMarker.Inst.UI_LineDrawing;
-
-			_HighlighterThread = new Thread( HighlighterThreadProc );
-			_HighlighterThread.Priority = ThreadPriority.BelowNormal;
-			_HighlighterThread.Start();
 		}
 
 		public void Dispose()
 		{
-			// dispose highlighter
-			if( _HighlighterThread != null )
-			{
-				_HighlighterThread.Abort();
-				bool timedOut = !( _HighlighterThread.Join(1000) );
-				if( timedOut )
-				{
-					_HighlighterThread.Abort();
-				}
-				_HighlighterThread = null;
-			}
-
-			// dispose event object
-			if( _HighlightEvent != null )
-			{
-				_HighlightEvent.Set();
-				_HighlightEvent.Close();
-				_HighlightEvent = null;
-			}
-
 			// uninstall document event handlers
 			if( Document != null )
 			{
@@ -605,104 +574,57 @@ namespace Sgry.Azuki
 			}
 		}
 
-		void HighlighterThreadProc()
+		internal void ExecHighlighter()
 		{
+			if( _UI.Document == null )
+				return;
+
 			int dirtyBegin, dirtyEnd;
-			Document doc;
-			ViewParam param;
+			Document doc = _UI.Document;
+			ViewParam param = doc.ViewParam;
 
-			while( _IsDisposed == false )
+			// do nothing unless the document needs to be highlighted
+			if( doc.ViewParam.H_IsInvalid == false )
 			{
-				// wait until next two conditions are satisfied:
-				// 1) thread was woken up to update highlighting
-				// 2) slight time span was elapsed after the last modification
-				while( _UI.Document == null
-					|| _UI.Document.ViewParam.H_IsInvalid == false
-					|| DateTime.Now.Ticks < _UI.Document.LastModifiedTime.Ticks + HighlightDelay )
-				{
-					_HighlightEvent.WaitOne( 30000, false );
-				}
-
-				// determine where to start and where to end highlighting
-				doc = _UI.Document;
-				param = doc.ViewParam;
-				lock( param )
-				{
-					// fit the range
-					dirtyBegin = param.H_InvalidRangeBegin;
-					if( dirtyBegin < 0 )
-					{
-						dirtyBegin = 0;
-					}
-					dirtyEnd = Math.Max( dirtyBegin, param.H_InvalidRangeEnd );
-					if( doc.Length < dirtyEnd )
-					{
-						dirtyEnd = doc.Length;
-					}
-					param.H_InvalidRangeBegin = Int32.MaxValue;
-					param.H_InvalidRangeEnd = Int32.MinValue;
-				}
-
-				// reset wait condition
-				_UI.Document.ViewParam.H_IsInvalid = false;
-				_HighlightEvent.Reset();
-
-				try
-				{
-					// if no highlighter was set to current active document, do nothing.
-					if( doc.Highlighter == null )
-					{
-						continue;
-					}
-
-					// highlight
-					Debug.Assert( 0 <= dirtyBegin );
-					Debug.Assert( dirtyBegin != Int32.MaxValue );
-					doc.Highlighter.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
-
-					// remember highlighted range of text
-					lock( param )
-					{
-						param.H_ValidRangeBegin = dirtyBegin;
-						param.H_ValidRangeEnd = dirtyEnd;
-						//DO_NOT//param.H_InvalidRangeBegin = something;
-						//DO_NOT//param.H_InvalidRangeEnd = something;
-					}
-
-					// then, refresh view
-					View.Invalidate( dirtyBegin, dirtyEnd );
-				}
-				catch( Exception ex )
-				{
-					// exit if the exception is ThreadAbortException
-					if( ex is ThreadAbortException )
-					{
-						break;
-					}
-
-					//DEBUG//DebugUtl.Log.WriteLine( "[thread] ex:[{0}]", ex );
-
-					// For example, contents could be shorten during highlighting
-					// because Azuki does not lock buffers for thread safety.
-					// It is very hard to take care of such cases in highlighters (including user-made ones)
-					// so here I trap any exception except ThreadAbortException
-					// and invalidate whole view in that case.
-					if( View != null )
-					{
-						View.Invalidate();
-					}
-
-					// (reset dirty range to stop infinite loop)
-					if( _UI.Document != null )
-					{
-						lock( _UI.Document.ViewParam )
-						{
-							_UI.Document.ViewParam.H_InvalidRangeBegin = Int32.MaxValue;
-							_UI.Document.ViewParam.H_InvalidRangeEnd = Int32.MinValue;
-						}
-					}
-				}
+				return;
 			}
+
+			// determine where to start and where to end highlighting
+			dirtyBegin = param.H_InvalidRangeBegin;
+			if( dirtyBegin < 0 )
+			{
+				dirtyBegin = 0;
+			}
+			dirtyEnd = Math.Max( dirtyBegin, param.H_InvalidRangeEnd );
+			if( doc.Length < dirtyEnd )
+			{
+				dirtyEnd = doc.Length;
+			}
+
+			// clear the invalid range
+			param.H_InvalidRangeBegin = Int32.MaxValue;
+			param.H_InvalidRangeEnd = Int32.MinValue;
+			param.H_IsInvalid = false;
+
+			// do nothing if no highlighter was set to the active document
+			if( doc.Highlighter == null )
+			{
+				return;
+			}
+
+			// highlight
+			Debug.Assert( 0 <= dirtyBegin );
+			Debug.Assert( dirtyBegin != Int32.MaxValue );
+			doc.Highlighter.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
+
+			// remember highlighted range of text
+			param.H_ValidRangeBegin = dirtyBegin;
+			param.H_ValidRangeEnd = dirtyEnd;
+			//DO_NOT//param.H_InvalidRangeBegin = something;
+			//DO_NOT//param.H_InvalidRangeEnd = something;
+
+			// then, refresh view
+			View.Invalidate( dirtyBegin, dirtyEnd );
 		}
 		#endregion
 
@@ -830,19 +752,16 @@ namespace Sgry.Azuki
 			{
 				ViewParam param = Document.ViewParam;
 				int end = GetIndexOfLastVisibleCharacter();
-				lock( param )
+				if( param.H_ValidRangeEnd < end )
 				{
-					if( param.H_ValidRangeEnd < end )
+					if( param.H_InvalidRangeBegin < 0
+						|| param.H_ValidRangeEnd < param.H_InvalidRangeBegin )
 					{
-						if( param.H_InvalidRangeBegin < 0
-							|| param.H_ValidRangeEnd < param.H_InvalidRangeBegin )
-						{
-							param.H_InvalidRangeBegin = param.H_ValidRangeEnd;
-						}
-						param.H_InvalidRangeEnd = Math.Max( param.H_InvalidRangeEnd, end );
-						param.H_IsInvalid = true;
-						_HighlightEvent.Set();
+						param.H_InvalidRangeBegin = param.H_ValidRangeEnd;
 					}
+					param.H_InvalidRangeEnd = Math.Max( param.H_InvalidRangeEnd, end );
+					param.H_IsInvalid = true;
+					_UI.RescheduleHighlighting();
 				}
 			}
 		}
@@ -1387,28 +1306,25 @@ namespace Sgry.Azuki
 
 			// update range of text which should be highlighted
 			ViewParam param = Document.ViewParam;
-			lock( param )
+			if( e.Index < param.H_InvalidRangeBegin )
 			{
-				if( e.Index < param.H_InvalidRangeBegin )
-				{
-					param.H_InvalidRangeBegin = e.Index;
-				}
-				if( param.H_InvalidRangeEnd < e.Index + e.NewText.Length )
-				{
-					param.H_InvalidRangeEnd = e.Index + e.NewText.Length;
-				}
-				param.H_IsInvalid = true;
+				param.H_InvalidRangeBegin = e.Index;
+			}
+			if( param.H_InvalidRangeEnd < e.Index + e.NewText.Length )
+			{
+				param.H_InvalidRangeEnd = e.Index + e.NewText.Length;
+			}
+			param.H_IsInvalid = true;
 
-				// update range of text which should NOT be highlighted until this document was modified
-				param.H_ValidRangeEnd = e.Index;
-				if( param.H_ValidRangeEnd <= param.H_ValidRangeBegin )
-				{
-					param.H_ValidRangeBegin = param.H_ValidRangeEnd;
-				}
+			// update range of text which should NOT be highlighted until this document was modified
+			param.H_ValidRangeEnd = e.Index;
+			if( param.H_ValidRangeEnd <= param.H_ValidRangeBegin )
+			{
+				param.H_ValidRangeBegin = param.H_ValidRangeEnd;
 			}
 
-			// resume highlighter thread
-			_HighlightEvent.Set();
+			// start (reset) the timer to run a highlighter after a moment
+			_UI.RescheduleHighlighting();
 		}
 
 		public void Doc_DirtyStateChanged( object sender, EventArgs e )

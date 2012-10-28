@@ -1,7 +1,5 @@
 // file: IUserInterface.cs
 // brief: interface of user interface module (platform dependent)
-// author: YAMAMOTO Suguru
-// update: 2011-07-31
 //=========================================================
 using System;
 using System.Drawing;
@@ -688,6 +686,11 @@ namespace Sgry.Azuki
 		{
 			get; set;
 		}
+
+		/// <summary>
+		/// (Internal use only.) Make a highlighter run after a little moment.
+		/// </summary>
+		void RescheduleHighlighting();
 
 		/// <summary>
 		/// Gets this component is focused by user or not.

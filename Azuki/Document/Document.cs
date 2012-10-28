@@ -32,7 +32,7 @@ namespace Sgry.Azuki
 		SelectionManager _SelMan;
 		bool _IsRecordingHistory = true;
 		bool _IsSuppressingDirtyStateChangedEvent = false;
-		List<WatchPattern> _WatchPatterns = new List<WatchPattern>();
+		WatchPatternSet _WatchPatterns = new WatchPatternSet();
 		WatchPatternMarker _WatchPatternMarker;
 		string _EolCode = "\r\n";
 		bool _IsReadOnly = false;
@@ -267,7 +267,8 @@ namespace Sgry.Azuki
 		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.WatchPattern">WatchPattern class</seealso>
-		public IList<WatchPattern> WatchPatterns
+		/// <seealso cref="Sgry.Azuki.WatchPatternSet">WatchPatternSet class</seealso>
+		public WatchPatternSet WatchPatterns
 		{
 			get{ return _WatchPatterns; }
 		}

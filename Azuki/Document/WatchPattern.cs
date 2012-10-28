@@ -1,13 +1,96 @@
 ﻿// file: WatchPattern.cs
 // brief: Represents watching text pattern.
-// author: YAMAMOTO Suguru
-// update: 2011-09-25
 //=========================================================
 using System;
+using System.Collections.Generic;
 using Regex = System.Text.RegularExpressions.Regex;
 
 namespace Sgry.Azuki
 {
+	/// <summary>
+	/// Set of WatchPattern objects.
+	/// </summary>
+	public class WatchPatternSet : IEnumerable<WatchPattern>
+	{
+		List<WatchPattern> _Patterns = new List<WatchPattern>();
+
+		/// <summary>
+		/// Registers a text pattern to be watched and automatically marked.
+		/// </summary>
+		/// <param name="pattern">The pattern of the text to be watched and automatically marked.</param>
+		/// <exception cref="System.ArgumentNullException">The argument 'pattern' was null.</exception>
+		/// <seealso cref="Sgry.Azuki.WatchPatternSet.Unregister">Unregister method</seealso>
+		public void Register( WatchPattern pattern )
+		{
+			if( pattern == null )
+				throw new ArgumentNullException( "pattern" );
+
+			// if the ID was already registered, overwrite it
+			for( int i=0; i<_Patterns.Count; i++ )
+			{
+				if( _Patterns[i].MarkingID == pattern.MarkingID )
+				{
+					_Patterns[i] = pattern;
+					return;
+				}
+			}
+
+			// otherwise, add the pattern
+			if( pattern.Pattern != null )
+			{
+				_Patterns.Add( pattern );
+			}
+		}
+
+		/// <summary>
+		/// Unregister a watch-pattern by markingID.
+		/// </summary>
+		public void Unregister( int markingID )
+		{
+			// if the ID was already registered, overwrite it
+			for( int i=0; i<_Patterns.Count; i++ )
+			{
+				if( _Patterns[i].MarkingID == markingID )
+				{
+					_Patterns.RemoveAt( i );
+					return;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a watch-pattern by marking ID.
+		/// </summary>
+		public WatchPattern Get( int markingID )
+		{
+			// if the ID was already registered, overwrite it
+			for( int i=0; i<_Patterns.Count; i++ )
+			{
+				if( _Patterns[i].MarkingID == markingID )
+				{
+					return _Patterns[ i ];
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Gets the enumerator that iterates through the WatchPatternSet.
+		/// </summary>
+		public IEnumerator<WatchPattern> GetEnumerator()
+		{
+			return _Patterns.GetEnumerator();
+		}
+
+		/// <summary>
+		/// Gets the enumerator that iterates through the WatchPatternSet.
+		/// </summary>
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return _Patterns.GetEnumerator();
+		}
+	}
+
 	/// <summary>
 	/// Text pattern to be watched and marked automatically.
 	/// </summary>
@@ -22,41 +105,35 @@ namespace Sgry.Azuki
 	///   <para>
 	///   Most typical usage of this feature is emphasizing visually text patterns
 	///   which the user is currently searching for.
-	///   Another usage is emphasizing already known keywords
-	///   such as 'ERROR' or 'FATAL' in application displyaing its or other application's log data.
+	///   Another possible usage is emphasizing patterns which the user is interested in.
 	///   </para>
 	/// </remarks>
 	/// <example>
 	///   <para>
-	///   Next code registers two text patterns to emphasize some keywords.
-	///   First pattern is "ERROR" and they are marked with ID 1.
-	///   Second pattern is "WARN" or "WARNING" and they will be marked with ID 2.
+	///   Next example code illustrates how to use WatchPattern
+	///   to emphasize text search results in a document.
 	///   </para>
 	///   <code lang="C#">
 	///   //--- somewhere initializing Azuki ---
 	///   // Variable 'azuki' is IUserInterface (AzukiControl) here.
 	///   
-	///   // Register marking ID and its visual decoration for warning log headers
-	///   Marking.Register( new MarkingInfo(1, "Warning") );
+	///   // Register marking ID and its visual decoration for search results
+	///   Marking.Register( new MarkingInfo(30, "Text search result.") );
 	///   azuki.ColorScheme.SetMarkingDecoration(
-	///           1, new OutlineTextDecoration( Color.Orange )
+	///           30, new BgColorTextDecoration( Color.Yellow )
 	///       );
 	///   
-	///   // Register marking ID and its visual decoration for error log headers
-	///   Marking.Register( new MarkingInfo(2, "Error") );
-	///   azuki.ColorScheme.SetMarkingDecoration(
-	///           2, new OutlineTextDecoration( Color.Red )
-	///       );
+	///   //--- somewhere after text search was started ---
+	///   // Variable 'doc' is an object of Document here
+	///   // Show a dialog to let user input the pattern to search
+	///   Regex pattern;
+	///   DialogResult result = ShowFindDialog( out pattern );
+	///   if( result != DialogResult.OK )
+	///       return;
 	///   
-	///   //--- somewhere initializing document ---
-	///   // Variable 'doc' is an object of Document here.
-	///   
-	///   // Register text patterns to be watched
-	///   doc.WatchPatterns.Add(
-	///           new WatchPattern( 1, new Regex(@"ERROR") )
-	///       );
-	///   doc.WatchPatterns.Add(
-	///           new WatchPattern( 2, new Regex(@"WARN(ING)?") )
+	///   // Update the text patterns to be watched
+	///   doc.WatchPatterns.Register(
+	///           new WatchPattern( 30, pattern )
 	///       );
 	///   </code>
 	/// </example>

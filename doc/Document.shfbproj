@@ -33,7 +33,7 @@
     </SandcastlePath>
     <WorkingPath>
     </WorkingPath>
-    <CleanIntermediates>False</CleanIntermediates>
+    <CleanIntermediates>True</CleanIntermediates>
     <KeepLogFile>False</KeepLogFile>
     <BuildLogFile>
     </BuildLogFile>

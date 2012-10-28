@@ -1,7 +1,5 @@
 // file: View.Paint.cs
 // brief: Common painting logic
-// author: YAMAMOTO Suguru
-// update: 2011-09-11
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -54,6 +52,20 @@ namespace Sgry.Azuki
 			g.BackColor = backColor;
 			markingBitMask = doc.GetMarkingBitMaskAt( tokenIndex );
 			decorations = ColorScheme.GetMarkingDecorations( markingBitMask );
+
+			// overwrite bg color if this token was decorated with solid background decoration
+			if( inSelection == false )
+			{
+				foreach( TextDecoration decoration in decorations )
+				{
+					if( decoration is BgColorTextDecoration )
+					{
+						g.BackColor
+							= backColor
+							= ((BgColorTextDecoration)decoration).BackgroundColor;
+					}
+				}
+			}
 
 			//--- draw graphic ---
 			// space

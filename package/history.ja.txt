@@ -4,6 +4,7 @@
  * add: 指定された特定のテキストパターンを監視し、描画と同時に自動的にマークする機能を追加（テキストパターンは正規表現で指定可能）
  * add: XML ハイライターが CDATA セクションを解釈するように
  * add: AzukiControl.HighlightsMatchedBracket プロパティで対カッコのハイライト機能を無効化できるように
+ * add: 背景描画色を変更する BgColorTextDecoration （マーカー機能用）を追加
  * add: マーカーを 32 種類まで同時に使えるように拡張（以前は最大 8 種類）
  * add: 垂直スクロールバーの表示・非表示を決定する ShowsVScrollBar プロパティを AzukiControl に追加
  * add: [Ann] テキスト検索の対象を強調表示するように（検索条件確定後に強調表示）

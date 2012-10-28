@@ -1,7 +1,5 @@
 ﻿// file: TextDecoration.cs
 // brief: Text decoration classes.
-// author: YAMAMOTO Suguru
-// update: 2011-09-23
 //=========================================================
 using System;
 using System.Drawing;
@@ -36,6 +34,32 @@ namespace Sgry.Azuki
 				}
 				return _None;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Represents how text should be decorated with special background color.
+	/// </summary>
+	public class BgColorTextDecoration : TextDecoration
+	{
+		Color bgColor;
+
+		#region Init / Dispose
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		public BgColorTextDecoration( Color backgroundColor )
+		{
+			bgColor = backgroundColor;
+		}
+		#endregion
+
+		/// <summary>
+		/// Gets the background color of decorated tokens.
+		/// </summary>
+		public Color BackgroundColor
+		{
+			get{ return bgColor; }
 		}
 	}
 

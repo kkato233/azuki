@@ -1,4 +1,3 @@
-// 2011-09-25
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -143,7 +142,7 @@ namespace Sgry.Ann
 				// register watching pattern for text search
 				Marking.Register( new MarkingInfo(0, "Text searching target") );
 				_MainForm.Azuki.ColorScheme.SetMarkingDecoration(
-						0, new OutlineTextDecoration( Color.Red )
+						0, new BgColorTextDecoration( Color.Yellow )
 					);
 
 				// handle initially set document

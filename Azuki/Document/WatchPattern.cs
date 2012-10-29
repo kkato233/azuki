@@ -10,6 +10,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Set of WatchPattern objects.
 	/// </summary>
+	/// <see cref="Sgry.Azuki.WatchPattern">WatchPattern class</see>
 	public class WatchPatternSet : IEnumerable<WatchPattern>
 	{
 		List<WatchPattern> _Patterns = new List<WatchPattern>();
@@ -103,9 +104,8 @@ namespace Sgry.Azuki
 	///   so that such patterns will be able to distinguished visually and logically too.
 	///   </para>
 	///   <para>
-	///   Most typical usage of this feature is emphasizing visually text patterns
-	///   which the user is currently searching for.
-	///   Another possible usage is emphasizing patterns which the user is interested in.
+	///   Most typical usage of this feature is emphasizing text patterns
+	///   visually which the user is currently searching for.
 	///   </para>
 	/// </remarks>
 	/// <example>
@@ -113,18 +113,24 @@ namespace Sgry.Azuki
 	///   Next example code illustrates how to use WatchPattern
 	///   to emphasize text search results in a document.
 	///   </para>
+	///   <para>
+	///   Firstly of all, register how the matched patterns should be
+	///   decorated in initialization part.
+	///   </para>
 	///   <code lang="C#">
-	///   //--- somewhere initializing Azuki ---
-	///   // Variable 'azuki' is IUserInterface (AzukiControl) here.
-	///   
-	///   // Register marking ID and its visual decoration for search results
-	///   Marking.Register( new MarkingInfo(30, "Text search result.") );
-	///   azuki.ColorScheme.SetMarkingDecoration(
+	///   // Use yellow background for the text pattern
+	///   // which matched to the text search criteria
+	///   // (using marking ID 30.)
+	///   Marking.Register( new MarkingInfo(30, "Search result") );
+	///   azukiControl.ColorScheme.SetMarkingDecoration(
 	///           30, new BgColorTextDecoration( Color.Yellow )
 	///       );
-	///   
-	///   //--- somewhere after text search was started ---
-	///   // Variable 'doc' is an object of Document here
+	///   </code>
+	///   <para>
+	///   Secondly, update the WatchPattern every time the search criteria
+	///   was changed.
+	///   </para>
+	///   <code lang="C#">
 	///   // Show a dialog to let user input the pattern to search
 	///   Regex pattern;
 	///   DialogResult result = ShowFindDialog( out pattern );

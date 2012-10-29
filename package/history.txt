@@ -1,4 +1,4 @@
-== 1.7.0 (2012-  -  ) ==
+== 1.7.0 (2012-10-29) ==
  * add: Speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
  * add: Improved performance of built-in highlighters (now they never scan characters beyond end of the range to be highlighted)
  * add: Added feature to watch for text patterns and mark them automatically with specified marking ID (text patterns can be specified with regular expression)

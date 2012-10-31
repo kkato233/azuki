@@ -1,5 +1,4 @@
-﻿// 2011-07-31
-#if TEST
+﻿#if TEST
 using System;
 
 namespace Sgry.Azuki.Test
@@ -14,16 +13,16 @@ namespace Sgry.Azuki.Test
 			int testNum = 0;
 			Console.WriteLine( "[Test for Azuki.KeywordHighlighter]" );
 
-			// around keywords
 			Console.WriteLine("test {0} - Keywords", testNum++);
 			TestUtl.Do( Test_Keywords );
 
-			// around line-comment
-			Console.WriteLine("test {0} - Line-Comment", testNum++);
+			Console.WriteLine("test {0} - Line highlight", testNum++);
 			TestUtl.Do( Test_LineComment );
 
-			// word character
-			Console.WriteLine("test {0} - Word Character", testNum++);
+			Console.WriteLine("test {0} - Enclosure", testNum++);
+			TestUtl.Do( Test_Enclosure );
+
+			Console.WriteLine("test {0} - Word character", testNum++);
 			TestUtl.Do( Test_WordChar );
 
 			Console.WriteLine( "done." );
@@ -66,6 +65,109 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(i) );
 			for( ; i<37; i++ )
 				TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(i) );
+		}
+
+		static void Test_Enclosure()
+		{
+			Document doc = new Document();
+			KeywordHighlighter h = new KeywordHighlighter();
+			h.AddEnclosure( "\"", "\"", CharClass.String, false, '\\' );
+			h.AddEnclosure( "/*", "*/", CharClass.Comment, true );
+			doc.Highlighter = h;
+			//---------------------------------------------
+
+			doc.Text = @"""";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(0) );
+
+			doc.Text = @"a""";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(1) );
+
+			doc.Text = @"a""b";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(2) );
+
+			doc.Text = @"a""b""";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(3) );
+
+			doc.Text = @"a""b""c";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(3) );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(4) );
+
+			doc.Text = @"a""b\""c";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(3) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(4) );
+			TestUtl.AssertEquals( CharClass.String, doc.GetCharClass(5) );
+
+			doc.Text = @"/";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+
+			doc.Text = @"/*";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+
+			doc.Text = @"/**";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(2) );
+
+			doc.Text = @"/**a";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(3) );
+
+			doc.Text = @"/*a*";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(3) );
+
+			doc.Text = @"/**/";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(3) );
+
+			doc.Text = @"/*a*/";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(3) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(4) );
+
+			doc.Text = @"a/*a*/a";
+			h.Highlight( doc );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(1) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(2) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(3) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(4) );
+			TestUtl.AssertEquals( CharClass.Comment, doc.GetCharClass(5) );
+			TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(6) );
 		}
 
 		static void Test_Keywords()

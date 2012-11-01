@@ -1,3 +1,6 @@
+== 1.7.1 (2012-xx-xx) ==
+ * fix: [Ann] Ann recognizes a file without an extension as a LaTeX file.
+
 == 1.7.0 (2012-10-29) ==
  * add: Speeded up highlighting logic (optimized delay time, and optimized text range to highlight)
  * add: Improved performance of built-in highlighters (now they never scan characters beyond end of the range to be highlighted)

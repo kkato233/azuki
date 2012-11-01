@@ -1,4 +1,3 @@
-// 2010-04-18
 using System;
 using Sgry.Azuki;
 using Path = System.IO.Path;
@@ -136,6 +135,10 @@ namespace Sgry.Ann
 			string extList;
 
 			ext = Path.GetExtension( fileName );
+			if( ext == String.Empty )
+			{
+				return TextFileType;
+			}
 
 			// LaTeX?
 			extList = AppConfig.Ini.Get( "LatexFileType", "Extensions", "" );

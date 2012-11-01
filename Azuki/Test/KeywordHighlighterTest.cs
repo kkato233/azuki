@@ -25,6 +25,9 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine("test {0} - Word character", testNum++);
 			TestUtl.Do( Test_WordChar );
 
+			Console.WriteLine("test {0} - Hook", testNum++);
+			TestUtl.Do( Test_Hook );
+
 			Console.WriteLine( "done." );
 			Console.WriteLine();
 		}
@@ -366,6 +369,38 @@ ho//ge";
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(17) );	// SELECT ABC-SELECT <--
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(23) );	// SELECT ABC-SELECT SELECT<--
 				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(26) );	// SELECT ABC-SELECT SELECT-ABC<--
+			}
+		}
+
+		static void Test_Hook()
+		{
+			Document doc = new Document();
+			KeywordHighlighter h;
+
+			//---------------------------------------------
+			h = new KeywordHighlighter();
+			{
+				h.AddKeywordSet( new string[]{"int"}, CharClass.Keyword );
+				doc.Highlighter = h;
+
+				doc.Text = @"int x";
+				h.Highlight( doc );
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(0) );
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(1) );
+				TestUtl.AssertEquals( CharClass.Keyword, doc.GetCharClass(2) );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(3) );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(4) );
+
+				h.HookProc = delegate( Document d, string token, int index, CharClass klass ) {
+					return (token == "int");
+				};
+				doc.Text = @"int x";
+				h.Highlight( doc );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(0) );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(1) );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(2) );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(3) );
+				TestUtl.AssertEquals( CharClass.Normal, doc.GetCharClass(4) );
 			}
 		}
 	}

@@ -1,11 +1,10 @@
 ﻿// file: KeywordHighlighter.cs
 // brief: Keyword based highlighter.
-// author: YAMAMOTO Suguru
-// update: 2011-07-10
 //=========================================================
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki.Highlighter
 {
@@ -321,9 +320,10 @@ namespace Sgry.Azuki.Highlighter
 			for( int i=0; i<keywords.Length-1; i++ )
 				if( 0 <= keywords[i].CompareTo(keywords[i+1]) )
 					throw new ArgumentException(
-						String.Format("keywords must be sorted alphabetically; '{0}' is expected to be greater than '{1}' but not greater.", keywords[i+1], keywords[i]),
-						"value"
-					);
+						String.Format( "Keywords must be sorted alphabetically;"
+									   + " '{0}' is expected to be greater than"
+									   + " '{1}' but not greater.",
+									   keywords[i+1], keywords[i]), "value" );
 #			endif
 
 			// parse and generate keyword tree
@@ -494,7 +494,7 @@ namespace Sgry.Azuki.Highlighter
 			bool highlighted;
 
 			// determine where to start highlighting
-			index = HighlighterUtl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
+			index = Utl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
 			if( 0 <= index )
 			{
 				dirtyBegin = _ReparsePoints[index];
@@ -505,7 +505,7 @@ namespace Sgry.Azuki.Highlighter
 			}
 
 			// determine where to end highlighting
-			int x = HighlighterUtl.ReparsePointMinimumDistance;
+			int x = Utl.ReparsePointMinimumDistance;
 			dirtyEnd += x - (dirtyEnd % x); // next multiple of x
 			if( doc.Length < dirtyEnd )
 			{
@@ -524,27 +524,27 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight line-comment if this token starts one
-				nextIndex = TryHighlightLineComment( doc, _LineHighlights, index, dirtyEnd );
+				Utl.TryHighlight( doc, _LineHighlights, index, dirtyEnd, _HookProc, out nextIndex );
 				if( index < nextIndex )
 				{
 					// successfully highlighted. skip to next.
-					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+					Utl.EntryReparsePoint( _ReparsePoints, index );
 					index = nextIndex;
 					continue;
 				}
 
 				// highlight enclosing part if this token begins a part
-				nextIndex = TryHighlightEnclosure( doc, _Enclosures, index, dirtyEnd );
+				Utl.TryHighlight( doc, _Enclosures, index, dirtyEnd, _HookProc, out nextIndex );
 				if( index < nextIndex )
 				{
 					// successfully highlighted. skip to next.
-					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+					Utl.EntryReparsePoint( _ReparsePoints, index );
 					index = nextIndex;
 					continue;
 				}
 
 				// highlight keyword if this token is a keyword
-				highlighted = TryHighlightKeyword( doc, _Keywords, _WordCharSet, index, dirtyEnd, out nextIndex );
+				highlighted = TryHighlight( doc, _Keywords, _WordCharSet, index, dirtyEnd, out nextIndex );
 				if( highlighted )
 				{
 					index = nextIndex;
@@ -552,16 +552,16 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight digit as number
-				nextIndex = HighlighterUtl.TryHighlightNumberToken( doc, index, dirtyEnd );
+				nextIndex = Utl.TryHighlightNumberToken( doc, index, dirtyEnd, _HookProc );
 				if( index < nextIndex )
 				{
 					index = nextIndex;
 					continue;
 				}
-				
+
 				// this token is normal class; reset classes and seek to next token
-				nextIndex = HighlighterUtl.FindNextToken( doc, index, _WordCharSet );
-				Highlight( doc, index, nextIndex, CharClass.Normal );
+				nextIndex = Utl.FindNextToken( doc, index, _WordCharSet );
+				Utl.Highlight( doc, index, nextIndex, CharClass.Normal, _HookProc );
 				index = nextIndex;
 			}
 
@@ -573,78 +573,16 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Highlight part between a enclosing pair registered.
-		/// </summary>
-		/// <returns>Index of next parse point if a pair was highlighted or startIndex</returns>
-		int TryHighlightEnclosure( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
-		{
-			Enclosure pair;
-			int closePos;
-
-			// get pair which begins from this position
-			pair = HighlighterUtl.StartsWith( doc, pairs, startIndex );
-			if( pair == null )
-			{
-				return startIndex; // no pair begins from here.
-			}
-
-			// find closing pair
-			closePos = HighlighterUtl.FindCloser( doc, pair, startIndex+pair.opener.Length, endIndex );
-			if( closePos == -1 )
-			{
-				// not found.
-				// if this is an opener without closer, highlight
-				if( endIndex == doc.Length )
-				{
-					Highlight( doc, startIndex, doc.Length, pair.klass );
-					return doc.Length;
-				}
-				else
-				{
-					return startIndex;
-				}
-			}
-
-			// highlight enclosed part
-			Highlight( doc, startIndex, closePos + pair.closer.Length, pair.klass );
-			return closePos + pair.closer.Length;
-		}
-
-		/// <summary>
-		/// Highlight line comment.
-		/// </summary>
-		/// <returns>Index of next parse point if highlight succeeded or startIndex</returns>
-		int TryHighlightLineComment( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
-		{
-			int closePos;
-			Enclosure pair;
-
-			// get line comment opener
-			pair = HighlighterUtl.StartsWith( doc, pairs, startIndex );
-			if( pair == null )
-			{
-				return startIndex; // no line-comment begins from here.
-			}
-
-			// get line-end pos
-			closePos = HighlighterUtl.GetLineEndIndexFromCharIndex( doc, startIndex );
-
-			// highlight the line
-			Highlight( doc, startIndex, closePos, pair.klass );
-			return closePos;
-		}
-
-		/// <summary>
 		/// Do keyword matching in [startIndex, endIndex) through keyword char-tree.
 		/// </summary>
-		bool TryHighlightKeyword( Document doc, List<KeywordSet> keywords, string wordCharSet, int startIndex, int endIndex, out int nextSeekIndex )
+		bool TryHighlight( Document doc, List<KeywordSet> keywords, string wordCharSet, int startIndex, int endIndex, out int nextSeekIndex )
 		{
 			bool highlighted = false;
 
 			nextSeekIndex = startIndex;
 			foreach( KeywordSet set in keywords )
 			{
-				highlighted = TryHighlightKeyword_One( doc, set, wordCharSet, startIndex, endIndex, out nextSeekIndex );
+				highlighted = TryHighlight_OneKeyword( doc, set, wordCharSet, startIndex, endIndex, out nextSeekIndex );
 				if( highlighted )
 				{
 					break;
@@ -654,7 +592,7 @@ namespace Sgry.Azuki.Highlighter
 			return highlighted;
 		}
 
-		bool TryHighlightKeyword_One(
+		bool TryHighlight_OneKeyword(
 				Document doc, KeywordSet set, string wordCharSet,
 				int startIndex, int endIndex, out int nextSeekIndex
 			)
@@ -694,7 +632,7 @@ namespace Sgry.Azuki.Highlighter
 						// (at least the keyword was partially matched,
 						// and the token in document at this place ends exactly)
 						// highlight and exit
-						Highlight( doc, index-node.depth+1, index+1, set.klass );
+						Utl.Highlight( doc, index-node.depth+1, index+1, set.klass, _HookProc );
 						nextSeekIndex = index + 1;
 						return true;
 					}
@@ -740,7 +678,7 @@ namespace Sgry.Azuki.Highlighter
 
 			// document token ends there?
 			if( index+1 == doc.Length
-				|| (index+1 < doc.Length && HighlighterUtl.IsWordChar(wordChars, doc[index+1]) == false) )
+				|| (index+1 < doc.Length && Utl.IsWordChar(wordChars, doc[index+1]) == false) )
 			{
 				// and, node.child is null or '\0'?
 				if( node.child == null || node.child.ch == '\0' )
@@ -749,25 +687,6 @@ namespace Sgry.Azuki.Highlighter
 				}
 			}
 			return false;
-		}
-
-		void Highlight( Document doc, int begin, int end, CharClass klass )
-		{
-			// try to use hook if installed
-			if( _HookProc != null )
-			{
-				string token = doc.GetTextInRange( begin, end );
-				if( _HookProc(doc, token, begin, klass) == true )
-				{
-					return; // hook did something to this token.
-				}
-			}
-
-			// normally highlight this token
-			for( int i=begin; i<end; i++ )
-			{
-				doc.SetCharClass( i, klass );
-			}
 		}
 		#endregion
 	}

@@ -1,7 +1,5 @@
 ﻿// file: XmlHighlighter.cs
 // brief: Highlighter for XML.
-// author: YAMAMOTO Suguru
-// update: 2011-07-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -19,7 +17,6 @@ namespace Sgry.Azuki.Highlighter
 		static readonly string DefaultWordCharSet = null;
 		List<Enclosure> _Enclosures = new List<Enclosure>();
 		SplitArray<int> _ReparsePoints = new SplitArray<int>( 64 );
-		Enclosure _CDataEnclosure;
 		#endregion
 
 		#region Properties
@@ -60,12 +57,12 @@ namespace Sgry.Azuki.Highlighter
 			singleQuote.multiLine = true;
 			_Enclosures.Add( singleQuote );
 
-			_CDataEnclosure = new Enclosure();
-			_CDataEnclosure.opener = "<![CDATA[";
-			_CDataEnclosure.closer = "]]>";
-			_CDataEnclosure.klass = CharClass.CDataSection;
-			_CDataEnclosure.multiLine = true;
-			_Enclosures.Add( _CDataEnclosure );
+			Enclosure cdata = new Enclosure();
+			cdata.opener = "<![CDATA[";
+			cdata.closer = "]]>";
+			cdata.klass = CharClass.CDataSection;
+			cdata.multiLine = true;
+			_Enclosures.Add( cdata );
 
 			Enclosure comment = new Enclosure();
 			comment.opener = "<!--";
@@ -105,7 +102,7 @@ namespace Sgry.Azuki.Highlighter
 			int index, nextIndex;
 
 			// determine where to start highlighting
-			index = HighlighterUtl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
+			index = Utl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
 			if( 0 <= index )
 			{
 				dirtyBegin = _ReparsePoints[index];
@@ -116,7 +113,7 @@ namespace Sgry.Azuki.Highlighter
 			}
 
 			// determine where to end highlighting
-			int x = HighlighterUtl.ReparsePointMinimumDistance;
+			int x = Utl.ReparsePointMinimumDistance;
 			dirtyEnd += x - (dirtyEnd % x); // next multiple of x
 			if( doc.Length < dirtyEnd )
 			{
@@ -127,65 +124,14 @@ namespace Sgry.Azuki.Highlighter
 			index = 0;
 			while( 0 <= index && index < dirtyEnd )
 			{
-				if( HighlighterUtl.StartsWith(doc, "<!--", index) )
+				if( Utl.TryHighlight(doc, _Enclosures, index, dirtyEnd, out nextIndex) )
 				{
-					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
-
-					// highlight enclosing part if this token begins a part
-					nextIndex = TryHighlightEnclosure( doc, _Enclosures, index, dirtyEnd );
-					if( index < nextIndex )
-					{
-						// successfully highlighted. skip to next.
-						HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
-						index = nextIndex;
-						continue;
-					}
+					Utl.EntryReparsePoint( _ReparsePoints, index );
+					index = nextIndex;
 				}
-
-				if( HighlighterUtl.StartsWith(doc, "<![CDATA[", index) )
+				else if( doc[index] == '<' )
 				{
-					int closePos;
-
-					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
-
-					// highlight the tag which starts this CDATA section
-					for( int i=0; i<_CDataEnclosure.opener.Length; i++ )
-					{
-						doc.SetCharClass( index+i, CharClass.CDataSection );
-					}
-					index += 9;
-
-					// highlight enclosing part if this token begins a part
-					closePos = HighlighterUtl.FindCloser(
-							doc, _CDataEnclosure, index, dirtyEnd
-						);
-					if( closePos == -1 )
-					{
-						// not found.
-						for( int i=index; i<doc.Length; i++ )
-							doc.SetCharClass( i, CharClass.Normal );
-						index = doc.Length;
-						return;
-					}
-
-					// highlight CDATA content as normal text
-					for( int i=index; i<closePos; i++ )
-					{
-						doc.SetCharClass( i, CharClass.Normal );
-					}
-					index = closePos;
-
-					// highlight the tag which ends CDATA section
-					for( int i=index; i<index+_CDataEnclosure.closer.Length; i++ )
-					{
-						doc.SetCharClass( i, CharClass.CDataSection );
-					}
-					index += _CDataEnclosure.closer.Length;
-				}
-
-				if( doc[index] == '<' )
-				{
-					HighlighterUtl.EntryReparsePoint( _ReparsePoints, index );
+					Utl.EntryReparsePoint( _ReparsePoints, index );
 
 					// set class for '<'
 					doc.SetCharClass( index, CharClass.Delimiter );
@@ -214,7 +160,7 @@ namespace Sgry.Azuki.Highlighter
 					}
 
 					// highlight element name
-					nextIndex = HighlighterUtl.FindNextToken( doc, index, DefaultWordCharSet );
+					nextIndex = Utl.FindNextToken( doc, index, DefaultWordCharSet );
 					for( int i=index; i<nextIndex; i++ )
 					{
 						doc.SetCharClass( i, CharClass.ElementName );
@@ -225,8 +171,7 @@ namespace Sgry.Azuki.Highlighter
 					while( index < doc.Length && doc[index] != '>' )
 					{
 						// highlight enclosing part if this token begins a part
-						nextIndex = TryHighlightEnclosure( doc, _Enclosures, index, dirtyEnd );
-						if( index < nextIndex )
+						if( Utl.TryHighlight(doc, _Enclosures, index, dirtyEnd, out nextIndex) )
 						{
 							// successfully highlighted. skip to next.
 							index = nextIndex;
@@ -234,7 +179,7 @@ namespace Sgry.Azuki.Highlighter
 						}
 
 						// this token is normal class; reset classes and seek to next token
-						nextIndex = HighlighterUtl.FindNextToken( doc, index, DefaultWordCharSet );
+						nextIndex = Utl.FindNextToken( doc, index, DefaultWordCharSet );
 						for( int i=index; i<nextIndex; i++ )
 						{
 							doc.SetCharClass( i, CharClass.Attribute );
@@ -311,54 +256,6 @@ namespace Sgry.Azuki.Highlighter
 
 			wasEntity = false;
 			return;
-		}
-
-		/// <summary>
-		/// Highlight part between a enclosing pair registered.
-		/// </summary>
-		/// <returns>Index of next parse point if a pair was highlighted or startIndex</returns>
-		static int TryHighlightEnclosure( Document doc, List<Enclosure> pairs, int startIndex, int endIndex )
-		{
-			Enclosure pair;
-			int closePos;
-			int highlightEndIndex;
-
-			// get pair which begins from this position
-			pair = HighlighterUtl.StartsWith( doc, pairs, startIndex );
-			if( pair == null )
-			{
-				return startIndex; // no pair begins from here.
-			}
-
-			// find closing pair
-			closePos = HighlighterUtl.FindCloser( doc, pair, startIndex+pair.opener.Length, endIndex );
-			if( closePos == -1 )
-			{
-				// not found.
-				// if this is an opener without closer, highlight
-				if( endIndex == doc.Length )
-				{
-					for( int i=startIndex; i<doc.Length; i++ )
-						doc.SetCharClass( i, pair.klass );
-					return doc.Length;
-				}
-
-				return startIndex;
-			}
-
-			// calculate end index of the enclosed part
-			highlightEndIndex = Math.Min( endIndex, closePos + pair.closer.Length );
-			if( doc.Length <= highlightEndIndex )
-			{
-				highlightEndIndex = doc.Length - 1;
-			}
-
-			// highlight enclosed part
-			for( int i=startIndex; i<highlightEndIndex; i++ )
-			{
-				doc.SetCharClass( i, pair.klass );
-			}
-			return closePos + pair.closer.Length;
 		}
 		#endregion
 	}

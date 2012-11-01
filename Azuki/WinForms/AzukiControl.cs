@@ -152,7 +152,8 @@ namespace Sgry.Azuki.WinForms
 			_HighlighterDelayTimer = new WinFormsTimer();
 			_HighlighterDelayTimer.Tick += delegate {
 				_HighlighterDelayTimer.Enabled = false;
-				_Impl.ExecHighlighter();
+				if( _Impl != null )
+					_Impl.ExecHighlighter();
 			};
 
 			// rewrite window procedure at first

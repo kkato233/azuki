@@ -17,4 +17,4 @@ using System.Resources;
 [assembly: AssemblyCopyright("Copyright (C) 2008-2012, Suguru YAMAMOTO")]
 
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.7.0.*")]
+[assembly: AssemblyVersion("1.7.1.*")]

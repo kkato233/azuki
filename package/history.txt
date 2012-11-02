@@ -1,3 +1,6 @@
+== 1.7.2 (2012-xx-xx) ==
+ * add: Now KeywordHighlighter can use regular expression
+
 == 1.7.1 (2012-11-01) ==
  * fix: Placing a token which is similar to the closer of an Enclosure (of KeywordHighlighter) at the end of file causes an exception.
  * fix: [Ann] Ann recognizes a file without an extension as a LaTeX file.

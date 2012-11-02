@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki.Highlighter
@@ -90,6 +91,17 @@ namespace Sgry.Azuki.Highlighter
 	public class KeywordHighlighter : IHighlighter
 	{
 		#region Inner Types and Fields
+		class RegexSet
+		{
+			public Regex regex;
+			public IList<CharClass> klassList;
+			public RegexSet( Regex regex, IList<CharClass> klassList )
+			{
+				this.regex = regex;
+				this.klassList = klassList;
+			}
+		}
+
 		class KeywordSet
 		{
 			public CharTreeNode root = new CharTreeNode();
@@ -118,6 +130,7 @@ namespace Sgry.Azuki.Highlighter
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
 		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
 		List<Enclosure> _LineHighlights = new List<Enclosure>( 2 );
+		List<RegexSet> _RegexSets = new List<RegexSet>( 16 );
 #		if DEBUG
 		internal
 #		endif
@@ -455,13 +468,49 @@ namespace Sgry.Azuki.Highlighter
 				for( int i=0; i<value.Length-1; i++ )
 					if( value[i+1] < value[i] )
 						throw new ArgumentException(
-							String.Format("word character set must be a sequence of alphabetically sorted characters; '{0}' (U+{1:x4}) is expected to be greater than '{2}' (U+{3:x4}) but not greater.", value[i+1], (int)value[i+1], value[i], (int)value[i]),
+							String.Format( "word character set must be a sequence of alphabetically"
+										   + " sorted characters; '{0}' (U+{1:x4}) is expected to"
+										   + " be greater than '{2}' (U+{3:x4}) but not greater.",
+										   value[i+1], (int)value[i+1], value[i], (int)value[i]),
 							"value"
 						);
 #				endif
 
 				_WordCharSet = value;
 			}
+		}
+
+		/// <summary>
+		/// Entry a pattern specified with a regular expression
+		/// to be highlighted.
+		/// </summary>
+		/// <param name="regex">
+		/// A regular expression expressing a text pattern to be highlighted.
+		/// </param>
+		/// <param name="klass">
+		/// A list of character classes to be assigned,
+		/// for each captured groups in the regular expression.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter 'regex' or 'klassList' was null.
+		/// </exception>
+		public void AddRegex( Regex regex, IList<CharClass> klassList )
+		{
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+			if( klassList == null )
+				throw new ArgumentNullException( "klassList" );
+
+			_RegexSets.Add( new RegexSet(regex, klassList) );
+		}
+
+		/// <summary>
+		/// Removes all entry of patterns specified with a regular expression
+		/// to be highlighted.
+		/// </summary>
+		public void ClearRegex()
+		{
+			_RegexSets.Clear();
 		}
 		#endregion
 
@@ -516,13 +565,6 @@ namespace Sgry.Azuki.Highlighter
 			index = dirtyBegin;
 			while( 0 <= index && index < dirtyEnd )
 			{
-				// if the document has been shrunken while highlighting, shrunk the range too.
-				// (although this is ad-hoc, but surely reduces risk of out-of-range exceptions)
-				if( doc.Length < dirtyEnd )
-				{
-					dirtyEnd = doc.Length;
-				}
-
 				// highlight line-comment if this token starts one
 				Utl.TryHighlight( doc, _LineHighlights, index, dirtyEnd, _HookProc, out nextIndex );
 				if( index < nextIndex )
@@ -555,6 +597,16 @@ namespace Sgry.Azuki.Highlighter
 				nextIndex = Utl.TryHighlightNumberToken( doc, index, dirtyEnd, _HookProc );
 				if( index < nextIndex )
 				{
+					index = nextIndex;
+					continue;
+				}
+
+				// highlight regular expressions
+				highlighted = TryHighlight( doc, _RegexSets,
+											index, dirtyEnd, out nextIndex );
+				if( highlighted )
+				{
+					Utl.EntryReparsePoint( _ReparsePoints, index );
 					index = nextIndex;
 					continue;
 				}
@@ -657,6 +709,55 @@ namespace Sgry.Azuki.Highlighter
 
 			nextSeekIndex = index;
 			return false;
+		}
+
+		bool TryHighlight( Document doc,
+						   IList<RegexSet> regexSet,
+						   int begin, int end,
+						   out int nextSeekIndex )
+		{
+			Debug.Assert( doc != null );
+			Debug.Assert( regexSet != null );
+			Debug.Assert( 0 <= begin );
+			Debug.Assert( begin < end );
+
+			nextSeekIndex = begin;
+
+			// Do nothing if beginning position is not head of a line
+			if( doc.Length <= begin
+				|| doc.GetLineHeadIndexFromCharIndex(begin) != begin )
+			{
+				return false;
+			}
+
+			// Get the content of the line
+			int lineHeadIndex = begin;
+			int lineIndex = doc.GetLineIndexFromCharIndex( begin );
+			string lineContent = doc.GetLineContentWithEolCode( lineIndex );
+
+			// Evaluate regular expressions
+			foreach( RegexSet set in regexSet )
+			{
+				MatchCollection matches;
+				matches = set.regex.Matches( lineContent );
+				foreach( Match match in matches )
+				{
+					for( int i=1; i<match.Groups.Count; i++ )
+					{
+						Group g = match.Groups[i];
+						int patBegin = lineHeadIndex + g.Index;
+						int patEnd = lineHeadIndex + g.Index + g.Length;
+						if( i-1 < set.klassList.Count )
+						{
+							Utl.Highlight( doc, patBegin, patEnd,
+										   set.klassList[i-1], _HookProc );
+							nextSeekIndex = Math.Max( nextSeekIndex, patEnd );
+						}
+					}
+				}
+			}
+
+			return (begin < nextSeekIndex);
 		}
 		#endregion
 

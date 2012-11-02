@@ -78,7 +78,9 @@ namespace Sgry.Azuki.Highlighter
 			// get pair which begins from this position
 			foreach( Enclosure pair in pairs )
 			{
-				if( TryHighlight(doc, pair, startIndex, endIndex, proc, out nextParsePos) )
+				if( TryHighlight(doc, pair,
+								 startIndex, endIndex,
+								 proc, out nextParsePos) )
 				{
 					return true;
 				}
@@ -99,7 +101,9 @@ namespace Sgry.Azuki.Highlighter
 										 int endIndex,
 										 out int nextParsePos )
 		{
-			return TryHighlight( doc, pair, startIndex, endIndex, null, out nextParsePos );
+			return TryHighlight( doc, pair,
+								 startIndex, endIndex,
+								 null, out nextParsePos );
 		}
 
 		/// <summary>
@@ -124,7 +128,9 @@ namespace Sgry.Azuki.Highlighter
 			bool openerFound;
 
 			// Search the closer
-			closerPos = FindCloser( doc, pair, startIndex, endIndex, out openerFound );
+			closerPos = FindCloser( doc, pair,
+									startIndex, endIndex,
+									out openerFound );
 			if( closerPos == -1 )
 			{
 				// Highlight all the followings if reached to the EOF
@@ -142,7 +148,9 @@ namespace Sgry.Azuki.Highlighter
 			}
 
 			// highlight enclosed part
-			closerEndPos = (pair.closer == null) ? closerPos : closerPos + pair.closer.Length;
+			closerEndPos = (pair.closer == null)
+							? closerPos
+							: closerPos + pair.closer.Length;
 			Highlight( doc, startIndex, closerEndPos, pair.klass, proc );
 			nextParsePos = closerEndPos;
 			return true;
@@ -157,7 +165,9 @@ namespace Sgry.Azuki.Highlighter
 												   int endIndex,
 												   HighlightHook proc )
 		{
-			Debug.Assert( endIndex <= doc.Length, "param endIndex is out of range (endIndex:"+endIndex+", doc.Length:"+doc.Length+")" );
+			Debug.Assert( endIndex <= doc.Length,
+						  "param endIndex is out of range (endIndex:"
+						  +endIndex+", doc.Length:"+doc.Length+")" );
 			int begin = startIndex;
 			int end = begin;
 			char postfixCh;
@@ -165,7 +175,8 @@ namespace Sgry.Azuki.Highlighter
 					return ('a'<=ch && ch<='z') || ('A'<=ch && ch<='Z');
 				};
 			ClassifyCharProc ishex = delegate( char ch ) {
-					return ('0'<=ch && ch<='9') || ('A'<=ch && ch<='F') || ('a'<=ch && ch<='f');
+					return ('0'<=ch && ch<='9')
+							|| ('A'<=ch && ch<='F') || ('a'<=ch && ch<='f');
 				};
 			ClassifyCharProc isdigitdot = delegate( char ch ) {
 					return ('0'<=ch && ch<='9') || (ch=='.');
@@ -175,7 +186,8 @@ namespace Sgry.Azuki.Highlighter
 				return begin;
 
 			// check whether this token is a hex-number literal or not
-			if( begin+2 < doc.Length && doc[begin] == '0' && doc[begin+1] == 'x' ) // check begin"+2" to avoid highlight token "0x" (nothing trails)
+			if( begin+2 < doc.Length
+				&& doc[begin] == '0' && doc[begin+1] == 'x' ) // check begin"+2" to avoid highlight token "0x" (nothing trails)
 			{
 				end = begin + 2;
 
@@ -198,7 +210,8 @@ namespace Sgry.Azuki.Highlighter
 				if( end < endIndex )
 				{
 					postfixCh = Char.ToLower( doc[end] );
-					if( postfixCh == 'f' || postfixCh == 'i' || postfixCh == 'j' || postfixCh == 'l' )
+					if( postfixCh == 'f' || postfixCh == 'i'
+						|| postfixCh == 'j' || postfixCh == 'l' )
 					{
 						end++;
 					}
@@ -251,7 +264,9 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Find next token beginning position and return it's index.
 		/// </summary>
-		public static int FindNextToken( Document doc, int index, string wordCharSet )
+		public static int FindNextToken( Document doc,
+										 int index,
+										 string wordCharSet )
 		{
 			Debug.Assert( doc != null );
 
@@ -279,7 +294,8 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Find token.
 		/// </summary>
-		public static int Find( Document doc, string token, int startIndex, int endIndex )
+		public static int Find( Document doc, string token,
+								int startIndex, int endIndex )
 		{
 			Debug.Assert( doc != null && token != null );
 			Debug.Assert( 0 <= startIndex && startIndex <= doc.Length );
@@ -312,7 +328,8 @@ namespace Sgry.Azuki.Highlighter
 		{
 			Debug.Assert( doc != null && token != null );
 			Debug.Assert( 0 <= startIndex );
-			Debug.Assert( (doc.Length == 0 && startIndex == 0) || startIndex < doc.Length );
+			Debug.Assert( (doc.Length == 0 && startIndex == 0)
+						  || startIndex < doc.Length );
 
 			for( int i=startIndex; 0<=i; i-- )
 			{

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sgry.Azuki;
 using Path = System.IO.Path;
 using IHighlighter = Sgry.Azuki.Highlighter.IHighlighter;
@@ -10,13 +11,16 @@ namespace Sgry.Ann
 	{
 		#region Fields & Constants
 		public const string TextFileTypeName = "Text";
-		public const string LatexFileTypeName = "LaTeX";
 		public const string CppFileTypeName = "C/C++";
 		public const string CSharpFileTypeName = "C#";
 		public const string IniFileTypeName = "INI";
 		public const string JavaFileTypeName = "Java";
+		public const string LatexFileTypeName = "LaTeX";
 		public const string RubyFileTypeName = "Ruby";
 		public const string XmlFileTypeName = "XML";
+		static Dictionary<string, FileType> _FileTypeMap
+			= new Dictionary<string,FileType>();
+
 		string _Name = null;
 		IHighlighter _Highlighter = null;
 		AutoIndentHook _AutoIndentHook = null;
@@ -24,6 +28,17 @@ namespace Sgry.Ann
 
 		private FileType()
 		{}
+
+		static FileType()
+		{
+			_FileTypeMap.Add( "CppFileType", CppFileType );
+			_FileTypeMap.Add( "CSharpFileType", CSharpFileType );
+			_FileTypeMap.Add( "IniFileType", IniFileType );
+			_FileTypeMap.Add( "JavaFileType", JavaFileType );
+			_FileTypeMap.Add( "LatexFileType", LatexFileType );
+			_FileTypeMap.Add( "RubyFileType", RubyFileType );
+			_FileTypeMap.Add( "XmlFileType", XmlFileType );
+		}
 
 		#region Factory
 		/// <summary>
@@ -36,21 +51,6 @@ namespace Sgry.Ann
 				FileType fileType = new FileType();
 				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = TextFileTypeName;
-				return fileType;
-			}
-		}
-
-		/// <summary>
-		/// Gets a new LaTeX file type.
-		/// </summary>
-		public static FileType LatexFileType
-		{
-			get
-			{
-				FileType fileType = new FileType();
-				fileType._Highlighter = Highlighters.Latex;
-				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
-				fileType._Name = LatexFileTypeName;
 				return fileType;
 			}
 		}
@@ -71,20 +71,6 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
-		/// Gets a new INI file type.
-		/// </summary>
-		public static FileType IniFileType
-		{
-			get
-			{
-				FileType fileType = new FileType();
-				fileType._Highlighter = Highlighters.Ini;
-				fileType._Name = IniFileTypeName;
-				return fileType;
-			}
-		}
-
-		/// <summary>
 		/// Gets a new C# file type.
 		/// </summary>
 		public static FileType CSharpFileType
@@ -100,6 +86,20 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
+		/// Gets a new INI file type.
+		/// </summary>
+		public static FileType IniFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Ini;
+				fileType._Name = IniFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
 		/// Gets a new Java file type.
 		/// </summary>
 		public static FileType JavaFileType
@@ -110,6 +110,21 @@ namespace Sgry.Ann
 				fileType._Highlighter = Highlighters.Java;
 				fileType._AutoIndentHook = AutoIndentHooks.CHook;
 				fileType._Name = JavaFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
+		/// Gets a new LaTeX file type.
+		/// </summary>
+		public static FileType LatexFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Latex;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
+				fileType._Name = LatexFileTypeName;
 				return fileType;
 			}
 		}
@@ -148,6 +163,7 @@ namespace Sgry.Ann
 		{
 			string ext;
 			string extList;
+			const StringComparison ignoreCase = StringComparison.CurrentCultureIgnoreCase;
 
 			ext = Path.GetExtension( fileName );
 			if( ext == String.Empty )
@@ -155,53 +171,13 @@ namespace Sgry.Ann
 				return TextFileType;
 			}
 
-			// LaTeX?
-			extList = AppConfig.Ini.Get( "LatexFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			foreach( string sectionName in _FileTypeMap.Keys )
 			{
-				return LatexFileType;
+				extList = AppConfig.Ini.Get( sectionName, "Extensions", "" );
+				if( 0 <= extList.IndexOf(ext, ignoreCase) )
+			{
+					return _FileTypeMap[sectionName];
 			}
-
-			// C/C++?
-			extList = AppConfig.Ini.Get( "CppFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
-			{
-				return CppFileType;
-			}
-
-			// C#?
-			extList = AppConfig.Ini.Get( "CSharpFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
-			{
-				return CSharpFileType;
-			}
-
-			// INI?
-			extList = AppConfig.Ini.Get( "IniFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
-			{
-				return IniFileType;
-			}
-
-			// Java?
-			extList = AppConfig.Ini.Get( "JavaFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
-			{
-				return JavaFileType;
-			}
-
-			// Ruby?
-			extList = AppConfig.Ini.Get( "RubyFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
-			{
-				return RubyFileType;
-			}
-
-			// XML?
-			extList = AppConfig.Ini.Get( "XmlFileType", "Extensions", "" );
-			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
-			{
-				return XmlFileType;
 			}
 
 			return TextFileType;

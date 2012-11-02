@@ -1,7 +1,5 @@
 // file: Document.cs
 // brief: Document of Azuki engine.
-// author: YAMAMOTO Suguru
-// update: 2011-09-23
 //=========================================================
 using System;
 using System.Collections;
@@ -22,7 +20,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// The document of the Azuki editor engine.
 	/// </summary>
-	public class Document : IEnumerable
+	public class Document : IEnumerable<char>
 	{
 		#region Fields
 		TextBuffer _Buffer = new TextBuffer( 4096, 1024 );
@@ -2645,7 +2643,15 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets content enumerator.
 		/// </summary>
-		public IEnumerator GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return _Buffer.GetEnumerator();
+		}
+
+		/// <summary>
+		/// Gets content enumerator.
+		/// </summary>
+		public IEnumerator<char> GetEnumerator()
 		{
 			return _Buffer.GetEnumerator();
 		}

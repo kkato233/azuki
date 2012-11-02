@@ -1,7 +1,5 @@
 // file: LineLogic.cs
 // brief: Logics to manipulate line/column in a string.
-// author: YAMAMOTO Suguru
-// update: 2010-04-18
 //=========================================================
 using System;
 using Debug = System.Diagnostics.Debug;
@@ -397,9 +395,9 @@ namespace Sgry.Azuki
 			}
 		}
 
-		public static int NextLineHead( TextBuffer str, int searchFromIndex )
+		public static int NextLineHead( TextBuffer str, int startIndex )
 		{
-			for( int i=searchFromIndex; i<str.Count; i++ )
+			for( int i=startIndex; i<str.Count; i++ )
 			{
 				// found EOL code?
 				if( str[i] == '\r' )
@@ -421,9 +419,9 @@ namespace Sgry.Azuki
 			return -1; // not found
 		}
 
-		public static int NextLineHead( string str, int searchFromIndex )
+		public static int NextLineHead( string str, int startIndex )
 		{
-			for( int i=searchFromIndex; i<str.Length; i++ )
+			for( int i=startIndex; i<str.Length; i++ )
 			{
 				// found EOL code?
 				if( str[i] == '\r' )
@@ -445,16 +443,18 @@ namespace Sgry.Azuki
 			return -1; // not found
 		}
 
-		public static int PrevLineHead( TextBuffer str, int searchFromIndex )
+		public static int PrevLineHead( TextBuffer str, int startIndex )
 		{
-			DebugUtl.Assert( searchFromIndex <= str.Count, "invalid argument; searchFromIndex is too large ("+searchFromIndex+" but str.Count is "+str.Count+")" );
+			DebugUtl.Assert( startIndex <= str.Count,
+							 "invalid argument; startIndex is ("
+							 +startIndex+" but str.Count is "+str.Count+")" );
 
-			if( str.Count <= searchFromIndex )
+			if( str.Count <= startIndex )
 			{
-				searchFromIndex = str.Count - 1;
+				startIndex = str.Count - 1;
 			}
 
-			for( int i=searchFromIndex-1; 0<=i; i-- )
+			for( int i=startIndex-1; 0<=i; i-- )
 			{
 				// found EOL code?
 				if( str[i] == '\n' )
@@ -475,16 +475,18 @@ namespace Sgry.Azuki
 			return 0;
 		}
 
-		public static int PrevLineHead( string str, int searchFromIndex )
+		public static int PrevLineHead( string str, int startIndex )
 		{
-			DebugUtl.Assert( searchFromIndex <= str.Length, "invalid argument; searchFromIndex is too large ("+searchFromIndex+" but str.Length is "+str.Length+")" );
+			DebugUtl.Assert( startIndex <= str.Length,
+							 "invalid argument; startIndex is ("
+							 +startIndex+" but str.Length is "+str.Length+")" );
 
-			if( str.Length <= searchFromIndex )
+			if( str.Length <= startIndex )
 			{
-				searchFromIndex = str.Length - 1;
+				startIndex = str.Length - 1;
 			}
 
-			for( int i=searchFromIndex-1; 0<=i; i-- )
+			for( int i=startIndex-1; 0<=i; i-- )
 			{
 				// found EOL code?
 				if( str[i] == '\n' )
@@ -509,9 +511,9 @@ namespace Sgry.Azuki
 		/// Find non-EOL char from specified index.
 		/// Note that the char at specified index always be skipped.
 		/// </summary>
-		public static int PrevNonEolChar( TextBuffer str, int searchFromIndex )
+		public static int PrevNonEolChar( TextBuffer str, int startIndex )
 		{
-			for( int i=searchFromIndex-1; 0<=i; i-- )
+			for( int i=startIndex-1; 0<=i; i-- )
 			{
 				if( IsEolChar(str[i]) != true )
 				{
@@ -523,7 +525,8 @@ namespace Sgry.Azuki
 			return -1; // not found
 		}
 
-		public static int GetLineLengthByCharIndex( TextBuffer text, int charIndex )
+		public static int GetLineLengthByCharIndex( TextBuffer text,
+													int charIndex )
 		{
 			int prevLH = PrevLineHead( text, charIndex );
 			int nextLH = NextLineHead( text, charIndex );

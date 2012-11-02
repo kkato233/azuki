@@ -197,9 +197,6 @@ namespace Sgry.Ann
 			}
 			switch( _App.ActiveDocument.FileType.Name )
 			{
-				case FileType.LatexFileTypeName:
-					_MI_Mode_Latex.Checked = true;
-					break;
 				case FileType.CppFileTypeName:
 					_MI_Mode_Cpp.Checked = true;
 					break;
@@ -211,6 +208,9 @@ namespace Sgry.Ann
 					break;
 				case FileType.JavaFileTypeName:
 					_MI_Mode_Java.Checked = true;
+					break;
+				case FileType.LatexFileTypeName:
+					_MI_Mode_Latex.Checked = true;
 					break;
 				case FileType.RubyFileTypeName:
 					_MI_Mode_Ruby.Checked = true;
@@ -289,11 +289,11 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_View_ShowTabPanel ]		= Actions.ToggleTabPanel;
 
 			_MenuMap[ _MI_Mode_Text ]		= Actions.SetToTextMode;
-			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
 			_MenuMap[ _MI_Mode_Cpp ]		= Actions.SetToCppMode;
 			_MenuMap[ _MI_Mode_CSharp ]		= Actions.SetToCSharpMode;
 			_MenuMap[ _MI_Mode_Ini ]		= Actions.SetToIniMode;
 			_MenuMap[ _MI_Mode_Java ]		= Actions.SetToJavaMode;
+			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
 			_MenuMap[ _MI_Mode_Ruby ]		= Actions.SetToRubyMode;
 			_MenuMap[ _MI_Mode_XML ]		= Actions.SetToXmlMode;
 
@@ -553,7 +553,8 @@ namespace Sgry.Ann
 			//
 			_StatusBar.Dock = DockStyle.Bottom;
 			_StatusBar.Panels.AddRange( new StatusBarPanel[] {
-				_Status_Message, _Status_CaretPos, _Status_SelectionMode, _Status_InsertionMode
+				_Status_Message, _Status_CaretPos,
+				_Status_SelectionMode, _Status_InsertionMode
 			});
 			_StatusBar.ShowPanels = true;
 			_StatusBar.SizingGrip = true;
@@ -650,11 +651,11 @@ namespace Sgry.Ann
 			_MI_View.MenuItems.Add( _MI_View_ShowTabPanel );
 
 			_MI_Mode.MenuItems.Add( _MI_Mode_Text );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ini );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Java );	
+			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ruby );	
 			_MI_Mode.MenuItems.Add( _MI_Mode_XML );
 
@@ -700,11 +701,11 @@ namespace Sgry.Ann
 			_MI_View_ShowTabPanel.Text = "Show &tab panel";
 			_MI_Mode.Text = "&Mode";
 			_MI_Mode_Text.Text = "&Text";
-			_MI_Mode_Latex.Text = "&LaTeX";
 			_MI_Mode_Cpp.Text = "&C/C++";
 			_MI_Mode_CSharp.Text = "C&#";
 			_MI_Mode_Ini.Text = "&INI / Properties";
 			_MI_Mode_Java.Text = "&Java";
+			_MI_Mode_Latex.Text = "&LaTeX";
 			_MI_Mode_Ruby.Text = "&Ruby";
 			_MI_Mode_XML.Text = "&XML";
 			_MI_Window.Text = "&Window";
@@ -820,11 +821,11 @@ namespace Sgry.Ann
 		MenuItem _MI_View_ShowTabPanel		= new MenuItem();
 		MenuItem _MI_Mode			= new MenuItem();
 		MenuItem _MI_Mode_Text		= new MenuItem();
-		MenuItem _MI_Mode_Latex		= new MenuItem();
 		MenuItem _MI_Mode_Cpp		= new MenuItem();
 		MenuItem _MI_Mode_CSharp	= new MenuItem();
 		MenuItem _MI_Mode_Ini		= new MenuItem();
 		MenuItem _MI_Mode_Java		= new MenuItem();
+		MenuItem _MI_Mode_Latex		= new MenuItem();
 		MenuItem _MI_Mode_Ruby		= new MenuItem();
 		MenuItem _MI_Mode_XML		= new MenuItem();
 		MenuItem _MI_Window			= new MenuItem();

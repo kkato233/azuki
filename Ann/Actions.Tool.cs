@@ -1,4 +1,3 @@
-// 2009-07-04
 using System;
 using System.Windows.Forms;
 
@@ -58,6 +57,15 @@ namespace Sgry.Ann
 			= delegate( AppLogic app )
 		{
 			app.SetFileType( app.ActiveDocument, FileType.RubyFileType );
+		};
+
+		/// <summary>
+		/// Set editing mode to Ini mode.
+		/// </summary>
+		public static AnnAction SetToIniMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.IniFileType );
 		};
 
 		/// <summary>

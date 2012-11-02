@@ -13,6 +13,7 @@ namespace Sgry.Ann
 		public const string LatexFileTypeName = "LaTeX";
 		public const string CppFileTypeName = "C/C++";
 		public const string CSharpFileTypeName = "C#";
+		public const string IniFileTypeName = "INI";
 		public const string JavaFileTypeName = "Java";
 		public const string RubyFileTypeName = "Ruby";
 		public const string XmlFileTypeName = "XML";
@@ -65,6 +66,20 @@ namespace Sgry.Ann
 				fileType._Highlighter = Highlighters.Cpp;
 				fileType._AutoIndentHook = AutoIndentHooks.CHook;
 				fileType._Name = CppFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
+		/// Gets a new INI file type.
+		/// </summary>
+		public static FileType IniFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Ini;
+				fileType._Name = IniFileTypeName;
 				return fileType;
 			}
 		}
@@ -159,6 +174,13 @@ namespace Sgry.Ann
 			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
 			{
 				return CSharpFileType;
+			}
+
+			// INI?
+			extList = AppConfig.Ini.Get( "IniFileType", "Extensions", "" );
+			if( 0 <= extList.IndexOf(ext, StringComparison.CurrentCultureIgnoreCase) )
+			{
+				return IniFileType;
 			}
 
 			// Java?

@@ -1,7 +1,5 @@
 ﻿// file: Highlighters.cs
 // brief: highlighter object factory.
-// author: YAMAMOTO Suguru
-// update: 2009-07-04
 //=========================================================
 using System;
 
@@ -35,6 +33,14 @@ namespace Sgry.Azuki.Highlighter
 		public static IHighlighter CSharp
 		{
 			get{ return new CSharpHighlighter(); }
+		}
+
+		/// <summary>
+		/// Gets a new highlighter for INI.
+		/// </summary>
+		public static IHighlighter Ini
+		{
+			get{ return new IniHighlighter(); }
 		}
 
 		/// <summary>

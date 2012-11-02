@@ -72,6 +72,7 @@
     <Compile Include="Highlighter\CSharpHighlighter.cs" />
     <Compile Include="Highlighter\Highlighters.cs" />
     <Compile Include="Highlighter\IHighlighter.cs" />
+    <Compile Include="Highlighter\IniHighlighter.cs" />
     <Compile Include="Highlighter\JavaHighlighter.cs" />
     <Compile Include="Highlighter\KeywordHighlighter.cs" />
     <Compile Include="Highlighter\LatexHighlighter.cs" />

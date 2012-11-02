@@ -1,4 +1,3 @@
-// 2012-05-05
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -207,6 +206,9 @@ namespace Sgry.Ann
 				case FileType.CSharpFileTypeName:
 					_MI_Mode_CSharp.Checked = true;
 					break;
+				case FileType.IniFileTypeName:
+					_MI_Mode_Ini.Checked = true;
+					break;
 				case FileType.JavaFileTypeName:
 					_MI_Mode_Java.Checked = true;
 					break;
@@ -290,6 +292,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
 			_MenuMap[ _MI_Mode_Cpp ]		= Actions.SetToCppMode;
 			_MenuMap[ _MI_Mode_CSharp ]		= Actions.SetToCSharpMode;
+			_MenuMap[ _MI_Mode_Ini ]		= Actions.SetToIniMode;
 			_MenuMap[ _MI_Mode_Java ]		= Actions.SetToJavaMode;
 			_MenuMap[ _MI_Mode_Ruby ]		= Actions.SetToRubyMode;
 			_MenuMap[ _MI_Mode_XML ]		= Actions.SetToXmlMode;
@@ -650,6 +653,7 @@ namespace Sgry.Ann
 			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
+			_MI_Mode.MenuItems.Add( _MI_Mode_Ini );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Java );	
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ruby );	
 			_MI_Mode.MenuItems.Add( _MI_Mode_XML );
@@ -699,6 +703,7 @@ namespace Sgry.Ann
 			_MI_Mode_Latex.Text = "&LaTeX";
 			_MI_Mode_Cpp.Text = "&C/C++";
 			_MI_Mode_CSharp.Text = "C&#";
+			_MI_Mode_Ini.Text = "&INI / Properties";
 			_MI_Mode_Java.Text = "&Java";
 			_MI_Mode_Ruby.Text = "&Ruby";
 			_MI_Mode_XML.Text = "&XML";
@@ -818,6 +823,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Mode_Latex		= new MenuItem();
 		MenuItem _MI_Mode_Cpp		= new MenuItem();
 		MenuItem _MI_Mode_CSharp	= new MenuItem();
+		MenuItem _MI_Mode_Ini		= new MenuItem();
 		MenuItem _MI_Mode_Java		= new MenuItem();
 		MenuItem _MI_Mode_Ruby		= new MenuItem();
 		MenuItem _MI_Mode_XML		= new MenuItem();

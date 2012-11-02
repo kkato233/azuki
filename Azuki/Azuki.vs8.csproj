@@ -81,6 +81,7 @@
     <Compile Include="Highlighter\IHighlighter.cs" />
     <Compile Include="Highlighter\IniHighlighter.cs" />
     <Compile Include="Highlighter\JavaHighlighter.cs" />
+    <Compile Include="Highlighter\JavaScriptHighlighter.cs" />
     <Compile Include="Highlighter\KeywordHighlighter.cs" />
     <Compile Include="Highlighter\LatexHighlighter.cs" />
     <Compile Include="Highlighter\RubyHighlighter.cs" />

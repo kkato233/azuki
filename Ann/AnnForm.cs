@@ -209,6 +209,9 @@ namespace Sgry.Ann
 				case FileType.JavaFileTypeName:
 					_MI_Mode_Java.Checked = true;
 					break;
+				case FileType.JavaScriptFileTypeName:
+					_MI_Mode_JavaScript.Checked = true;
+					break;
 				case FileType.LatexFileTypeName:
 					_MI_Mode_Latex.Checked = true;
 					break;
@@ -293,6 +296,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Mode_CSharp ]		= Actions.SetToCSharpMode;
 			_MenuMap[ _MI_Mode_Ini ]		= Actions.SetToIniMode;
 			_MenuMap[ _MI_Mode_Java ]		= Actions.SetToJavaMode;
+			_MenuMap[ _MI_Mode_JavaScript ]	= Actions.SetToJavaScriptMode;
 			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
 			_MenuMap[ _MI_Mode_Ruby ]		= Actions.SetToRubyMode;
 			_MenuMap[ _MI_Mode_XML ]		= Actions.SetToXmlMode;
@@ -467,8 +471,8 @@ namespace Sgry.Ann
 
 				// get caret position
 				_Azuki.GetLineColumnIndexFromCharIndex(
-					_Azuki.CaretIndex, out line, out columnInChar
-				);
+						_Azuki.CaretIndex, out line, out columnInChar
+					);
 				columnInHRuler = _Azuki.View.GetVirPosFromIndex( _Azuki.CaretIndex ).X
 					/ _Azuki.View.HRulerUnitWidth;
 
@@ -654,9 +658,10 @@ namespace Sgry.Ann
 			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ini );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Java );	
+			_MI_Mode.MenuItems.Add( _MI_Mode_Java );
+			_MI_Mode.MenuItems.Add( _MI_Mode_JavaScript );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Ruby );	
+			_MI_Mode.MenuItems.Add( _MI_Mode_Ruby );
 			_MI_Mode.MenuItems.Add( _MI_Mode_XML );
 
 			_MI_Window.MenuItems.Add( _MI_Window_Next );
@@ -705,6 +710,7 @@ namespace Sgry.Ann
 			_MI_Mode_CSharp.Text = "C&#";
 			_MI_Mode_Ini.Text = "&INI / Properties";
 			_MI_Mode_Java.Text = "&Java";
+			_MI_Mode_JavaScript.Text = "Java&Script";
 			_MI_Mode_Latex.Text = "&LaTeX";
 			_MI_Mode_Ruby.Text = "&Ruby";
 			_MI_Mode_XML.Text = "&XML";
@@ -825,6 +831,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Mode_CSharp	= new MenuItem();
 		MenuItem _MI_Mode_Ini		= new MenuItem();
 		MenuItem _MI_Mode_Java		= new MenuItem();
+		MenuItem _MI_Mode_JavaScript= new MenuItem();
 		MenuItem _MI_Mode_Latex		= new MenuItem();
 		MenuItem _MI_Mode_Ruby		= new MenuItem();
 		MenuItem _MI_Mode_XML		= new MenuItem();

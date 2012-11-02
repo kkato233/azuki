@@ -60,6 +60,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Set editing mode to JavaScript mode.
+		/// </summary>
+		public static AnnAction SetToJavaScriptMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.JavaScriptFileType );
+		};
+
+		/// <summary>
 		/// Set editing mode to Ini mode.
 		/// </summary>
 		public static AnnAction SetToIniMode

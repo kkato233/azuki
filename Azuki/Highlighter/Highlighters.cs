@@ -60,6 +60,14 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
+		/// Gets a new highlighter for JavaScript.
+		/// </summary>
+		public static IHighlighter JavaScript
+		{
+			get{ return new JavaScriptHighlighter(); }
+		}
+
+		/// <summary>
 		/// Gets a new highlighter for XML.
 		/// </summary>
 		public static IHighlighter Xml

@@ -15,6 +15,7 @@ namespace Sgry.Ann
 		public const string CSharpFileTypeName = "C#";
 		public const string IniFileTypeName = "INI";
 		public const string JavaFileTypeName = "Java";
+		public const string JavaScriptFileTypeName = "JavaScript";
 		public const string LatexFileTypeName = "LaTeX";
 		public const string RubyFileTypeName = "Ruby";
 		public const string XmlFileTypeName = "XML";
@@ -35,6 +36,7 @@ namespace Sgry.Ann
 			_FileTypeMap.Add( "CSharpFileType", CSharpFileType );
 			_FileTypeMap.Add( "IniFileType", IniFileType );
 			_FileTypeMap.Add( "JavaFileType", JavaFileType );
+			_FileTypeMap.Add( "JavaScriptFileType", JavaScriptFileType );
 			_FileTypeMap.Add( "LatexFileType", LatexFileType );
 			_FileTypeMap.Add( "RubyFileType", RubyFileType );
 			_FileTypeMap.Add( "XmlFileType", XmlFileType );
@@ -115,6 +117,21 @@ namespace Sgry.Ann
 		}
 
 		/// <summary>
+		/// Gets a new JavaScript file type.
+		/// </summary>
+		public static FileType JavaScriptFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.JavaScript;
+				fileType._AutoIndentHook = AutoIndentHooks.CHook;
+				fileType._Name = JavaScriptFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
 		/// Gets a new LaTeX file type.
 		/// </summary>
 		public static FileType LatexFileType
@@ -175,9 +192,9 @@ namespace Sgry.Ann
 			{
 				extList = AppConfig.Ini.Get( sectionName, "Extensions", "" );
 				if( 0 <= extList.IndexOf(ext, ignoreCase) )
-			{
+				{
 					return _FileTypeMap[sectionName];
-			}
+				}
 			}
 
 			return TextFileType;

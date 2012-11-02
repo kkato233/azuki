@@ -1,7 +1,9 @@
 == 1.7.2 (2012-xx-xx) ==
  * add: 正規表現でのハイライト機能をキーワードハイライターに追加
  * add: INI / .properties ファイル形式用のハイライター IniHighlighter を追加
+ * add: JavaScript 用のハイライターを追加
  * add: [Ann] INI (.properties)ファイル形式をハイライト可能に
+ * add: [Ann] JavaScript ファイルをハイライト可能に
 
 == 1.7.1 (2012-11-01) ==
  * fix: キーワードハイライターの Enclosure の「閉じ」と似た文字列をファイル末尾に置くと例外が発生する問題などを修正

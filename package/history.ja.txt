@@ -2,6 +2,7 @@
  * add: 正規表現でのハイライト機能をキーワードハイライターに追加
  * add: INI / .properties ファイル形式用のハイライター IniHighlighter を追加
  * add: JavaScript 用のハイライターを追加
+ * add: C# のプリプロセッサディレクティブが # とキーワードの間に空白があってもハイライトするように
  * add: [Ann] INI (.properties)ファイル形式をハイライト可能に
  * add: [Ann] JavaScript ファイルをハイライト可能に
 

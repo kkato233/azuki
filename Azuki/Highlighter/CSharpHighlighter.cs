@@ -1,9 +1,8 @@
 ﻿// file: CSharpHighlighter.cs
 // brief: C# highlighter.
-// author: YAMAMOTO Suguru
-// update: 2009-09-05
 //=========================================================
 using System;
+using System.Text.RegularExpressions;
 using Color = System.Drawing.Color;
 
 namespace Sgry.Azuki.Highlighter
@@ -18,6 +17,7 @@ namespace Sgry.Azuki.Highlighter
 		/// </summary>
 		public CSharpHighlighter()
 		{
+			// normal keywords
 			AddKeywordSet( new string[] {
 				"abstract", "as", "base", "bool",
 				"break", "byte", "case", "catch",
@@ -40,17 +40,22 @@ namespace Sgry.Azuki.Highlighter
 				"using", "virtual", "void", "volatile", "while"
 			}, CharClass.Keyword );
 
+			// Context sensitive keywords
 			AddKeywordSet( new string[] {
-				"add", "from", "get", "global", "group", "into",
-				"join", "let", "orderby", "partial", "remove",
-				"select", "set", "value", "var", "where", "yield"
-			}, CharClass.Keyword2 );
+				"add", "alias", "ascending", "async", "await", "by",
+				"descending", "dynamic", "equals", "from", "get", "global",
+				"group", "in", "into", "join", "let", "on", "orderby",
+				"partial", "remove", "select", "set", "value", "var",
+				"where", "yield"
+			}, CharClass.Keyword );
 
-			AddKeywordSet( new string[] {
-				"#define", "#elif", "#else", "#endif",
-				"#endregion", "#error", "#if", "#line",
-				"#region", "#undef", "#warning"
-			}, CharClass.Macro );
+			// preprocessor macro
+			string words = "define|elif|else|endif|endregion|error"
+						 + "|if|line|pragma|region|undef|warning";
+			AddRegex(
+					new Regex(@"^\s*(#\s*(?:" + words + "))"),
+					new CharClass[]{CharClass.Macro}
+				);
 
 			AddEnclosure( "'", "'", CharClass.String, false, '\\' );
 			AddEnclosure( "@\"", "\"", CharClass.String, true, '\"' );

@@ -2,6 +2,7 @@
  * add: Now KeywordHighlighter can use regular expression
  * add: Added IniHighlighter for highlighting .ini / .properties file format
  * add: Added JavaScriptHighlighter
+ * add: Now CSharpHighlighter highlights preprocessor directive even if a sharp sign and keyword are separated with white spaces
  * add: [Ann] Added feature to highlight .ini / .properties files
  * add: [Ann] Added feature to highlight JavaScript files
 

@@ -11,53 +11,86 @@ namespace Sgry.Azuki.Highlighter
 {
 	/// <summary>
 	/// A keyword-based highlighter which can highlight
-	/// matched keywords and parts being enclosed by specified pair.
+	/// keywords, ranges enclosed with tokens, and regular expressions.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This class provides feature to highlight document in keyword oriented way.
-	/// Users can create an instance of this class and customize it directly to achieve
-	/// desired highlighting result, or can define a child class of this and customize it.
+	/// KeywordHighlighter highlights keywords, enclosed parts, and regular
+	/// expressions. To make basic syntax highlighter, you can create an
+	/// instance and customize it, or make a child class and customize it.
 	/// </para>
 	/// <para>
-	/// KeywordHighlighter can highlight three types of text pattern as follows.
+	/// KeywordHighlighter can highlight four types of text patterns.
 	/// </para>
 	/// <list type="number">
-	///		<item>keyword set</item>
-	///		<item>line highlight</item>
-	///		<item>enclosure</item>
+	///		<item>Keyword set</item>
+	///		<item>Line highlight</item>
+	///		<item>Enclosure</item>
+	///		<item>Regular expression</item>
 	/// </list>
 	/// <para>
 	/// Keyword set is a set of keywords.
-	/// KeywordHighlighter searches document for registered keywords and,
-	/// for each found word, applies char-class associated with the keyword set
-	/// to the characters consisting the word.
-	/// For example, C/C++ source code includes keywords and pre-processor macro keywords
-	/// so user may define one keyword set containing all C/C++ keywords and associate
-	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>.Keyword,
-	/// and another keyword set containing all pre-processor macro keywords and associate
-	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>.Macro.
-	/// To register keyword sets, use
-	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean)">
+	/// KeywordHighlighter searches a document for registered keywords and
+	/// applies char-class associated with the keyword set to the found words.
+	/// For example, C/C++ source code includes keywords and pre-processor
+	/// macro keywords so user may define one keyword set containing all
+	/// C/C++ keywords and associate <see cref="Sgry.Azuki.CharClass"
+	/// >CharClass</see>.Keyword, and another keyword set containing all
+	/// pre-processor macro keywords and associate <see
+	/// cref="Sgry.Azuki.CharClass">CharClass</see>.Macro.
+	/// To register keyword sets, use <see
+	/// cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean)">
 	/// AddKeywordSet</see> method.
 	/// </para>
 	/// <para>
-	/// Line highlight is a text pattern that begins with particular pattern at anywhere in a line
-	/// and ends at the end of the line.
-	/// Line highlight is designed to highlight single line comment syntax
-	/// that very many programming language defines.
+	/// Line highlight is a feature to highlight text patterns which begins
+	/// with particular pattern and ends at the end of the line.
+	/// This feature is designed to highlight single line comment found in
+	/// many programming language.
 	/// To register targets of line highlight, use
 	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddLineHighlight"
 	/// >AddLineHighlight</see> method.
 	/// </para>
 	/// <para>
-	/// Enclosure is a text pattern that is enclosed with a beginning pattern and an ending pattern.
-	/// Typical example of enclosure type is &quot;string literal&quot; and &quot;multiple line comment&quot;
-	/// in programming languages.
+	/// Enclosure is a text pattern that is enclosed with particular patterns.
+	/// Typical example of enclosure type is &quot;string literal&quot; and
+	/// &quot;multiple line comment&quot; found in many programming languages.
 	/// To register enclosure target, use
 	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddEnclosure(String, String, CharClass, Boolean, Char)">
 	/// AddEnclosure</see> method.
 	/// </para>
+	/// <para>
+	/// Regular expression is one of the most flexible and popular method to
+	/// express character sequence pattern. To register a regular expression,
+	/// give <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddRegex"
+	/// >AddRegex</see> method a pair of a regular expression and a list of
+	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>es. The CharClasses
+	/// will be used for each captured group in the regular expression, from
+	/// first to the end. The regular expression must contain at least one
+	/// group, and the number of CharClass list must be equal to the number
+	/// of the capturing groups defined in the regular expression.
+	/// </para>
+	/// <para>
+	/// Here are some notes about highlighting with regular expressions.
+	/// </para>
+	/// <list type="bullet">
+	///		<item>
+	///		The reason of using grouping in the regular expression feature is,
+	///		a regular expression specifying a pattern to be highlighted also
+	///		contains the preceding and/or following parts in many scenarios so
+	///		there should be a method to exclude such extra parts from
+	///		highlighting. For example, a regular expression to specify property
+	///		name part of INI format might be '^[^=]\s*=', which contains an
+	///		equal sign at the end. I suppose nobody want to highlight the sign
+	///		as a 'property name,' so it should be '^([^=])\s*=', and the list
+	///		of CharClass should contain only one element: CharClass.Property.
+	///		</item>
+	///		<item>
+	///		The back-end of this feature is System. Text. RegularExpressions.
+	///		Regex, which is provided by .NET Framework. For detail of regular
+	///		expression, refer to the reference manual of that class.
+	///		</item>
+	/// </list>
 	/// </remarks>
 	/// <example>
 	/// <para>
@@ -66,22 +99,26 @@ namespace Sgry.Azuki.Highlighter
 	/// <code lang="C#">
 	/// KeywordHighlighter kh = new KeywordHighlighter();
 	/// 
-	/// // register keyword set
+	/// // Registering keyword set
 	/// kh.AddKeywordSet( new string[]{
 	/// 	"abstract", "as", "base", "bool", ...
 	/// }, CharClass.Keyword );
 	/// 
-	/// // register pre-processor keywords
-	/// kh.AddKeywordSet( new string[] {
-	/// 	"#define", "#elif", "#else", "#endif", ...
-	/// }, CharClass.Macro );
+	/// // Registering pre-processor keywords
+	/// // (To avoid macro keywords to be highlighted again,
+	/// // keyword list is defined as non-capturing group.)
+	/// string macros = "define|elif|else|endif|endregion|error...
+	/// kh.AddRegex(
+	/// 	new Regex(@"^\s*(#\s*(?:" + words + "))"),
+	/// 	new CharClass[]{CharClass.Macro}
+	/// );
 	/// 
-	/// // register string literals and character literal
+	/// // Registering string literals and character literal
 	/// kh.AddEnclosure( "'", "'", CharClass.String, false, '\\' );
 	/// kh.AddEnclosure( "@\"", "\"", CharClass.String, true, '\"' );
 	/// kh.AddEnclosure( "\"", "\"", CharClass.String, false, '\\' );
 	/// 
-	/// // register comment
+	/// // Registering comment
 	/// kh.AddEnclosure( "/**", "*/", CharClass.DocComment, true );
 	/// kh.AddEnclosure( "/*", "*/", CharClass.Comment, true );
 	/// kh.AddLineHighlight( "///", CharClass.DocComment );
@@ -487,7 +524,7 @@ namespace Sgry.Azuki.Highlighter
 		/// <param name="regex">
 		/// A regular expression expressing a text pattern to be highlighted.
 		/// </param>
-		/// <param name="klass">
+		/// <param name="klassList">
 		/// A list of character classes to be assigned,
 		/// for each captured groups in the regular expression.
 		/// </param>

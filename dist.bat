@@ -1,32 +1,33 @@
 @echo off
 setlocal
 
-set version=%~1
-set sevenzip=a
-set msbuild_opt=-nologo -v:m -t:Build -clp:ForceNoAlign;ShowCommandLine
+set FDIR=%SystemRoot%\Microsoft.NET\Framework\v4.0.30319
+set VER=%~1
+set SEVENZIP=a
+set MSBUILD_OPT=-nologo -v:m -t:Build -clp:ForceNoAlign;ShowCommandLine
 
 :: test environment
-(msbuild.exe 2>&1) > NUL
+(%FDIR%\MSBuild.exe 2>&1) > NUL
 if "%ERRORLEVEL%" == "9009" (
-	echo msbuild.exe was not found in PATH.
+	echo msbuild.exe was not found.
 	goto ERROR
 )
 (7z 2>&1) > NUL
 if not "%ERRORLEVEL%" == "9009" (
-	set sevenzip=7z
+	set SEVENZIP=7z
 )
 (7za 2>&1) > NUL
 if not "%ERRORLEVEL%" == "9009" (
-	set sevenzip=7za
+	set SEVENZIP=7za
 )
-if "%sevenzip%" == "a" (
+if "%SEVENZIP%" == "a" (
 	echo 7-Zip commands were not found in PATH.
 	goto ERROR
 )
 
-:: ask for version
-if "%version%" == "" (
-	set /p version="Please input version string (ex: 1.2.0):"
+:: Determine version
+if "%VER%" == "" (
+	set /p VER="Please input version string (ex: 1.2.0):"
 )
 
 
@@ -34,7 +35,7 @@ if "%version%" == "" (
 echo ========================================
 echo   [1/4] run tests
 echo ========================================
-msbuild.exe AzukiTest.vs8.sln %msbuild_opt%
+%FDIR%\MSBuild.exe AzukiTest.vs9.sln %MSBUILD_OPT%
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
@@ -51,7 +52,7 @@ echo.
 echo ========================================
 echo   [2/4] build assembly
 echo ========================================
-msbuild.exe All.vs8.sln %msbuild_opt% -p:Configuration=Release
+%FDIR%\MSBuild.exe All.vs9.sln %MSBUILD_OPT% -p:Configuration=Release
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
@@ -63,7 +64,7 @@ echo ========================================
 echo   [3/4] generating API document
 echo ========================================
 pushd doc
-	msbuild  /p:Configuration=Release  /p:CleanIntermediates=True  Document.shfbproj
+	%FDIR%\MSBuild.exe  /p:Configuration=Release  /p:CleanIntermediates=True  Document.shfbproj
 popd
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
@@ -75,7 +76,7 @@ echo ========================================
 echo   [4/4] make archive
 echo ========================================
 pushd package
-%sevenzip% a -tzip -mx=9 .\zip\Azuki-%version%-bin.zip @dist.list
+%SEVENZIP% a -tzip -mx=9 .\zip\Azuki-%VER%-bin.zip @dist.list
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
@@ -83,11 +84,11 @@ popd
 
 pushd doc
 move .\Release\*.chm .\
-%sevenzip% a -tzip -mx=9 ..\package\zip\Azuki-%version%-api-web.zip Release
+%SEVENZIP% a -tzip -mx=9 ..\package\zip\Azuki-%VER%-api-web.zip Release
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
-%sevenzip% a -tzip -mx=9 ..\package\zip\Azuki-%version%-api-chm.zip .\*.chm
+%SEVENZIP% a -tzip -mx=9 ..\package\zip\Azuki-%VER%-api-chm.zip .\*.chm
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )

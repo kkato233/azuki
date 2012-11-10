@@ -590,20 +590,13 @@ namespace Sgry.Azuki
 			}
 
 			// determine where to start and where to end highlighting
-			dirtyBegin = param.H_InvalidRangeBegin;
-			if( dirtyBegin < 0 )
-			{
-				dirtyBegin = 0;
-			}
-			dirtyEnd = Math.Max( dirtyBegin, param.H_InvalidRangeEnd );
-			if( doc.Length < dirtyEnd )
-			{
-				dirtyEnd = doc.Length;
-			}
+			dirtyBegin = Math.Max( 0, param.H_InvalidRangeBegin );
+			dirtyEnd = Math.Min( Math.Max(dirtyBegin, param.H_InvalidRangeEnd),
+								 doc.Length );
 
 			// clear the invalid range
 			param.H_InvalidRangeBegin = Int32.MaxValue;
-			param.H_InvalidRangeEnd = Int32.MinValue;
+			param.H_InvalidRangeEnd = 0;
 			param.H_IsInvalid = false;
 
 			// do nothing if no highlighter was set to the active document
@@ -614,7 +607,7 @@ namespace Sgry.Azuki
 
 			// highlight
 			Debug.Assert( 0 <= dirtyBegin );
-			Debug.Assert( dirtyBegin != Int32.MaxValue );
+			Debug.Assert( dirtyBegin < dirtyEnd );
 			doc.Highlighter.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
 
 			// remember highlighted range of text
@@ -750,17 +743,16 @@ namespace Sgry.Azuki
 			// so that the highlighter thread can highlight them on next run
 			if( Document != null && Document.Highlighter != null )
 			{
-				ViewParam param = Document.ViewParam;
+				ViewParam vp = Document.ViewParam;
 				int end = GetIndexOfLastVisibleCharacter();
-				if( param.H_ValidRangeEnd < end )
+				if( vp.H_ValidRangeEnd < end )
 				{
-					if( param.H_InvalidRangeBegin < 0
-						|| param.H_ValidRangeEnd < param.H_InvalidRangeBegin )
-					{
-						param.H_InvalidRangeBegin = param.H_ValidRangeEnd;
-					}
-					param.H_InvalidRangeEnd = Math.Max( param.H_InvalidRangeEnd, end );
-					param.H_IsInvalid = true;
+					Debug.Assert( 0 <= vp.H_InvalidRangeBegin );
+					vp.H_InvalidRangeBegin = Math.Min( vp.H_InvalidRangeBegin,
+													   vp.H_ValidRangeEnd );
+					vp.H_InvalidRangeEnd = Math.Max( vp.H_InvalidRangeEnd,
+													 end );
+					vp.H_IsInvalid = true;
 					_UI.RescheduleHighlighting();
 				}
 			}

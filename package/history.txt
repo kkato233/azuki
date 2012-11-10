@@ -3,6 +3,7 @@
  * add: Added IniHighlighter for highlighting .ini / .properties file format
  * add: Added JavaScriptHighlighter
  * add: Now CSharpHighlighter highlights preprocessor directive even if a sharp sign and keyword are separated with white spaces
+ * add: Added Document.GetLineEndIndexFromCharIndex method
  * fix: Switching highlighter while the document is empty raises an exception
  * add: [Ann] Added feature to highlight .ini / .properties files
  * add: [Ann] Added feature to highlight JavaScript files

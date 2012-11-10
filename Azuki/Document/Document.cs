@@ -1641,38 +1641,68 @@ namespace Sgry.Azuki
 
 		#region Index Conversion
 		/// <summary>
-		/// Gets the index of the first char in the logical line.
+		/// Gets index of the first character in specified logical line.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// Specified index is out of valid range.
+		/// </exception>
 		public int GetLineHeadIndex( int lineIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid index was given (lineIndex:"+lineIndex+", this.LineCount:"+LineCount+")." );
+				throw new ArgumentOutOfRangeException( "lineIndex",
+					"Invalid index was given (lineIndex:" + lineIndex
+					+ ", document.LineCount:" + LineCount + ")." );
 
 			return _LHI[ lineIndex ];
 		}
 
 		/// <summary>
-		/// Gets the index of the first char in the logical line
+		/// Gets index of the first char in the logical line
 		/// which contains the specified char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// Specified index is out of valid range.
+		/// </exception>
 		public int GetLineHeadIndexFromCharIndex( int charIndex )
 		{
-			if( charIndex < 0 || _Buffer.Count < charIndex ) // charIndex can be char-count
-				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", this.Length:"+Length+")." );
+			if( charIndex < 0 || _Buffer.Count < charIndex )
+				throw new ArgumentOutOfRangeException( "charIndex",
+					"Invalid index was given (charIndex:" + charIndex
+					+ ", document.Length:" + Length + ")." );
 
 			return LineLogic.GetLineHeadIndexFromCharIndex( _Buffer, _LHI, charIndex );
 		}
 
 		/// <summary>
+		/// Gets index of the end position of the line
+		/// which contains a character at the specified index.
+		/// </summary>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// Specified index is out of valid range.
+		/// </exception>
+		public int GetLineEndIndexFromCharIndex( int charIndex )
+		{
+			//NO_NEED//check( charIndex < 0 || Length < charIndex )
+
+			int lineIndex = GetLineIndexFromCharIndex( charIndex );
+			if( lineIndex+1 < LineCount )
+				return GetLineHeadIndex( lineIndex+1 );
+			else
+				return Length;
+		}
+
+		/// <summary>
 		/// Calculates logical line index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// Specified index is out of valid range.
+		/// </exception>
 		public int GetLineIndexFromCharIndex( int charIndex )
 		{
-			if( charIndex < 0 || _Buffer.Count < charIndex ) // charIndex can be char-count
-				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", this.Length:"+Length+")." );
+			if( charIndex < 0 || _Buffer.Count < charIndex )
+				throw new ArgumentOutOfRangeException( "charIndex",
+					"Invalid index was given (charIndex:" + charIndex
+					+ ", document.Length:" + Length + ")." );
 
 			return LineLogic.GetLineIndexFromCharIndex( _LHI, charIndex );
 		}
@@ -1680,33 +1710,51 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates logical line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
-		public void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// Specified index is out of valid range.
+		/// </exception>
+		public void GetLineColumnIndexFromCharIndex( int charIndex,
+													 out int lineIndex,
+													 out int columnIndex )
 		{
-			if( charIndex < 0 || _Buffer.Count < charIndex ) // charIndex can be char-index
-				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", this.Length:"+Length+")." );
+			if( charIndex < 0 || _Buffer.Count < charIndex )
+				throw new ArgumentOutOfRangeException( "charIndex",
+					"Invalid index was given (charIndex:" + charIndex
+					+ ", document.Length:" + Length + ")." );
 
-			LineLogic.GetLineColumnIndexFromCharIndex( _Buffer, _LHI, charIndex, out lineIndex, out columnIndex );
+			LineLogic.GetLineColumnIndexFromCharIndex( _Buffer,
+													   _LHI,
+													   charIndex,
+													   out lineIndex,
+													   out columnIndex );
 		}
 
 		/// <summary>
 		/// Calculates char-index from logical line/column index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of valid range.</exception>
-		public int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// Specified index is out of valid range.
+		/// </exception>
+		public int GetCharIndexFromLineColumnIndex( int lineIndex,
+													int columnIndex )
 		{
 			if( lineIndex < 0 || _LHI.Count <= lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid index was given (lineIndex:"+lineIndex+", this.LineCount:"+LineCount+")." );
+				throw new ArgumentOutOfRangeException( "lineIndex",
+					"Invalid index was given (lineIndex:" + lineIndex
+					+ ", this.LineCount:" + LineCount + ")." );
 			if( columnIndex < 0 )
-				throw new ArgumentOutOfRangeException( "columnIndex", "Invalid index was given (columnIndex:"+columnIndex+")." );
+				throw new ArgumentOutOfRangeException( "columnIndex",
+					"Invalid index was given (columnIndex:"
+					+ columnIndex + ")." );
 
 			int index;
 
-			index = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI, lineIndex, columnIndex );
+			index = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer,
+															   _LHI,
+															   lineIndex,
+															   columnIndex );
 			if( _Buffer.Count < index )
 			{
-				// strict validation of column index is only done in debug build (for performance)
-				// but exceeding buffer size may crash application so checks only that problem
 				index = _Buffer.Count;
 			}
 

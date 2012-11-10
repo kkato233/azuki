@@ -1,4 +1,3 @@
-// 2011-09-25
 using System;
 using System.Windows.Forms;
 
@@ -54,7 +53,7 @@ namespace Sgry.Ann
 		/// <summary>
 		/// Shows find dialog.
 		/// </summary>
-		public static AnnAction Find
+		public static AnnAction ShowFindDialog
 			= delegate( AppLogic app )
 		{
 			app.MainForm.ActivateSearchPanel();
@@ -84,6 +83,29 @@ namespace Sgry.Ann
 
 			// seek to previous occurrence
 			app.FindPrev();
+		};
+
+		/// <summary>
+		/// Shows "GotoLine" dialog.
+		/// </summary>
+		public static AnnAction ShowGotoDialog
+			= delegate( AppLogic app )
+		{
+			using( GotoForm form = new GotoForm() )
+			{
+				Document doc = app.ActiveDocument;
+				form.LineNumber = doc.GetLineIndexFromCharIndex( doc.CaretIndex ) + 1;
+				DialogResult result = form.ShowDialog();
+				if( result == DialogResult.OK
+					&& form.LineNumber < doc.LineCount)
+				{
+					int index = doc.GetLineHeadIndex(
+								form.LineNumber - 1
+							);
+					doc.SetSelection( index, index );
+					app.MainForm.Azuki.ScrollToCaret();
+				}
+			}
 		};
 
 		/// <summary>

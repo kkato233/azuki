@@ -19,7 +19,7 @@ namespace Sgry.Ann
 		Dictionary<MenuItem, AnnAction> _MenuMap = new Dictionary<MenuItem,AnnAction>();
 		Dictionary<Keys, AnnAction>	_KeyMap = new Dictionary<Keys, AnnAction>();
 		Timer _TimerForDelayedActivatedEvent = new Timer();
-		const string StatusMsg_CaretPos = "Position:{3} (line {0} column {1} char {2})";
+		const string StatusMsg_CaretPos = "Position:{3:N0} (Line {0:N0}, Col {1:N0}, Char {2:N0})";
 		#endregion
 
 		#region Init / Dispose
@@ -282,10 +282,11 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Edit_Cut ]		= Actions.Cut;
 			_MenuMap[ _MI_Edit_Copy ]		= Actions.Copy;
 			_MenuMap[ _MI_Edit_Paste ]		= Actions.Paste;
-			_MenuMap[ _MI_Edit_Find ]		= Actions.Find;
+			_MenuMap[ _MI_Edit_Find ]		= Actions.ShowFindDialog;
 			_MenuMap[ _MI_Edit_FindNext ]	= Actions.FindNext;
 			_MenuMap[ _MI_Edit_FindPrev ]	= Actions.FindPrev;
 			_MenuMap[ _MI_Edit_SelectAll ]	= Actions.SelectAll;
+			_MenuMap[ _MI_Edit_GotoLine ]	= Actions.ShowGotoDialog;
 			_MenuMap[ _MI_Edit_EolCode_CRLF ]	= Actions.SetEolCodeToCRLF;
 			_MenuMap[ _MI_Edit_EolCode_LF ]		= Actions.SetEolCodeToLF;
 			_MenuMap[ _MI_Edit_EolCode_CR ]		= Actions.SetEolCodeToCR;
@@ -329,10 +330,11 @@ namespace Sgry.Ann
 			_KeyMap[ Keys.X|Keys.Control ]				= Actions.Cut;
 			_KeyMap[ Keys.C|Keys.Control ]				= Actions.Copy;
 			_KeyMap[ Keys.V|Keys.Control ]				= Actions.Paste;
-			_KeyMap[ Keys.F|Keys.Control ]				= Actions.Find;
+			_KeyMap[ Keys.F|Keys.Control ]				= Actions.ShowFindDialog;
 			_KeyMap[ Keys.G|Keys.Control ]				= Actions.FindNext;
 			_KeyMap[ Keys.G|Keys.Control|Keys.Shift ]	= Actions.FindPrev;
 			_KeyMap[ Keys.A|Keys.Control ]				= Actions.SelectAll;
+			_KeyMap[ Keys.L|Keys.Control ]				= Actions.ShowGotoDialog;
 
 			_KeyMap[ Keys.PageDown|Keys.Control ]		= Actions.ActivateNextDocument;
 			_KeyMap[ Keys.PageUp|Keys.Control ]			= Actions.ActivatePrevDocument;
@@ -466,7 +468,7 @@ namespace Sgry.Ann
 
 				// Display the number
 				_Status_Message.Text = String.Format(
-						"{0:N0} chars ({1} bytes) selected.",
+						"{0:N0} chars ({1:N0} bytes) selected.",
 						charCount, columnCountStr
 					);
 			}
@@ -647,6 +649,7 @@ namespace Sgry.Ann
 			_MI_Edit.MenuItems.Add( _MI_Edit_FindPrev );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Sep2 );
 			_MI_Edit.MenuItems.Add( _MI_Edit_SelectAll );
+			_MI_Edit.MenuItems.Add( _MI_Edit_GotoLine );
 			_MI_Edit.MenuItems.Add( _MI_Edit_Sep3 );
 			_MI_Edit.MenuItems.Add( _MI_Edit_EolCode );
 			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CRLF );
@@ -698,6 +701,7 @@ namespace Sgry.Ann
 			_MI_Edit_FindPrev.Text = "Find &previous";
 			_MI_Edit_Sep2.Text = "-";
 			_MI_Edit_SelectAll.Text = "Select &All";
+			_MI_Edit_GotoLine.Text = "&Goto line...";
 			_MI_Edit_Sep3.Text = "-";
 			_MI_Edit_EolCode.Text = "Set &line end code";
 			_MI_Edit_EolCode_CRLF.Text = "&CR+LF";
@@ -819,6 +823,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Edit_FindPrev	= new MenuItem();
 		MenuItem _MI_Edit_Sep2		= new MenuItem();
 		MenuItem _MI_Edit_SelectAll	= new MenuItem();
+		MenuItem _MI_Edit_GotoLine	= new MenuItem();
 		MenuItem _MI_Edit_Sep3		= new MenuItem();
 		MenuItem _MI_Edit_EolCode		= new MenuItem();
 		MenuItem _MI_Edit_EolCode_CRLF	= new MenuItem();

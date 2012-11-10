@@ -49,6 +49,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GotoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MyMutex.cs" />
     <Compile Include="PseudoPipe.cs" />
     <Compile Include="Resource.Designer.cs">

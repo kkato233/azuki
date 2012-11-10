@@ -1,7 +1,5 @@
 ﻿// file: ViewParam.cs
 // brief: Parameters associated with each document used internally by View and UiImpl.
-// author: YAMAMOTO Suguru
-// update: 2011-05-15
 //=========================================================
 using System;
 
@@ -41,7 +39,7 @@ namespace Sgry.Azuki
 		/// <summary>Beginning position of the range to be highlighted.</summary>
 		public int H_InvalidRangeBegin = Int32.MaxValue;
 		/// <summary>Ending position of the range to be highlighted.</summary>
-		public int H_InvalidRangeEnd = Int32.MinValue;
+		public int H_InvalidRangeEnd = 0;
 		/// <summary>Beginning position of the range which was already highlighted.</summary>
 		public int H_ValidRangeBegin = 0;
 		/// <summary>Ending position of the range which was already highlighted.</summary>

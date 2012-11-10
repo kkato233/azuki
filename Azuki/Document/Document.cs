@@ -2422,7 +2422,7 @@ namespace Sgry.Azuki
 
 				// clear highlighter related parameters
 				ViewParam.H_InvalidRangeBegin = Int32.MaxValue;
-				ViewParam.H_InvalidRangeEnd = Int32.MinValue;
+				ViewParam.H_InvalidRangeEnd = 0;
 				ViewParam.H_ValidRangeBegin = 0;
 				ViewParam.H_ValidRangeEnd = 0;
 			}

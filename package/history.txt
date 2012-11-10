@@ -7,6 +7,7 @@
  * fix: Switching highlighter while the document is empty raises an exception
  * add: [Ann] Added feature to highlight .ini / .properties files
  * add: [Ann] Added feature to highlight JavaScript files
+ * mod: [Ann] Changed how to display information about caret position and selection
 
 == 1.7.1 (2012-11-01) ==
  * fix: Placing a token which is similar to the closer of an Enclosure (of KeywordHighlighter) at the end of file causes an exception.

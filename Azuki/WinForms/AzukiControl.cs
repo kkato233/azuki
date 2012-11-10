@@ -2828,180 +2828,167 @@ namespace Sgry.Azuki.WinForms
 		#region Custom Window Procedure (handling v/h scroll and paint event etc.)
 		IntPtr CustomWndProc( IntPtr window, UInt32 message, IntPtr wParam, IntPtr lParam )
 		{
-			try
+			if( message == WinApi.WM_PAINT )
 			{
-				if( message == WinApi.WM_PAINT )
+				WinApi.PAINTSTRUCT ps;
+
+				// .NET's Paint event does not inform invalidated region when double buffering was disabled.
+				// In addition to this, Control.SetStyle is not supported in Compact Framework
+				// and thus enabling double buffering seems impossible.
+				// Therefore painting logic is called here.
+				unsafe
 				{
-					WinApi.PAINTSTRUCT ps;
+					WinApi.BeginPaint( window, &ps );
 
-					// .NET's Paint event does not inform invalidated region when double buffering was disabled.
-					// In addition to this, Control.SetStyle is not supported in Compact Framework
-					// and thus enabling double buffering seems impossible.
-					// Therefore painting logic is called here.
-					unsafe
-					{
-						WinApi.BeginPaint( window, &ps );
+					Rectangle rect = new Rectangle( ps.paint.left, ps.paint.top, ps.paint.right-ps.paint.left, ps.paint.bottom-ps.paint.top );
+					_Impl.HandlePaint( rect );
 
-						Rectangle rect = new Rectangle( ps.paint.left, ps.paint.top, ps.paint.right-ps.paint.left, ps.paint.bottom-ps.paint.top );
-						_Impl.HandlePaint( rect );
+					WinApi.EndPaint( window, &ps );
+				}
 
-						WinApi.EndPaint( window, &ps );
-					}
+				// return zero here to prevent executing original painting logic of Control class.
+				// (if the original logic runs,
+				// we will get invalid(?) update region from BeginPaint API in Windows XP or former.)
+				return IntPtr.Zero;
+			}
+#			if !PocketPC
+			else if( DesignMode )
+			{
+				; // do nothing
+			}
+#			endif
+			else if( message == WinApi.WM_VSCROLL )
+			{
+				HandleVScrollEvent( wParam.ToInt32() & 0xffff );
+			}
+			else if( message == WinApi.WM_HSCROLL )
+			{
+				HandleHScrollEvent( wParam.ToInt32() & 0xffff );
+			}
+			else if( message == WinApi.WM_MOUSEWHEEL )
+			{
+				// [*] on Vista x64, wParam value SHOULD be signed 64 bit like next:
+				// 0xFFFFFFFFFF880000
+				// but sometimes invalid value like next will be sent for same scroll action:
+				// 0x00000000FE980000
+				// so we should get extract 3rd and 4th byte and make it 16-bit int
 
-					// return zero here to prevent executing original painting logic of Control class.
-					// (if the original logic runs,
-					// we will get invalid(?) update region from BeginPaint API in Windows XP or former.)
+				const int threashold = 120;
+				int linesPerWheel;
+				Int16 wheelDelta;
+				int scrollCount;
+
+				// get line count to scroll on each wheel event
+#				if !PocketPC
+				linesPerWheel = SystemInformation.MouseWheelScrollLines;
+#				else
+				linesPerWheel = 1;
+#				endif
+
+				// calculate wheel position
+				wheelDelta = (Int16)( wParam.ToInt64() << 32 >> 48 ); // [*]
+				_WheelPos += wheelDelta;
+
+				// do scroll when the scroll position exceeds threashould
+				scrollCount = _WheelPos / threashold;
+				_WheelPos = _WheelPos % threashold;
+				if( 0 != scrollCount )
+				{
+					HandleWheelEvent( -(linesPerWheel * scrollCount) );
+				}
+			}
+			else if( message == WinApi.WM_CHAR )
+			{
+#				if PocketPC
+				if( 0 < _ImeCompositionCharCount )
+				{
+					_ImeCompositionCharCount--;
 					return IntPtr.Zero;
 				}
-#				if !PocketPC
-				else if( DesignMode )
-				{
-					; // do nothing
-				}
-#				endif
-				else if( message == WinApi.WM_VSCROLL )
-				{
-					HandleVScrollEvent( wParam.ToInt32() & 0xffff );
-				}
-				else if( message == WinApi.WM_HSCROLL )
-				{
-					HandleHScrollEvent( wParam.ToInt32() & 0xffff );
-				}
-				else if( message == WinApi.WM_MOUSEWHEEL )
-				{
-					// [*] on Vista x64, wParam value SHOULD be signed 64 bit like next:
-					// 0xFFFFFFFFFF880000
-					// but sometimes invalid value like next will be sent for same scroll action:
-					// 0x00000000FE980000
-					// so we should get extract 3rd and 4th byte and make it 16-bit int
-
-					const int threashold = 120;
-					int linesPerWheel;
-					Int16 wheelDelta;
-					int scrollCount;
-
-					// get line count to scroll on each wheel event
-#					if !PocketPC
-					linesPerWheel = SystemInformation.MouseWheelScrollLines;
-#					else
-					linesPerWheel = 1;
-#					endif
-
-					// calculate wheel position
-					wheelDelta = (Int16)( wParam.ToInt64() << 32 >> 48 ); // [*]
-					_WheelPos += wheelDelta;
-
-					// do scroll when the scroll position exceeds threashould
-					scrollCount = _WheelPos / threashold;
-					_WheelPos = _WheelPos % threashold;
-					if( 0 != scrollCount )
-					{
-						HandleWheelEvent( -(linesPerWheel * scrollCount) );
-					}
-				}
-				else if( message == WinApi.WM_CHAR )
-				{
-#					if PocketPC
-					if( 0 < _ImeCompositionCharCount )
-					{
-						_ImeCompositionCharCount--;
-						return IntPtr.Zero;
-					}
-#					endif
-				}
-				else if( message == WinApi.WM_IME_CHAR )
-				{
-					if( IsOverwriteMode == false )
-						return IntPtr.Zero;
-				}
-				else if( message == WinApi.WM_IME_COMPOSITION )
-				{
-					if( IsOverwriteMode == false
-						&& (lParam.ToInt32() & WinApi.GCS_RESULTSTR) != 0 )
-					{
-						string text;
-
-						unsafe
-						{
-							IntPtr ime;
-							int len;
-
-							ime = WinApi.ImmGetContext( Handle );
-							len = WinApi.ImmGetCompositionStringW( ime, WinApi.GCS_RESULTSTR, null, 0 );
-							fixed( char* buf = new char[len+1] )
-							{
-								WinApi.ImmGetCompositionStringW( ime, WinApi.GCS_RESULTSTR, (void*)buf, (uint)len );
-								buf[len] = '\0';
-								text = new String( buf );
-							}
-							WinApi.ImmReleaseContext( Handle, ime );
-						}
-
-						_Impl.HandleTextInput( text );
-#						if PocketPC
-						_ImeCompositionCharCount = text.Length;
-#						endif
-					}
-				}
-				else if( message == WinApi.WM_IME_STARTCOMPOSITION )
-				{
-#					if PocketPC
-					_ImeCompositionCharCount = 0;
-#					endif
-
-					// move IMM window to caret position
-					WinApi.SetImeWindowFont( Handle, View.FontInfo );
-				}
-				else if( message == WinApi.WM_IME_ENDCOMPOSITION )
-				{
-#					if PocketPC
-					_ImeCompositionCharCount = 0;
-#					endif
-				}
-				else if( message == WinApi.WM_IME_REQUEST
-					&& wParam.ToInt64() == (long)WinApi.IMR_RECONVERTSTRING )
-				{
-					int rc;
-
-					unsafe {
-						rc = HandleImeReconversion( (WinApi.RECONVERTSTRING*)lParam.ToPointer() );
-					}
-
-					return new IntPtr( rc );
-				}
-#				if PocketPC
-				else if( message == WinApi.WM_KEYDOWN )
-				{
-					// Default behavior of .NET Control class for WM_KEYDOWN
-					// moves focus and there seems to be no way to prevent moving focus on WinCE env.
-					// Thus here I hook WM_KEYDOWN message and control focus
-					Keys keyCode = (Keys)wParam.ToInt32();
-					Keys keyData = keyCode | WinApi.GetCurrentModifierKeyStates();
-					if( keyData == (Keys.Tab)
-						&& AcceptsTab )
-					{
-						OnKeyDown( new KeyEventArgs(keyData) );
-						return IntPtr.Zero;
-					}
-					if( keyData == (Keys.Tab | Keys.Control)
-						&& UseCtrlTabToMoveFocus == false )
-					{
-						OnKeyDown( new KeyEventArgs(keyData) );
-						return IntPtr.Zero;
-					}
-				}
 #				endif
 			}
-			catch( Exception ex )
+			else if( message == WinApi.WM_IME_CHAR )
 			{
-				// because window proc was overwritten,
-				// exceptions thrown in this method can not be handled well.
-				// so we catch them here.
-				Console.Error.WriteLine( ex );
-#				if DEBUG
-				MessageBox.Show( ex.ToString(), "azuki bug" );
+				if( IsOverwriteMode == false )
+					return IntPtr.Zero;
+			}
+			else if( message == WinApi.WM_IME_COMPOSITION )
+			{
+				if( IsOverwriteMode == false
+					&& (lParam.ToInt32() & WinApi.GCS_RESULTSTR) != 0 )
+				{
+					string text;
+
+					unsafe
+					{
+						IntPtr ime;
+						int len;
+
+						ime = WinApi.ImmGetContext( Handle );
+						len = WinApi.ImmGetCompositionStringW( ime, WinApi.GCS_RESULTSTR, null, 0 );
+						fixed( char* buf = new char[len+1] )
+						{
+							WinApi.ImmGetCompositionStringW( ime, WinApi.GCS_RESULTSTR, (void*)buf, (uint)len );
+							buf[len] = '\0';
+							text = new String( buf );
+						}
+						WinApi.ImmReleaseContext( Handle, ime );
+					}
+
+					_Impl.HandleTextInput( text );
+#					if PocketPC
+					_ImeCompositionCharCount = text.Length;
+#					endif
+				}
+			}
+			else if( message == WinApi.WM_IME_STARTCOMPOSITION )
+			{
+#				if PocketPC
+				_ImeCompositionCharCount = 0;
+#				endif
+
+				// move IMM window to caret position
+				WinApi.SetImeWindowFont( Handle, View.FontInfo );
+			}
+			else if( message == WinApi.WM_IME_ENDCOMPOSITION )
+			{
+#				if PocketPC
+				_ImeCompositionCharCount = 0;
 #				endif
 			}
+			else if( message == WinApi.WM_IME_REQUEST
+				&& wParam.ToInt64() == (long)WinApi.IMR_RECONVERTSTRING )
+			{
+				int rc;
+
+				unsafe {
+					rc = HandleImeReconversion( (WinApi.RECONVERTSTRING*)lParam.ToPointer() );
+				}
+
+				return new IntPtr( rc );
+			}
+#			if PocketPC
+			else if( message == WinApi.WM_KEYDOWN )
+			{
+				// Default behavior of .NET Control class for WM_KEYDOWN
+				// moves focus and there seems to be no way to prevent moving focus on WinCE env.
+				// Thus here I hook WM_KEYDOWN message and control focus
+				Keys keyCode = (Keys)wParam.ToInt32();
+				Keys keyData = keyCode | WinApi.GetCurrentModifierKeyStates();
+				if( keyData == (Keys.Tab)
+					&& AcceptsTab )
+				{
+					OnKeyDown( new KeyEventArgs(keyData) );
+					return IntPtr.Zero;
+				}
+				if( keyData == (Keys.Tab | Keys.Control)
+					&& UseCtrlTabToMoveFocus == false )
+				{
+					OnKeyDown( new KeyEventArgs(keyData) );
+					return IntPtr.Zero;
+				}
+			}
+#			endif
 
 			return WinApi.CallWindowProc( _OriginalWndProcObj, window, message, wParam, lParam );
 		}

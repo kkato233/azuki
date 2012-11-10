@@ -19,6 +19,7 @@ namespace Sgry.Ann
 		Dictionary<MenuItem, AnnAction> _MenuMap = new Dictionary<MenuItem,AnnAction>();
 		Dictionary<Keys, AnnAction>	_KeyMap = new Dictionary<Keys, AnnAction>();
 		Timer _TimerForDelayedActivatedEvent = new Timer();
+		const string StatusMsg_CaretPos = "Position:{3} (line {0} column {1} char {2})";
 		#endregion
 
 		#region Init / Dispose
@@ -153,8 +154,10 @@ namespace Sgry.Ann
 					_Status_SelectionMode.Text = "";
 					break;
 			}
-			_Status_InsertionMode.Text = (Azuki.IsOverwriteMode) ? "Overwrite" : "Insert";
-			_Azuki_CaretMoved( this, EventArgs.Empty ); // emulate event to update text of caret position
+			_Status_InsertionMode.Text = (Azuki.IsOverwriteMode)
+										 ? "O/W"
+										 : "Ins";
+			_Azuki_CaretMoved( this, EventArgs.Empty ); // update caret pos
 #			endif
 
 			// apply read-only mode
@@ -436,6 +439,7 @@ namespace Sgry.Ann
 		void _Azuki_CaretMoved( object sender, EventArgs e )
 		{
 			int selLen;
+			int line, columnInHRuler, columnInChar;
 
 			selLen = _Azuki.GetSelectedTextLength();
 			if( 0 < selLen )
@@ -451,7 +455,8 @@ namespace Sgry.Ann
 				{
 					try
 					{
-						columnCountStr = _App.ActiveDocument.Encoding.GetByteCount(
+						columnCountStr =
+							_App.ActiveDocument.Encoding.GetByteCount(
 								_Azuki.GetSelectedText("")
 							).ToString("N0");
 					}
@@ -460,28 +465,26 @@ namespace Sgry.Ann
 				}
 
 				// Display the number
-				_Status_CaretPos.Text = String.Format(
+				_Status_Message.Text = String.Format(
 						"{0:N0} chars ({1} bytes) selected.",
 						charCount, columnCountStr
 					);
 			}
 			else
 			{
-				int line, columnInHRuler, columnInChar;
-
-				// get caret position
-				_Azuki.GetLineColumnIndexFromCharIndex(
-						_Azuki.CaretIndex, out line, out columnInChar
-					);
-				columnInHRuler = _Azuki.View.GetVirPosFromIndex( _Azuki.CaretIndex ).X
-					/ _Azuki.View.HRulerUnitWidth;
-
-				// display it in status bar
-				_Status_CaretPos.Text = String.Format(
-						"line:{0}, col:{1}, char:{2}",
-						line+1, columnInHRuler+1, columnInChar+1
-					);
+				_Status_Message.Text = String.Empty;
 			}
+
+			// Display caret position on status bar
+			_Azuki.GetLineColumnIndexFromCharIndex(
+					_Azuki.CaretIndex, out line, out columnInChar
+				);
+			columnInHRuler = _Azuki.View.GetVirPosFromIndex( _Azuki.CaretIndex ).X
+				/ _Azuki.View.HRulerUnitWidth;
+			_Status_CaretPos.Text = String.Format( StatusMsg_CaretPos,
+					line+1, columnInHRuler+1, columnInChar+1,
+					_Azuki.CaretIndex
+				);
 
 			// expand status bar width if its text cannot be displayed
 			using( Graphics g = CreateGraphics() )
@@ -509,16 +512,16 @@ namespace Sgry.Ann
 				{
 					// update size of status panels
 					string sampleText = String.Format(
-							AppLogic.StatusMsg_CaretPos, 999, 999, 999
+							StatusMsg_CaretPos, 9999, 9999, 9999, 9999
 						);
 					_Status_CaretPos.Width = (int)g.MeasureString(
 							sampleText, value
 						).Width;
 					_Status_SelectionMode.Width = (int)g.MeasureString(
-							"WORD_", value
+							"WORD|", value
 						).Width;
 					_Status_InsertionMode.Width = (int)g.MeasureString(
-							"Overwrite_", value
+							"O/W|", value
 						).Width;
 				}
 #				endif

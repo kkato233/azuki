@@ -47,7 +47,6 @@ namespace Sgry.Ann
 
 		static string _AppInstanceMutexName = null;
 		static string _IpcFilePath = null;
-		public static string StatusMsg_CaretPos = "line:{0}, column:{1}, char:{2}";
 
 		AnnForm _MainForm = null;
 		List<Document> _DAD_Documents = new List<Document>(); // Don't Access Directly

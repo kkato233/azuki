@@ -435,8 +435,7 @@ namespace Sgry.Azuki.Highlighter
 				// if an EOL char was found and it is single-line enclosure, stop here
 				if( pair.multiLine == false && LineLogic.IsEolChar(doc[i]) )
 				{
-					i--;
-					break;
+					return i-1;
 				}
 			}
 

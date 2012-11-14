@@ -607,7 +607,9 @@ namespace Sgry.Azuki
 
 			// highlight
 			Debug.Assert( 0 <= dirtyBegin );
-			Debug.Assert( dirtyBegin < dirtyEnd );
+			Debug.Assert( dirtyBegin <= dirtyEnd );	// even if an empty range
+													// was given, it will be
+													// expanded by highlighters
 			doc.Highlighter.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
 
 			// remember highlighted range of text

@@ -133,11 +133,11 @@ namespace Sgry.Azuki.Highlighter
 									out openerFound );
 			if( closerPos == -1 )
 			{
-				// Highlight all the followings if reached to the EOF
+				// Highlight all following characters
 				if( openerFound )
 				{
-					Highlight( doc, startIndex, doc.Length, pair.klass, proc );
-					nextParsePos = doc.Length;
+					Highlight( doc, startIndex, endIndex, pair.klass, proc );
+					nextParsePos = endIndex;
 					return true;
 				}
 				else

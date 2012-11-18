@@ -139,6 +139,12 @@ namespace Sgry.Azuki.Highlighter
 			}
 		}
 
+		class LineContentCache
+		{
+			public int lineBegin = -1;
+			public string lineContent;
+		}
+
 		class KeywordSet
 		{
 			public CharTreeNode root = new CharTreeNode();
@@ -524,6 +530,41 @@ namespace Sgry.Azuki.Highlighter
 		/// <param name="regex">
 		/// A regular expression expressing a text pattern to be highlighted.
 		/// </param>
+		/// <param name="ignoreCase">
+		/// Whether the regular expression should be matched
+		/// case-insensitively or not.
+		/// </param>
+		/// <param name="klassList">
+		/// A list of character classes to be assigned,
+		/// for each captured groups in the regular expression.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter 'regex' or 'klassList' was null.
+		/// </exception>
+		public void AddRegex( string regex,
+							  bool ignoreCase,
+							  IList<CharClass> klassList )
+		{
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+			if( klassList == null )
+				throw new ArgumentNullException( "klassList" );
+
+			RegexOptions opt = RegexOptions.Compiled;
+			if( ignoreCase )
+				opt |= RegexOptions.IgnoreCase;
+			Regex r = new Regex( regex, opt );
+
+			_RegexSets.Add( new RegexSet(r, klassList) );
+		}
+
+		/// <summary>
+		/// Entry a pattern specified with a regular expression
+		/// to be highlighted.
+		/// </summary>
+		/// <param name="regex">
+		/// A regular expression expressing a text pattern to be highlighted.
+		/// </param>
 		/// <param name="klassList">
 		/// A list of character classes to be assigned,
 		/// for each captured groups in the regular expression.
@@ -578,6 +619,7 @@ namespace Sgry.Azuki.Highlighter
 
 			int index, nextIndex;
 			bool highlighted;
+			LineContentCache cache = new LineContentCache();
 
 			// determine where to start highlighting
 			index = Utl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
@@ -639,7 +681,7 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight regular expressions
-				highlighted = TryHighlight( doc, _RegexSets,
+				highlighted = TryHighlight( doc, _RegexSets, cache,
 											index, dirtyEnd, out nextIndex );
 				if( highlighted )
 				{
@@ -750,6 +792,7 @@ namespace Sgry.Azuki.Highlighter
 
 		bool TryHighlight( Document doc,
 						   IList<RegexSet> regexSet,
+						   LineContentCache cache,
 						   int begin, int end,
 						   out int nextSeekIndex )
 		{
@@ -760,36 +803,48 @@ namespace Sgry.Azuki.Highlighter
 
 			nextSeekIndex = begin;
 
-			// Do nothing if beginning position is not head of a line
-			if( doc.Length <= begin
-				|| doc.GetLineHeadIndexFromCharIndex(begin) != begin )
+			// Do nothing if no regular expressions registered
+			if( regexSet.Count == 0 )
+			{
+				return false;
+			}
+
+			// Because KeywordHighlighter applies regular expressions line per
+			// line basis, do nothing in a middle of lines.
+			if( LineLogic.IsEolChar(doc[begin]) )
 			{
 				return false;
 			}
 
 			// Get the content of the line
-			int lineHeadIndex = begin;
-			int lineIndex = doc.GetLineIndexFromCharIndex( begin );
-			string lineContent = doc.GetLineContentWithEolCode( lineIndex );
+			int lineHeadIndex = doc.GetLineHeadIndexFromCharIndex( begin );
+			if( cache.lineBegin != lineHeadIndex )
+			{
+				cache.lineBegin = lineHeadIndex;
+				int lineIndex = doc.GetLineIndexFromCharIndex(cache.lineBegin);
+				cache.lineContent = doc.GetLineContent( lineIndex );
+			}
+			int offset = begin - cache.lineBegin;
 
 			// Evaluate regular expressions
 			foreach( RegexSet set in regexSet )
 			{
-				MatchCollection matches;
-				matches = set.regex.Matches( lineContent );
-				foreach( Match match in matches )
+				Match match = set.regex.Match( cache.lineContent, offset );
+				if( match.Success == false || match.Index != offset )
 				{
-					for( int i=1; i<match.Groups.Count; i++ )
+					continue;
+				}
+
+				for( int i=1; i<match.Groups.Count; i++ )
+				{
+					Group g = match.Groups[i];
+					int patBegin = cache.lineBegin + g.Index;
+					int patEnd = cache.lineBegin + g.Index + g.Length;
+					if( i-1 < set.klassList.Count )
 					{
-						Group g = match.Groups[i];
-						int patBegin = lineHeadIndex + g.Index;
-						int patEnd = lineHeadIndex + g.Index + g.Length;
-						if( i-1 < set.klassList.Count )
-						{
-							Utl.Highlight( doc, patBegin, patEnd,
-										   set.klassList[i-1], _HookProc );
-							nextSeekIndex = Math.Max( nextSeekIndex, patEnd );
-						}
+						Utl.Highlight( doc, patBegin, patEnd,
+									   set.klassList[i-1], _HookProc );
+						nextSeekIndex = Math.Max( nextSeekIndex, patEnd );
 					}
 				}
 			}

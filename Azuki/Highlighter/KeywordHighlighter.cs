@@ -124,11 +124,11 @@ namespace Sgry.Azuki.Highlighter
 	public class KeywordHighlighter : IHighlighter
 	{
 		#region Inner Types and Fields
-		class RegexSet
+		class RegexPattern
 		{
 			public Regex regex;
 			public IList<CharClass> klassList;
-			public RegexSet( Regex regex, IList<CharClass> klassList )
+			public RegexPattern( Regex regex, IList<CharClass> klassList )
 			{
 				this.regex = regex;
 				this.klassList = klassList;
@@ -167,10 +167,10 @@ namespace Sgry.Azuki.Highlighter
 			"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
 		HighlightHook _HookProc = null;
 		string _WordCharSet = null;
-		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
-		List<Enclosure> _Enclosures = new List<Enclosure>( 2 );
-		List<Enclosure> _LineHighlights = new List<Enclosure>( 2 );
-		List<RegexSet> _RegexSets = new List<RegexSet>( 16 );
+		List<KeywordSet> _Keywords = new List<KeywordSet>( 8 );
+		List<Enclosure> _Enclosures = new List<Enclosure>( 8 );
+		List<Enclosure> _LineHighlights = new List<Enclosure>( 8 );
+		List<RegexPattern> _RegexPatterns = new List<RegexPattern>( 8 );
 #		if DEBUG
 		internal
 #		endif
@@ -594,7 +594,7 @@ namespace Sgry.Azuki.Highlighter
 				opt |= RegexOptions.IgnoreCase;
 			Regex r = new Regex( regex, opt );
 
-			_RegexSets.Add( new RegexSet(r, klassList) );
+			_RegexPatterns.Add( new RegexPattern(r, klassList) );
 		}
 
 		/// <summary>
@@ -618,7 +618,7 @@ namespace Sgry.Azuki.Highlighter
 			if( klassList == null )
 				throw new ArgumentNullException( "klassList" );
 
-			_RegexSets.Add( new RegexSet(regex, klassList) );
+			_RegexPatterns.Add( new RegexPattern(regex, klassList) );
 		}
 
 		/// <summary>
@@ -627,7 +627,7 @@ namespace Sgry.Azuki.Highlighter
 		/// </summary>
 		public void ClearRegex()
 		{
-			_RegexSets.Clear();
+			_RegexPatterns.Clear();
 		}
 		#endregion
 
@@ -735,7 +735,7 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight regular expressions
-				highlighted = TryHighlight( doc, _RegexSets, cache,
+				highlighted = TryHighlight( doc, _RegexPatterns, cache,
 											index, dirtyEnd, out nextIndex );
 				if( highlighted )
 				{
@@ -856,20 +856,20 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		bool TryHighlight( Document doc,
-						   IList<RegexSet> regexSet,
+						   IList<RegexPattern> patterns,
 						   LineContentCache cache,
 						   int begin, int end,
 						   out int nextSeekIndex )
 		{
 			Debug.Assert( doc != null );
-			Debug.Assert( regexSet != null );
+			Debug.Assert( patterns != null );
 			Debug.Assert( 0 <= begin );
 			Debug.Assert( begin < end );
 
 			nextSeekIndex = begin;
 
 			// Do nothing if no regular expressions registered
-			if( regexSet.Count == 0 )
+			if( patterns.Count == 0 )
 			{
 				return false;
 			}
@@ -892,9 +892,9 @@ namespace Sgry.Azuki.Highlighter
 			int offset = begin - cache.lineBegin;
 
 			// Evaluate regular expressions
-			foreach( RegexSet set in regexSet )
+			foreach( RegexPattern pattern in patterns )
 			{
-				Match match = set.regex.Match( cache.lineContent, offset );
+				Match match = pattern.regex.Match( cache.lineContent, offset );
 				if( match.Success == false || match.Index != offset )
 				{
 					continue;
@@ -905,10 +905,10 @@ namespace Sgry.Azuki.Highlighter
 					Group g = match.Groups[i];
 					int patBegin = cache.lineBegin + g.Index;
 					int patEnd = cache.lineBegin + g.Index + g.Length;
-					if( i-1 < set.klassList.Count )
+					if( i-1 < pattern.klassList.Count )
 					{
 						Utl.Highlight( doc, patBegin, patEnd,
-									   set.klassList[i-1], _HookProc );
+									   pattern.klassList[i-1], _HookProc );
 						nextSeekIndex = Math.Max( nextSeekIndex, patEnd );
 					}
 				}

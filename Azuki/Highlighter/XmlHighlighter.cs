@@ -101,24 +101,9 @@ namespace Sgry.Azuki.Highlighter
 			char nextCh;
 			int index, nextIndex;
 
-			// determine where to start highlighting
-			index = Utl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
-			if( 0 <= index )
-			{
-				dirtyBegin = _ReparsePoints[index];
-			}
-			else
-			{
-				dirtyBegin = 0;
-			}
-
-			// determine where to end highlighting
-			int x = Utl.ReparsePointMinimumDistance;
-			dirtyEnd += x - (dirtyEnd % x); // next multiple of x
-			if( doc.Length < dirtyEnd )
-			{
-				dirtyEnd = doc.Length;
-			}
+			// Determine range to highlight
+			dirtyBegin = Utl.FindReparsePoint( _ReparsePoints, dirtyBegin );
+			dirtyEnd = Utl.FindReparseEndPoint( doc, dirtyEnd );
 
 			// seek each tags
 			index = 0;

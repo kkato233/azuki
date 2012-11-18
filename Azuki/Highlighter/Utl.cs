@@ -41,6 +41,66 @@ namespace Sgry.Azuki.Highlighter
 		public const int ReparsePointMinimumDistance = 1024;
 		delegate bool ClassifyCharProc( char ch );
 
+
+		#region Reparse Point
+		public static void EntryReparsePoint( SplitArray<int> reparsePoints,
+											  int index )
+		{
+			int count;
+			int leastMaximumIndex;
+
+			count = reparsePoints.Count;
+			if( count == 0 )
+			{
+				reparsePoints.Add( 0 );
+				count = 1;
+			}
+
+			// if there are remembered positions larger than current token's one,
+			// drop them
+			if( index < reparsePoints[count-1] )
+			{
+				leastMaximumIndex = Utl.FindLeastMaximum(
+						reparsePoints, index
+					);
+				reparsePoints.RemoveRange( leastMaximumIndex+1, reparsePoints.Count );
+			}
+			// if current token is not so far from currently largest position,
+			// position of current token is not worth to remember
+			else if( index < reparsePoints[count-1] + ReparsePointMinimumDistance )
+			{
+				return;
+			}
+			reparsePoints.Add( index );
+		}
+
+		public static int FindReparsePoint( SplitArray<int> reparsePoints,
+											int parseStartIndex )
+		{
+			int index = Utl.FindLeastMaximum( reparsePoints, parseStartIndex );
+			if( 0 <= index )
+			{
+				return reparsePoints[index];
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		public static int FindReparseEndPoint( Document doc,
+											   int parseEndIndex )
+		{
+			int d = Utl.ReparsePointMinimumDistance;
+			parseEndIndex += d - (parseEndIndex % d); // next multiple of x
+			if( doc.Length < parseEndIndex )
+			{
+				parseEndIndex = doc.Length;
+			}
+			return parseEndIndex;
+		}
+		#endregion
+
 		#region Utilities
 		/// <summary>
 		/// Highlight an enclosed part with specified patterns.
@@ -127,15 +187,16 @@ namespace Sgry.Azuki.Highlighter
 			int closerEndPos;
 			bool openerFound;
 
-			// Search the closer
+			// Search for a closing pattern
 			closerPos = FindCloser( doc, pair,
 									startIndex, endIndex,
 									out openerFound );
 			if( closerPos == -1 )
 			{
-				// Highlight all following characters
+				// No opening pattern nor closing pattern was found
 				if( openerFound )
 				{
+					// Highlight all the followings if reached to the end position
 					Highlight( doc, startIndex, endIndex, pair.klass, proc );
 					nextParsePos = endIndex;
 					return true;
@@ -147,7 +208,7 @@ namespace Sgry.Azuki.Highlighter
 				}
 			}
 
-			// highlight enclosed part
+			// Highlight enclosed part
 			closerEndPos = (pair.closer == null)
 							? closerPos
 							: closerPos + pair.closer.Length;
@@ -364,7 +425,7 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Returns closer pos or line-end if closer is null.
+		/// Returns where the enclosing part ends.
 		/// </summary>
 		public static int FindCloser( Document doc,
 									  Enclosure pair,
@@ -389,7 +450,7 @@ namespace Sgry.Azuki.Highlighter
 			}
 			openerFound = true;
 
-			// If no closer is specified, the end of line will be the end position
+			// If no closer was specified, EOL becomes the ending pattern
 			openerEndIndex = openerIndex + pair.opener.Length;
 			if( pair.closer == null )
 			{
@@ -397,42 +458,44 @@ namespace Sgry.Azuki.Highlighter
 				return Math.Min( lineEndIndex, endIndex );
 			}
 
-			// Closer never exists if the search range is shorter than the closer token
+			// Closing pattern will never be found if the search range is
+			// shorter than the length of it
 			if( endIndex < openerEndIndex + pair.closer.Length )
 			{
 				return -1;
 			}
 
-			// find closer
+			// Find a closing pattern
 			for( i=openerEndIndex; i<endIndex; i++ )
 			{
-				// if a closer was found, stop here
+				// If found one, return this position
 				if( StartsWith(doc, pair.closer, i) )
 				{
-					// If the closer is an escape character, this might not be a closer
-					// but an escape character (placed here to escape a closer).
-					// Skip this token in that case.
+					// If the closing pattern is exactly the same with the
+					// escape character, this can be an escape character.
 					if( pair.closer == pair.escape.ToString()
 						&& doc[i+1] == pair.escape )
 					{
 						i++;
-						continue;
+						continue; // Continue searching
 					}
 					return i;
 				}
 
-				// if an escape char was found, skip this and following escaped character(s).
+				// If an escape char was found, skip this and following
+				// escaped character(s).
 				if( doc[i] == pair.escape )
 				{
 					if( i+2 < endIndex && doc[i+1] == '\r' && doc[i+2] == '\n' )
 					{
-						i++;
+						i++; // skip one more character to skip CR+LF
 					}
 					i++;
 					continue;
 				}
 
-				// if an EOL char was found and it is single-line enclosure, stop here
+				// If an EOL char was found and it is single-line enclosure,
+				// stop here
 				if( pair.multiLine == false && LineLogic.IsEolChar(doc[i]) )
 				{
 					return i-1;
@@ -510,7 +573,7 @@ namespace Sgry.Azuki.Highlighter
 			}
 		}
 
-		public static int FindLeastMaximum( IList<int> numbers, int value )
+		static int FindLeastMaximum( IList<int> numbers, int value )
 		{
 			if( numbers.Count == 0 )
 			{
@@ -526,34 +589,6 @@ namespace Sgry.Azuki.Highlighter
 			}
 
 			return numbers.Count - 1;
-		}
-
-		public static void EntryReparsePoint( SplitArray<int> reparsePoints, int index )
-		{
-			int count;
-			int leastMaximumIndex;
-
-			// manage reparse point index list
-			count = reparsePoints.Count;
-			if( 0 < count )
-			{
-				// if there are remembered positions larger than current token's one,
-				// drop them
-				if( index < reparsePoints[count-1] )
-				{
-					leastMaximumIndex = Utl.FindLeastMaximum(
-							reparsePoints, index
-						);
-					reparsePoints.RemoveRange( leastMaximumIndex+1, reparsePoints.Count );
-				}
-				// if current token is not so far from currently largest position,
-				// position of current token is not worth to remember
-				else if( index < reparsePoints[count-1] + ReparsePointMinimumDistance )
-				{
-					return;
-				}
-			}
-			reparsePoints.Add( index );
 		}
 		#endregion
 	}

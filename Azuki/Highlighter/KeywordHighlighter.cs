@@ -128,9 +128,14 @@ namespace Sgry.Azuki.Highlighter
 		{
 			public Regex regex;
 			public IList<CharClass> klassList;
-			public RegexPattern( Regex regex, IList<CharClass> klassList )
+			public bool groupMatch;
+			public RegexPattern( Regex regex,
+								 bool groupMatch,
+								 IList<CharClass> klassList )
 			{
+				Debug.Assert( 0 < klassList.Count );
 				this.regex = regex;
+				this.groupMatch = groupMatch;
 				this.klassList = klassList;
 			}
 		}
@@ -561,6 +566,28 @@ namespace Sgry.Azuki.Highlighter
 				_WordCharSet = value;
 			}
 		}
+		
+		/// <summary>
+		/// Entry a pattern specified with a regular expression (case
+		/// sensitive) to be highlighted.
+		/// </summary>
+		/// <param name="regex">
+		/// A regular expression expressing a text pattern to be highlighted.
+		/// </param>
+		/// <param name="klass">
+		/// Character class to be assigned for each characters
+		/// consisting the pattern matched with the regular expression.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter 'regex' was null.
+		/// </exception>
+		/// <exception cref="ArgumentException">
+		/// Parameter 'regex' was not a valid regular expression.
+		/// </exception>
+		public void AddRegex( string regex, CharClass klass )
+		{
+			AddRegex( regex, false, klass );
+		}
 
 		/// <summary>
 		/// Entry a pattern specified with a regular expression
@@ -573,12 +600,101 @@ namespace Sgry.Azuki.Highlighter
 		/// Whether the regular expression should be matched
 		/// case-insensitively or not.
 		/// </param>
+		/// <param name="klass">
+		/// Character class to be assigned for each characters
+		/// consisting the pattern matched with the regular expression.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter 'regex' was null.
+		/// </exception>
+		/// <exception cref="ArgumentException">
+		/// Parameter 'regex' was not a valid regular expression.
+		/// </exception>
+		public void AddRegex( string regex,
+							  bool ignoreCase,
+							  CharClass klass )
+		{
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+
+			RegexOptions opt = RegexOptions.Compiled;
+			if( ignoreCase )
+				opt |= RegexOptions.IgnoreCase;
+			Regex r = new Regex( regex, opt );
+
+			AddRegex( r, klass );
+		}
+
+		/// <summary>
+		/// Entry a pattern specified with a regular expression
+		/// to be highlighted.
+		/// </summary>
+		/// <param name="regex">
+		/// A regular expression expressing a text pattern to be highlighted.
+		/// </param>
+		/// <param name="klass">
+		/// Character class to be assigned for each characters
+		/// consisting the pattern matched with the regular expression.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter 'regex' was null.
+		/// </exception>
+		public void AddRegex( Regex regex,
+							  CharClass klass )
+		{
+			if( regex == null )
+				throw new ArgumentNullException( "regex" );
+
+			_RegexPatterns.Add( new RegexPattern( regex,
+												  false,
+												  new CharClass[]{klass} ) );
+		}
+
+		/// <summary>
+		/// Entry a pattern specified with a regular expression (case
+		/// sensitive) containing capturing groups which will be highlighted.
+		/// </summary>
+		/// <param name="regex">
+		/// A regular expression containing capturing groups
+		/// to be highlighted.
+		/// </param>
 		/// <param name="klassList">
 		/// A list of character classes to be assigned,
 		/// for each captured groups in the regular expression.
 		/// </param>
 		/// <exception cref="ArgumentNullException">
 		/// Parameter 'regex' or 'klassList' was null.
+		/// </exception>
+		/// <exception cref="ArgumentException">
+		/// Parameter 'regex' was not a valid regular expression.
+		/// </exception>
+		public void AddRegex( string regex,
+							  IList<CharClass> klassList )
+		{
+			AddRegex( regex, false, klassList );
+		}
+
+		/// <summary>
+		/// Entry a pattern specified with a regular expression containing
+		/// capturing groups which will be highlighted.
+		/// </summary>
+		/// <param name="regex">
+		/// A regular expression containing capturing groups
+		/// to be highlighted.
+		/// </param>
+		/// <param name="ignoreCase">
+		/// Whether the regular expression should be matched
+		/// case-insensitively or not.
+		/// </param>
+		/// <param name="klassList">
+		/// A list of character classes to be assigned,
+		/// for each captured groups in the regular expression.
+		/// </param>
+		/// <exception cref="ArgumentNullException">
+		/// Parameter 'regex' or 'klassList' was null.
+		/// </exception>
+		/// <exception cref="ArgumentException">
+		/// Parameter 'regex' was not a valid regular expression.
 		/// </exception>
 		public void AddRegex( string regex,
 							  bool ignoreCase,
@@ -594,15 +710,16 @@ namespace Sgry.Azuki.Highlighter
 				opt |= RegexOptions.IgnoreCase;
 			Regex r = new Regex( regex, opt );
 
-			_RegexPatterns.Add( new RegexPattern(r, klassList) );
+			AddRegex( r, klassList );
 		}
 
 		/// <summary>
-		/// Entry a pattern specified with a regular expression
-		/// to be highlighted.
+		/// Entry a pattern specified with a regular expression containing
+		/// capturing groups which will be highlighted.
 		/// </summary>
 		/// <param name="regex">
-		/// A regular expression expressing a text pattern to be highlighted.
+		/// A regular expression containing capturing groups
+		/// to be highlighted.
 		/// </param>
 		/// <param name="klassList">
 		/// A list of character classes to be assigned,
@@ -618,7 +735,7 @@ namespace Sgry.Azuki.Highlighter
 			if( klassList == null )
 				throw new ArgumentNullException( "klassList" );
 
-			_RegexPatterns.Add( new RegexPattern(regex, klassList) );
+			_RegexPatterns.Add( new RegexPattern(regex, true, klassList) );
 		}
 
 		/// <summary>
@@ -668,24 +785,9 @@ namespace Sgry.Azuki.Highlighter
 			bool highlighted;
 			LineContentCache cache = new LineContentCache();
 
-			// determine where to start highlighting
-			index = Utl.FindLeastMaximum( _ReparsePoints, dirtyBegin );
-			if( 0 <= index )
-			{
-				dirtyBegin = _ReparsePoints[index];
-			}
-			else
-			{
-				dirtyBegin = 0;
-			}
-
-			// determine where to end highlighting
-			int x = Utl.ReparsePointMinimumDistance;
-			dirtyEnd += x - (dirtyEnd % x); // next multiple of x
-			if( doc.Length < dirtyEnd )
-			{
-				dirtyEnd = doc.Length;
-			}
+			// Determine range to highlight
+			dirtyBegin = Utl.FindReparsePoint( _ReparsePoints, dirtyBegin );
+			dirtyEnd = Utl.FindReparseEndPoint( doc, dirtyEnd );
 
 			// seek each chars and do pattern matching
 			index = dirtyBegin;
@@ -863,6 +965,7 @@ namespace Sgry.Azuki.Highlighter
 		{
 			Debug.Assert( doc != null );
 			Debug.Assert( patterns != null );
+			Debug.Assert( cache != null );
 			Debug.Assert( 0 <= begin );
 			Debug.Assert( begin < end );
 
@@ -900,15 +1003,30 @@ namespace Sgry.Azuki.Highlighter
 					continue;
 				}
 
-				for( int i=1; i<match.Groups.Count; i++ )
+				if( pattern.groupMatch )
 				{
-					Group g = match.Groups[i];
-					int patBegin = cache.lineBegin + g.Index;
-					int patEnd = cache.lineBegin + g.Index + g.Length;
-					if( i-1 < pattern.klassList.Count )
+					for( int i=1; i<match.Groups.Count; i++ )
+					{
+						Group g = match.Groups[i];
+						int patBegin = cache.lineBegin + g.Index;
+						int patEnd = cache.lineBegin + g.Index + g.Length;
+						if( patBegin < patEnd
+							&& i-1 < pattern.klassList.Count )
+						{
+							Utl.Highlight( doc, patBegin, patEnd,
+										   pattern.klassList[i-1], _HookProc );
+							nextSeekIndex = Math.Max( nextSeekIndex, patEnd );
+						}
+					}
+				}
+				else
+				{
+					int patBegin = cache.lineBegin + match.Index;
+					int patEnd = cache.lineBegin + match.Index + match.Length;
+					if( patBegin < patEnd )
 					{
 						Utl.Highlight( doc, patBegin, patEnd,
-									   pattern.klassList[i-1], _HookProc );
+									   pattern.klassList[0], _HookProc );
 						nextSeekIndex = Math.Max( nextSeekIndex, patEnd );
 					}
 				}

@@ -593,6 +593,12 @@ namespace Sgry.Azuki
 			dirtyBegin = Math.Max( 0, param.H_InvalidRangeBegin );
 			dirtyEnd = Math.Min( Math.Max(dirtyBegin, param.H_InvalidRangeEnd),
 								 doc.Length );
+			if( dirtyEnd <= dirtyBegin )
+			{
+				// If characters at the end of documents was removed, or if 
+				// highlighter executed while the document was completely new.
+				return;
+			}
 
 			// clear the invalid range
 			param.H_InvalidRangeBegin = Int32.MaxValue;
@@ -606,10 +612,6 @@ namespace Sgry.Azuki
 			}
 
 			// highlight
-			Debug.Assert( 0 <= dirtyBegin );
-			Debug.Assert( dirtyBegin <= dirtyEnd );	// even if an empty range
-													// was given, it will be
-													// expanded by highlighters
 			doc.Highlighter.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
 
 			// remember highlighted range of text

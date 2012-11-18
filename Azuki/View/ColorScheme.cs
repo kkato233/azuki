@@ -277,7 +277,8 @@ namespace Sgry.Azuki
 			Color waka_midori = Color.FromArgb( 0xa8, 0xef, 0xaf ); // waka-midori iro (japanese)
 			Color himawari = Color.FromArgb( 0xff, 0xf1, 0x0f ); // himawari iro (japanese)
 			Color sax_blue = Color.FromArgb( 0x46, 0x48, 0xb8 );
-			
+			Color oreillyPerl = Color.FromArgb( 0x00, 0x97, 0xc2 );
+
 			SetColor( CharClass.Normal, Color.Black, bgcolor );
 			SetColor( CharClass.Number, Color.Black, Color.Transparent );
 			SetColor( CharClass.String, Color.Teal, Color.Transparent );
@@ -289,7 +290,7 @@ namespace Sgry.Azuki
 			SetColor( CharClass.Macro, Color.Purple, Color.Transparent );
 			SetColor( CharClass.Character, Color.Purple, Color.Transparent );
 			SetColor( CharClass.Type, Color.BlueViolet, Color.Transparent );
-			SetColor( CharClass.Regex, Color.Teal, Color.Transparent );
+			SetColor( CharClass.Regex, oreillyPerl, Color.Transparent );
 			SetColor( CharClass.Annotation, Color.Gray, Color.Transparent );
 			SetColor( CharClass.Selecter, Color.Navy, Color.Transparent );
 			SetColor( CharClass.Property, Color.Blue, Color.Transparent );

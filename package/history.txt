@@ -1,4 +1,5 @@
 == 1.7.3 (2012-xx-xx) ==
+ * mod: Changed color of regular expression literals of default color set
  * fix: KeywordHighlighter doesn't stop highlighting if no closing pattern of non-multiline enclosures was found (problem since 1.7.1)
  * fix: If certain condition is met, KeywordHighlighter doesn't stop highlighting even if a closer of multi-line enclosure was found (problem since 1.7.1)
  * fix: KeywordHighlighter highlights text patterns matched with regular expressions even if it's in an enclosed part (problem since 1.7.0)

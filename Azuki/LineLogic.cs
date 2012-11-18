@@ -397,6 +397,7 @@ namespace Sgry.Azuki
 
 		public static int NextLineHead( TextBuffer str, int startIndex )
 		{
+			DebugUtl.Assert( str != null );
 			for( int i=startIndex; i<str.Count; i++ )
 			{
 				// found EOL code?
@@ -421,6 +422,7 @@ namespace Sgry.Azuki
 
 		public static int NextLineHead( string str, int startIndex )
 		{
+			DebugUtl.Assert( str != null );
 			for( int i=startIndex; i<str.Length; i++ )
 			{
 				// found EOL code?

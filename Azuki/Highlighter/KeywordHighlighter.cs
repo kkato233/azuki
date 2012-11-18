@@ -33,42 +33,38 @@ namespace Sgry.Azuki.Highlighter
 	/// KeywordHighlighter searches a document for registered keywords and
 	/// applies char-class associated with the keyword set to the found words.
 	/// For example, C/C++ source code includes keywords and pre-processor
-	/// macro keywords so user may define one keyword set containing all
-	/// C/C++ keywords and associate <see cref="Sgry.Azuki.CharClass"
-	/// >CharClass</see>.Keyword, and another keyword set containing all
-	/// pre-processor macro keywords and associate <see
-	/// cref="Sgry.Azuki.CharClass">CharClass</see>.Macro.
-	/// To register keyword sets, use <see
-	/// cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass, Boolean)">
-	/// AddKeywordSet</see> method.
+	/// macro keywords so user may define one keyword set containing all C/C++
+	/// keywords and associate <see cref="CharClass"/>.Keyword, and another
+	/// keyword set containing all pre-processor macro keywords and associate
+	/// <see cref="CharClass"/>.Macro. To register keyword sets, use <see
+	/// cref="AddKeywordSet(String[], CharClass, Boolean)">AddKeywordSet</see>
+	/// method.
 	/// </para>
 	/// <para>
 	/// Line highlight is a feature to highlight text patterns which begins
 	/// with particular pattern and ends at the end of the line.
 	/// This feature is designed to highlight single line comment found in
-	/// many programming language.
-	/// To register targets of line highlight, use
-	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddLineHighlight"
-	/// >AddLineHighlight</see> method.
+	/// many programming language. To register targets of line highlight, use
+	/// <see cref="AddLineHighlight">AddLineHighlight</see> method.
 	/// </para>
 	/// <para>
 	/// Enclosure is a text pattern that is enclosed with particular patterns.
 	/// Typical example of enclosure type is &quot;string literal&quot; and
 	/// &quot;multiple line comment&quot; found in many programming languages.
-	/// To register enclosure target, use
-	/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddEnclosure(String, String, CharClass, Boolean, Char)">
+	/// To register enclosure target, use <see
+	/// cref="AddEnclosure(String, String, CharClass, Boolean, Char)">
 	/// AddEnclosure</see> method.
 	/// </para>
 	/// <para>
 	/// Regular expression is one of the most flexible and popular method to
 	/// express character sequence pattern. To register a regular expression,
-	/// give <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddRegex"
+	/// give <see cref="AddRegex(string, bool, IList&lt;CharClass&gt;)"
 	/// >AddRegex</see> method a pair of a regular expression and a list of
-	/// <see cref="Sgry.Azuki.CharClass">CharClass</see>es. The CharClasses
-	/// will be used for each captured group in the regular expression, from
-	/// first to the end. The regular expression must contain at least one
-	/// group, and the number of CharClass list must be equal to the number
-	/// of the capturing groups defined in the regular expression.
+	/// <see cref="CharClass"/>es. The CharClasses will be used for each
+	/// captured group in the regular expression, from first to the end. The
+	/// regular expression must contain at least one group, and the number of
+	/// CharClass list must be equal to the number of the capturing groups
+	/// defined in the regular expression.
 	/// </para>
 	/// <para>
 	/// Here are some notes about highlighting with regular expressions.
@@ -167,7 +163,8 @@ namespace Sgry.Azuki.Highlighter
 #			endif
 		}
 
-		const string DefaultWordCharSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+		const string DefaultWordCharSet =
+			"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
 		HighlightHook _HookProc = null;
 		string _WordCharSet = null;
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 16 );
@@ -182,7 +179,7 @@ namespace Sgry.Azuki.Highlighter
 
 		#region Highlight Settings
 		/// <summary>
-		/// Gets or sets whether a highlighter hook procedure can be installed or not.
+		/// Gets whether a highlighter hook procedure can be installed or not.
 		/// </summary>
 		public bool CanUseHook
 		{
@@ -192,8 +189,12 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Gets or sets highlighter hook procedure.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.Highlighter.IHighlighter.CanUseHook">IHighlighter.CanUseHook property</seealso>
-		/// <seealso cref="Sgry.Azuki.Highlighter.HighlightHook">HighlightHook delegate</seealso>
+		/// <seealso cref="Sgry.Azuki.Highlighter.IHighlighter.CanUseHook">
+		/// IHighlighter.CanUseHook property
+		/// </seealso>
+		/// <seealso cref="Sgry.Azuki.Highlighter.HighlightHook">
+		/// HighlightHook delegate
+		/// </seealso>
 		public HighlightHook HookProc
 		{
 			get{ return _HookProc; }
@@ -204,9 +205,9 @@ namespace Sgry.Azuki.Highlighter
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
 		/// </summary>
-		public void AddEnclosure(
-				string openPattern, string closePattern, CharClass klass
-			)
+		public void AddEnclosure( string openPattern,
+								  string closePattern,
+								  CharClass klass )
 		{
 			AddEnclosure( openPattern, closePattern, klass, true, '\0' );
 		}
@@ -215,9 +216,10 @@ namespace Sgry.Azuki.Highlighter
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
 		/// </summary>
-		public void AddEnclosure(
-				string openPattern, string closePattern, CharClass klass, bool multiLine
-			)
+		public void AddEnclosure( string openPattern,
+								  string closePattern,
+								  CharClass klass,
+								  bool multiLine )
 		{
 			AddEnclosure( openPattern, closePattern, klass, multiLine, '\0' );
 		}
@@ -226,9 +228,10 @@ namespace Sgry.Azuki.Highlighter
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
 		/// </summary>
-		public void AddEnclosure(
-				string openPattern, string closePattern, CharClass klass, char escapeChar
-			)
+		public void AddEnclosure( string openPattern,
+								  string closePattern,
+								  CharClass klass,
+								  char escapeChar )
 		{
 			AddEnclosure( openPattern, closePattern, klass, true, escapeChar );
 		}
@@ -237,9 +240,11 @@ namespace Sgry.Azuki.Highlighter
 		/// Adds a pair of strings and character-class
 		/// that characters between the pair will be classified as.
 		/// </summary>
-		public void AddEnclosure(
-				string openPattern, string closePattern, CharClass klass, bool multiLine, char escapeChar
-			)
+		public void AddEnclosure( string openPattern,
+								  string closePattern,
+								  CharClass klass,
+								  bool multiLine,
+								  char escapeChar )
 		{
 			Enclosure pair = new Enclosure();
 			pair.opener = openPattern;
@@ -261,8 +266,12 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Adds a line-highlight entry.
 		/// </summary>
-		/// <param name="openPattern">Opening pattern of the line-comment.</param>
-		/// <param name="klass">Class to apply to highlighted text.</param>
+		/// <param name="openPattern">
+		/// Opening pattern of the line-comment.
+		/// </param>
+		/// <param name="klass">
+		/// Class to apply to highlighted text.
+		/// </param>
 		public void AddLineHighlight( string openPattern, CharClass klass )
 		{
 			Enclosure pair;
@@ -288,8 +297,7 @@ namespace Sgry.Azuki.Highlighter
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This method is obsoleted.
-		/// Please use
+		/// This method is obsoleted. Please use
 		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass)">
 		/// AddKeywordSet</see> method instead.
 		/// </para>
@@ -303,30 +311,40 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Adds a set of keywords to be highlighted.
 		/// </summary>
-		/// <param name="keywords">Sorted array of keywords.</param>
-		/// <param name="klass">Char-class to be applied to the keyword set.</param>
-		/// <exception cref="System.ArgumentException">Parameter 'keywords' are not sorted alphabetically.</exception>
-		/// <exception cref="System.ArgumentNullException">Parameter 'keywords' is null.</exception>
+		/// <param name="keywords">
+		/// Sorted array of keywords.
+		/// </param>
+		/// <param name="klass">
+		/// Char-class to be applied to the keyword set.
+		/// </param>
+		/// <exception cref="System.ArgumentException">
+		/// Parameter 'keywords' are not sorted alphabetically.
+		/// </exception>
+		/// <exception cref="System.ArgumentNullException">
+		/// Parameter 'keywords' is null.
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// This method registers a set of keywords to be highlighted.
 		/// </para>
 		/// <para>
-		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
-		/// as a character class specified by <paramref name="klass"/> parameter.
-		/// Please ensure that keywords in <paramref name="keywords"/> parameter
-		/// must be alphabetically sorted.
-		/// If they are not sorted, <see cref="ArgumentException"/> will be thrown.
+		/// The keywords stored in <paramref name="keywords"/> parameter will
+		/// be highlighted as a character class specified by <paramref
+		/// name="klass"/> parameter. Please ensure that keywords in <paramref
+		/// name="keywords"/> parameter must be alphabetically sorted. If they
+		/// are not sorted, <see cref="ArgumentException"/> will be thrown.
 		/// </para>
 		/// <para>
-		/// The keywords will be matched case sensitively
-		/// and supposed to be consisted with only alphabets, numbers and underscore ('_').
-		/// If other character must be considered as a part of keyword,
-		/// use <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.WordCharSet">WordCharSet</see>
-		/// property.
+		/// The keywords will be matched case sensitively and supposed to be
+		/// consisted with only alphabets, numbers and underscore ('_'). If
+		/// other character must be considered as a part of keyword, use <see
+		/// cref="Sgry.Azuki.Highlighter.KeywordHighlighter.WordCharSet">
+		/// WordCharSet</see> property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="AddKeywordSet(String[], CharClass, Boolean)">AddKeywordSet method (another overloaded method)</seealso>
+		/// <seealso cref="AddKeywordSet(String[], CharClass, Boolean)">
+		/// AddKeywordSet method (another overloaded method)
+		/// </seealso>
 		public void AddKeywordSet( string[] keywords, CharClass klass )
 		{
 			AddKeywordSet( keywords, klass, false );
@@ -336,35 +354,45 @@ namespace Sgry.Azuki.Highlighter
 		/// Adds a set of keywords to be highlighted.
 		/// </summary>
 		/// <param name="keywords">Sorted array of keywords.</param>
-		/// <param name="klass">Char-class to be applied to the keyword set.</param>
-		/// <param name="ignoreCase">Whether case of the keywords should be ignored or not.</param>
-		/// <exception cref="System.ArgumentException">Parameter 'keywords' are not sorted alphabetically.</exception>
-		/// <exception cref="System.ArgumentNullException">Parameter 'keywords' is null.</exception>
+		/// <param name="klass">
+		/// Char-class to be applied to the keyword set.
+		/// </param>
+		/// <param name="ignoreCase">
+		/// Whether case of the keywords should be ignored or not.
+		/// </param>
+		/// <exception cref="System.ArgumentException">
+		/// Parameter 'keywords' are not sorted alphabetically.
+		/// </exception>
+		/// <exception cref="System.ArgumentNullException">
+		/// Parameter 'keywords' is null.
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// This method registers a set of keywords to be highlighted.
 		/// </para>
 		/// <para>
-		/// The keywords stored in <paramref name="keywords"/> parameter will be highlighted
-		/// as a character class specified by <paramref name="klass"/> parameter.
-		/// Please ensure that keywords in <paramref name="keywords"/> parameter
-		/// must be alphabetically sorted.
-		/// If they are not sorted, <see cref="ArgumentException"/> will be thrown.
+		/// The keywords stored in <paramref name="keywords"/> parameter will
+		/// be highlighted as a character class specified by <paramref
+		/// name="klass"/> parameter. Please ensure that keywords in <paramref
+		/// name="keywords"/> parameter must be alphabetically sorted. If they
+		/// are not sorted, <see cref="ArgumentException"/> will be thrown.
 		/// </para>
 		/// <para>
-		/// If <paramref name="ignoreCase"/> is true,
-		/// KeywordHighlighter ignores case of all given keywords on matching.
-		/// Note that if <paramref name="ignoreCase"/> is true,
-		/// all characters of keywords must be in lower case
-		/// otherwise keywords may not be highlighted properly.
+		/// If <paramref name="ignoreCase"/> is true, KeywordHighlighter
+		/// ignores case of all given keywords on matching. Note that if
+		/// <paramref name="ignoreCase"/> is true, all characters of keywords
+		/// must be in lower case otherwise keywords may not be highlighted
+		/// properly.
 		/// </para>
 		/// <para>
-		/// If other character must be considered as a part of keyword,
-		/// use <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.WordCharSet">WordCharSet</see>
-		/// property.
+		/// If other character must be considered as a part of keyword, use
+		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.WordCharSet"
+		/// >WordCharSet</see> property.
 		/// </para>
 		/// </remarks>
-		public void AddKeywordSet( string[] keywords, CharClass klass, bool ignoreCase )
+		public void AddKeywordSet( string[] keywords,
+								   CharClass klass,
+								   bool ignoreCase )
 		{
 			if( keywords == null )
 				throw new ArgumentNullException("keywords");
@@ -376,10 +404,12 @@ namespace Sgry.Azuki.Highlighter
 			for( int i=0; i<keywords.Length-1; i++ )
 				if( 0 <= keywords[i].CompareTo(keywords[i+1]) )
 					throw new ArgumentException(
-						String.Format( "Keywords must be sorted alphabetically;"
-									   + " '{0}' is expected to be greater than"
-									   + " '{1}' but not greater.",
-									   keywords[i+1], keywords[i]), "value" );
+						String.Format(
+							"Keywords must be sorted alphabetically;"
+							+ " '{0}' is expected to be greater than"
+							+ " '{1}' but not greater.",
+							keywords[i+1], keywords[i]),
+						"value" );
 #			endif
 
 			// parse and generate keyword tree
@@ -404,7 +434,10 @@ namespace Sgry.Azuki.Highlighter
 			_Keywords.Add( set );
 		}
 
-		void AddCharNode( string keyword, int index, CharTreeNode parent, int depth )
+		void AddCharNode( string keyword,
+						  int index,
+						  CharTreeNode parent,
+						  int depth )
 		{
 			CharTreeNode child, node;
 
@@ -466,32 +499,35 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Gets or sets word-character set.
 		/// </summary>
-		/// <exception cref="ArgumentException">Characters in value are not sorted alphabetically.</exception>
+		/// <exception cref="ArgumentException">
+		/// Characters in value are not sorted alphabetically.
+		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// KeywordHighlighter treats a sequence of characters in a word-character set as a word.
-		/// The word-character set must be an alphabetically sorted character sequence.
-		/// Setting this property to a character sequence which is not sorted alphabetically,
-		/// <see cref="System.ArgumentException"/> will be thrown.
-		/// If this property was set to null, KeywordHighlighter uses
-		/// internally defined default word-character set.
-		/// Default word-character set is
-		/// <c>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz</c>.
+		/// KeywordHighlighter treats a sequence of characters in a
+		/// word-character set as a word. The word-character set must be an
+		/// alphabetically sorted character sequence. Setting this property to
+		/// a character sequence which is not sorted alphabetically, <see
+		/// cref="System.ArgumentException"/> will be thrown. If this property
+		/// was set to null, KeywordHighlighter uses internally defined default
+		/// word-character set. Default word-character set is <c
+		/// >0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz</c
+		/// >.
 		/// </para>
 		/// <para>
-		/// Word-character set affects keyword matching process.
-		/// If a keyword partially matched to a token in a document,
-		/// KeywordHighlighter checks whether the character at the place where the match ended
-		/// is included in the word-character set or not.
-		/// Then if it was NOT a one of the word-character set,
-		/// KeywordHighlighter determines the token which ends there is a keyword
-		/// and highlight the token.
-		/// For example, if word-character set is &quot;abc_&quot; and document is
-		/// &quot;abc-def abc_def&quot;, &quot;abc&quot; of &quot;abc-def&quot; will be highlighted
-		/// but &quot;abc&quot; of &quot;abc_def&quot; will NOT be highlighted
-		/// because following character for former one ('-') is not included in the word-character set
-		/// but one of the latter pattern ('_') is included.
-		/// Note that if there are keywords that contain characters not included in the word-character set,
+		/// Word-character set affects keyword matching process. If a keyword
+		/// partially matched to a token in a document, KeywordHighlighter
+		/// checks whether the character at the place where the match ended is
+		/// included in the word-character set or not. Then if it was NOT a one
+		/// of the word-character set, KeywordHighlighter determines the token
+		/// which ends there is a keyword and highlight the token. For example,
+		/// if word-character set is &quot;abc_&quot; and document is
+		/// &quot;abc-def abc_def&quot;, &quot;abc&quot; of &quot;abc-def&quot;
+		/// will be highlighted but &quot;abc&quot; of &quot;abc_def&quot; will
+		/// NOT be highlighted because following character for former one ('-')
+		/// is not included in the word-character set but one of the latter
+		/// pattern ('_') is included. Note that if there are keywords that
+		/// contain characters not included in the word-character set,
 		/// KeywordHighlighter will not highlight such keywords properly.
 		/// </para>
 		/// </remarks>
@@ -511,10 +547,13 @@ namespace Sgry.Azuki.Highlighter
 				for( int i=0; i<value.Length-1; i++ )
 					if( value[i+1] < value[i] )
 						throw new ArgumentException(
-							String.Format( "word character set must be a sequence of alphabetically"
-										   + " sorted characters; '{0}' (U+{1:x4}) is expected to"
-										   + " be greater than '{2}' (U+{3:x4}) but not greater.",
-										   value[i+1], (int)value[i+1], value[i], (int)value[i]),
+							String.Format(
+								"word character set must be a sequence of"
+								+ " alphabetically sorted characters; '{0}'"
+								+ " (U+{1:x4}) is expected to be greater than"
+								+ " '{2}' (U+{3:x4}) but not greater.",
+								value[i+1], (int)value[i+1],
+								value[i], (int)value[i] ),
 							"value"
 						);
 #				endif
@@ -608,9 +647,17 @@ namespace Sgry.Azuki.Highlighter
 		/// Parse and highlight keywords.
 		/// </summary>
 		/// <param name="doc">Document to highlight.</param>
-		/// <param name="dirtyBegin">Index to start highlighting. On return, start index of the range to be invalidated.</param>
-		/// <param name="dirtyEnd">Index to end highlighting. On return, end index of the range to be invalidated.</param>
-		public void Highlight( Document doc, ref int dirtyBegin, ref int dirtyEnd )
+		/// <param name="dirtyBegin">
+		/// Index to start highlighting.
+		/// On return, start index of the range to be invalidated.
+		/// </param>
+		/// <param name="dirtyEnd">
+		/// Index to end highlighting.
+		/// On return, end index of the range to be invalidated.
+		/// </param>
+		public void Highlight( Document doc,
+							   ref int dirtyBegin,
+							   ref int dirtyEnd )
 		{
 			if( dirtyBegin < 0 || doc.Length < dirtyBegin )
 				throw new ArgumentOutOfRangeException( "dirtyBegin" );
@@ -645,7 +692,9 @@ namespace Sgry.Azuki.Highlighter
 			while( 0 <= index && index < dirtyEnd )
 			{
 				// highlight line-comment if this token starts one
-				Utl.TryHighlight( doc, _LineHighlights, index, dirtyEnd, _HookProc, out nextIndex );
+				Utl.TryHighlight( doc, _LineHighlights,
+								  index, dirtyEnd,
+								  _HookProc, out nextIndex );
 				if( index < nextIndex )
 				{
 					// successfully highlighted. skip to next.
@@ -655,7 +704,9 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight enclosing part if this token begins a part
-				Utl.TryHighlight( doc, _Enclosures, index, dirtyEnd, _HookProc, out nextIndex );
+				Utl.TryHighlight( doc, _Enclosures,
+								  index, dirtyEnd,
+								  _HookProc, out nextIndex );
 				if( index < nextIndex )
 				{
 					// successfully highlighted. skip to next.
@@ -665,7 +716,8 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight keyword if this token is a keyword
-				highlighted = TryHighlight( doc, _Keywords, _WordCharSet, index, dirtyEnd, out nextIndex );
+				highlighted = TryHighlight( doc, _Keywords, _WordCharSet,
+											index, dirtyEnd, out nextIndex );
 				if( highlighted )
 				{
 					index = nextIndex;
@@ -673,7 +725,9 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight digit as number
-				nextIndex = Utl.TryHighlightNumberToken( doc, index, dirtyEnd, _HookProc );
+				nextIndex = Utl.TryHighlightNumberToken( doc,
+														 index, dirtyEnd,
+														 _HookProc );
 				if( index < nextIndex )
 				{
 					index = nextIndex;
@@ -690,9 +744,11 @@ namespace Sgry.Azuki.Highlighter
 					continue;
 				}
 
-				// this token is normal class; reset classes and seek to next token
+				// This is not a token to be highlighted.
+				// Reset classes and seek to next token.
 				nextIndex = Utl.FindNextToken( doc, index, _WordCharSet );
-				Utl.Highlight( doc, index, nextIndex, CharClass.Normal, _HookProc );
+				Utl.Highlight( doc, index, nextIndex,
+							   CharClass.Normal, _HookProc );
 				index = nextIndex;
 			}
 
@@ -704,16 +760,24 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Do keyword matching in [startIndex, endIndex) through keyword char-tree.
+		/// Do keyword matching in [startIndex, endIndex) through keyword
+		/// char-tree.
 		/// </summary>
-		bool TryHighlight( Document doc, List<KeywordSet> keywords, string wordCharSet, int startIndex, int endIndex, out int nextSeekIndex )
+		bool TryHighlight( Document doc,
+						   List<KeywordSet> keywords,
+						   string wordCharSet,
+						   int startIndex,
+						   int endIndex,
+						   out int nextSeekIndex )
 		{
 			bool highlighted = false;
 
 			nextSeekIndex = startIndex;
 			foreach( KeywordSet set in keywords )
 			{
-				highlighted = TryHighlight_OneKeyword( doc, set, wordCharSet, startIndex, endIndex, out nextSeekIndex );
+				highlighted = TryHighlight_OneKeyword( doc, set, wordCharSet,
+													   startIndex, endIndex,
+													   out nextSeekIndex );
 				if( highlighted )
 				{
 					break;
@@ -731,8 +795,8 @@ namespace Sgry.Azuki.Highlighter
 			CharTreeNode node;
 			int index;
 
-			// keyword char-tree made with "char", "if", "int", "interface", "long"
-			// looks like (where * means a node with null-character):
+			// keyword char-tree made with "char", "if", "int", "interface",
+			// "long"looks like (where * means a node with null-character):
 			//
 			//  *-c-h-a-r
 			//    |
@@ -760,10 +824,11 @@ namespace Sgry.Azuki.Highlighter
 					if( MatchedExactly(doc, node, index, wordCharSet) )
 					{
 						//--- the keyword exactly matched ---
-						// (at least the keyword was partially matched,
-						// and the token in document at this place ends exactly)
+						// (at least the keyword was partially matched, and
+						// the token in document at this place ends exactly)
 						// highlight and exit
-						Utl.Highlight( doc, index-node.depth+1, index+1, set.klass, _HookProc );
+						Utl.Highlight( doc, index-node.depth+1, index+1,
+									   set.klass, _HookProc );
 						nextSeekIndex = index + 1;
 						return true;
 					}
@@ -863,7 +928,10 @@ namespace Sgry.Azuki.Highlighter
 			return false;
 		}
 
-		static bool MatchedExactly( Document doc, CharTreeNode node, int index, string wordChars )
+		static bool MatchedExactly( Document doc,
+									CharTreeNode node,
+									int index,
+									string wordChars )
 		{
 			// 'exact match' cases are next two:
 			// 1) node.child is null, document token ends there
@@ -871,7 +939,8 @@ namespace Sgry.Azuki.Highlighter
 
 			// document token ends there?
 			if( index+1 == doc.Length
-				|| (index+1 < doc.Length && Utl.IsWordChar(wordChars, doc[index+1]) == false) )
+				|| (index+1 < doc.Length
+					&& Utl.IsWordChar(wordChars, doc[index+1]) == false) )
 			{
 				// and, node.child is null or '\0'?
 				if( node.child == null || node.child.ch == '\0' )

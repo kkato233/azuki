@@ -7,24 +7,15 @@ namespace Sgry.Azuki.Highlighter
 	{
 		public IniHighlighter()
 		{
-			AddRegex(
-				new Regex(@"^\s*(\[[^\]]+\])", RegexOptions.Singleline),
-				new CharClass[]{
-					CharClass.Heading1			// group 1
-				}
-			);
-			AddRegex(
-				new Regex(@"^\s*([^=]+)\s*[=:]", RegexOptions.Singleline),
-				new CharClass[]{
-					CharClass.Property			// group 1
-				}
-			);
-			AddRegex(
-				new Regex(@"^\s*([;#!].*)", RegexOptions.Singleline),
-				new CharClass[]{
-					CharClass.Comment			// group 1
-				}
-			);
+			AddRegex( @"^\s*(\[[^\]]+\])",
+					  false,
+					  new CharClass[]{ CharClass.Heading1 } );
+			AddRegex( @"^\s*([^=]+)\s*[=:]",
+					  false,
+					  new CharClass[]{ CharClass.Property } );
+			AddRegex( @"^\s*([;#!].*)",
+					  false,
+					  new CharClass[]{ CharClass.Comment } );
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace Sgry.Azuki.Highlighter
 			AddEnclosure( "/*", "*/", CharClass.Comment, true );
 			AddLineHighlight( "//", CharClass.Comment );
 
-			AddEnclosure( "/", "/", CharClass.Regex, false, '\\' );
+			AddRegex( @"(?<!\w\s*)(/(?:[^/\\]|\\.)+/(?:[a-z]+)?)", true, new CharClass[]{CharClass.Regex} );
 		}
 	}
 }

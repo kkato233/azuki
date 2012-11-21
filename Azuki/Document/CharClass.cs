@@ -1,7 +1,5 @@
 ﻿// file: CharClass.cs
 // brief: Indicator for class of characters.
-// author: YAMAMOTO Suguru
-// update: 2009-08-13
 //=========================================================
 
 namespace Sgry.Azuki
@@ -130,6 +128,12 @@ namespace Sgry.Azuki
 		Heading5,
 
 		/// <summary>Heading 6 (LaTeX, Wiki, HTML).</summary>
-		Heading6
+		Heading6,
+
+		/// <summary>Function (C, Java, ...)</summary>
+		Function,
+
+		/// <summary>Class (C++, Java, ...)</summary>
+		Class
 	}
 }

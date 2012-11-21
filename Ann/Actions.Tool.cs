@@ -51,6 +51,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Set editing mode to Python mode.
+		/// </summary>
+		public static AnnAction SetToPythonMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.PythonFileType );
+		};
+
+		/// <summary>
 		/// Set editing mode to Ruby mode.
 		/// </summary>
 		public static AnnAction SetToRubyMode

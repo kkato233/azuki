@@ -1,8 +1,5 @@
 // file: Actions.cs
 // brief: Actions for Azuki engine.
-// author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2011-08-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -448,7 +445,7 @@ namespace Sgry.Azuki
 				string rowText;
 				string padding;
 
-				// insert all rows that consisting the rectangle
+				// Insert every row at same column position
 				insertPos = ui.View.GetVirPosFromIndex( doc.CaretIndex );
 				rowBegin = 0;
 				rowEnd = LineLogic.NextLineHead( clipboardText, rowBegin );

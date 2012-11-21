@@ -84,6 +84,7 @@
     <Compile Include="Highlighter\JavaScriptHighlighter.cs" />
     <Compile Include="Highlighter\KeywordHighlighter.cs" />
     <Compile Include="Highlighter\LatexHighlighter.cs" />
+    <Compile Include="Highlighter\PythonHighlighter.cs" />
     <Compile Include="Highlighter\RubyHighlighter.cs" />
     <Compile Include="Highlighter\Utl.cs" />
     <Compile Include="Highlighter\XmlHighlighter.cs" />

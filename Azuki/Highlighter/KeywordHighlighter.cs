@@ -704,6 +704,8 @@ namespace Sgry.Azuki.Highlighter
 				throw new ArgumentNullException( "regex" );
 			if( klassList == null )
 				throw new ArgumentNullException( "klassList" );
+			if( klassList.Count == 0 )
+				throw new ArgumentException( "klassList" );
 
 			RegexOptions opt = RegexOptions.Compiled;
 			if( ignoreCase )

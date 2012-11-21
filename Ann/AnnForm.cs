@@ -218,6 +218,9 @@ namespace Sgry.Ann
 				case FileType.LatexFileTypeName:
 					_MI_Mode_Latex.Checked = true;
 					break;
+				case FileType.PythonFileTypeName:
+					_MI_Mode_Python.Checked = true;
+					break;
 				case FileType.RubyFileTypeName:
 					_MI_Mode_Ruby.Checked = true;
 					break;
@@ -302,6 +305,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Mode_Java ]		= Actions.SetToJavaMode;
 			_MenuMap[ _MI_Mode_JavaScript ]	= Actions.SetToJavaScriptMode;
 			_MenuMap[ _MI_Mode_Latex ]		= Actions.SetToLatexMode;
+			_MenuMap[ _MI_Mode_Python ]		= Actions.SetToPythonMode;
 			_MenuMap[ _MI_Mode_Ruby ]		= Actions.SetToRubyMode;
 			_MenuMap[ _MI_Mode_XML ]		= Actions.SetToXmlMode;
 
@@ -667,6 +671,7 @@ namespace Sgry.Ann
 			_MI_Mode.MenuItems.Add( _MI_Mode_Java );
 			_MI_Mode.MenuItems.Add( _MI_Mode_JavaScript );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
+			_MI_Mode.MenuItems.Add( _MI_Mode_Python );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ruby );
 			_MI_Mode.MenuItems.Add( _MI_Mode_XML );
 
@@ -719,6 +724,7 @@ namespace Sgry.Ann
 			_MI_Mode_Java.Text = "&Java";
 			_MI_Mode_JavaScript.Text = "Java&Script";
 			_MI_Mode_Latex.Text = "&LaTeX";
+			_MI_Mode_Python.Text = "&Python";
 			_MI_Mode_Ruby.Text = "&Ruby";
 			_MI_Mode_XML.Text = "&XML";
 			_MI_Window.Text = "&Window";
@@ -841,6 +847,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Mode_Java		= new MenuItem();
 		MenuItem _MI_Mode_JavaScript= new MenuItem();
 		MenuItem _MI_Mode_Latex		= new MenuItem();
+		MenuItem _MI_Mode_Python	= new MenuItem();
 		MenuItem _MI_Mode_Ruby		= new MenuItem();
 		MenuItem _MI_Mode_XML		= new MenuItem();
 		MenuItem _MI_Window			= new MenuItem();

@@ -17,6 +17,7 @@ namespace Sgry.Ann
 		public const string JavaFileTypeName = "Java";
 		public const string JavaScriptFileTypeName = "JavaScript";
 		public const string LatexFileTypeName = "LaTeX";
+		public const string PythonFileTypeName = "Python";
 		public const string RubyFileTypeName = "Ruby";
 		public const string XmlFileTypeName = "XML";
 		static Dictionary<string, FileType> _FileTypeMap
@@ -38,6 +39,7 @@ namespace Sgry.Ann
 			_FileTypeMap.Add( "JavaFileType", JavaFileType );
 			_FileTypeMap.Add( "JavaScriptFileType", JavaScriptFileType );
 			_FileTypeMap.Add( "LatexFileType", LatexFileType );
+			_FileTypeMap.Add( "PythonFileType", PythonFileType );
 			_FileTypeMap.Add( "RubyFileType", RubyFileType );
 			_FileTypeMap.Add( "XmlFileType", XmlFileType );
 		}
@@ -142,6 +144,21 @@ namespace Sgry.Ann
 				fileType._Highlighter = Highlighters.Latex;
 				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = LatexFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
+		/// Gets a new Python file type.
+		/// </summary>
+		public static FileType PythonFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Python;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
+				fileType._Name = PythonFileTypeName;
 				return fileType;
 			}
 		}

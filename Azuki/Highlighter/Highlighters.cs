@@ -52,6 +52,14 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
+		/// Gets a new highlighter for Python.
+		/// </summary>
+		public static IHighlighter Python
+		{
+			get{ return new PythonHighlighter(); }
+		}
+
+		/// <summary>
 		/// Gets a new highlighter for Ruby.
 		/// </summary>
 		public static IHighlighter Ruby

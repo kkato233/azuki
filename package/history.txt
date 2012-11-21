@@ -1,4 +1,5 @@
 == 1.7.3 (2012-xx-xx) ==
+ * add: Added PythonHighlighter
  * add: JavaScript highlighter now recognizes regular expression literals better (ex. highlights c=/e+f/g but doesn't highlight c=d/e+f/g)
  * add: Added an overload method of KeywordHighlighter.AddRegex which takes one CharClass and applies it to matched patterns
  * mod: Changed color of regular expression literals of default color set
@@ -7,6 +8,7 @@
  * fix: KeywordHighlighter highlights text patterns matched with regular expressions even if it's in an enclosed part (problem since 1.7.2)
  * fix: Highlighting completely new document or removing very last part of document causes an exception (problem since 1.7.0)
  * add: [Ann] Added "Goto line" feature
+ * add: [Ann] Added feature to highlight Python files
 
 == 1.7.2 (2012-11-10) ==
  * add: Now KeywordHighlighter can use regular expression
@@ -124,7 +126,7 @@
  * fix: [Ann] tagged as version 1.4.8
 
 == 1.5.7 (2010-07-09) ==
- * fix: pasting non-text clipboard data locks clipboard system and prevents any other program from using  clipboard (problem since 1.5.0)
+ * fix: pasting non-text clipboard data locks clipboard system and prevents any other program from using  clipboard (degrade problem since 1.5.0)
  * fix: now Azuki does not uses System.Drawing.Font.OriginalFontName property
  * fix: [Ann] tagged as version 1.4.7
 

@@ -11,6 +11,7 @@ namespace Sgry.Ann
 	{
 		#region Fields & Constants
 		public const string TextFileTypeName = "Text";
+		public const string BatchFileTypeName = "Batch";
 		public const string CppFileTypeName = "C/C++";
 		public const string CSharpFileTypeName = "C#";
 		public const string IniFileTypeName = "INI";
@@ -33,6 +34,7 @@ namespace Sgry.Ann
 
 		static FileType()
 		{
+			_FileTypeMap.Add( "BatchFileType", BatchFileType );
 			_FileTypeMap.Add( "CppFileType", CppFileType );
 			_FileTypeMap.Add( "CSharpFileType", CSharpFileType );
 			_FileTypeMap.Add( "IniFileType", IniFileType );
@@ -55,6 +57,21 @@ namespace Sgry.Ann
 				FileType fileType = new FileType();
 				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
 				fileType._Name = TextFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
+		/// Gets a new batch file type.
+		/// </summary>
+		public static FileType BatchFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.BatchFile;
+				fileType._AutoIndentHook = AutoIndentHooks.GenericHook;
+				fileType._Name = BatchFileTypeName;
 				return fileType;
 			}
 		}

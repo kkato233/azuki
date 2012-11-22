@@ -80,6 +80,7 @@
     <Compile Include="Document\ViewParam.cs" />
     <Compile Include="Document\WatchPattern.cs" />
     <Compile Include="Document\WatchPatternMarker.cs" />
+    <Compile Include="Highlighter\BatchFileHighlighter.cs" />
     <Compile Include="Highlighter\Coco\Buffer.cs" />
     <Compile Include="Highlighter\Coco\LatexParser.cs" />
     <Compile Include="Highlighter\Coco\LatexScanner.cs" />

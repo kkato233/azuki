@@ -20,6 +20,14 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
+		/// Gets a new highlighter for batch file.
+		/// </summary>
+		public static IHighlighter BatchFile
+		{
+			get{ return new BatchFileHighlighter(); }
+		}
+
+		/// <summary>
 		/// Gets a new highlighter for C/C++.
 		/// </summary>
 		public static IHighlighter Cpp

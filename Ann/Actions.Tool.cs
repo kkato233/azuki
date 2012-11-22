@@ -24,6 +24,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Set editing mode to batch file mode.
+		/// </summary>
+		public static AnnAction SetToBatchFileMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.BatchFileType );
+		};
+
+		/// <summary>
 		/// Set editing mode to C/C++ mode.
 		/// </summary>
 		public static AnnAction SetToCppMode

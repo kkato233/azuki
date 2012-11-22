@@ -1,5 +1,6 @@
 == 1.7.3 (2012-xx-xx) ==
  * add: Added PythonHighlighter
+ * add: Added BatchFileHighlighter
  * add: JavaScript highlighter now recognizes regular expression literals better (ex. highlights c=/e+f/g but doesn't highlight c=d/e+f/g)
  * add: Added an overload method of KeywordHighlighter.AddRegex which takes one CharClass and applies it to matched patterns
  * add: Now KeywordHighlighter can use "ignore case" option for matching enclosure and line highlight
@@ -10,6 +11,7 @@
  * fix: Highlighting completely new document or removing very last part of document causes an exception (problem since 1.7.0)
  * add: [Ann] Added "Goto line" feature
  * add: [Ann] Added feature to highlight Python files
+ * add: [Ann] Added feature to highlight MS-DOS batch files
 
 == 1.7.2 (2012-11-10) ==
  * add: Now KeywordHighlighter can use regular expression

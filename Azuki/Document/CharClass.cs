@@ -134,6 +134,12 @@ namespace Sgry.Azuki
 		Function,
 
 		/// <summary>Class (C++, Java, ...)</summary>
-		Class
+		Class,
+
+		/// <summary>Variable (Batch file, ...)</summary>
+		Variable,
+
+		/// <summary>Label (Batch file, ...)</summary>
+		Label
 	}
 }

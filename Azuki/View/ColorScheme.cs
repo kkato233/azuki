@@ -314,6 +314,8 @@ namespace Sgry.Azuki
 			SetColor( CharClass.Heading6, Color.Black, Color.FromArgb(0xff, 0xff, 0xed) ); // -LOG( 1/8.5 )
 			SetColor( CharClass.Function, Color.BlueViolet, Color.Transparent );
 			SetColor( CharClass.Class, Color.BlueViolet, Color.Transparent );
+			SetColor( CharClass.Variable, Color.Teal, Color.Transparent );
+			SetColor( CharClass.Label, Color.Purple, Color.Transparent );
 
 			this.SelectionFore = Color.White;
 			this.SelectionBack = azuki;

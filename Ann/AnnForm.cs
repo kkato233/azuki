@@ -200,6 +200,9 @@ namespace Sgry.Ann
 			}
 			switch( _App.ActiveDocument.FileType.Name )
 			{
+				case FileType.BatchFileTypeName:
+					_MI_Mode_BatchFile.Checked = true;
+					break;
 				case FileType.CppFileTypeName:
 					_MI_Mode_Cpp.Checked = true;
 					break;
@@ -299,6 +302,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_View_ShowTabPanel ]		= Actions.ToggleTabPanel;
 
 			_MenuMap[ _MI_Mode_Text ]		= Actions.SetToTextMode;
+			_MenuMap[ _MI_Mode_BatchFile ]	= Actions.SetToBatchFileMode;
 			_MenuMap[ _MI_Mode_Cpp ]		= Actions.SetToCppMode;
 			_MenuMap[ _MI_Mode_CSharp ]		= Actions.SetToCSharpMode;
 			_MenuMap[ _MI_Mode_Ini ]		= Actions.SetToIniMode;
@@ -665,6 +669,7 @@ namespace Sgry.Ann
 			_MI_View.MenuItems.Add( _MI_View_ShowTabPanel );
 
 			_MI_Mode.MenuItems.Add( _MI_Mode_Text );
+			_MI_Mode.MenuItems.Add( _MI_Mode_BatchFile );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ini );
@@ -718,6 +723,7 @@ namespace Sgry.Ann
 			_MI_View_ShowTabPanel.Text = "Show &tab panel";
 			_MI_Mode.Text = "&Mode";
 			_MI_Mode_Text.Text = "&Text";
+			_MI_Mode_BatchFile.Text = "&Batch file";
 			_MI_Mode_Cpp.Text = "&C/C++";
 			_MI_Mode_CSharp.Text = "C&#";
 			_MI_Mode_Ini.Text = "&INI / Properties";
@@ -841,6 +847,7 @@ namespace Sgry.Ann
 		MenuItem _MI_View_ShowTabPanel		= new MenuItem();
 		MenuItem _MI_Mode			= new MenuItem();
 		MenuItem _MI_Mode_Text		= new MenuItem();
+		MenuItem _MI_Mode_BatchFile	= new MenuItem();
 		MenuItem _MI_Mode_Cpp		= new MenuItem();
 		MenuItem _MI_Mode_CSharp	= new MenuItem();
 		MenuItem _MI_Mode_Ini		= new MenuItem();

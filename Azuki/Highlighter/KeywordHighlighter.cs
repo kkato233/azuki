@@ -10,14 +10,15 @@ using Debug = System.Diagnostics.Debug;
 namespace Sgry.Azuki.Highlighter
 {
 	/// <summary>
-	/// A keyword-based highlighter which can highlight
-	/// keywords, ranges enclosed with tokens, and regular expressions.
+	/// A keyword-based highlighter which can highlight keywords, text parts
+	/// enclosed with specific patterns, line comment, and regular expressions.
 	/// </summary>
 	/// <remarks>
 	/// <para>
 	/// KeywordHighlighter highlights keywords, enclosed parts, and regular
 	/// expressions. To make basic syntax highlighter, you can create an
-	/// instance and customize it, or make a child class and customize it.
+	/// instance and register highlighting targets, or make a child class and
+	/// register highlighting targets.
 	/// </para>
 	/// <para>
 	/// KeywordHighlighter can highlight four types of text patterns.
@@ -31,55 +32,60 @@ namespace Sgry.Azuki.Highlighter
 	/// <para>
 	/// Keyword set is a set of keywords.
 	/// KeywordHighlighter searches a document for registered keywords and
-	/// applies char-class associated with the keyword set to the found words.
-	/// For example, C/C++ source code includes keywords and pre-processor
-	/// macro keywords so user may define one keyword set containing all C/C++
-	/// keywords and associate <see cref="CharClass"/>.Keyword, and another
-	/// keyword set containing all pre-processor macro keywords and associate
-	/// <see cref="CharClass"/>.Macro. To register keyword sets, use <see
-	/// cref="AddKeywordSet(String[], CharClass, Boolean)">AddKeywordSet</see>
+	/// applies char-class associated with the keyword set.
+	/// For example, you may create two keyword sets for highlighting C# source
+	/// code. One of the them contains every keywords of C# and is associated
+	/// with <see cref="CharClass"/>.Keyword. Another one contains every
+	/// preprocessor macro keywords and is associated with <see
+	/// cref="CharClass"/>.Macro. To register keyword sets, use <see
+	/// cref="AddKeywordSet(String[],CharClass,Boolean)">AddKeywordSet</see>
 	/// method.
 	/// </para>
 	/// <para>
 	/// Line highlight is a feature to highlight text patterns which begins
-	/// with particular pattern and ends at the end of the line.
+	/// with particular pattern and continues until the end of line.
 	/// This feature is designed to highlight single line comment found in
 	/// many programming language. To register targets of line highlight, use
-	/// <see cref="AddLineHighlight">AddLineHighlight</see> method.
+	/// <see cref="AddLineHighlight(String,CharClass,Boolean)"
+	/// >AddLineHighlight</see> method.
 	/// </para>
 	/// <para>
 	/// Enclosure is a text pattern that is enclosed with particular patterns.
 	/// Typical example of enclosure type is &quot;string literal&quot; and
 	/// &quot;multiple line comment&quot; found in many programming languages.
 	/// To register enclosure target, use <see
-	/// cref="AddEnclosure(String, String, CharClass, Boolean, Char)">
-	/// AddEnclosure</see> method.
+	/// cref="AddEnclosure(String,String,CharClass,Boolean,Char,Boolean)"
+	/// >AddEnclosure</see> method.
 	/// </para>
 	/// <para>
 	/// Regular expression is one of the most flexible and popular method to
-	/// express character sequence pattern. To register a regular expression,
-	/// give <see cref="AddRegex(string, bool, IList&lt;CharClass&gt;)"
-	/// >AddRegex</see> method a pair of a regular expression and a list of
-	/// <see cref="CharClass"/>es. The CharClasses will be used for each
-	/// captured group in the regular expression, from first to the end. The
-	/// regular expression must contain at least one group, and the number of
-	/// CharClass list must be equal to the number of the capturing groups
-	/// defined in the regular expression.
+	/// express character sequence pattern. To register a regular expression
+	/// to specify highlighting targets, give <see
+	/// cref="AddRegex(String,Boolean,CharClass)">AddRegex</see> method a
+	/// regular expression and a <see cref="CharClass"/>.
+	/// Note that there is another overloaded method <see
+	/// cref="AddRegex(String,Boolean,IList&lt;CharClass&gt;)"/>
+	/// which takes not a CharClass but a list of them. This version applies
+	/// the char-classes to each group captured in every matched patterns.
+	/// If you need to highlight complex patterns consisting of sub-patterns
+	/// each of which should be highlighted differently, this method will be
+	/// useful.
 	/// </para>
 	/// <para>
 	/// Here are some notes about highlighting with regular expressions.
 	/// </para>
 	/// <list type="bullet">
 	///		<item>
-	///		The reason of using grouping in the regular expression feature is,
-	///		a regular expression specifying a pattern to be highlighted also
-	///		contains the preceding and/or following parts in many scenarios so
-	///		there should be a method to exclude such extra parts from
-	///		highlighting. For example, a regular expression to specify property
-	///		name part of INI format might be '^[^=]\s*=', which contains an
-	///		equal sign at the end. I suppose nobody want to highlight the sign
-	///		as a 'property name,' so it should be '^([^=])\s*=', and the list
-	///		of CharClass should contain only one element: CharClass.Property.
+	///		If you need to specify preceding or following text patterns for
+	///		specifying highlighting targets strictly, consider using
+	///		zero-width assertions such as <c>(?=...)</c> and <c>(?!...)</c>.
+	///		For example, regular expression literals used in Perl may be
+	///		specified as <c>(?&lt;!\w\s*)/([^/\\]|\\.)+/[a-z]*</c>,
+	///		which uses a negative lookbehind assertion to prevent highlighting
+	///		patterns look like <c>/.../</c> whose preceding non-whitespace
+	///		character is a letter or digit. By the assertion, <c>/3+2/</c>
+	///		inside <c>$x=/3+2/;</c> will be highlighted but <c>$x=1/3+2/3;</c>
+	///		will not be highlighted.
 	///		</item>
 	///		<item>
 	///		The back-end of this feature is System. Text. RegularExpressions.
@@ -101,13 +107,12 @@ namespace Sgry.Azuki.Highlighter
 	/// }, CharClass.Keyword );
 	/// 
 	/// // Registering pre-processor keywords
-	/// // (To avoid macro keywords to be highlighted again,
-	/// // keyword list is defined as non-capturing group.)
-	/// string macros = "define|elif|else|endif|endregion|error...
-	/// kh.AddRegex(
-	/// 	new Regex(@"^\s*(#\s*(?:" + words + "))"),
-	/// 	new CharClass[]{CharClass.Macro}
-	/// );
+	/// string[] words = new string[] {
+	/// 	"define", "elif", "else", "endif", "endregion", "error", "if",
+	/// 	"line", "pragma", "region", "undef", "warning"
+	/// };
+	/// AddRegex( @"^\s*#\s*(" + String.Join(@"\b|", words) + @"\b)",
+	/// 		  CharClass.Macro );
 	/// 
 	/// // Registering string literals and character literal
 	/// kh.AddEnclosure( "'", "'", CharClass.String, false, '\\' );
@@ -238,7 +243,7 @@ namespace Sgry.Azuki.Highlighter
 								  CharClass klass,
 								  char escapeChar )
 		{
-			AddEnclosure( openPattern, closePattern, klass, true, escapeChar );
+			AddEnclosure( openPattern, closePattern, klass, true, escapeChar, false );
 		}
 
 		/// <summary>
@@ -251,12 +256,26 @@ namespace Sgry.Azuki.Highlighter
 								  bool multiLine,
 								  char escapeChar )
 		{
-			Enclosure pair = new Enclosure();
-			pair.opener = openPattern;
-			pair.closer = closePattern;
-			pair.klass = klass;
-			pair.escape = escapeChar;
-			pair.multiLine = multiLine;
+			AddEnclosure( openPattern, closePattern, klass, true, escapeChar, false );
+		}
+
+		/// <summary>
+		/// Adds a pair of strings and character-class
+		/// that characters between the pair will be classified as.
+		/// </summary>
+		public void AddEnclosure( string openPattern,
+								  string closePattern,
+								  CharClass klass,
+								  bool multiLine,
+								  char escapeChar,
+								  bool ignoreCase )
+		{
+			Enclosure pair = new Enclosure( openPattern,
+											closePattern,
+											klass,
+											escapeChar,
+											multiLine,
+											ignoreCase );
 			_Enclosures.Add( pair );
 		}
 
@@ -279,12 +298,32 @@ namespace Sgry.Azuki.Highlighter
 		/// </param>
 		public void AddLineHighlight( string openPattern, CharClass klass )
 		{
-			Enclosure pair;
+			AddLineHighlight( openPattern, klass, false );
+		}
 
-			pair = new Enclosure();
-			pair.opener = openPattern;
-			pair.closer = null;
-			pair.klass = klass;
+		/// <summary>
+		/// Adds a line-highlight entry.
+		/// </summary>
+		/// <param name="openPattern">
+		/// Opening pattern of the line-comment.
+		/// </param>
+		/// <param name="klass">
+		/// Class to apply to highlighted text.
+		/// </param>
+		/// <param name="ignoreCase">
+		/// Whether the opening pattern should be matched case-insensitively.
+		/// </param>
+		public void AddLineHighlight( string openPattern,
+									  CharClass klass,
+									  bool ignoreCase )
+		{
+
+			Enclosure pair = new Enclosure( openPattern,
+											null,
+											klass,
+											'\0',
+											false,
+											ignoreCase );
 
 			_LineHighlights.Add( pair );
 		}
@@ -303,8 +342,8 @@ namespace Sgry.Azuki.Highlighter
 		/// <remarks>
 		/// <para>
 		/// This method is obsoleted. Please use
-		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter.AddKeywordSet(String[], CharClass)">
-		/// AddKeywordSet</see> method instead.
+		/// <see cref="AddKeywordSet(string[],CharClass)"/>
+		/// method instead.
 		/// </para>
 		/// </remarks>
 		[Obsolete("Please use AddKeywordSet method instead.", true)]
@@ -347,7 +386,7 @@ namespace Sgry.Azuki.Highlighter
 		/// WordCharSet</see> property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="AddKeywordSet(String[], CharClass, Boolean)">
+		/// <seealso cref="AddKeywordSet(String[],CharClass,bool)">
 		/// AddKeywordSet method (another overloaded method)
 		/// </seealso>
 		public void AddKeywordSet( string[] keywords, CharClass klass )
@@ -1041,11 +1080,16 @@ namespace Sgry.Azuki.Highlighter
 		#region Utilities
 		static bool Matches( char ch1, char ch2, bool ignoreCase )
 		{
-			if( ch1 == ch2 )
-				return true;
-			if( ignoreCase && Char.ToLower(ch1) == Char.ToLower(ch2) )
-				return true;
-			return false;
+			if( ignoreCase )
+			{
+				int c1 = ('A' <= ch1 && ch1 <= 'Z') ? ('a' + ch1 - 'A') : ch1;
+				int c2 = ('A' <= ch2 && ch2 <= 'Z') ? ('a' + ch2 - 'A') : ch2;
+				return (c1 == c2);
+			}
+			else
+			{
+				return (ch1 == ch2);
+			}
 		}
 
 		static bool MatchedExactly( Document doc,

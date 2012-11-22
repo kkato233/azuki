@@ -49,13 +49,13 @@ namespace Sgry.Azuki.Highlighter
 				"where", "yield"
 			}, CharClass.Keyword );
 
-			// preprocessor macro
-			string words = "define|elif|else|endif|endregion|error"
-						 + "|if|line|pragma|region|undef|warning";
-			AddRegex(
-					new Regex(@"^\s*(#\s*(?:" + words + "))"),
-					new CharClass[]{CharClass.Macro}
-				);
+			// Preprocessor macro
+			string[] words = new string[] {
+				"define", "elif", "else", "endif", "endregion", "error", "if",
+				"line", "pragma", "region", "undef", "warning"
+			};
+			AddRegex( @"^\s*#\s*(" + String.Join(@"\b|", words) + @"\b)",
+					  CharClass.Macro );
 
 			AddEnclosure( "'", "'", CharClass.String, false, '\\' );
 			AddEnclosure( "@\"", "\"", CharClass.String, true, '\"' );

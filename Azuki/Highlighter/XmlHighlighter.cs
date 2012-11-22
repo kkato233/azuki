@@ -45,30 +45,39 @@ namespace Sgry.Azuki.Highlighter
 		/// </summary>
 		public XmlHighlighter()
 		{
-			Enclosure doubleQuote = new Enclosure();
-			doubleQuote.opener = doubleQuote.closer = "\"";
-			doubleQuote.klass = CharClass.String;
-			doubleQuote.multiLine = true;
+			bool MULTILINE = true;
+			bool CASE_SENSITIVE = false;
+
+			Enclosure doubleQuote = new Enclosure( "\"",
+												   "\"",
+												   CharClass.String,
+												   '\0',
+												   MULTILINE,
+												   CASE_SENSITIVE );
 			_Enclosures.Add( doubleQuote );
 
-			Enclosure singleQuote = new Enclosure();
-			singleQuote.opener = singleQuote.closer = "'";
-			singleQuote.klass = CharClass.String;
-			singleQuote.multiLine = true;
+			Enclosure singleQuote = new Enclosure( "'",
+												   "'",
+												   CharClass.String,
+												   '\0',
+												   MULTILINE,
+												   CASE_SENSITIVE );
 			_Enclosures.Add( singleQuote );
 
-			Enclosure cdata = new Enclosure();
-			cdata.opener = "<![CDATA[";
-			cdata.closer = "]]>";
-			cdata.klass = CharClass.CDataSection;
-			cdata.multiLine = true;
+			Enclosure cdata = new Enclosure( "<![CDATA[",
+											 "]]>",
+											 CharClass.CDataSection,
+											 '\0',
+											 MULTILINE,
+											 CASE_SENSITIVE );
 			_Enclosures.Add( cdata );
 
-			Enclosure comment = new Enclosure();
-			comment.opener = "<!--";
-			comment.closer = "-->";
-			comment.klass = CharClass.Comment;
-			comment.multiLine = true;
+			Enclosure comment = new Enclosure( "<!--",
+											   "-->",
+											   CharClass.Comment,
+											   '\0',
+											   MULTILINE,
+											   CASE_SENSITIVE );
 			_Enclosures.Add( comment );
 		}
 		#endregion

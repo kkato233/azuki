@@ -13,20 +13,23 @@ namespace Sgry.Azuki.Highlighter
 	/// </summary>
 	class Enclosure
 	{
-		/// <summary>Token to open the enclosing pair.</summary>
-		public string opener;
-
-		/// <summary>Token to close the enclosing pair.</summary>
-		public string closer;
-		
-		/// <summary>Char-class to be set for chars in the range of enclosing pair.</summary>
+		public string opener = null;
+		public string closer = null;
 		public CharClass klass;
-		
-		/// <summary>Escape char used in the enclosing pair.</summary>
-		public char escape;
+		public char escape = '\0';
+		public bool multiLine = false;
+		public bool ignoreCase = false;
 
-		/// <summary>Whether this enclosure must exist in a line or not.</summary>
-		public bool multiLine;
+		public Enclosure( string opener, string closer, CharClass klass,
+						  char escape, bool multiLine, bool ignoreCase )
+		{
+			this.opener = opener;
+			this.closer = closer;
+			this.klass = klass;
+			this.escape = escape;
+			this.multiLine = multiLine;
+			this.ignoreCase = ignoreCase;
+		}
 
 #		if DEBUG
 		public override string ToString()
@@ -155,29 +158,12 @@ namespace Sgry.Azuki.Highlighter
 		/// <returns>
 		/// Whether any characters are highlighted or not.
 		/// </returns>
-		public static bool TryHighlight( Document doc,
-										 Enclosure pair,
-										 int startIndex,
-										 int endIndex,
-										 out int nextParsePos )
-		{
-			return TryHighlight( doc, pair,
-								 startIndex, endIndex,
-								 null, out nextParsePos );
-		}
-
-		/// <summary>
-		/// Highlight an enclosed part with specified patterns.
-		/// </summary>
-		/// <returns>
-		/// Whether any characters are highlighted or not.
-		/// </returns>
-		public static bool TryHighlight( Document doc,
-										 Enclosure pair,
-										 int startIndex,
-										 int endIndex,
-										 HighlightHook proc,
-										 out int nextParsePos )
+		static bool TryHighlight( Document doc,
+								  Enclosure pair,
+								  int startIndex,
+								  int endIndex,
+								  HighlightHook hook,
+								  out int nextParsePos )
 		{
 			Debug.Assert( doc != null );
 			Debug.Assert( pair != null );
@@ -197,7 +183,7 @@ namespace Sgry.Azuki.Highlighter
 				if( openerFound )
 				{
 					// Highlight all the followings if reached to the end position
-					Highlight( doc, startIndex, endIndex, pair.klass, proc );
+					Highlight( doc, startIndex, endIndex, pair.klass, hook );
 					nextParsePos = endIndex;
 					return true;
 				}
@@ -212,7 +198,7 @@ namespace Sgry.Azuki.Highlighter
 			closerEndPos = (pair.closer == null)
 							? closerPos
 							: closerPos + pair.closer.Length;
-			Highlight( doc, startIndex, closerEndPos, pair.klass, proc );
+			Highlight( doc, startIndex, closerEndPos, pair.klass, hook );
 			nextParsePos = closerEndPos;
 			return true;
 		}
@@ -270,9 +256,11 @@ namespace Sgry.Azuki.Highlighter
 				// treat it as a post-fix.
 				if( end < endIndex )
 				{
-					postfixCh = Char.ToLower( doc[end] );
-					if( postfixCh == 'f' || postfixCh == 'i'
-						|| postfixCh == 'j' || postfixCh == 'l' )
+					postfixCh = doc[end];
+					if( postfixCh == 'f' || postfixCh == 'F'
+						|| postfixCh == 'i' || postfixCh == 'I' 
+						|| postfixCh == 'j' || postfixCh == 'J'
+						|| postfixCh == 'l' || postfixCh == 'L' )
 					{
 						end++;
 					}
@@ -443,7 +431,7 @@ namespace Sgry.Azuki.Highlighter
 			int openerEndIndex;
 
 			// Check whether there is the opener at specified position
-			if( StartsWith(doc, pair.opener, openerIndex) == false )
+			if( StartsWith(doc, pair.opener, openerIndex, pair.ignoreCase) == false )
 			{
 				openerFound = false;
 				return -1;
@@ -469,7 +457,7 @@ namespace Sgry.Azuki.Highlighter
 			for( i=openerEndIndex; i<endIndex; i++ )
 			{
 				// If found one, return this position
-				if( StartsWith(doc, pair.closer, i) )
+				if( StartsWith(doc, pair.closer, i, pair.ignoreCase) )
 				{
 					// If the closing pattern is exactly the same with the
 					// escape character, this can be an escape character.
@@ -520,13 +508,24 @@ namespace Sgry.Azuki.Highlighter
 		/// <summary>
 		/// Determine whether the token starts with given index in the document.
 		/// </summary>
-		public static bool StartsWith( Document doc, string token, int index )
+		public static bool StartsWith( Document doc,
+									   string token,
+									   int index,
+									   bool ignoreCase )
 		{
 			int i = 0;
 
 			for( ; i<token.Length && index+i<doc.Length; i++ )
 			{
-				if( token[i] != doc[index+i] )
+				int ch1 = (int)token[i];
+				int ch2 = (int)doc[index+i];
+				if( ignoreCase )
+				{
+					if( 'A' <= ch1 && ch1 <= 'Z' )	ch1 = ('a' + ch1-'A');
+					if( 'A' <= ch2 && ch2 <= 'Z' )	ch2 = ('a' + ch2-'A');
+				}
+
+				if( ch1 != ch2 )
 					return false;
 			}
 
@@ -534,19 +533,6 @@ namespace Sgry.Azuki.Highlighter
 				return true;
 			else
 				return false;
-		}
-
-		/// <summary>
-		/// Determine whether the enclosing pair starts with given index in the document.
-		/// </summary>
-		public static Enclosure StartsWith( Document doc, List<Enclosure> pairs, int index )
-		{
-			foreach( Enclosure pair in pairs )
-			{
-				if( StartsWith(doc, pair.opener, index) )
-					return pair;
-			}
-			return null;
 		}
 
 		public static bool IsWordChar( string wordChars, char ch )

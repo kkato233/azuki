@@ -2,6 +2,7 @@
  * add: Added PythonHighlighter
  * add: JavaScript highlighter now recognizes regular expression literals better (ex. highlights c=/e+f/g but doesn't highlight c=d/e+f/g)
  * add: Added an overload method of KeywordHighlighter.AddRegex which takes one CharClass and applies it to matched patterns
+ * add: Now KeywordHighlighter can use "ignore case" option for matching enclosure and line highlight
  * mod: Changed color of regular expression literals of default color set
  * fix: KeywordHighlighter doesn't stop highlighting if no closing pattern of non-multiline enclosures was found (problem since 1.7.1)
  * fix: If certain condition is met, KeywordHighlighter doesn't stop highlighting even if a closer of multi-line enclosure was found (problem since 1.7.1)

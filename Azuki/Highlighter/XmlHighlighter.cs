@@ -118,7 +118,7 @@ namespace Sgry.Azuki.Highlighter
 			index = 0;
 			while( 0 <= index && index < dirtyEnd )
 			{
-				if( Utl.TryHighlight(doc, _Enclosures, index, dirtyEnd, out nextIndex) )
+				if( Utl.TryHighlight(doc, _Enclosures, index, dirtyEnd, null, out nextIndex) )
 				{
 					Utl.EntryReparsePoint( _ReparsePoints, index );
 					index = nextIndex;
@@ -130,9 +130,9 @@ namespace Sgry.Azuki.Highlighter
 					// set class for '<'
 					doc.SetCharClass( index, CharClass.Delimiter );
 					index++;
-					if( doc.Length <= index )
+					if( dirtyEnd <= index )
 					{
-						return; // reached to the end
+						return;
 					}
 
 					// if next char is '?' or '/', highlight it too
@@ -141,16 +141,17 @@ namespace Sgry.Azuki.Highlighter
 					{
 						doc.SetCharClass( index, CharClass.Delimiter );
 						index++;
-						if( doc.Length <= index )
-							return; // reached to the end
+						if( dirtyEnd <= index )
+							return;
 					}
 
 					// skip whitespaces
 					while( Char.IsWhiteSpace(doc[index]) )
 					{
+						doc.SetCharClass( index, CharClass.Normal );
 						index++;
-						if( doc.Length <= index )
-							return; // reached to the end
+						if( dirtyEnd <= index )
+							return;
 					}
 
 					// highlight element name
@@ -162,10 +163,10 @@ namespace Sgry.Azuki.Highlighter
 					index = nextIndex;
 
 					// highlight attributes
-					while( index < doc.Length && doc[index] != '>' )
+					while( index < dirtyEnd && doc[index] != '>' )
 					{
 						// highlight enclosing part if this token begins a part
-						if( Utl.TryHighlight(doc, _Enclosures, index, dirtyEnd, out nextIndex) )
+						if( Utl.TryHighlight(doc, _Enclosures, index, dirtyEnd, null, out nextIndex) )
 						{
 							// successfully highlighted. skip to next.
 							index = nextIndex;
@@ -182,7 +183,7 @@ namespace Sgry.Azuki.Highlighter
 					}
 
 					// highlight '>'
-					if( index < doc.Length )
+					if( index < dirtyEnd )
 					{
 						doc.SetCharClass( index, CharClass.Delimiter );
 						if( 1 <= index && doc[index-1] == '/' )

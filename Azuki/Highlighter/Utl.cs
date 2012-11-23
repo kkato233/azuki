@@ -115,22 +115,7 @@ namespace Sgry.Azuki.Highlighter
 										 List<Enclosure> pairs,
 										 int startIndex,
 										 int endIndex,
-										 out int nextParsePos )
-		{
-			return TryHighlight( doc, pairs, startIndex, endIndex, null, out nextParsePos );
-		}
-
-		/// <summary>
-		/// Highlight an enclosed part with specified patterns.
-		/// </summary>
-		/// <returns>
-		/// Whether any characters are highlighted or not.
-		/// </returns>
-		public static bool TryHighlight( Document doc,
-										 List<Enclosure> pairs,
-										 int startIndex,
-										 int endIndex,
-										 HighlightHook proc,
+										 HighlightHook hook,
 										 out int nextParsePos )
 		{
 			Debug.Assert( doc != null );
@@ -143,7 +128,7 @@ namespace Sgry.Azuki.Highlighter
 			{
 				if( TryHighlight(doc, pair,
 								 startIndex, endIndex,
-								 proc, out nextParsePos) )
+								 hook, out nextParsePos) )
 				{
 					return true;
 				}
@@ -210,7 +195,7 @@ namespace Sgry.Azuki.Highlighter
 		public static int TryHighlightNumberToken( Document doc,
 												   int startIndex,
 												   int endIndex,
-												   HighlightHook proc )
+												   HighlightHook hook )
 		{
 			Debug.Assert( endIndex <= doc.Length,
 						  "param endIndex is out of range (endIndex:"
@@ -274,7 +259,7 @@ namespace Sgry.Azuki.Highlighter
 			}
 
 			// highlight this token
-			Highlight( doc, begin, end, CharClass.Number, proc );
+			Highlight( doc, begin, end, CharClass.Number, hook );
 
 			return end;
 		}
@@ -286,7 +271,7 @@ namespace Sgry.Azuki.Highlighter
 									  int begin,
 									  int end,
 									  CharClass klass,
-									  HighlightHook hookProc )
+									  HighlightHook hook )
 		{
 			Debug.Assert( doc != null );
 			Debug.Assert( 0 <= begin );
@@ -294,10 +279,10 @@ namespace Sgry.Azuki.Highlighter
 			Debug.Assert( end <= doc.Length );
 
 			// Call the hook if installed
-			if( hookProc != null )
+			if( hook != null )
 			{
 				string token = doc.GetTextInRange( begin, end );
-				if( hookProc(doc, token, begin, klass) == true )
+				if( hook(doc, token, begin, klass) == true )
 				{
 					return; // hook did something to this token.
 				}

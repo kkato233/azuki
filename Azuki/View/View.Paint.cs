@@ -1002,59 +1002,71 @@ namespace Sgry.Azuki
 
 		#region Utilities
 		/// <summary>
-		/// Calculates end index of the drawing token at longest case by selection state.
+		/// Calculates end index of a drawing token at longest case
+		/// according to selection state etc.
 		/// </summary>
-		int CalcTokenEndAtMost( Document doc, int index, int nextLineHead, out bool inSelection )
+		int CalcTokenEndAtMost( Document doc,
+								int index,
+								int nextLineHead,
+								out bool inSelection )
 		{
 			DebugUtl.Assert( doc != null );
 			DebugUtl.Assert( index < doc.Length );
-			DebugUtl.Assert( index < nextLineHead && nextLineHead <= doc.Length );
+			DebugUtl.Assert( index<nextLineHead && nextLineHead<=doc.Length );
+			const int MaxPaintTokenLen = 128;
 			int selBegin, selEnd;
 
-			// get selection range on the line
+			// Get selection range on the line
 			doc.GetSelection( out selBegin, out selEnd );
 			if( doc.RectSelectRanges != null )
 			{
-				//--- rectangle selection ---
 				int i;
 
-				// find a row that is on the drawing line
-				// (finding a begin-end pair whose 'end' is at middle of 'index' and 'nextLineHead')
+				// Determine whether a part of the line is selected by the
+				// rectangular selection or not, and get the selection range
+				// in this line. After determining it, drawing logic will be
+				// the same as case of normal selection.
 				for( i=0; i<doc.RectSelectRanges.Length; i+=2 )
 				{
 					selBegin = doc.RectSelectRanges[i];
 					selEnd = doc.RectSelectRanges[i+1];
 					if( index <= selEnd && selEnd < nextLineHead )
 					{
-						break;
+						break; // Selected.
 					}
 				}
 				if( doc.RectSelectRanges.Length <= i )
 				{
-					// this line is not selected
-					inSelection = false;
-					return nextLineHead;
+					// Not selected.
+					selBegin = selEnd = Int32.MaxValue;
 				}
 			}
 
 			if( index < selBegin )
 			{
-				// token begins before selection range.
-				// so this token is out of selection and must stops before reaching the selection
+				// Token being drawn exist before a selection
+				// so we must extract characters not in a selection range.
 				inSelection = false;
-				return Math.Min( selBegin, nextLineHead );
+				return Math.Min( Math.Min( selBegin,
+										   nextLineHead ),
+								 index + MaxPaintTokenLen );
 			}
 			else if( index < selEnd )
 			{
-				// token is in selection.
-				// this token must stops in the selection range
+				// Token being drawin exist in a selection
+				// so we must extract characters in a selection range.
 				inSelection = true;
-				return Math.Min( selEnd, nextLineHead );
+				return Math.Min( Math.Min( selEnd,
+										   nextLineHead ),
+								 index + MaxPaintTokenLen );
 			}
 			else
 			{
+				// Token being drawin exist after a selection or there is no
+				// characters selected so we don't need to care about selection
 				inSelection = false;
-				return nextLineHead;
+				return Math.Min( nextLineHead,
+								 index + MaxPaintTokenLen );
 			}
 		}
 

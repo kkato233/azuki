@@ -9,6 +9,7 @@
  * fix: If certain condition is met, KeywordHighlighter doesn't stop highlighting even if a closer of multi-line enclosure was found (problem since 1.7.1)
  * fix: KeywordHighlighter highlights text patterns matched with regular expressions even if it's in an enclosed part (problem since 1.7.2)
  * fix: Highlighting completely new document or removing very last part of document causes an exception (problem since 1.7.0)
+ * fix: Reduced unnecessary calculation on drawing a very long word (because of this, drawing text in a binary file oftenly slow)
  * add: [Ann] Added "Goto line" feature
  * add: [Ann] Added feature to highlight Python files
  * add: [Ann] Added feature to highlight MS-DOS batch files

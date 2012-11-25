@@ -13,6 +13,7 @@
  * add: [Ann] Added "Goto line" feature
  * add: [Ann] Added feature to highlight Python files
  * add: [Ann] Added feature to highlight MS-DOS batch files
+ * fix: [Ann] Caret position was reset when a document which is opened already is opened
 
 == 1.7.2 (2012-11-10) ==
  * add: Now KeywordHighlighter can use regular expression

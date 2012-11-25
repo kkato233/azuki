@@ -429,15 +429,6 @@ namespace Sgry.Ann
 			Document doc;
 			string errorMessage = null;
 
-			// if specified file was already opened, just return the document
-			foreach( Document d in Documents )
-			{
-				if( String.Compare(d.FilePath, filePath, true) == 0 )
-				{
-					return d;
-				}
-			}
-
 			// create new document
 			try
 			{
@@ -518,6 +509,16 @@ namespace Sgry.Ann
 		public void OpenDocument( string filePath )
 		{
 			Document doc;
+
+			// if specified file was already opened, just return the document
+			foreach( Document d in Documents )
+			{
+				if( String.Compare(d.FilePath, filePath, true) == 0 )
+				{
+					ActiveDocument = d;
+					return;
+				}
+			}
 
 			// load the file
 			doc = CreateDocumentFromFile( filePath, null, false );

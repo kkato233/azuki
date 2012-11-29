@@ -48,6 +48,9 @@ namespace Sgry.Ann
 			_Azuki.UseCtrlTabToMoveFocus = false;
 			_Azuki.CaretMoved += _Azuki_CaretMoved;
 #			endif
+			_Azuki.ColorScheme.SetColor( CharClass.Number,
+										 Color.Red,
+										 Color.Transparent );
 
 			_SearchPanel.SetFont( this.Font );
 			_TabPanel.ActiveTabBackColor = _Azuki.ColorScheme.LineNumberBack;

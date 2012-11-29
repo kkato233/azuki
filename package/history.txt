@@ -1,4 +1,4 @@
-== 1.7.3 (2012-xx-xx) ==
+== 1.7.3 (2012-11-29) ==
  * add: Added PythonHighlighter
  * add: Added BatchFileHighlighter
  * add: JavaScript highlighter now recognizes regular expression literals better (ex. highlights c=/e+f/g but doesn't highlight c=d/e+f/g)

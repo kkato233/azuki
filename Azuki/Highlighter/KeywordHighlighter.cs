@@ -93,6 +93,16 @@ namespace Sgry.Azuki.Highlighter
 	///		expression, refer to the reference manual of that class.
 	///		</item>
 	/// </list>
+	/// <para>
+	/// There is one more note about this class. KeywordHighlighter highlights
+	/// numeric literals like 3.14 or 0xFFFE by default. To disable this
+	/// feature, set false to <see cref="HighlightsNumericLiterals"/> property.
+	/// There is no customization option for this feature so if you want to
+	/// highlight numeric literals in a way different from this class's,
+	/// disable this feature and define regular expressions for numeric
+	/// literals by your own. For more detail of this feature, see the document
+	/// of <see cref="HighlightsNumericLiterals"/> property.
+	/// </para>
 	/// </remarks>
 	/// <example>
 	/// <para>
@@ -176,6 +186,7 @@ namespace Sgry.Azuki.Highlighter
 		const string DefaultWordCharSet =
 			"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
 		HighlightHook _HookProc = null;
+		bool _HighlightsNumericLiterals = true;
 		string _WordCharSet = null;
 		List<KeywordSet> _Keywords = new List<KeywordSet>( 8 );
 		List<Enclosure> _Enclosures = new List<Enclosure>( 8 );
@@ -209,6 +220,41 @@ namespace Sgry.Azuki.Highlighter
 		{
 			get{ return _HookProc; }
 			set{ _HookProc = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether to enable built-in logic to recognize numeric
+		/// literals or not.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// By default, KeywordHighlighter recognizes numeric literals (such as
+		/// 3.14, 0xfffe) automatically and highlights them. This built-in
+		/// logic highlights:
+		/// </para>
+		/// <list style="bullet">
+		/// 	<item>
+		/// 	tokens starting with '0x' and every following character are one
+		/// 	of '0123456789abcdefABCDEF', and
+		/// 	</item>
+		/// 	<item>
+		/// 	tokens starting with digits or dot (period) and ends with one
+		/// 	of 'fijlFIJL'.
+		/// 	</item>
+		/// </list>
+		/// <para>
+		/// This feature is a kind of legacy implemented back when this class
+		/// cannot highlight patterns specified with regular expressions.
+		/// Because there is no customization option, if you want to highlight
+		/// numeric literals which cannot be highlighted by this logic, disable
+		/// this feature and define regular expressions for numeric literals by
+		/// your own.
+		/// </para>
+		/// </remarks>
+		public bool HighlightsNumericLiterals
+		{
+			get{ return _HighlightsNumericLiterals; }
+			set{ _HighlightsNumericLiterals = value; }
 		}
 
 		/// <summary>
@@ -868,13 +914,16 @@ namespace Sgry.Azuki.Highlighter
 				}
 
 				// highlight digit as number
-				nextIndex = Utl.TryHighlightNumberToken( doc,
-														 index, dirtyEnd,
-														 _HookProc );
-				if( index < nextIndex )
+				if( _HighlightsNumericLiterals )
 				{
-					index = nextIndex;
-					continue;
+					nextIndex = Utl.TryHighlightNumberToken( doc,
+															 index, dirtyEnd,
+															 _HookProc );
+					if( index < nextIndex )
+					{
+						index = nextIndex;
+						continue;
+					}
 				}
 
 				// highlight regular expressions

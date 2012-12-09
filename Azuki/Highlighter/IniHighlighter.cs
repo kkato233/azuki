@@ -16,6 +16,7 @@ namespace Sgry.Azuki.Highlighter
 			AddRegex( @"^\s*([;#!].*)",
 					  false,
 					  new CharClass[]{ CharClass.Comment } );
+			HighlightsNumericLiterals = false;
 		}
 	}
 }

@@ -1,3 +1,6 @@
+== 1.7.4 (2012-xx-xx) ==
+ * add: KeywordHighlighter の数値リテラルをハイライトする内蔵ロジックを無効化できるプロパティ HighlightsNumericLiterals を追加
+
 == 1.7.3 (2012-11-29) ==
  * add: Python 用のハイライターを追加
  * add: MS-DOSバッチファイル用のハイライターを追加

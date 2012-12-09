@@ -1,3 +1,6 @@
+== 1.7.4 (2012-xx-xx) ==
+ * add: Added KeywordHighlighter.HighlightsNumericLiterals property which can turn off or on whether to highlight numeric literals by its built-in logic
+
 == 1.7.3 (2012-11-29) ==
  * add: Added PythonHighlighter
  * add: Added BatchFileHighlighter

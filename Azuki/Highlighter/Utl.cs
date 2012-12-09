@@ -189,9 +189,12 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
-		/// Highlight a token consisted with only digits.
+		/// Highlights a token which is regarded as a numeric literals.
 		/// </summary>
-		/// <returns>Index of next parse point if a pair was highlighted or 'begin' index</returns>
+		/// <returns>
+		/// Index of next parsing position if a pair was highlighted otherwise
+		/// '<paramref name="startIndex"/>'.
+		/// </returns>
 		public static int TryHighlightNumberToken( Document doc,
 												   int startIndex,
 												   int endIndex,
@@ -218,24 +221,20 @@ namespace Sgry.Azuki.Highlighter
 				return begin;
 
 			// check whether this token is a hex-number literal or not
-			if( begin+2 < doc.Length
-				&& doc[begin] == '0' && doc[begin+1] == 'x' ) // check begin"+2" to avoid highlight token "0x" (nothing trails)
+			if( (begin+1) + 1 < doc.Length
+				&& doc[begin] == '0' && doc[begin+1] == 'x' )
 			{
 				end = begin + 2;
 
 				// seek end of this hex-number token
 				while( end < endIndex && ishex(doc[end]) )
-				{
 					end++;
-				}
 			}
 			else
 			{
 				// seek end of this number token
 				while( end < endIndex && isdigitdot(doc[end]) )
-				{
 					end++;
-				}
 
 				// if next char is one of the alphabets in 'f', 'i', 'j', 'l',
 				// treat it as a post-fix.
@@ -251,7 +250,7 @@ namespace Sgry.Azuki.Highlighter
 					}
 				}
 			}
-			
+
 			// ensure this token ends with NOT an alphabet
 			if( end < endIndex && isalpha(doc[end]) )
 			{

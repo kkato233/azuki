@@ -1,7 +1,5 @@
 // file: WinApi.cs
 // brief: Sgry's Win32API glues.
-// author: YAMAMOTO Suguru
-// update: 2011-07-31
 //=========================================================
 using System;
 using System.Text;
@@ -434,8 +432,14 @@ namespace Sgry.Azuki.WinForms
 			Debug.Assert( rc != UInt32.MaxValue, "failed to set text alignment by SetTextAlign." );
 		}
 
-		public static unsafe void CreateLogFont( IntPtr window, FontInfo font, out LOGFONTW lf )
+		public static unsafe void CreateLogFont( IntPtr window,
+												 FontInfo font,
+												 out LOGFONTW lf )
 		{
+			//DO_NOT//Debug.Assert( window != IntPtr.Zero );
+			Debug.Assert( font != null );
+			Debug.Assert( font.Name != null );
+
 			const int LOGPIXELSY = 90;
 			lf = new LOGFONTW();
 			IntPtr dc;

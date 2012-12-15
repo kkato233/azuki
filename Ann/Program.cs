@@ -1,4 +1,3 @@
-// 2011-09-25
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,7 +49,7 @@ namespace Sgry.Ann
 			using( app = new AppLogic(initOpenFilePaths) )
 			{
 				app.MainForm = new AnnForm( app );
-				app.LoadConfig();
+				app.LoadConfig( true );
 
 #				if !PocketPC
 				Application.EnableVisualStyles();

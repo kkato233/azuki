@@ -1,5 +1,4 @@
-﻿// 2011-07-07
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -43,19 +42,18 @@ namespace Sgry.Ann
 		/// </summary>
 		public static void Load()
 		{
-			string str;
 			int width, height;
 			
 			try
 			{
 				Ini.Load( IniFilePath, Encoding.UTF8 );
 
-				int fontSize = Ini.GetInt( "Default", "FontSize", 1, Int32.MaxValue, 10 );
-				str = Ini.Get( "Default", "Font", null );
-				width = Ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, 300 );
-				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, 400 );
+				int fontSize = Ini.GetInt( "Default", "FontSize", 1, Int32.MaxValue, FontInfo.Size );
+				string fontName = Ini.Get( "Default", "Font", FontInfo.Name );
+				width = Ini.GetInt( "Default", "WindowWidth", 100, Int32.MaxValue, WindowSize.Width );
+				height = Ini.GetInt( "Default", "WindowHeight", 100, Int32.MaxValue, WindowSize.Height );
 
-				AppConfig.FontInfo					= new FontInfo( str, fontSize, FontStyle.Regular );
+				AppConfig.FontInfo					= new FontInfo( fontName, fontSize, FontStyle.Regular );
 				AppConfig.WindowSize				= new Size( width, height );
 				AppConfig.WindowMaximized			= Ini.Get( "Default", "WindowMaximized", false );
 				AppConfig.TabPanelEnabled			= Ini.Get( "Default", "TabPanelEnabled", false );
@@ -130,9 +128,9 @@ namespace Sgry.Ann
 
 		#region Utilities
 		/// <summary>
-		/// Gets INI file path.
+		/// Gets path of the configuration file.
 		/// </summary>
-		static string IniFilePath
+		public static string IniFilePath
 		{
 			get
 			{

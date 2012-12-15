@@ -1,4 +1,3 @@
-// 2010-07-04
 using System;
 using System.Windows.Forms;
 using Sgry.Azuki;
@@ -57,6 +56,7 @@ namespace Sgry.Ann
 				azuki.DrawingOption = dialog.DrawingOption;
 				azuki.TabWidth = dialog.TabWidth;
 				azuki.FontInfo = dialog.FontInfo;
+				app.SaveConfig();
 			}
 		};
 

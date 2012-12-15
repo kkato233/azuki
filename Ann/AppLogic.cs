@@ -112,7 +112,6 @@ namespace Sgry.Ann
 				_MainForm = value;
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
-				_MainForm.Closed += MainForm_Closed;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.Azuki.Click += Azuki_Click;
 				_MainForm.Azuki.DoubleClick += Azuki_DoubleClick;
@@ -545,7 +544,6 @@ namespace Sgry.Ann
 		/// </summary>
 		public void SaveDocument( Document doc )
 		{
-			FileStream file = null;
 			string dirPath;
 
 			// if the document is read-only, do nothing
@@ -604,7 +602,10 @@ namespace Sgry.Ann
 				}
 
 				// write file bytes
-				using( file = File.Open(doc.FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite) )
+				using( FileStream file = File.Open(doc.FilePath,
+										 FileMode.OpenOrCreate,
+										 FileAccess.ReadWrite,
+										 FileShare.ReadWrite) )
 				{
 					file.SetLength( 0 );
 					file.Write( bomBytes, 0, bomBytes.Length );
@@ -623,6 +624,12 @@ namespace Sgry.Ann
 			{
 				// case example: another process is opening the file and does not allow to write
 				Alert( ex );
+			}
+
+			// Reload configuration if it's the application config file.
+			if( doc.FilePath.ToLower() == AppConfig.IniFilePath.ToLower() )
+			{
+				LoadConfig( false );
 			}
 		}
 
@@ -806,7 +813,8 @@ namespace Sgry.Ann
 				int readCount = 0;
 
 				// open the file
-				stream = File.Open( filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
+				stream = File.Open( filePath, FileMode.Open,
+									FileAccess.Read, FileShare.ReadWrite );
 				file = new StreamReader( stream, encoding );
 
 				// make the document content empty first
@@ -996,18 +1004,13 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Config
-		public void LoadConfig()
+		public void LoadConfig( bool includeWindowConfig )
 		{
 			// load config file
 			AppConfig.Load();
 
 			// apply config
 			MainForm.Azuki.FontInfo				= AppConfig.FontInfo;
-			MainForm.ClientSize					= AppConfig.WindowSize;
-			if( AppConfig.WindowMaximized )
-			{
-				MainForm.WindowState = FormWindowState.Maximized;
-			}
 			MainForm.TabPanelEnabled				= AppConfig.TabPanelEnabled;
 
 			MainForm.Azuki.DrawsEolCode				= AppConfig.DrawsEolCode;
@@ -1029,6 +1032,16 @@ namespace Sgry.Ann
 			MainForm.Azuki.ConvertsFullWidthSpaceToSpace = AppConfig.ConvertsFullWidthSpaceToSpace;
 			MainForm.Azuki.HRulerIndicatorType		= AppConfig.HRulerIndicatorType;
 			MainForm.Azuki.ScrollsBeyondLastLine	= AppConfig.ScrollsBeyondLastLine;
+
+			// apply window config
+			if( includeWindowConfig )
+			{
+				MainForm.ClientSize = AppConfig.WindowSize;
+				if( AppConfig.WindowMaximized )
+				{
+					MainForm.WindowState = FormWindowState.Maximized;
+				}
+			}
 
 			// update UI
 			MainForm.UpdateUI();
@@ -1130,11 +1143,6 @@ namespace Sgry.Ann
 					}
 				}
 			}
-		}
-
-		void MainForm_Closed( object sender, EventArgs e )
-		{
-			SaveConfig();
 		}
 
 		internal void MainForm_DelayedActivated()

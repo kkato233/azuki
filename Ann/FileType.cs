@@ -212,22 +212,21 @@ namespace Sgry.Ann
 
 		public static FileType GetFileTypeByFileName( string fileName )
 		{
-			string ext;
-			string extList;
-			const StringComparison ignoreCase = StringComparison.CurrentCultureIgnoreCase;
-
-			ext = Path.GetExtension( fileName );
-			if( ext == String.Empty )
+			string fileExt = Path.GetExtension( fileName );
+			if( fileExt == String.Empty )
 			{
 				return TextFileType;
 			}
 
 			foreach( string sectionName in _FileTypeMap.Keys )
 			{
-				extList = AppConfig.Ini.Get( sectionName, "Extensions", "" );
-				if( 0 <= extList.IndexOf(ext, ignoreCase) )
+				string extList = AppConfig.Ini.Get( sectionName,
+													"Extensions",
+													"" );
+				foreach( string ext in extList.Split(' ') )
 				{
-					return _FileTypeMap[sectionName];
+					if( String.Compare(fileExt, ext, true) == 0 )
+						return _FileTypeMap[sectionName];
 				}
 			}
 

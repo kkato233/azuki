@@ -698,7 +698,8 @@ namespace Sgry.Azuki
 			for( int i=beginL; i<endL; i++ )
 			{
 				int lineHead = doc.GetLineHeadIndex( i );
-				doc.Replace( indentChars, lineHead, lineHead );
+				if( 0 < doc.GetLineLength(i) )
+					doc.Replace( indentChars, lineHead, lineHead );
 			}
 			doc.EndUndo();
 

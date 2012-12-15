@@ -1,5 +1,6 @@
 == 1.7.4 (2012-xx-xx) ==
  * add: Added KeywordHighlighter.HighlightsNumericLiterals property which can turn off or on whether to highlight numeric literals by its built-in logic
+ * fix: Block-indent action now ignores empty lines
  * fix: [Ann] Fixed problem that Ann opens .c file as .cmd file (MS-DOS batch file type.)
 
 == 1.7.3 (2012-11-29) ==

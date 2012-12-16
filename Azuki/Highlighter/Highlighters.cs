@@ -44,6 +44,14 @@ namespace Sgry.Azuki.Highlighter
 		}
 
 		/// <summary>
+		/// Gets a new highlighter for Diff format.
+		/// </summary>
+		public static IHighlighter Diff
+		{
+			get{ return new DiffHighlighter(); }
+		}
+
+		/// <summary>
 		/// Gets a new highlighter for INI.
 		/// </summary>
 		public static IHighlighter Ini

@@ -840,7 +840,7 @@ namespace Sgry.Azuki.Highlighter
 		/// Parse and highlight keywords.
 		/// </summary>
 		/// <param name="doc">Document to highlight.</param>
-		public void Highlight( Document doc )
+		public virtual void Highlight( Document doc )
 		{
 			int begin = 0;
 			int end = doc.Length;
@@ -859,9 +859,9 @@ namespace Sgry.Azuki.Highlighter
 		/// Index to end highlighting.
 		/// On return, end index of the range to be invalidated.
 		/// </param>
-		public void Highlight( Document doc,
-							   ref int dirtyBegin,
-							   ref int dirtyEnd )
+		public virtual void Highlight( Document doc,
+									   ref int dirtyBegin,
+									   ref int dirtyEnd )
 		{
 			if( dirtyBegin < 0 || doc.Length < dirtyBegin )
 				throw new ArgumentOutOfRangeException( "dirtyBegin" );

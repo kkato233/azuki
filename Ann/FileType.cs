@@ -14,6 +14,7 @@ namespace Sgry.Ann
 		public const string BatchFileTypeName = "Batch";
 		public const string CppFileTypeName = "C/C++";
 		public const string CSharpFileTypeName = "C#";
+		public const string DiffFileTypeName = "Diff";
 		public const string IniFileTypeName = "INI";
 		public const string JavaFileTypeName = "Java";
 		public const string JavaScriptFileTypeName = "JavaScript";
@@ -37,6 +38,7 @@ namespace Sgry.Ann
 			_FileTypeMap.Add( "BatchFileType", BatchFileType );
 			_FileTypeMap.Add( "CppFileType", CppFileType );
 			_FileTypeMap.Add( "CSharpFileType", CSharpFileType );
+			_FileTypeMap.Add( "DiffFileType", DiffFileType );
 			_FileTypeMap.Add( "IniFileType", IniFileType );
 			_FileTypeMap.Add( "JavaFileType", JavaFileType );
 			_FileTypeMap.Add( "JavaScriptFileType", JavaScriptFileType );
@@ -102,6 +104,20 @@ namespace Sgry.Ann
 				fileType._Highlighter = Highlighters.CSharp;
 				fileType._AutoIndentHook = AutoIndentHooks.CHook;
 				fileType._Name = CSharpFileTypeName;
+				return fileType;
+			}
+		}
+
+		/// <summary>
+		/// Gets a new Diff / Patch file type.
+		/// </summary>
+		public static FileType DiffFileType
+		{
+			get
+			{
+				FileType fileType = new FileType();
+				fileType._Highlighter = Highlighters.Diff;
+				fileType._Name = DiffFileTypeName;
 				return fileType;
 			}
 		}

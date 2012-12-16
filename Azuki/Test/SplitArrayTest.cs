@@ -1,4 +1,3 @@
-// 2010-04-18
 #if TEST
 using System;
 using System.Collections;
@@ -31,15 +30,10 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine( "test {0} - Insert()", ++test_num );
 			TestUtl.Do( Test_Insert_One );
 			TestUtl.Do( Test_Insert_Array );
-			TestUtl.Do( Test_Insert_Cvt );
 
 			// Replace
 			Console.WriteLine( "test {0} - Replace()", ++test_num );
 			TestUtl.Do( Test_Replace );
-
-// SetAt (to part2)
-//chars.SetAt( 'Z', 6 ); // case 2
-//TestUtl.AssertEquals( chars[6] == 'Z' );
 
 			// RemoveRange
 			Console.WriteLine( "test {0} - RemoveRange()", ++test_num );
@@ -48,10 +42,6 @@ namespace Sgry.Azuki.Test
 			// CopyTo
 			Console.WriteLine( "test {0} - CopyTo()", ++test_num );
 			TestUtl.Do( Test_CopyTo );
-
-			// Convertion (ToArray, CopyTo)
-			Console.WriteLine( "test {0} - Convertion()", ++test_num );
-			TestUtl.Do( Test_Convertion );
 
 			Console.WriteLine( "done." );
 			Console.WriteLine();
@@ -203,61 +193,6 @@ namespace Sgry.Azuki.Test
 			sary.Clear();
 			sary.Add( InitData.ToCharArray() );
 			try{ sary.Insert(9, "FOO".ToCharArray()); Console.WriteLine("### INSA_AE ###"); }
-			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
-		}
-
-		static void Test_Insert_Cvt()
-		{
-			const string InitData = "hogepiyo";
-			SplitArray<char> sary = new SplitArray<char>( 5, 8 );
-			int[] nums = new int[]{ 15, 14, 13 };
-			Converter<int, char> cvt = delegate( int n ){
-				return n.ToString("X")[0];
-			};
-
-			// null array
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			try{ sary.Insert(0, null, cvt); Console.WriteLine("### INSC_NULL ###"); }
-			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
-			
-			// empty array
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			sary.Insert( 0, new int[]{}, cvt );
-			TestUtl.AssertEquals( "hogepiyo", ToString(sary) );
-
-			// before head
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			try{ sary.Insert(-1, nums, cvt); Console.WriteLine("### INSC_BH ###"); }
-			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
-
-			// head
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			sary.Insert( 0, nums, cvt );
-			TestUtl.AssertEquals( 11, sary.Count );
-			TestUtl.AssertEquals( "FEDhogepiyo", ToString(sary) );
-
-			// middle
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			sary.Insert( 4, nums, cvt );
-			TestUtl.AssertEquals( 11, sary.Count );
-			TestUtl.AssertEquals( "hogeFEDpiyo", ToString(sary) );
-
-			// end
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			sary.Insert( 8, nums, cvt );
-			TestUtl.AssertEquals( 11, sary.Count );
-			TestUtl.AssertEquals( "hogepiyoFED", ToString(sary) );
-
-			// after end
-			sary.Clear();
-			sary.Add( InitData.ToCharArray() );
-			try{ sary.Insert(9, nums, cvt); Console.WriteLine("### INSC_AE ###"); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 		}
 
@@ -413,51 +348,6 @@ namespace Sgry.Azuki.Test
 			buf = initBufContent.ToCharArray();
 			try{ sary.CopyTo(5, 9, buf); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
-		}
-
-		static void Test_Convertion()
-		{
-			SplitArray<int> sary = new SplitArray<int>( 5, 8 );
-			string[] ary;
-
-			Converter<int, string> itos = delegate( int num ) {
-				return num.ToString( "D4" );
-			};
-			Converter<string, int> stoi = delegate( string num ) {
-				return Convert.ToInt32( num );
-			};
-
-			sary.Add( 0 );
-			sary.Add( 1 );
-			sary.Add( 2 );
-			sary.Add( 3 );
-			sary.Add( 4 );
-
-			// ToArray<S>()
-			ary = sary.ToArray<string>( itos );
-			TestUtl.AssertEquals( "0000", ary[0] );
-			TestUtl.AssertEquals( "0001", ary[1] );
-			TestUtl.AssertEquals( "0002", ary[2] );
-			TestUtl.AssertEquals( "0003", ary[3] );
-			TestUtl.AssertEquals( "0004", ary[4] );
-
-			// CopyTo<S>()
-			ary = new string[4];
-			sary.CopyTo<string>( 1, 3, ary, itos );
-			TestUtl.AssertEquals( "0001", ary[0] );
-			TestUtl.AssertEquals( "0002", ary[1] );
-			TestUtl.AssertEquals( null, ary[2] );
-			TestUtl.AssertEquals( null, ary[3] );
-
-			// Insert<S>()
-			ary = new string[]{"10", "10"};
-			sary.Insert<string>( 1, ary, stoi );
-			TestUtl.AssertEquals( 0, sary[0] );
-			TestUtl.AssertEquals( 10, sary[1] );
-			TestUtl.AssertEquals( 10, sary[2] );
-			TestUtl.AssertEquals( 1, sary[3] );
-			TestUtl.AssertEquals( 2, sary[4] );
-			TestUtl.AssertEquals( 3, sary[5] );
 		}
 
 		static string ToString( SplitArray<char> sary )

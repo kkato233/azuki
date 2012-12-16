@@ -1,7 +1,5 @@
 // file: SplitArray.cs
 // brief: Data structure holding a 'gap' in it for efficient insert/delete operation.
-// author: YAMAMOTO Suguru
-// update: 2010-04-18
 //=========================================================
 //#define SPLIT_ARRAY_ENABLE_SANITY_CHECK
 //#define SPLIT_ARRAY_ENABLE_TRACE
@@ -51,21 +49,6 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region ToArray
-		/// <summary>
-		/// Creates a copy of the content as an array by using given converter.
-		/// </summary>
-		public S[] ToArray<S>( Converter<T, S> converter )
-		{
-			S[] array = new S[ _Count ];
-
-			for( int i=0; i<_Count; i++ )
-			{
-				array[i] = converter( GetAt(i) );
-			}
-
-			return array;
-		}
-
 		/// <summary>
 		/// Creates a copy of the content as an array.
 		/// </summary>
@@ -118,18 +101,6 @@ namespace Sgry.Azuki
 			{
 				return _Data[ _GapLen + index ];
 			}
-		}
-
-		/// <summary>
-		/// Gets elements in range [begin, end).
-		/// </summary>
-		public void CopyTo<S>( int begin, int end, S[] outBuffer, Converter<T, S> converter )
-		{
-			DebugUtl.Assert( 0 <= begin && begin <= _Count && begin < end, "argument out of range: requested data at invalid range ["+begin+", "+end+")." );
-
-			int count = end - begin;
-			for( int i=0; i<count; i++ )
-				outBuffer[i] = converter( GetAt(begin + i) );
 		}
 
 		/// <summary>
@@ -207,14 +178,6 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Adds elements.
-		/// </summary>
-		public void Add<S>( S[] values, Converter<S, T> converter )
-		{
-			Insert( _Count, values, converter );
-		}
-
-		/// <summary>
 		/// Inserts an element at specified index.
 		/// </summary>
 		/// <exception cref="ArgumentException">invalid index was given</exception>
@@ -241,44 +204,6 @@ namespace Sgry.Azuki
 			_GapPos += 1;
 			_GapLen -= 1;
 			__dump__( String.Format("Insert({0}, {1})", insertIndex, value) );
-			__check_sanity__();
-		}
-
-		/// <summary>
-		/// Inserts elements at specified index.
-		/// </summary>
-		/// <param name="insertIndex">target location of insertion</param>
-		/// <param name="values">the elements to be inserted</param>
-		/// <param name="converter">type converter to insert data of different type efficiently</param>
-		/// <exception cref="ArgumentOutOfRangeException">invalid index was given</exception>
-		public virtual void Insert<S>( int insertIndex, S[] values, Converter<S, T> converter )
-		{
-			// [case 1: Insert(1, "hoge")]
-			// ABCDE___FGHI     (gappos:5, gaplen:3)
-			// ABCDEFGHI___     (gappos:9, gaplen:3)
-			// ABCDEFGHI_______ (gappos:9, gaplen:7)
-			// A_______BCDEFGHI (gappos:1, gaplen:7)
-			// Ahoge___BCDEFGHI (gappos:5, gaplen:3)
-			DebugUtl.Assert( 0 <= insertIndex, "Invalid index was given (insertIndex:"+insertIndex+")." );
-			DebugUtl.Assert( values != null, "Null was given to 'values'." );
-			DebugUtl.Assert( converter != null, "Null was given to 'converter'." );
-			
-			// make sufficient gap for insertion
-			EnsureSpaceForInsertion( values.Length );
-			MoveGapTo( insertIndex );
-
-			// insert
-			//Array.Copy( values, 0, _Data, insertIndex, values.Length );
-			for( int i=0; i<values.Length; i++ )
-			{
-				_Data[insertIndex + i] = converter( values[i] );
-			}
-
-			// update info
-			_Count += values.Length;
-			_GapPos += values.Length;
-			_GapLen -= values.Length;
-			__dump__( String.Format("Insert({0}, {1}...)", insertIndex, values[0]) );
 			__check_sanity__();
 		}
 

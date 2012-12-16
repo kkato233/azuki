@@ -95,20 +95,6 @@ namespace Sgry.Azuki
 			_Classes.Insert( index, CharClass.Normal );
 			_MarkingBitMasks.Insert( index, 0 );
 		}
-		
-		/// <summary>
-		/// Inserts elements at specified index.
-		/// </summary>
-		/// <param name="insertIndex">target location of insertion</param>
-		/// <param name="values">the elements to be inserted</param>
-		/// <param name="converter">type converter to insert data of different type efficiently</param>
-		/// <exception cref="ArgumentOutOfRangeException">invalid index was given</exception>
-		public override void Insert<S>( int insertIndex, S[] values, Converter<S, char> converter )
-		{
-			base.Insert( insertIndex, values, converter );
-			_Classes.Insert( insertIndex, new CharClass[values.Length] );
-			_MarkingBitMasks.Insert( insertIndex, 0, values.Length );
-		}
 
 		/// <summary>
 		/// Inserts elements at specified index.

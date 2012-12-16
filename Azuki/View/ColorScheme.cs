@@ -316,6 +316,11 @@ namespace Sgry.Azuki
 			SetColor( CharClass.Class, Color.BlueViolet, Color.Transparent );
 			SetColor( CharClass.Variable, Color.Teal, Color.Transparent );
 			SetColor( CharClass.Label, Color.Purple, Color.Transparent );
+			SetColor( CharClass.AddedLine, Color.Blue, Color.Transparent );
+			SetColor( CharClass.RemovedLine, Color.DarkRed, Color.Transparent );
+			SetColor( CharClass.ChangedLine, Color.Blue, Color.Transparent );
+			SetColor( CharClass.ChangeCommandLine, Color.Gray, Color.Transparent );
+			SetColor( CharClass.IndexLine, Color.Black, Color.Silver );
 
 			this.SelectionFore = Color.White;
 			this.SelectionBack = azuki;

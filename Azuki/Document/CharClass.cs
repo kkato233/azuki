@@ -140,6 +140,21 @@ namespace Sgry.Azuki
 		Variable,
 
 		/// <summary>Label (Batch file, ...)</summary>
-		Label
+		Label,
+
+		/// <summary>New line (diff/patch file)</summary>
+		AddedLine,
+
+		/// <summary>Removed line (diff/patch file)</summary>
+		RemovedLine,
+
+		/// <summary>Changed line (diff/patch file)</summary>
+		ChangedLine,
+
+		/// <summary>Change-command line (diff/patch file)</summary>
+		ChangeCommandLine,
+
+		/// <summary>Index line (diff/patch file)</summary>
+		IndexLine,
 	}
 }

@@ -51,6 +51,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Set editing mode to Diff/Patch file mode.
+		/// </summary>
+		public static AnnAction SetToDiffMode
+			= delegate( AppLogic app )
+		{
+			app.SetFileType( app.ActiveDocument, FileType.DiffFileType );
+		};
+
+		/// <summary>
 		/// Set editing mode to Java mode.
 		/// </summary>
 		public static AnnAction SetToJavaMode

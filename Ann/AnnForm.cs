@@ -212,6 +212,9 @@ namespace Sgry.Ann
 				case FileType.CSharpFileTypeName:
 					_MI_Mode_CSharp.Checked = true;
 					break;
+				case FileType.DiffFileTypeName:
+					_MI_Mode_Diff.Checked = true;
+					break;
 				case FileType.IniFileTypeName:
 					_MI_Mode_Ini.Checked = true;
 					break;
@@ -308,6 +311,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Mode_BatchFile ]	= Actions.SetToBatchFileMode;
 			_MenuMap[ _MI_Mode_Cpp ]		= Actions.SetToCppMode;
 			_MenuMap[ _MI_Mode_CSharp ]		= Actions.SetToCSharpMode;
+			_MenuMap[ _MI_Mode_Diff ]		= Actions.SetToDiffMode;
 			_MenuMap[ _MI_Mode_Ini ]		= Actions.SetToIniMode;
 			_MenuMap[ _MI_Mode_Java ]		= Actions.SetToJavaMode;
 			_MenuMap[ _MI_Mode_JavaScript ]	= Actions.SetToJavaScriptMode;
@@ -675,6 +679,7 @@ namespace Sgry.Ann
 			_MI_Mode.MenuItems.Add( _MI_Mode_BatchFile );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
 			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
+			_MI_Mode.MenuItems.Add( _MI_Mode_Diff );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Ini );
 			_MI_Mode.MenuItems.Add( _MI_Mode_Java );
 			_MI_Mode.MenuItems.Add( _MI_Mode_JavaScript );
@@ -729,6 +734,7 @@ namespace Sgry.Ann
 			_MI_Mode_BatchFile.Text = "&Batch file";
 			_MI_Mode_Cpp.Text = "&C/C++";
 			_MI_Mode_CSharp.Text = "C&#";
+			_MI_Mode_Diff.Text = "&Diff";
 			_MI_Mode_Ini.Text = "&INI / Properties";
 			_MI_Mode_Java.Text = "&Java";
 			_MI_Mode_JavaScript.Text = "Java&Script";
@@ -853,6 +859,7 @@ namespace Sgry.Ann
 		MenuItem _MI_Mode_BatchFile	= new MenuItem();
 		MenuItem _MI_Mode_Cpp		= new MenuItem();
 		MenuItem _MI_Mode_CSharp	= new MenuItem();
+		MenuItem _MI_Mode_Diff		= new MenuItem();
 		MenuItem _MI_Mode_Ini		= new MenuItem();
 		MenuItem _MI_Mode_Java		= new MenuItem();
 		MenuItem _MI_Mode_JavaScript= new MenuItem();

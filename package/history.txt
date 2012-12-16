@@ -1,12 +1,13 @@
 == 1.7.4 (2012-xx-xx) ==
+ * add: Added a highlighter for Diff/Patch file format
  * add: Added KeywordHighlighter.HighlightsNumericLiterals property which can turn off or on whether to highlight numeric literals by its built-in logic
  * fix: Block-indent action now ignores empty lines
  * fix: [Ann] Now Ann can edit its own configuration file (Ann.ini)
  * fix: [Ann] Fixed problem that Ann opens .c file as .cmd file (MS-DOS batch file type.)
 
 == 1.7.3 (2012-11-29) ==
- * add: Added PythonHighlighter
- * add: Added BatchFileHighlighter
+ * add: Added a highlighter for Python script
+ * add: Added a highlighter for Batch file
  * add: JavaScript highlighter now recognizes regular expression literals better (ex. highlights c=/e+f/g but doesn't highlight c=d/e+f/g)
  * add: Added an overload method of KeywordHighlighter.AddRegex which takes one CharClass and applies it to matched patterns
  * add: Now KeywordHighlighter can use "ignore case" option for matching enclosure and line highlight
@@ -24,8 +25,8 @@
 
 == 1.7.2 (2012-11-10) ==
  * add: Now KeywordHighlighter can use regular expression
- * add: Added IniHighlighter for highlighting .ini / .properties file format
- * add: Added JavaScriptHighlighter
+ * add: Added a highlighter for .ini / .properties file format
+ * add: Added a highlighter for JavaScript file format
  * add: Now CSharpHighlighter highlights preprocessor directive even if a sharp sign and keyword are separated with white spaces
  * add: Added Document.GetLineEndIndexFromCharIndex method
  * fix: Switching highlighter while the document is empty raises an exception

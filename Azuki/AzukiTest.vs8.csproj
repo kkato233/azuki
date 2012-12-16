@@ -66,6 +66,7 @@
     <Compile Include="Highlighter\Coco\LatexScanner.cs" />
     <Compile Include="Highlighter\CppHighlighter.cs" />
     <Compile Include="Highlighter\CSharpHighlighter.cs" />
+    <Compile Include="Highlighter\DiffHighlighter.cs" />
     <Compile Include="Highlighter\Highlighters.cs" />
     <Compile Include="Highlighter\IHighlighter.cs" />
     <Compile Include="Highlighter\IniHighlighter.cs" />

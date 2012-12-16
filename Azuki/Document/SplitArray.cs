@@ -172,7 +172,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Adds elements.
 		/// </summary>
-		public void Add( T[] values )
+		public void Add( params T[] values )
 		{
 			Insert( _Count, values );
 		}
@@ -213,7 +213,7 @@ namespace Sgry.Azuki
 		/// <param name="insertIndex">target location of insertion</param>
 		/// <param name="values">the elements to be inserted</param>
 		/// <exception cref="ArgumentOutOfRangeException">invalid index was given</exception>
-		public void Insert( int insertIndex, T[] values )
+		public void Insert( int insertIndex, params T[] values )
 		{
 			DebugUtl.Assert( values != null, "Null was given to 'values'." );
 
@@ -376,6 +376,62 @@ namespace Sgry.Azuki
 					return i;
 			}
 			return -1;
+		}
+
+		/// <summary>
+		/// Search for an item using binary-search algorithm
+		/// (using Comparer&lt;T&gt;.Default as a comparer.)
+		/// </summary>
+		/// <returns>
+		/// The index of the 'item' if found, otherwise bit-reversed value of
+		/// the index of the first element which was greater than the 'item.'
+		/// </returns>
+		/// <exception cref="ArgumentException">
+		/// Comparer&lt;T&gt;.Default does not know how to compare elements of
+		/// type T.
+		/// </exception>
+		public int BinarySearch( T item )
+		{
+			return BinarySearch( item, Comparer<T>.Default.Compare );
+		}
+
+		/// <summary>
+		/// Search for an item using binary-search algorithm.
+		/// </summary>
+		/// <returns>
+		/// The index of the 'item' if found, otherwise bit-reversed value of
+		/// the index of the first element which was greater than the 'item.'
+		/// </returns>
+		public int BinarySearch( T item, Comparison<T> compare )
+		{
+			int left = 0;
+			int right = Count;
+			int middle;
+
+			if( Count == 0 )
+				return ~(0);
+
+			for(;;)
+			{
+				middle = left + ( (right - left) >> 1 );
+				int result = compare( GetAt(middle), item );
+				if( 0 < result )
+				{
+					if( right == middle )
+						return ~(middle);
+					right = middle;
+				}
+				else if( result < 0 )
+				{
+					if( left == middle )
+						return ~(middle + 1);
+					left = middle;
+				}
+				else
+				{
+					return middle;
+				}
+			}
 		}
 
 		/// <summary>

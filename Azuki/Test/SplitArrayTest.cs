@@ -43,6 +43,10 @@ namespace Sgry.Azuki.Test
 			Console.WriteLine( "test {0} - CopyTo()", ++test_num );
 			TestUtl.Do( Test_CopyTo );
 
+			// Binary search
+			Console.WriteLine( "test {0} - Binary search()", ++test_num );
+			TestUtl.Do( Test_BinarySearch );
+
 			Console.WriteLine( "done." );
 			Console.WriteLine();
 		}
@@ -348,6 +352,40 @@ namespace Sgry.Azuki.Test
 			buf = initBufContent.ToCharArray();
 			try{ sary.CopyTo(5, 9, buf); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
+		}
+
+		static void Test_BinarySearch()
+		{
+			SplitArray<int> ary = new SplitArray<int>( 4 );
+
+			ary.Clear();
+			TestUtl.AssertEquals( -1, ary.BinarySearch(1234) );
+
+			ary.Clear();
+			ary.Add( 3 );
+			TestUtl.AssertEquals( ~(0), ary.BinarySearch(2) );
+			TestUtl.AssertEquals(  (0), ary.BinarySearch(3) );
+			TestUtl.AssertEquals( ~(1), ary.BinarySearch(4) );
+
+			ary.Clear();
+			ary.Add( 1, 3 );
+			TestUtl.AssertEquals( ~(0), ary.BinarySearch(0) );
+			TestUtl.AssertEquals(  (0), ary.BinarySearch(1) );
+			TestUtl.AssertEquals( ~(1), ary.BinarySearch(2) );
+			TestUtl.AssertEquals(  (1), ary.BinarySearch(3) );
+			TestUtl.AssertEquals( ~(2), ary.BinarySearch(4) );
+
+			SplitArray<System.Drawing.Point> points = new SplitArray<System.Drawing.Point>( 4 );
+			points.Add( new System.Drawing.Point() );
+			try
+			{
+				points.BinarySearch(new System.Drawing.Point(1,1));
+				throw new AssertException();
+			}
+			catch( Exception ex )
+			{
+				TestUtl.AssertExceptionType<ArgumentException>(ex);
+			}
 		}
 
 		static string ToString( SplitArray<char> sary )

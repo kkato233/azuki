@@ -112,6 +112,7 @@ namespace Sgry.Ann
 				_MainForm = value;
 				_MainForm.Load += MainForm_Load;
 				_MainForm.Closing += MainForm_Closing;
+				_MainForm.Closed += MainForm_Closed;
 				_MainForm.Azuki.Resize += Azuki_Resize;
 				_MainForm.Azuki.Click += Azuki_Click;
 				_MainForm.Azuki.DoubleClick += Azuki_DoubleClick;
@@ -1143,6 +1144,11 @@ namespace Sgry.Ann
 					}
 				}
 			}
+		}
+
+		void MainForm_Closed( object sender, EventArgs e )
+		{
+			SaveConfig();
 		}
 
 		internal void MainForm_DelayedActivated()

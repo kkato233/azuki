@@ -404,13 +404,14 @@ namespace Sgry.Azuki
 		/// </returns>
 		public int BinarySearch( T item, Comparison<T> compare )
 		{
-			int left = 0;
-			int right = Count;
-			int middle;
+			DebugUtl.Assert( compare != null );
 
 			if( Count == 0 )
 				return ~(0);
 
+			int left = 0;
+			int right = Count;
+			int middle;
 			for(;;)
 			{
 				middle = left + ( (right - left) >> 1 );

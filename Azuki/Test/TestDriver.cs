@@ -1,5 +1,4 @@
-﻿// 2011-08-15
-#if TEST
+﻿#if TEST
 using System;
 
 namespace Sgry.Azuki.Test
@@ -8,13 +7,13 @@ namespace Sgry.Azuki.Test
 	{
 		static int Main()
 		{
-			DefaultWordProcTest.Test();
-			CaretMoveLogicTest.Test();
-			EditHistoryTest.Test();
 			SplitArrayTest.Test();
 			RleArrayTest.Test();
 			LineLogicTest.Test();
 			DocumentTest.Test();
+			DefaultWordProcTest.Test();
+			CaretMoveLogicTest.Test();
+			EditHistoryTest.Test();
 			KeywordHighlighterTest.Test();
 			UriMarkerTest.Test();
 			FixedBugsTest.Test();

@@ -15,10 +15,16 @@ namespace Sgry.Azuki
 		public static readonly char[] EolChars = new char[]{ '\r', '\n' };
 
 		#region Index Conversion
-		public static int GetCharIndexFromLineColumnIndex( TextBuffer text, SplitArray<int> lhi, int lineIndex, int columnIndex )
+		public static int GetCharIndexFromLineColumnIndex( TextBuffer text,
+														   SplitArray<int> lhi,
+														   int lineIndex,
+														   int columnIndex )
 		{
-			DebugUtl.Assert( text != null && lhi != null && 0 <= lineIndex && 0 <= columnIndex, "invalid arguments were given" );
-			DebugUtl.Assert( lineIndex < lhi.Count, String.Format("too large line index was given (given:{0} actual line count:{1})", lineIndex, lhi.Count) );
+			DebugUtl.Assert( text != null && lhi != null && 0 <= lineIndex
+							 && 0<=columnIndex,"invalid arguments were given");
+			DebugUtl.Assert( lineIndex < lhi.Count, String.Format(
+							 "too large line index was given (given:{0} actual"
+							 + " line count:{1})", lineIndex, lhi.Count) );
 
 			int lineHeadIndex = lhi[lineIndex];
 
@@ -33,7 +39,9 @@ namespace Sgry.Azuki
 				}
 				else
 				{
-					DebugUtl.Fail( "specified column index was too large (given:"+columnIndex+" actual line length:"+lineLength+")" );
+					DebugUtl.Fail( "specified column index was too large"
+								   + " (given:"+columnIndex+" actual line"
+								   + " length:"+lineLength+")" );
 				}
 			}
 #			endif
@@ -41,81 +49,66 @@ namespace Sgry.Azuki
 			return lineHeadIndex + columnIndex;
 		}
 
-		public static int GetLineIndexFromCharIndex( SplitArray<int> lhi, int charIndex )
+		public static int GetLineIndexFromCharIndex( SplitArray<int> lhi,
+													 int charIndex )
 		{
-			DebugUtl.Assert( 0 <= charIndex, "invalid args; given charIndex was "+charIndex );
+			DebugUtl.Assert( 0<=charIndex,"invalid args; given charIndex was "
+							 + charIndex );
 
-			// find the first line whose line-head index exceeds given char-index
-			for( int i=1; i<lhi.Count; i++ )
-			{
-				int nextLineHeadIndex = lhi[i];
-				if( charIndex < nextLineHeadIndex )
-				{
-					// found the NEXT line of the target line.
-					return i-1;
-				}
-			}
-
-			// if given index indicates the EOF code, return its index
-			// (giving char-index indicating after EOF would be the same result but only in release build.
-			// in debug build, giving such index causes assertion error.)
-			return lhi.Count - 1;
+			int index = lhi.BinarySearch( charIndex );
+			return (0 <= index) ? index : ~(index) - 1;
 		}
 
-		public static void GetLineColumnIndexFromCharIndex( TextBuffer text, SplitArray<int> lhi, int charIndex, out int lineIndex, out int columnIndex )
+		public static void
+			GetLineColumnIndexFromCharIndex( TextBuffer text,
+											 SplitArray<int> lhi,
+											 int charIndex,
+											 out int lineIndex,
+											 out int columnIndex )
 		{
 			DebugUtl.Assert( text != null && lhi != null );
-			DebugUtl.Assert( 0 <= charIndex, "invalid args; given charIndex was "+charIndex );
-			DebugUtl.Assert( charIndex <= text.Count, String.Format("given charIndex was too large (given:{0} actual text count:{1})", charIndex, text.Count) );
+			DebugUtl.Assert( 0<=charIndex,"invalid args; given charIndex was "
+							 + charIndex );
+			DebugUtl.Assert( charIndex <= text.Count, String.Format(
+							 "given charIndex was too large (given:{0} "
+							 + "actual text count:{1})",charIndex,text.Count));
 
-			// find the first line whose line-head index exceeds given char-index
-			for( int i=1; i<lhi.Count; i++ )
-			{
-				int nextLineHeadIndex = lhi[i];
-				if( charIndex < nextLineHeadIndex )
-				{
-					// found the NEXT line of the target line.
-					lineIndex = i-1;
-					columnIndex = charIndex - lhi[i-1];
-					return;
-				}
-			}
-
-			// if given index indicates the EOF code, return its index
-			// (giving char-index indicating after EOF would be the same result but only in release build.
-			// in debug build, giving such index causes assertion error.)
-			lineIndex = lhi.Count - 1;
+			int index = lhi.BinarySearch( charIndex );
+			lineIndex = ( 0 <= index ) ? index : ~(index) - 1;
+			if( lhi.Count <= lineIndex )
+				lineIndex = lhi.Count - 1;
 			columnIndex = charIndex - lhi[lineIndex];
 		}
 
-		public static int GetLineHeadIndexFromCharIndex( TextBuffer text, SplitArray<int> lhi, int charIndex )
+		public static int GetLineHeadIndexFromCharIndex( TextBuffer text,
+														 SplitArray<int> lhi,
+														 int charIndex )
 		{
 			DebugUtl.Assert( text != null && lhi != null );
-			DebugUtl.Assert( 0 <= charIndex, "invalid arguments were given ("+charIndex+")" );
-			DebugUtl.Assert( charIndex <= text.Count, String.Format("too large char-index was given (given:{0} actual text count:{1})", charIndex, text.Count) );
+			DebugUtl.Assert( 0 <= charIndex, "invalid arguments were given ("
+							 + charIndex + ")" );
+			DebugUtl.Assert( charIndex <= text.Count, String.Format(
+							 "too large char-index was given (given:{0} actual"
+							 + " text count:{1})", charIndex, text.Count) );
 
-			// find the first line whose line-head index exceeds given char-index
-			for( int i=1; i<lhi.Count; i++ )
-			{
-				int nextLineHeadIndex = lhi[i];
-				if( charIndex < nextLineHeadIndex )
-				{
-					// found the NEXT line of the target line.
-					return lhi[i-1];
-				}
-			}
-
-			// if given index indicates the EOF code, return its index
-			// (giving char-index indicating after EOF would be the same result but only in release build.
-			// in debug build, giving such index causes assertion error.)
-			return lhi[ lhi.Count-1 ];
+			int index = lhi.BinarySearch( charIndex );
+			int lineIndex = ( 0 <= index ) ? index : ~(index) - 1;
+			if( lhi.Count <= lineIndex )
+				lineIndex = lhi.Count - 1;
+			return lhi[lineIndex];
 		}
 		#endregion
 
 		#region Line Range
-		public static void GetLineRangeWithEol( TextBuffer text, SplitArray<int> lhi, int lineIndex, out int begin, out int end )
+		public static void GetLineRangeWithEol( TextBuffer text,
+												SplitArray<int> lhi,
+												int lineIndex,
+												out int begin,
+												out int end )
 		{
-			DebugUtl.Assert( lineIndex < lhi.Count, "argument out of range; given lineIndex is "+lineIndex+" but lhi.Count is "+lhi.Count );
+			DebugUtl.Assert( lineIndex < lhi.Count, "argument out of range; "
+							 + "given lineIndex is " + lineIndex
+							 + " but lhi.Count is " + lhi.Count );
 
 			// get range of the line including EOL code
 			begin = lhi[lineIndex];
@@ -129,11 +122,17 @@ namespace Sgry.Azuki
 			}
 		}
 
-		public static void GetLineRange( TextBuffer text, SplitArray<int> lhi, int lineIndex, out int begin, out int end )
+		public static void GetLineRange( TextBuffer text,
+										 SplitArray<int> lhi,
+										 int lineIndex,
+										 out int begin,
+										 out int end )
 		{
 			DebugUtl.Assert( text != null );
 			DebugUtl.Assert( lhi != null );
-			DebugUtl.Assert( 0 <= lineIndex && lineIndex < lhi.Count, "argument out of range; given lineIndex is "+lineIndex+" but lhi.Count is "+lhi.Count );
+			DebugUtl.Assert( 0 <= lineIndex && lineIndex < lhi.Count,
+							 "argument out of range; given lineIndex is "
+							 + lineIndex + " but lhi.Count is " + lhi.Count );
 			int length;
 
 			// get range of the line including EOL code
@@ -177,11 +176,17 @@ namespace Sgry.Azuki
 				string insertText, int insertIndex
 			)
 		{
-			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0, "lhi must have 0 as a first member." );
-			DebugUtl.Assert( lds != null && 0 < lds.Count, "lds must have at one or more items." );
-			DebugUtl.Assert( lhi.Count == lds.Count, "lhi.Count("+lhi.Count+") is not lds.Count("+lds.Count+")" );
-			DebugUtl.Assert( insertText != null && 0 < insertText.Length, "insertText must not be null nor empty." );
-			DebugUtl.Assert( 0 <= insertIndex && insertIndex <= text.Count, "insertIndex is out of range ("+insertIndex+")." );
+			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0,
+							 "lhi must have 0 as a first member." );
+			DebugUtl.Assert( lds != null && 0 < lds.Count,
+							 "lds must have at one or more items." );
+			DebugUtl.Assert( lhi.Count == lds.Count, "lhi.Count(" + lhi.Count
+							 + ") is not lds.Count(" + lds.Count + ")" );
+			DebugUtl.Assert( insertText != null && 0 < insertText.Length,
+							 "insertText must not be null nor empty." );
+			DebugUtl.Assert( 0 <= insertIndex && insertIndex <= text.Count,
+							 "insertIndex is out of range (" + insertIndex
+							 + ")." );
 			int insTargetLine, dummy;
 			int lineIndex; // work variable
 			int lineHeadIndex;
@@ -189,10 +194,12 @@ namespace Sgry.Azuki
 			int insLineCount;
 
 			// at first, find the line which contains the insertion point
-			GetLineColumnIndexFromCharIndex( text, lhi, insertIndex, out insTargetLine, out dummy );
+			GetLineColumnIndexFromCharIndex( text, lhi, insertIndex,
+											 out insTargetLine, out dummy );
 			lineIndex = insTargetLine;
 
-			// if the inserting divides a CR+LF, insert an entry for the CR separated
+			// if the inserting divides a CR+LF, insert an entry for the CR
+			// separated
 			if( 0 < insertIndex && text[insertIndex-1] == '\r'
 				&& insertIndex < text.Count && text[insertIndex] == '\n' )
 			{
@@ -224,7 +231,7 @@ namespace Sgry.Azuki
 					// this is the final line. no need to insert new entry
 					break;
 				}
-				lhi.Insert( lineIndex+insLineCount, insertIndex+lineEndIndex+1 );
+				lhi.Insert( lineIndex+insLineCount,insertIndex+lineEndIndex+1);
 				lds.Insert( lineIndex+insLineCount, LineDirtyState.Dirty );
 				insLineCount++;
 
@@ -233,10 +240,13 @@ namespace Sgry.Azuki
 			}
 			while( lineHeadIndex != -1 );
 
-			// if inserted text is ending with CR and is inserted just before a LF,
-			// remove this CR's entry
-			if( 0 < insertText.Length && insertText[insertText.Length - 1] == '\r'
-				&& insertIndex < text.Count && text[insertIndex] == '\n' )
+			// If finaly character of the inserted string is CR and if it is
+			// inserted just before an LF, remove this CR's entry since it will
+			// be a part of a CR+LF
+			if( 0 < insertText.Length
+				&& insertText[insertText.Length - 1] == '\r'
+				&& insertIndex < text.Count
+				&& text[insertIndex] == '\n' )
 			{
 				int lastInsertedLine = lineIndex + insLineCount - 1;
 				lhi.RemoveAt( lastInsertedLine );
@@ -244,7 +254,7 @@ namespace Sgry.Azuki
 				lineIndex--;
 			}
 
-			// shift all followings
+			// shift all the followings
 			for( int i=lineIndex+insLineCount; i<lhi.Count; i++ )
 			{
 				lhi[i] += insertText.Length;
@@ -255,12 +265,11 @@ namespace Sgry.Azuki
 				&& 0 < insertIndex && text[insertIndex-1] == '\r'
 				&& insertIndex < text.Count && text[insertIndex] != '\n' )
 			{
-				// inserted text has a LF at beginning
-				// and there is a CR (not CR+LF) at insertion point.
-				// because in this case insertion target line should be
-				// the line containing the existing CR,
-				// mark not calculated insertion target line
-				// but the line at one line before.
+				// Inserted text has an LF at beginning and there is a CR (not
+				// part of a CR+LF) at insertion point so a new CR+LF is made.
+				// Since newly made CR+LF is regarded as part of the line
+				// which originally ended with a CR, the line should be marked
+				// as modified.
 				DebugUtl.Assert( 0 < insTargetLine );
 				lds[insTargetLine-1] = LineDirtyState.Dirty;
 			}
@@ -281,34 +290,42 @@ namespace Sgry.Azuki
 				int delBegin, int delEnd
 			)
 		{
-			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0, "lhi must have 0 as a first member." );
-			DebugUtl.Assert( lds != null && 0 < lds.Count, "lds must have one or more items." );
-			DebugUtl.Assert( lhi.Count == lds.Count, "lhi.Count("+lhi.Count+") is not lds.Count("+lds.Count+")" );
-			DebugUtl.Assert( 0 <= delBegin && delBegin < text.Count, "delBegin is out of range." );
-			DebugUtl.Assert( delBegin <= delEnd && delEnd <= text.Count, "delEnd is out of range." );
+			DebugUtl.Assert( lhi != null && 0 < lhi.Count && lhi[0] == 0,
+							 "lhi must have 0 as a first member." );
+			DebugUtl.Assert( lds != null && 0 < lds.Count, "lds must have one"
+							 + " or more items." );
+			DebugUtl.Assert( lhi.Count == lds.Count, "lhi.Count(" + lhi.Count
+							 + ") is not lds.Count(" + lds.Count + ")" );
+			DebugUtl.Assert( 0 <= delBegin && delBegin < text.Count,
+							 "delBegin is out of range." );
+			DebugUtl.Assert( delBegin <= delEnd && delEnd <= text.Count,
+							 "delEnd is out of range." );
 			int delFirstLine;
 			int delFromL, delToL;
 			int dummy;
 			int delLen = delEnd - delBegin;
 
 			// calculate line indexes of both ends of the range
-			GetLineColumnIndexFromCharIndex( text, lhi, delBegin, out delFromL, out dummy );
-			GetLineColumnIndexFromCharIndex( text, lhi, delEnd, out delToL, out dummy );
+			GetLineColumnIndexFromCharIndex( text, lhi, delBegin,
+											 out delFromL, out dummy );
+			GetLineColumnIndexFromCharIndex( text, lhi, delEnd,
+											 out delToL, out dummy );
 			delFirstLine = delFromL;
 
 			if( 0 < delBegin && text[delBegin-1] == '\r' )
 			{
 				if( delEnd < text.Count && text[delEnd] == '\n' )
 				{
-					// if the deletion creates a new CR+LF, delete an entry of the CR
+					// Delete an entry of a line terminated with a CR in case
+					// of that the CR will be merged into an CR+LF.
 					lhi.RemoveAt( delToL );
 					lds.RemoveAt( delToL );
 					delToL--;
 				}
 				else if( text[delBegin] == '\n' )
 				{
-					// if the deletion divides a CR+LF at left side of deletion range,
-					// insert an entry for the CR
+					// Insert an entry of a line terminated with a CR in case
+					// of that an LF was removed from an CR+LF.
 					lhi.Insert( delToL, delBegin );
 					lds.Insert( delToL, LineDirtyState.Dirty );
 					delFromL++;
@@ -334,11 +351,10 @@ namespace Sgry.Azuki
 				&& delEnd < text.Count && text[delEnd] == '\n'
 				&& 0 < delFirstLine )
 			{
-				// In this case, there is a CR (not CR+LF) at left of the deletion range,
-				// and there is a LF (not CR+LF) at right of the deletion range;
-				// so deletion combines the CR and the LF and the target line disappears.
-				// Because the target line does not exist any more,
-				// mark the line at one previous index as 'dirty.'
+				// This deletion combines a CR and an LF.
+				// Since newly made CR+LF is regarded as part of the line
+				// which originally ended with a CR, the line should be marked
+				// as modified.
 				lds[delFirstLine-1] = LineDirtyState.Dirty;
 			}
 			else

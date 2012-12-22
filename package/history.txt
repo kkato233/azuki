@@ -1,4 +1,4 @@
-== 1.7.4 (2012-xx-xx) ==
+== 1.7.4 (2012-12-22) ==
  * add: Added a highlighter for Diff/Patch file format
  * add: Added KeywordHighlighter.HighlightsNumericLiterals property which can turn off or on whether to highlight numeric literals by its built-in logic
  * fix: Block-indent action now ignores empty lines

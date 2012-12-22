@@ -1,4 +1,4 @@
-== 1.7.4 (2012-xx-xx) ==
+== 1.7.4 (2012-12-22) ==
  * add: Diff (Patch) ファイル用のハイライターを追加
  * add: KeywordHighlighter の数値リテラルをハイライトする内蔵ロジックを無効化できるプロパティ HighlightsNumericLiterals を追加
  * fix: ブロックインデントでは空行を無視するように修正

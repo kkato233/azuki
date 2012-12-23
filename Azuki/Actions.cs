@@ -873,36 +873,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void ConvertTabsToSpaces( IUserInterface ui )
 		{
-			Debug.Assert( ui != null );
-			Debug.Assert( ui.Document != null );
-
-			Document doc = ui.Document;
-			int delta = 0;
-			int begin, end;
-
-			if( doc.RectSelectRanges != null )
-			{
-				doc.BeginUndo();
-				for( int i=0; i<doc.RectSelectRanges.Length; i+=2 )
-				{
-					begin = doc.RectSelectRanges[i] + delta;
-					end = doc.RectSelectRanges[i+1] + delta;
-					ConvertTabsToSpaces( ui, begin, end, ref delta );
-				}
-				doc.EndUndo();
-
-				int lastIndex = doc.RectSelectRanges.Length - 1;
-				doc.SelectionMode = TextDataType.Rectangle;
-				doc.SelectionManager.SetSelection(
-						doc.RectSelectRanges[0],
-						doc.RectSelectRanges[lastIndex] + delta,
-						ui.View );
-			}
-			else
-			{
-				doc.GetSelection( out begin, out end );
-				ConvertTabsToSpaces( ui, begin, end, ref delta );
-			}
+			ForEachSelection( ui, ConvertTabsToSpaces );
 		}
 
 		static void ConvertTabsToSpaces( IUserInterface ui,
@@ -933,6 +904,102 @@ namespace Sgry.Azuki
 			}
 
 			delta += text.Length - (end - begin);
+		}
+
+		/// <summary>
+		/// Converts space characters to tab characters.
+		/// </summary>
+		public static void ConvertSpacesToTabs( IUserInterface ui )
+		{
+			ForEachSelection( ui, ConvertSpacesToTabs );
+		}
+
+		/// <summary>
+		/// Convertes sequences of two or more spaces in selected text with
+		/// tab characters as much as possible.
+		/// </summary>
+		static void ConvertSpacesToTabs( IUserInterface ui,
+										 int begin, int end,
+										 ref int indexDelta )
+		{
+			Document doc = ui.Document;
+			View view = (View)ui.View;
+			StringBuilder text = new StringBuilder( 1024 );
+			int cvtCount = 0;
+
+			for( int i=begin; i<end; i++ )
+			{
+				int prevCvtCount = cvtCount;
+				if( doc[i] == ' ' )
+				{
+					int x = view.GetVirPosFromIndex( i ).X;
+					int nextTabStopX = view.NextTabStopX( x );
+					int neededCount = (nextTabStopX - x) / view.SpaceWidthInPx;
+					if( 2 <= neededCount )
+					{
+						string str = doc.GetTextInRange( i, i+neededCount );
+						if( str.TrimStart(' ') == "" )
+						{
+							text.Append( "\t" );
+							i += neededCount - 1;
+							indexDelta -= neededCount - 1;
+							cvtCount++;
+						}
+					}
+				}
+
+				if( prevCvtCount == cvtCount )
+				{
+					text.Append( doc[i] );
+				}
+			}
+
+			// Replace with current content
+			if( 0 < cvtCount )
+			{
+				doc.Replace( text.ToString(), begin, end );
+			}
+		}
+		#endregion
+
+		#region Utilities
+		delegate void ForEachSelectionPredicate( IUserInterface ui,
+												 int begin, int end,
+												 ref int indexDelta );
+
+		static void ForEachSelection( IUserInterface ui,
+									  ForEachSelectionPredicate predicate )
+		{
+			Debug.Assert( ui != null );
+			Debug.Assert( ui.Document != null );
+
+			Document doc = ui.Document;
+			int delta = 0;
+			int begin, end;
+
+			if( doc.RectSelectRanges != null )
+			{
+				doc.BeginUndo();
+				for( int i=0; i<doc.RectSelectRanges.Length; i+=2 )
+				{
+					begin = doc.RectSelectRanges[i] + delta;
+					end = doc.RectSelectRanges[i+1] + delta;
+					predicate( ui, begin, end, ref delta );
+				}
+				doc.EndUndo();
+
+				int lastIndex = doc.RectSelectRanges.Length - 1;
+				doc.SelectionMode = TextDataType.Rectangle;
+				doc.SelectionManager.SetSelection(
+						doc.RectSelectRanges[0],
+						doc.RectSelectRanges[lastIndex] + delta,
+						ui.View );
+			}
+			else
+			{
+				doc.GetSelection( out begin, out end );
+				predicate( ui, begin, end, ref delta );
+			}
 		}
 		#endregion
 	}

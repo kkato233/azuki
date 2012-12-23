@@ -1,11 +1,13 @@
 == 1.8.0 (2013-xx-xx) ==
  * add: Added Action.TrimTrailingSpace which removes whitespaces from end of selected lines
  * add: Added Action.TrimLeadingSpace which removes whitespaces from beginning of selected lines
- * add: Added Action.ConvertTabsToSpaces which replaces every tab characters in selection range to 
+ * add: Added Action.ConvertTabsToSpaces which replaces every tab characters in selection range to equivalent amount of space characters
+ * add: Added Action.ConvertSpacesToTabs which replaces space characters in selection range to tab characters as much as possible
  * fix: Group undo action will not be stacked if it has no effect at all
  * add: [Ann] Added feature to remove spaces from end of each selected lines (shortcut key is Ctrl+Shift+R)
  * add: [Ann] Added feature to remove spaces from beginning of each selected lines (shortcut key is Ctrl+Shift+L)
  * add: [Ann] Added feature to convert tab characters in selected text to equivalent amount of spaces (shortcut key is Ctrl+Shift+P)
+ * add: [Ann] Added feature to convert space characters in selected text to tab characters as much as possible (shortcut key is Ctrl+Shift+T)
 
 == 1.7.4 (2012-12-22) ==
  * add: Added a highlighter for Diff/Patch file format

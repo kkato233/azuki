@@ -1555,11 +1555,11 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
-		internal int NextTabStopX( int x )
+		internal int NextTabStopX( int virX )
 		{
-			x += TabWidthInPx;
-			x -= (x % TabWidthInPx);
-			return x;
+			virX += TabWidthInPx;
+			virX -= (virX % TabWidthInPx);
+			return virX;
 		}
 
 		/// <summary>

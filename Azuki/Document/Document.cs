@@ -2911,6 +2911,22 @@ namespace Sgry.Azuki
 			SetSelection( RectSelectRanges[0], RectSelectRanges[0] );
 		}
 
+		internal void GetSelectedLineRange( out int selBeginL,
+											out int selEndL )
+		{
+			int selBegin, selEnd;
+
+			GetSelection( out selBegin, out selEnd );
+			selBeginL = GetLineIndexFromCharIndex( selBegin );
+			selEndL = GetLineIndexFromCharIndex( selEnd );
+			if( selBeginL == selEndL
+				|| GetLineHeadIndex(selEndL) != selEnd )
+			{
+				selEndL++; // Target the final line too unless multiple lines
+						   // are selected and at least one char is selected
+			}
+		}
+
 		internal class Utl
 		{
 			public static void ConstrainIndex( Document doc, ref int anchor, ref int caret )

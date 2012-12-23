@@ -689,7 +689,6 @@ namespace Sgry.Azuki
 		{
 			Document doc = ui.Document;
 			string indentChars;
-			int begin, end;
 			int beginL, endL;
 			int beginLineHead, endLineHead;
 
@@ -700,13 +699,7 @@ namespace Sgry.Azuki
 			}
 
 			// get range of the selected lines
-			doc.GetSelection( out begin, out end );
-			beginL = doc.GetLineIndexFromCharIndex( begin );
-			endL = doc.GetLineIndexFromCharIndex( end );
-			if( end != doc.GetLineHeadIndex(endL) )
-			{
-				endL++;
-			}
+			doc.GetSelectedLineRange( out beginL, out endL );
 
 			// prepare indent character
 			if( ui.UsesTabForIndent )
@@ -752,7 +745,6 @@ namespace Sgry.Azuki
 		public static void BlockUnIndent( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			int begin, end;
 			int beginL, endL;
 			int beginLineHead, endLineHead;
 
@@ -763,13 +755,7 @@ namespace Sgry.Azuki
 			}
 			
 			// get range of the selected lines
-			doc.GetSelection( out begin, out end );
-			beginL = doc.GetLineIndexFromCharIndex( begin );
-			endL = doc.GetLineIndexFromCharIndex( end );
-			if( end != doc.GetLineHeadIndex(endL) )
-			{
-				endL++;
-			}
+			doc.GetSelectedLineRange( out beginL, out endL );
 
 			// unindent each lines
 			doc.BeginUndo();
@@ -813,7 +799,9 @@ namespace Sgry.Azuki
 			}
 			doc.SetSelection( beginLineHead, endLineHead );
 		}
+		#endregion
 
+		#region Blank Operation
 		/// <summary>
 		/// Removes spaces at the end of each selected lines.
 		/// </summary>
@@ -822,23 +810,15 @@ namespace Sgry.Azuki
 			Debug.Assert( ui != null );
 			Debug.Assert( ui.Document != null );
 
-			int begin, end;
+			int beginL, endL;
 			Document doc = ui.Document;
 
 			// Determine target lines
-			doc.GetSelection( out begin, out end );
-			int selBeginL = doc.GetLineIndexFromCharIndex( begin );
-			int selEndL = doc.GetLineIndexFromCharIndex( end );
-			if( selBeginL == selEndL
-				|| doc.GetLineHeadIndex(selEndL) != end )
-			{
-				selEndL++; // Target the final line too unless multiple lines
-						   // are selected and at least one char is selected
-			}
+			doc.GetSelectedLineRange( out beginL, out endL );
 
 			// Trim
 			doc.BeginUndo();
-			for( int i=selBeginL; i<selEndL; i++ )
+			for( int i=beginL; i<endL; i++ )
 			{
 				int lineBegin = doc.GetLineHeadIndex( i );
 				int lineEnd = lineBegin + doc.GetLineLength( i );
@@ -863,23 +843,15 @@ namespace Sgry.Azuki
 			Debug.Assert( ui != null );
 			Debug.Assert( ui.Document != null );
 
-			int begin, end;
+			int beginL, endL;
 			Document doc = ui.Document;
 
 			// Determine target lines
-			doc.GetSelection( out begin, out end );
-			int selBeginL = doc.GetLineIndexFromCharIndex( begin );
-			int selEndL = doc.GetLineIndexFromCharIndex( end );
-			if( selBeginL == selEndL
-				|| doc.GetLineHeadIndex(selEndL) != end )
-			{
-				selEndL++; // Target the final line too unless multiple lines
-						   // are selected and at least one char is selected
-			}
+			doc.GetSelectedLineRange( out beginL, out endL );
 
 			// Trim
 			doc.BeginUndo();
-			for( int i=selBeginL; i<selEndL; i++ )
+			for( int i=beginL; i<endL; i++ )
 			{
 				int lineBegin = doc.GetLineHeadIndex( i );
 				int lineEnd = lineBegin + doc.GetLineLength( i );

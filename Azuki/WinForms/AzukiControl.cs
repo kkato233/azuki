@@ -1063,11 +1063,13 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets whether overwrite mode is enabled or not.
-		/// In overwrite mode, input character will not be inserted
-		/// but replaces the character at where the caret is on.
+		/// Gets or sets whether overwrite mode is enabled or not. In overwrite
+		/// mode, input character will not be inserted but replaces a character
+		/// at where the caret is on.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.OverwriteModeChanged">AzukiControl.OverwriteModeChanged event</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.OverwriteModeChanged">
+		/// AzukiControl.OverwriteModeChanged event
+		/// </seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1105,16 +1107,19 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
+		/// Gets or sets whether tab characters are used for indentation,
+		/// instead of space characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property is a synonym of
-		/// <see cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">UsesTabForIndent</see>
-		/// property.
+		/// This property is a synonym of <see
+		/// cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent
+		/// </see> property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">UsesTabForIndent</seealso>
+		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">
+		/// AzukiControl.UsesTabForIndent property
+		/// </seealso>
 #		if !PocketPC
 		[Category("Behavior")]
 		[DefaultValue(false)]

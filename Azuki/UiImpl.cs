@@ -455,47 +455,37 @@ namespace Sgry.Azuki
 					if( _AutoIndentHook != null
 						&& _AutoIndentHook(_UI, ch) == true )
 					{
-						// if this char was handled by the hook, do nothing for this char.
+						// Do nothing if this was handled by the hook
 						continue;
 					}
 
 					// execute built-in hook logic
 					if( LineLogic.IsEolChar(ch) )
 					{
-						// if an EOL code was found, stop consuming and discard following inputs
+						// if an EOL code was found, stop consuming and discard
+						// following inputs
 						if( IsSingleLineMode )
 						{
 							break;
 						}
 
-						// change all EOL code in the text should changed to the
+						// change all EOL code in the text
 						input.Append( doc.EolCode );
 					}
 					else if( ch == '\t' && _UsesTabForIndent == false )
 					{
-						Point caretPos;
-						Point nextTabStopPos;
-						
-						// get x-coord of caret index
-						doc.GetSelection( out selBegin, out selEnd );
-						caretPos = View.GetVirPosFromIndex( g, selBegin );
-
-						// calc next tab stop
-						// ([*] When distance of the caret and next tab stop is narrower than a space width,
-						// no padding chars will be made and 'nothing will happen.'
-						// To avoid such case, here we add an extra space width
-						// before calculating next tab stop.)
-						nextTabStopPos = caretPos;
-						nextTabStopPos.X += View.SpaceWidthInPx - 1; // [*]
-						nextTabStopPos.X += View.TabWidthInPx;
-						nextTabStopPos.X -= (nextTabStopPos.X % View.TabWidthInPx);
-
-						// make padding spaces
-						int spaceCount = (nextTabStopPos.X - caretPos.X) / View.SpaceWidthInPx;
-						for( int i=0; i<spaceCount; i++ )
+						string spaces = GetTabEquivalentSpaces(_UI,
+															   doc.CaretIndex);
+						if( spaces == "" )
 						{
-							input.Append( ' ' );
+							// When the caret position is close to next tab
+							// stop, an empty string will be the equivalent to
+							// a tab. In this case we should think as if the
+							// caret is just on the next tab stop.
+							for( int i=0; i<View.TabWidth; i++ )
+								spaces += ' ';
 						}
+						input.Append( spaces );
 					}
 					else if( ch == '\x3000' && ConvertsFullWidthSpaceToSpace )
 					{
@@ -1402,10 +1392,38 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Generates appropriate padding characters
-		/// that fills the gap between the target position and actual line-end position.
+		/// Makes an array of spaces which is equivalent of a tab character
+		/// in case of inserting it to the position indicated by parameter
+		/// 'index'.
 		/// </summary>
-		internal static string GetNeededPaddingChars( IUserInterface ui, Point targetVirPos, bool alignTabStop )
+		internal static string GetTabEquivalentSpaces( IUserInterface ui,
+													   int index )
+		{
+			Document doc = ui.Document;
+			View view = (View)ui.View;
+			StringBuilder spaces = new StringBuilder( 32 );
+
+			// Calculate next tab stop
+			Point insertPos = view.GetVirPosFromIndex( index );
+			int nextTabStop = view.NextTabStopX( insertPos.X );
+
+			// make padding spaces
+			int spaceCount = (nextTabStop - insertPos.X) / view.SpaceWidthInPx;
+			for( int i=0; i<spaceCount; i++ )
+			{
+				spaces.Append( ' ' );
+			}
+
+			return spaces.ToString();
+		}
+
+		/// <summary>
+		/// Generates appropriate padding characters that fills the gap between
+		/// the target position and actual line-end position.
+		/// </summary>
+		internal static string GetNeededPaddingChars( IUserInterface ui,
+													  Point targetVirPos,
+													  bool alignTabStop )
 		{
 			StringBuilder paddingChars;
 			int targetIndex;
@@ -1413,18 +1431,20 @@ namespace Sgry.Azuki
 			int rightMostTabStopX;
 			int neededTabCount = 0;
 			int neededSpaceCount;
+			IView view = ui.View;
 
 			// calculate the position of the nearest character in line
 			// (this will be at end of the line)
-			targetIndex = ui.View.GetIndexFromVirPos( targetVirPos );
-			lineLastCharPos = ui.View.GetVirPosFromIndex( targetIndex );
-			if( targetVirPos.X <= lineLastCharPos.X + ui.View.SpaceWidthInPx )
+			targetIndex = view.GetIndexFromVirPos( targetVirPos );
+			lineLastCharPos = view.GetVirPosFromIndex( targetIndex );
+			if( targetVirPos.X <= lineLastCharPos.X + view.SpaceWidthInPx )
 			{
 				return ""; // no padding is needed
 			}
 
 			// calculate right most tab stop at left of the target position
-			rightMostTabStopX = targetVirPos.X - (targetVirPos.X % ui.View.TabWidthInPx);
+			rightMostTabStopX = targetVirPos.X
+								- (targetVirPos.X % view.TabWidthInPx);
 			if( alignTabStop )
 			{
 				// to align position to tab stop,
@@ -1435,19 +1455,22 @@ namespace Sgry.Azuki
 			// calculate how many tabs are needed
 			if( ui.UsesTabForIndent )
 			{
-				int availableRightMostTabStopX
-					= lineLastCharPos.X - (lineLastCharPos.X % ui.View.TabWidthInPx);
-				neededTabCount = (targetVirPos.X - availableRightMostTabStopX) / ui.View.TabWidthInPx;
+				int xMax; // x-corrdinate of available right most tab stop
+				xMax = lineLastCharPos.X
+					   - (lineLastCharPos.X % view.TabWidthInPx);
+				neededTabCount = (targetVirPos.X - xMax) / view.TabWidthInPx;
 			}
 
 			// calculate how many spaces are needed
 			if( 0 < neededTabCount )
 			{
-				neededSpaceCount = (targetVirPos.X - rightMostTabStopX) / ui.View.SpaceWidthInPx;
+				neededSpaceCount = (targetVirPos.X - rightMostTabStopX)
+								   / view.SpaceWidthInPx;
 			}
 			else
 			{
-				neededSpaceCount = (targetVirPos.X - lineLastCharPos.X) / ui.View.SpaceWidthInPx;
+				neededSpaceCount = (targetVirPos.X - lineLastCharPos.X)
+								   / view.SpaceWidthInPx;
 			}
 
 			// pad tabs

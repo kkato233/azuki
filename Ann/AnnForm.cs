@@ -299,6 +299,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Edit_FindPrev ]	= Actions.FindPrev;
 			_MenuMap[ _MI_Edit_BlankOp_TrimTrailingSpace ]	= Actions.TrimTrailingSpace;
 			_MenuMap[ _MI_Edit_BlankOp_TrimLeadingSpace ]	= Actions.TrimLeadingSpace;
+			_MenuMap[ _MI_Edit_BlankOp_ConvertTabsToSpaces ]= Actions.ConvertTabsToSpaces;
 			_MenuMap[ _MI_Edit_SelectAll ]	= Actions.SelectAll;
 			_MenuMap[ _MI_Edit_GotoLine ]	= Actions.ShowGotoDialog;
 			_MenuMap[ _MI_Edit_EolCode_CRLF ]	= Actions.SetEolCodeToCRLF;
@@ -354,6 +355,7 @@ namespace Sgry.Ann
 			_KeyMap[ Keys.L|Keys.Control ]				= Actions.ShowGotoDialog;
 			_KeyMap[ Keys.R|Keys.Control|Keys.Shift ]	= Actions.TrimTrailingSpace;
 			_KeyMap[ Keys.L|Keys.Control|Keys.Shift ]	= Actions.TrimLeadingSpace;
+			_KeyMap[ Keys.P|Keys.Control|Keys.Shift ]	= Actions.ConvertTabsToSpaces;
 
 			_KeyMap[ Keys.PageDown|Keys.Control ]		= Actions.ActivateNextDocument;
 			_KeyMap[ Keys.PageUp|Keys.Control ]			= Actions.ActivatePrevDocument;
@@ -677,6 +679,7 @@ namespace Sgry.Ann
 			_MI_Edit.MenuItems.Add( _MI_Edit_BlankOp );
 			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_TrimTrailingSpace );
 			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_TrimLeadingSpace );
+			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_ConvertTabsToSpaces );
 
 			_MI_View.MenuItems.Add( _MI_View_ShowSpecialChar );
 			_MI_View.MenuItems.Add( _MI_View_WrapLines );
@@ -735,6 +738,7 @@ namespace Sgry.Ann
 			_MI_Edit_BlankOp.Text = "&Blank Operation";
 			_MI_Edit_BlankOp_TrimTrailingSpace.Text = "Trim &trailing space";
 			_MI_Edit_BlankOp_TrimLeadingSpace.Text = "Trim &leading space";
+			_MI_Edit_BlankOp_ConvertTabsToSpaces.Text = "Convert &tabs to spaces";
 			_MI_View.Text = "&View";
 			_MI_View_ShowSpecialChar.Text = "Show &Special Chars...";
 			_MI_View_WrapLines.Text = "&Wrap lines";
@@ -860,9 +864,10 @@ namespace Sgry.Ann
 		MenuItem _MI_Edit_EolCode_CRLF	= new MenuItem();
 		MenuItem _MI_Edit_EolCode_LF	= new MenuItem();
 		MenuItem _MI_Edit_EolCode_CR	= new MenuItem();
-		MenuItem _MI_Edit_BlankOp					= new MenuItem();
-		MenuItem _MI_Edit_BlankOp_TrimTrailingSpace	= new MenuItem();
-		MenuItem _MI_Edit_BlankOp_TrimLeadingSpace	= new MenuItem();
+		MenuItem _MI_Edit_BlankOp						= new MenuItem();
+		MenuItem _MI_Edit_BlankOp_TrimTrailingSpace		= new MenuItem();
+		MenuItem _MI_Edit_BlankOp_TrimLeadingSpace		= new MenuItem();
+		MenuItem _MI_Edit_BlankOp_ConvertTabsToSpaces	= new MenuItem();
 		MenuItem _MI_View					= new MenuItem();
 		MenuItem _MI_View_ShowSpecialChar	= new MenuItem();
 		MenuItem _MI_View_WrapLines			= new MenuItem();

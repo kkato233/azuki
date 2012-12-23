@@ -127,6 +127,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Convertes tab characters in selection to equivalent amount of spaces.
+		/// </summary>
+		public static AnnAction ConvertTabsToSpaces
+			= delegate( AppLogic app )
+		{
+			Sgry.Azuki.Actions.ConvertTabsToSpaces( app.MainForm.Azuki );
+		};
+
+		/// <summary>
 		/// Selects all text.
 		/// </summary>
 		public static AnnAction SelectAll

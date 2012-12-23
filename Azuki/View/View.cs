@@ -1,7 +1,5 @@
 ﻿// file: View.cs
 // brief: Platform independent view implementation of Azuki engine.
-// author: YAMAMOTO Suguru
-// update: 2011-07-07
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -1557,6 +1555,13 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
+		internal int NextTabStopX( int x )
+		{
+			x += TabWidthInPx;
+			x -= (x % TabWidthInPx);
+			return x;
+		}
+
 		/// <summary>
 		/// Gets Y coordinate in client area of specified line.
 		/// </summary>

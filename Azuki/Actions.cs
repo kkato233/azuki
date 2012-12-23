@@ -867,6 +867,73 @@ namespace Sgry.Azuki
 			}
 			doc.EndUndo();
 		}
+
+		/// <summary>
+		/// Converts tab characters to space characters.
+		/// </summary>
+		public static void ConvertTabsToSpaces( IUserInterface ui )
+		{
+			Debug.Assert( ui != null );
+			Debug.Assert( ui.Document != null );
+
+			Document doc = ui.Document;
+			int delta = 0;
+			int begin, end;
+
+			if( doc.RectSelectRanges != null )
+			{
+				doc.BeginUndo();
+				for( int i=0; i<doc.RectSelectRanges.Length; i+=2 )
+				{
+					begin = doc.RectSelectRanges[i] + delta;
+					end = doc.RectSelectRanges[i+1] + delta;
+					ConvertTabsToSpaces( ui, begin, end, ref delta );
+				}
+				doc.EndUndo();
+
+				int lastIndex = doc.RectSelectRanges.Length - 1;
+				doc.SelectionMode = TextDataType.Rectangle;
+				doc.SelectionManager.SetSelection(
+						doc.RectSelectRanges[0],
+						doc.RectSelectRanges[lastIndex] + delta,
+						ui.View );
+			}
+			else
+			{
+				doc.GetSelection( out begin, out end );
+				ConvertTabsToSpaces( ui, begin, end, ref delta );
+			}
+		}
+
+		static void ConvertTabsToSpaces( IUserInterface ui,
+										 int begin, int end, ref int delta )
+		{
+			int tabCount = 0;
+			Document doc = ui.Document;
+			StringBuilder text = new StringBuilder( 1024 );
+
+			for( int i=begin; i<end; i++ )
+			{
+				if( doc[i] == '\t' )
+				{
+					tabCount++;
+					string spaces = UiImpl.GetTabEquivalentSpaces( ui, i );
+					text.Append( spaces );
+				}
+				else
+				{
+					text.Append( doc[i] );
+				}
+			}
+
+			// Replace with current content
+			if( 0 < tabCount )
+			{
+				doc.Replace( text.ToString(), begin, end );
+			}
+
+			delta += text.Length - (end - begin);
+		}
 		#endregion
 	}
 }

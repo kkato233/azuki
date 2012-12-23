@@ -294,35 +294,40 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets whether overwrite mode is enabled or not.
-		/// In overwrite mode, input character will not be inserted
-		/// but replace the character at where the caret is on.
+		/// Gets or sets whether overwrite mode is enabled or not. In overwrite
+		/// mode, input character will not be inserted but replaces a character
+		/// at where the caret is on.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.OverwriteModeChanged">IUserInterface.OverwriteModeChanged event</seealso>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.OverwriteModeChanged">
+		/// IUserInterface.OverwriteModeChanged event
+		/// </seealso>
 		bool IsOverwriteMode
 		{
 			get; set;
 		}
 
 		/// <summary>
-		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
+		/// Gets or sets whether tab characters are used for indentation,
+		/// instead of space characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property is a synonym of
-		/// <see cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent</see>
-		/// property.
+		/// This property is a synonym of <see
+		/// cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent
+		/// </see> property.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">UsesTabForIndent</seealso>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">
+		/// UsesTabForIndent property
+		/// </seealso>
 		bool ConvertsTabToSpaces
 		{
 			get; set;
 		}
 
 		/// <summary>
-		/// Gets or sets whether a tab character should be used for
-		/// indentation or not, instead of space characters.
+		/// Gets or sets whether a tab character should be used for indentation
+		/// or not, instead of space characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>

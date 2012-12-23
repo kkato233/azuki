@@ -1,8 +1,6 @@
 // file: EditAction.cs
 // brief: Recorded editing action for UNDO/REDO.
-// author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2011-02-05
+// author: Suguru YAMAMOTO
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -171,6 +169,22 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Properties
+		/// <summary>
+		/// Gets whether this EditAction has no effect on a document or not.
+		/// </summary>
+		public bool HasNoEffect
+		{
+			get
+			{
+				bool thisHasNoEffect = (_Document == null)
+									   || (_InsertedText == ""
+										   && _DeletedText == "");
+				bool nextHasNoEffect = (_Next == null)
+									   || _Next.HasNoEffect == true;
+				return (thisHasNoEffect && nextHasNoEffect);
+			}
+		}
+
 		/// <summary>
 		/// Gets the text deleted by this action.
 		/// </summary>

@@ -1,3 +1,6 @@
+== 1.8.0 (2013-xx-xx) ==
+ * fix: 効果が無いグループ UNDO は記録しないように
+
 == 1.7.4 (2012-12-22) ==
  * add: Diff (Patch) ファイル用のハイライターを追加
  * add: KeywordHighlighter の数値リテラルをハイライトする内蔵ロジックを無効化できるプロパティ HighlightsNumericLiterals を追加

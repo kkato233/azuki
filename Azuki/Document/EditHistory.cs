@@ -1,8 +1,6 @@
 ﻿// file: EditHistory.cs
 // brief: History managemer for UNDO.
-// author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2011-05-04
+// author: Suguru YAMAMOTO
 //=========================================================
 using System;
 
@@ -111,7 +109,9 @@ namespace Sgry.Azuki
 		{
 			if( _GroupingUndoChain == null )
 			{
-				_GroupingUndoChain = new EditAction( null, 0, null, null, 0, 0, null );
+				_GroupingUndoChain = new EditAction( null,
+													 0, null, null,
+													 0, 0, null );
 			}
 		}
 
@@ -123,8 +123,11 @@ namespace Sgry.Azuki
 			if( _GroupingUndoChain != null )
 			{
 				EditAction groupedAction = _GroupingUndoChain;
-				_GroupingUndoChain = null; // nullify this, otherwise Add() adds it to the end of the chain again
-				Add( groupedAction );
+				_GroupingUndoChain = null;
+				if( groupedAction.HasNoEffect == false )
+				{
+					Add( groupedAction );
+				}
 			}
 		}
 

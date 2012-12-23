@@ -946,6 +946,10 @@ namespace Sgry.Azuki
 			int affectedBeginLI = -1;
 			bool wasSavedState;
 
+			// Do nothing if the operation has no effect
+			if( text == "" && begin == end )
+				return;
+
 			// first of all, remember current dirty state of the lines
 			// which will be modified by this replacement
 			wasSavedState = _History.IsSavedState;

@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using System.Text;
+using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
@@ -811,6 +812,47 @@ namespace Sgry.Azuki
 				endLineHead = doc.Length;
 			}
 			doc.SetSelection( beginLineHead, endLineHead );
+		}
+
+		/// <summary>
+		/// Removes spaces at the end of each selected lines.
+		/// </summary>
+		public static void TrimTrailingSpace( IUserInterface ui )
+		{
+			Debug.Assert( ui != null );
+			Debug.Assert( ui.Document != null );
+
+			int begin, end;
+			Document doc = ui.Document;
+
+			// Determine target lines
+			doc.GetSelection( out begin, out end );
+			int selBeginL = doc.GetLineIndexFromCharIndex( begin );
+			int selEndL = doc.GetLineIndexFromCharIndex( end );
+			if( selBeginL == selEndL
+				|| doc.GetLineHeadIndex(selEndL) != end )
+			{
+				selEndL++; // Target the final line too unless multiple lines
+						   // are selected and at least one char is selected
+			}
+
+			// Trim
+			doc.BeginUndo();
+			for( int i=selBeginL; i<selEndL; i++ )
+			{
+				int lineBegin = doc.GetLineHeadIndex( i );
+				int lineEnd = lineBegin + doc.GetLineLength( i );
+				int index = lineEnd;
+				while( lineBegin <= index-1 && Char.IsWhiteSpace(doc[index-1]) )
+				{
+					index--;
+				}
+				if( index < lineEnd )
+				{
+					doc.Replace( "", index, lineEnd );
+				}
+			}
+			doc.EndUndo();
 		}
 		#endregion
 	}

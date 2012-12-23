@@ -109,6 +109,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Removes whitespaces at end of each line.
+		/// </summary>
+		public static AnnAction TrimTrailingSpace
+			= delegate( AppLogic app )
+		{
+			Sgry.Azuki.Actions.TrimTrailingSpace( app.MainForm.Azuki );
+		};
+
+		/// <summary>
 		/// Selects all text.
 		/// </summary>
 		public static AnnAction SelectAll

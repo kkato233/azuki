@@ -297,6 +297,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_Edit_Find ]		= Actions.ShowFindDialog;
 			_MenuMap[ _MI_Edit_FindNext ]	= Actions.FindNext;
 			_MenuMap[ _MI_Edit_FindPrev ]	= Actions.FindPrev;
+			_MenuMap[ _MI_Edit_BlankOp_TrimTrailingSpace ]	= Actions.TrimTrailingSpace;
 			_MenuMap[ _MI_Edit_SelectAll ]	= Actions.SelectAll;
 			_MenuMap[ _MI_Edit_GotoLine ]	= Actions.ShowGotoDialog;
 			_MenuMap[ _MI_Edit_EolCode_CRLF ]	= Actions.SetEolCodeToCRLF;
@@ -350,6 +351,7 @@ namespace Sgry.Ann
 			_KeyMap[ Keys.G|Keys.Control|Keys.Shift ]	= Actions.FindPrev;
 			_KeyMap[ Keys.A|Keys.Control ]				= Actions.SelectAll;
 			_KeyMap[ Keys.L|Keys.Control ]				= Actions.ShowGotoDialog;
+			_KeyMap[ Keys.R|Keys.Control|Keys.Shift ]	= Actions.TrimTrailingSpace;
 
 			_KeyMap[ Keys.PageDown|Keys.Control ]		= Actions.ActivateNextDocument;
 			_KeyMap[ Keys.PageUp|Keys.Control ]			= Actions.ActivatePrevDocument;
@@ -670,6 +672,8 @@ namespace Sgry.Ann
 			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CRLF );
 			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_LF );
 			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CR );
+			_MI_Edit.MenuItems.Add( _MI_Edit_BlankOp );
+			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_TrimTrailingSpace );
 
 			_MI_View.MenuItems.Add( _MI_View_ShowSpecialChar );
 			_MI_View.MenuItems.Add( _MI_View_WrapLines );
@@ -725,6 +729,8 @@ namespace Sgry.Ann
 			_MI_Edit_EolCode_CRLF.Text = "&CR+LF";
 			_MI_Edit_EolCode_LF.Text = "&LF";
 			_MI_Edit_EolCode_CR.Text = "C&R";
+			_MI_Edit_BlankOp.Text = "Blank Operation";
+			_MI_Edit_BlankOp_TrimTrailingSpace.Text = "Trim trailing space";
 			_MI_View.Text = "&View";
 			_MI_View_ShowSpecialChar.Text = "Show &Special Chars...";
 			_MI_View_WrapLines.Text = "&Wrap lines";
@@ -850,6 +856,8 @@ namespace Sgry.Ann
 		MenuItem _MI_Edit_EolCode_CRLF	= new MenuItem();
 		MenuItem _MI_Edit_EolCode_LF	= new MenuItem();
 		MenuItem _MI_Edit_EolCode_CR	= new MenuItem();
+		MenuItem _MI_Edit_BlankOp					= new MenuItem();
+		MenuItem _MI_Edit_BlankOp_TrimTrailingSpace	= new MenuItem();
 		MenuItem _MI_View					= new MenuItem();
 		MenuItem _MI_View_ShowSpecialChar	= new MenuItem();
 		MenuItem _MI_View_WrapLines			= new MenuItem();

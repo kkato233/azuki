@@ -508,7 +508,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Misc.
+		#region Undo / Reduo
 		/// <summary>
 		/// Undos an action.
 		/// </summary>
@@ -556,7 +556,9 @@ namespace Sgry.Azuki
 			}
 			view.ScrollToCaret();
 		}
+		#endregion
 
+		#region Misc.
 		/// <summary>
 		/// Toggles overwrite mode.
 		/// </summary>
@@ -575,6 +577,22 @@ namespace Sgry.Azuki
 			else
 				ui.SelectionMode = TextDataType.Normal;
 		}
+		
+		/// <summary>
+		/// Scrolls down one line.
+		/// </summary>
+		public static void ScrollDown( IUserInterface ui )
+		{
+			ui.View.Scroll( 1 );
+		}
+		
+		/// <summary>
+		/// Scrolls up one line.
+		/// </summary>
+		public static void ScrollUp( IUserInterface ui )
+		{
+			ui.View.Scroll( -1 );
+		}
 
 		/// <summary>
 		/// Refreshes view and force to redraw text area.
@@ -583,7 +601,9 @@ namespace Sgry.Azuki
 		{
 			ui.View.Invalidate();
 		}
+		#endregion
 
+		#region Line editing
 		/// <summary>
 		/// Inserts a new line above the cursor.
 		/// </summary>
@@ -644,17 +664,26 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Indent selected lines.
+		/// Increase indentation level of selected lines.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This action indents all selected lines at once.
-		/// The indent characters will be tabs (U+0009) if
-		/// <see cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">IUserInterface.UsesTabForIndent</see>
-		/// property is true, otherwise spaces (U+0020).
+		/// This action indents all selected lines at once. The character(s) to
+		/// be used for indentation will be a tab (U+0009) if
+		/// <see cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">
+		/// IUserInterface.UsesTabForIndent</see> property is true, otherwise
+		/// a sequence of space characters (U+0020). The number of space
+		/// characters which will be used for indentation is determined by <see
+		/// cref="Sgry.Azuki.IUserInterface.TabWidth">IUserInterface.TabWidth
+		/// </see> property value.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">IUserInterface.UsesTabForIndent property</seealso>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.UsesTabForIndent">
+		/// IUserInterface.UsesTabForIndent property
+		/// </seealso>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.TabWidth">
+		/// IUserInterface.TabWidth property
+		/// </seealso>
 		public static void BlockIndent( IUserInterface ui )
 		{
 			Document doc = ui.Document;
@@ -717,7 +746,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Unindent selected lines.
+		/// Decrease indentation level of selected lines.
 		/// </summary>
 		public static void BlockUnIndent( IUserInterface ui )
 		{
@@ -782,67 +811,6 @@ namespace Sgry.Azuki
 				endLineHead = doc.Length;
 			}
 			doc.SetSelection( beginLineHead, endLineHead );
-		}
-		
-		/// <summary>
-		/// Scrolls down one line.
-		/// </summary>
-		public static void ScrollDown( IUserInterface ui )
-		{
-			ui.View.Scroll( 1 );
-		}
-		
-		/// <summary>
-		/// Scrolls up one line.
-		/// </summary>
-		public static void ScrollUp( IUserInterface ui )
-		{
-			ui.View.Scroll( -1 );
-		}
-
-		/// <summary>
-		/// Moves caret to the matched bracket.
-		/// </summary>
-		public static void GoToMatchedBracket( IUserInterface ui )
-		{
-			int caretIndex;
-			int pairIndex;
-
-			// find pair and go there
-			caretIndex = ui.CaretIndex;
-			pairIndex = ui.Document.FindMatchedBracket( caretIndex );
-			if( pairIndex != -1 )
-			{
-				// found.
-				ui.SetSelection( pairIndex, pairIndex );
-				ui.ScrollToCaret();
-				return;
-			}
-
-			// not found.
-			// if the char at CaretIndex (at right of the caret) is not a bracket,
-			// then we try again for the char at CaretIndex-1 (at left of the caret.)
-			if( 1 <= caretIndex )
-			{
-				char ch = ui.Document[ caretIndex-1 ];
-				if( ch != '(' && ch != ')'
-					|| ch != '{' && ch != '}'
-					|| ch != '[' && ch != ']' )
-				{
-					pairIndex = ui.Document.FindMatchedBracket( caretIndex-1 );
-					if( pairIndex != -1 )
-					{
-						// found.
-						ui.SetSelection( pairIndex, pairIndex );
-						ui.ScrollToCaret();
-						return;
-					}
-				}
-			}
-
-			// not found.
-			Plat.Inst.MessageBeep();
-			return;
 		}
 		#endregion
 	}

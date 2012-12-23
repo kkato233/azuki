@@ -321,43 +321,55 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
+		/// Gets or sets whether a tab character should be used for
+		/// indentation or not, instead of space characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property gets or sets whether tab characters are used for indentation,
-		/// instead of space characters.
+		/// This property gets or sets whether tab characters are used for
+		/// indentation or not. If this property is false, space characters
+		/// will be used.
 		/// </para>
 		/// <para>
-		/// In addition to the case of inserting a new tab character,
-		/// This property affects some other cases like next:
+		/// This property affects every action involving indentation. Next is
+		/// the list of such actions:
 		/// </para>
 		/// <list type="bullet">
 		///		<item>
-		///		When executing block-indent.
+		///		Inserting an indentation character sequence
+		///		(hitting the &quot;tab&quot; on your keyboard).
 		///		</item>
 		///		<item>
-		///		When additional indent characters are needed.
-		///		This case is about auto-indentation for specific syntax such as C/C++ language
-		///		(term <term>smart-indentation</term> is more appropriate here.)
-		///		In C/C++, if user hits the Enter key on a line
-		///		that ends with a closing curly bracket (<c> } </c>),
-		///		newly generated line will be indented one more level
-		///		by inserting additional indent characters.
+		///		Executing block-indent.
 		///		</item>
 		///		<item>
-		///		When pasting rectangle selection data.
-		///		Let's suppose pasting the text data
-		///		when the caret is at end of a long line
-		///		and the lines below is shorter than the line caret is at.
-		///		In this case, whitespaces will be appended automatically
-		///		for the lines below as a padding to make pasted result a 'rectangle.'
+		///		Executing auto-indentation which requires to indent lines. An
+		///		example is smart-indentation for C/C++ language. If user hits
+		///		&quot;Enter&quot; key when the caret is at end of line which
+		///		ends with a closing curly bracket (<c> } </c>), newly generated
+		///		line will be indented.
+		///		</item>
+		///		<item>
+		///		Pasting rectangular selection data, under specific condition.
+		///		An example of the condition is; pasting when (1) a rectangular
+		///		selection contains two lines, (2) the caret is at the end
+		///		of a line which is not empty, and (3) the next line is empty.
+		///		In this case, an appropriate amount of whitespaces are needed
+		///		to be appended to the the next (empty) line so that the second
+		///		line in the rectangular selection data will be placed at the
+		///		same column position as the first line.
 		///		</item>
 		/// </list>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.TabWidth">IUserInterface.TabWidth property</seealso>
-		/// <seealso cref="Sgry.Azuki.Actions.BlockIndent">Actions.BlockIndent action</seealso>
-		/// <seealso cref="Sgry.Azuki.Actions.BlockUnIndent">Actions.BlockUnIndent action</seealso>
+		/// <seealso cref="Sgry.Azuki.IUserInterface.TabWidth">
+		/// IUserInterface.TabWidth property
+		/// </seealso>
+		/// <seealso cref="Sgry.Azuki.Actions.BlockIndent">
+		/// Actions.BlockIndent action
+		/// </seealso>
+		/// <seealso cref="Sgry.Azuki.Actions.BlockUnIndent">
+		/// Actions.BlockUnIndent action
+		/// </seealso>
 		bool UsesTabForIndent
 		{
 			get; set;
@@ -411,17 +423,14 @@ namespace Sgry.Azuki
 		/// 'sticky' or not.
 		/// </para>
 		/// <para>
-		/// Sticky caret tries to keep its desired column position
-		/// unless user explicitly changes it, by hitting right or left key for instance.
-		/// Normal caret updates desired column position on typing text
-		/// so if user moves up or down the caret after typing,
-		/// column position of it will be as same as the position
-		/// finally the caret was located.
-		/// On the other hand, sticky caret does not update
-		/// desired column position by typing text
-		/// (because user does not 'explicitly' changed it,)
-		/// so column position will be restored to the position
-		/// where the caret was placed before user typed text.
+		/// Sticky caret tries to keep its desired column position unless user
+		/// explicitly changes it (by hitting right or left key, for instance.)
+		/// Non-sticky caret updates 'desired column position' everytime you
+		/// type so moving up or down never change column position of caret.
+		/// On the other hand, sticky caret does not update desired column
+		/// position by typing (because user does not 'explicitly' changed it,)
+		/// so moving up or down restores the column position to the one
+		/// where you start typing text.
 		/// </para>
 		/// </remarks>
 		bool UsesStickyCaret

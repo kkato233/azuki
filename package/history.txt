@@ -1,7 +1,9 @@
 == 1.8.0 (2013-xx-xx) ==
  * add: Added Action.TrimTrailingSpace which removes whitespaces from end of selected lines
+ * add: Added Action.TrimLeadingSpace which removes whitespaces from beginning of selected lines
  * fix: Group undo action will not be stacked if it has no effect at all
  * add: [Ann] Added feature to remove spaces from end of each selected lines (shortcut key is Ctrl+Shift+R)
+ * add: [Ann] Added feature to remove spaces from beginning of each selected lines (shortcut key is Ctrl+Shift+L)
 
 == 1.7.4 (2012-12-22) ==
  * add: Added a highlighter for Diff/Patch file format

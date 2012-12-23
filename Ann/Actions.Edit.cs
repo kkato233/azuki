@@ -118,6 +118,15 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Removes whitespaces at beginning of each line.
+		/// </summary>
+		public static AnnAction TrimLeadingSpace
+			= delegate( AppLogic app )
+		{
+			Sgry.Azuki.Actions.TrimLeadingSpace( app.MainForm.Azuki );
+		};
+
+		/// <summary>
 		/// Selects all text.
 		/// </summary>
 		public static AnnAction SelectAll

@@ -935,7 +935,7 @@ namespace Sgry.Azuki
 					int x = view.GetVirPosFromIndex( i ).X;
 					int nextTabStopX = view.NextTabStopX( x );
 					int neededCount = (nextTabStopX - x) / view.SpaceWidthInPx;
-					if( 2 <= neededCount )
+					if( 2 <= neededCount && i+neededCount <= end )
 					{
 						string str = doc.GetTextInRange( i, i+neededCount );
 						if( str.TrimStart(' ') == "" )

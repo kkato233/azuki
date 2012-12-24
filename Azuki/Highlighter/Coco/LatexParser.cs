@@ -41,34 +41,21 @@ class Parser {
 int sectionLevel = 0;
 	int curlyBracketDepth = 0;
 	internal Sgry.Azuki.Highlighter.HighlightHook _Hook = null;
+	internal SplitArray<int> _ReparsePoints = null;
 
 	void Highlight( Token t, CharClass klass )
 	{
-		CharClass k;
-		
-		// use hook procedure if installed
-		if( _Hook != null
-			&& _Hook(doc, t.val, t.pos, klass) == true )
-		{
-			return;
-		}
-		
-		// no hook was installed or the hook did nothing.
-		// highlight this word normally
-		k = klass;
 		if( 0 < curlyBracketDepth )
 		{
 			if( sectionLevel == 1 )
-				k = CharClass.Heading1;
+				klass = CharClass.Heading1;
 			else if( sectionLevel == 2 )
-				k = CharClass.Heading2;
+				klass = CharClass.Heading2;
 			else if( sectionLevel == 3 )
-				k = CharClass.Heading3;
+				klass = CharClass.Heading3;
 		}
-		for( int i=t.pos; i<t.pos+t.val.Length; i++ )
-		{
-			doc.SetCharClass( i, k );
-		}
+
+		Utl.Highlight( doc, t.pos, t.pos+t.val.Length, klass, _Hook );
 	}
 
 /*-------------------------------------------------------
@@ -183,7 +170,9 @@ int sectionLevel = 0;
 		}
 		case 6: {
 			Get();
-			Highlight( t, CharClass.LatexBracket );	
+			Highlight( t, CharClass.LatexBracket );
+			Utl.EntryReparsePoint( _ReparsePoints, t.pos );
+			
 			break;
 		}
 		case 7: {
@@ -198,7 +187,7 @@ int sectionLevel = 0;
 			curlyBracketDepth--;
 			if( curlyBracketDepth <= 0 )
 			{
-				Debug.Assert( curlyBracketDepth == 0 );
+				curlyBracketDepth = 0;
 				sectionLevel = 0;
 			}
 			Highlight( t, CharClass.LatexCurlyBracket );

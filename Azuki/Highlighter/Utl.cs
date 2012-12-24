@@ -59,14 +59,14 @@ namespace Sgry.Azuki.Highlighter
 				count = 1;
 			}
 
-			// if there are remembered positions larger than current token's one,
-			// drop them
+			// if there are remembered positions larger than current token's
+			// one, drop them
 			if( index < reparsePoints[count-1] )
 			{
-				leastMaximumIndex = Utl.FindLeastMaximum(
-						reparsePoints, index
-					);
-				reparsePoints.RemoveRange( leastMaximumIndex+1, reparsePoints.Count );
+				leastMaximumIndex = Utl.FindLeastMaximum( reparsePoints,
+														  index );
+				reparsePoints.RemoveRange( leastMaximumIndex + 1,
+										   reparsePoints.Count );
 			}
 			// if current token is not so far from currently largest position,
 			// position of current token is not worth to remember

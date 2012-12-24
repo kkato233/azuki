@@ -1,7 +1,5 @@
 // file: LatexHighlighter.cs
 // brief: Highlighter for LaTeX.
-// author: YAMAMOTO Suguru
-// update: 2011-07-10
 //=========================================================
 using System;
 using Sgry.Azuki.Highlighter.Coco.Latex;
@@ -14,6 +12,7 @@ namespace Sgry.Azuki.Highlighter
 	class LatexHighlighter : IHighlighter
 	{
 		HighlightHook _Hook = null;
+		SplitArray<int> _ReparsePoints = new SplitArray<int>( 64 );
 
 		#region Properties
 		/// <summary>
@@ -61,12 +60,13 @@ namespace Sgry.Azuki.Highlighter
 				throw new ArgumentOutOfRangeException( "dirtyEnd" );
 
 			// set re-highlight range
-			dirtyBegin = doc.GetLineHeadIndexFromCharIndex( dirtyBegin );
+			dirtyBegin = Utl.FindReparsePoint( _ReparsePoints, dirtyBegin );
 			//NO_NEED//dirtyEnd = something
 
 			// highlight with generated parser
 			Parser parser = new Parser( doc, dirtyBegin, dirtyEnd );
 			parser._Hook = this._Hook;
+			parser._ReparsePoints = _ReparsePoints;
 			try
 			{
 				parser.Parse();

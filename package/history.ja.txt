@@ -4,6 +4,7 @@
  * add: 選択範囲中にあるタブ文字を空白文字に変換する Action.ConvertTabsToSpaces を追加
  * add: 選択範囲中にある空白文字をタブ文字に変換する Action.ConvertSpacesToTabs を追加
  * fix: 効果が無いグループ UNDO は記録しないように
+ * fix: LaTeXハイライタで見出しのハイライトが正常に更新されないことがある問題を修正
  * add: [Ann] Ctrl+Shift+R で選択行の行末にある空白文字をまとめて削除する機能を追加
  * add: [Ann] Ctrl+Shift+L で選択行の行頭にある空白文字をまとめて削除する機能を追加
  * add: [Ann] Ctrl+Shift+P で選択テキスト中のタブ文字を空白文字に変換する機能を追加

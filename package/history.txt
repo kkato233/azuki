@@ -10,6 +10,7 @@
  * add: [Ann] Added feature to convert tab characters in selected text to equivalent amount of spaces (shortcut key is Ctrl+Shift+P)
  * add: [Ann] Added feature to convert space characters in selected text to tab characters as much as possible (shortcut key is Ctrl+Shift+T)
  * add: [Ann] Added feature to reload files using specified Japanese character encodings
+ * add: [Ann] Added feature to change character encoding to be used on saving files
 
 == 1.7.4 (2012-12-22) ==
  * add: Added a highlighter for Diff/Patch file format

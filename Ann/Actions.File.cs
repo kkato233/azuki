@@ -46,39 +46,39 @@ namespace Sgry.Ann
 			app.SaveDocument( app.ActiveDocument );
 		};
 
-		public static void ReloadDocument_Auto( AppLogic app )
+		public static void ChangeEncoding_Auto( AppLogic app )
 		{
-			ReloadDocument( app, null );
+			ChangeEncoding( app, null );
 		}
 
-		public static void ReloadDocument_SJIS( AppLogic app )
+		public static void ChangeEncoding_SJIS( AppLogic app )
 		{
-			ReloadDocument( app, Encoding.GetEncoding("Shift_JIS") );
+			ChangeEncoding( app, Encoding.GetEncoding("Shift_JIS") );
 		}
 
-		public static void ReloadDocument_JIS( AppLogic app )
+		public static void ChangeEncoding_JIS( AppLogic app )
 		{
-			ReloadDocument( app, Encoding.GetEncoding("iso-2022-jp") );
+			ChangeEncoding( app, Encoding.GetEncoding("iso-2022-jp") );
 		}
 
-		public static void ReloadDocument_EUCJP( AppLogic app )
+		public static void ChangeEncoding_EUCJP( AppLogic app )
 		{
-			ReloadDocument( app, Encoding.GetEncoding("EUC-JP") );
+			ChangeEncoding( app, Encoding.GetEncoding("EUC-JP") );
 		}
 
-		public static void ReloadDocument_UTF8( AppLogic app )
+		public static void ChangeEncoding_UTF8( AppLogic app )
 		{
-			ReloadDocument( app, Encoding.UTF8 );
+			ChangeEncoding( app, Encoding.UTF8 );
 		}
 
-		public static void ReloadDocument_UTF16LE( AppLogic app )
+		public static void ChangeEncoding_UTF16LE( AppLogic app )
 		{
-			ReloadDocument( app, Encoding.Unicode );
+			ChangeEncoding( app, Encoding.Unicode );
 		}
 
-		public static void ReloadDocument_UTF16BE( AppLogic app )
+		public static void ChangeEncoding_UTF16BE( AppLogic app )
 		{
-			ReloadDocument( app, Encoding.BigEndianUnicode );
+			ChangeEncoding( app, Encoding.BigEndianUnicode );
 		}
 
 		/// <summary>
@@ -113,19 +113,30 @@ namespace Sgry.Ann
 		};
 		#endregion
 
-		static void ReloadDocument( AppLogic app, Encoding enc )
+		static void ChangeEncoding( AppLogic app, Encoding enc )
 		{
 			Document doc = app.ActiveDocument;
-			if( doc.IsDirty )
+
+			doc.Encoding = enc;
+			if( enc != null && doc.FilePath != null )
 			{
-				DialogResult result;
-				result = app.AlertBeforeDiscarding( doc );
-				if( result == DialogResult.No )
+				DialogResult result = app.ConfirmReloadOrJustChangeEncoding(doc, enc);
+				if( result != DialogResult.Yes )
 				{
+					app.MainForm.UpdateUI();
 					return;
 				}
 			}
 
+			if( doc.IsDirty )
+			{
+				DialogResult result = app.AlertBeforeDiscarding( doc );
+				if( result != DialogResult.Yes )
+				{
+					app.MainForm.UpdateUI();
+					return;
+				}
+			}
 			app.ReloadDocument( app.ActiveDocument, enc, false );
 		}
 	}

@@ -1358,13 +1358,21 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
+		public DialogResult ConfirmReloadOrJustChangeEncoding( Document doc, Encoding enc )
+		{
+			return Alert( "Encoding \"" + enc.WebName + "\" will be used when you save"
+						  + " this document next time.\n"
+						  + "Do you also want to reload this file using the encoding?",
+						  MessageBoxButtons.YesNo,
+						  MessageBoxIcon.Question );
+		}
+
 		public DialogResult AlertBeforeDiscarding( Document doc )
 		{
-			return Alert(
-					doc.DisplayName + " is modified but not saved. Are you sure to"
-					+ " discard changes?",
-					MessageBoxButtons.YesNo,
-					MessageBoxIcon.Exclamation
+			return Alert( doc.DisplayName + " is modified but not saved. Are you sure"
+						  + " to discard changes?",
+						  MessageBoxButtons.YesNo,
+						  MessageBoxIcon.Exclamation
 				);
 		}
 

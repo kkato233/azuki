@@ -196,6 +196,9 @@ namespace Sgry.Ann
 				_MI_Edit_EolCode_CR.Checked = true;
 			}
 
+			// Disable encoding menu if the document is newly created one
+			_MI_File_Encoding_Auto.Enabled = (doc.FilePath != null);
+
 			// update radio check of file type menu
 			foreach( MenuItem mi in _MI_Mode.MenuItems )
 			{
@@ -285,13 +288,13 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_File_Open ]		= Actions.OpenDocument;
 			_MenuMap[ _MI_File_Save ]		= Actions.SaveDocument;
 			_MenuMap[ _MI_File_SaveAs ]		= Actions.SaveDocumentAs;
-			_MenuMap[ _MI_File_Reload_Auto ]	= Actions.ReloadDocument_Auto;
-			_MenuMap[ _MI_File_Reload_SJIS ]	= Actions.ReloadDocument_SJIS;
-			_MenuMap[ _MI_File_Reload_JIS ]	= Actions.ReloadDocument_JIS;
-			_MenuMap[ _MI_File_Reload_EUCJP ]	= Actions.ReloadDocument_EUCJP;
-			_MenuMap[ _MI_File_Reload_UTF8 ]	= Actions.ReloadDocument_UTF8;
-			_MenuMap[ _MI_File_Reload_UTF16LE ]	= Actions.ReloadDocument_UTF16LE;
-			_MenuMap[ _MI_File_Reload_UTF16BE ]	= Actions.ReloadDocument_UTF16BE;
+			_MenuMap[ _MI_File_Encoding_Auto ]		= Actions.ChangeEncoding_Auto;
+			_MenuMap[ _MI_File_Encoding_SJIS ]		= Actions.ChangeEncoding_SJIS;
+			_MenuMap[ _MI_File_Encoding_JIS ]		= Actions.ChangeEncoding_JIS;
+			_MenuMap[ _MI_File_Encoding_EUCJP ]		= Actions.ChangeEncoding_EUCJP;
+			_MenuMap[ _MI_File_Encoding_UTF8 ]		= Actions.ChangeEncoding_UTF8;
+			_MenuMap[ _MI_File_Encoding_UTF16LE ]	= Actions.ChangeEncoding_UTF16LE;
+			_MenuMap[ _MI_File_Encoding_UTF16BE ]	= Actions.ChangeEncoding_UTF16BE;
 			_MenuMap[ _MI_File_Close ]		= Actions.CloseDocument;
 			_MenuMap[ _MI_File_ReadOnly ]	= Actions.ToggleReadOnlyMode;
 			_MenuMap[ _MI_File_Exit ]		= Actions.Exit;
@@ -661,13 +664,13 @@ namespace Sgry.Ann
 			_MI_File.MenuItems.Add( _MI_File_Open );
 			_MI_File.MenuItems.Add( _MI_File_Save );
 			_MI_File.MenuItems.Add( _MI_File_SaveAs );
-			_MI_File.MenuItems.Add( _MI_File_Reload );
-			_MI_File_Reload.MenuItems.Add( _MI_File_Reload_Auto );
-			_MI_File_Reload.MenuItems.Add( _MI_File_Reload_SJIS );
-			_MI_File_Reload.MenuItems.Add( _MI_File_Reload_JIS );
-			_MI_File_Reload.MenuItems.Add( _MI_File_Reload_EUCJP );
-			_MI_File_Reload.MenuItems.Add( _MI_File_Reload_UTF8 );
-			_MI_File_Reload.MenuItems.Add( _MI_File_Reload_UTF16LE );
+			_MI_File.MenuItems.Add( _MI_File_Encoding );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_Auto );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_SJIS );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_JIS );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_EUCJP );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF8 );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16LE );
 			_MI_File.MenuItems.Add( _MI_File_Close );
 			_MI_File.MenuItems.Add( _MI_File_Sep1 );
 			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
@@ -728,14 +731,14 @@ namespace Sgry.Ann
 			_MI_File_Open.Text = "&Open...";
 			_MI_File_Save.Text = "&Save";
 			_MI_File_SaveAs.Text = "Save &as...";
-			_MI_File_Reload.Text = "&Reload in";
-			_MI_File_Reload_Auto.Text = "Auto-detect encoding";
-			_MI_File_Reload_SJIS.Text = "&Shift_JIS";
-			_MI_File_Reload_JIS.Text = "&JIS (iso-2022-jp)";
-			_MI_File_Reload_EUCJP.Text = "&EUC-JP";
-			_MI_File_Reload_UTF8.Text = "UTF-&8";
-			_MI_File_Reload_UTF16LE.Text = "&UTF-16";
-			_MI_File_Reload_UTF16BE.Text = "&UTF-16 (Big Endian)";
+			_MI_File_Encoding.Text = "Encodin&g";
+			_MI_File_Encoding_Auto.Text = "(&Auto-detect)";
+			_MI_File_Encoding_SJIS.Text = "&Shift_JIS";
+			_MI_File_Encoding_JIS.Text = "&JIS (iso-2022-jp)";
+			_MI_File_Encoding_EUCJP.Text = "&EUC-JP";
+			_MI_File_Encoding_UTF8.Text = "UTF-&8";
+			_MI_File_Encoding_UTF16LE.Text = "&UTF-16";
+			_MI_File_Encoding_UTF16BE.Text = "&UTF-16 (Big Endian)";
 			_MI_File_Close.Text = "&Close";
 			_MI_File_Sep1.Text = "-";
 			_MI_File_ReadOnly.Text = "Read onl&y";
@@ -866,14 +869,14 @@ namespace Sgry.Ann
 		MenuItem _MI_File_Open		= new MenuItem();
 		MenuItem _MI_File_Save		= new MenuItem();
 		MenuItem _MI_File_SaveAs	= new MenuItem();
-		MenuItem _MI_File_Reload		= new MenuItem();
-		MenuItem _MI_File_Reload_Auto	= new MenuItem();
-		MenuItem _MI_File_Reload_SJIS	= new MenuItem();
-		MenuItem _MI_File_Reload_JIS	= new MenuItem();
-		MenuItem _MI_File_Reload_EUCJP	= new MenuItem();
-		MenuItem _MI_File_Reload_UTF8	= new MenuItem();
-		MenuItem _MI_File_Reload_UTF16LE= new MenuItem();
-		MenuItem _MI_File_Reload_UTF16BE= new MenuItem();
+		MenuItem _MI_File_Encoding			= new MenuItem();
+		MenuItem _MI_File_Encoding_Auto		= new MenuItem();
+		MenuItem _MI_File_Encoding_SJIS		= new MenuItem();
+		MenuItem _MI_File_Encoding_JIS		= new MenuItem();
+		MenuItem _MI_File_Encoding_EUCJP	= new MenuItem();
+		MenuItem _MI_File_Encoding_UTF8		= new MenuItem();
+		MenuItem _MI_File_Encoding_UTF16LE	= new MenuItem();
+		MenuItem _MI_File_Encoding_UTF16BE	= new MenuItem();
 		MenuItem _MI_File_Close		= new MenuItem();
 		MenuItem _MI_File_Sep1		= new MenuItem();
 		MenuItem _MI_File_ReadOnly	= new MenuItem();

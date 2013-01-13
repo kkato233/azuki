@@ -1,6 +1,6 @@
-// 2009-07-12
 using System;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Sgry.Ann
@@ -46,6 +46,41 @@ namespace Sgry.Ann
 			app.SaveDocument( app.ActiveDocument );
 		};
 
+		public static void ReloadDocument_Auto( AppLogic app )
+		{
+			ReloadDocument( app, null );
+		}
+
+		public static void ReloadDocument_SJIS( AppLogic app )
+		{
+			ReloadDocument( app, Encoding.GetEncoding("Shift_JIS") );
+		}
+
+		public static void ReloadDocument_JIS( AppLogic app )
+		{
+			ReloadDocument( app, Encoding.GetEncoding("iso-2022-jp") );
+		}
+
+		public static void ReloadDocument_EUCJP( AppLogic app )
+		{
+			ReloadDocument( app, Encoding.GetEncoding("EUC-JP") );
+		}
+
+		public static void ReloadDocument_UTF8( AppLogic app )
+		{
+			ReloadDocument( app, Encoding.UTF8 );
+		}
+
+		public static void ReloadDocument_UTF16LE( AppLogic app )
+		{
+			ReloadDocument( app, Encoding.Unicode );
+		}
+
+		public static void ReloadDocument_UTF16BE( AppLogic app )
+		{
+			ReloadDocument( app, Encoding.BigEndianUnicode );
+		}
+
 		/// <summary>
 		/// Close active document.
 		/// </summary>
@@ -77,5 +112,21 @@ namespace Sgry.Ann
 			app.MainForm.Close();
 		};
 		#endregion
+
+		static void ReloadDocument( AppLogic app, Encoding enc )
+		{
+			Document doc = app.ActiveDocument;
+			if( doc.IsDirty )
+			{
+				DialogResult result;
+				result = app.AlertBeforeDiscarding( doc );
+				if( result == DialogResult.No )
+				{
+					return;
+				}
+			}
+
+			app.ReloadDocument( app.ActiveDocument, enc, false );
+		}
 	}
 }

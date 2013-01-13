@@ -764,7 +764,7 @@ namespace Sgry.Ann
 			// confirm to discard modification
 			if( doc.IsDirty )
 			{
-				result = AlertDiscardModification( doc );
+				result = AlertBeforeSave( doc );
 				if( result == DialogResult.Yes )
 				{
 					SaveDocument( doc );
@@ -1124,7 +1124,7 @@ namespace Sgry.Ann
 					this.ActiveDocument = doc;
 
 					// then, show dialog
-					result = AlertDiscardModification( doc );
+					result = AlertBeforeSave( doc );
 					if( result == DialogResult.Yes )
 					{
 						SaveDocument( doc );
@@ -1358,7 +1358,17 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
-		public DialogResult AlertDiscardModification( Document doc )
+		public DialogResult AlertBeforeDiscarding( Document doc )
+		{
+			return Alert(
+					doc.DisplayName + " is modified but not saved. Are you sure to"
+					+ " discard changes?",
+					MessageBoxButtons.YesNo,
+					MessageBoxIcon.Exclamation
+				);
+		}
+
+		public DialogResult AlertBeforeSave( Document doc )
 		{
 			return Alert(
 					doc.DisplayName + " is modified but not saved. Save changes?",

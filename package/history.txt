@@ -9,6 +9,7 @@
  * add: [Ann] Added feature to remove spaces from beginning of each selected lines (shortcut key is Ctrl+Shift+L)
  * add: [Ann] Added feature to convert tab characters in selected text to equivalent amount of spaces (shortcut key is Ctrl+Shift+P)
  * add: [Ann] Added feature to convert space characters in selected text to tab characters as much as possible (shortcut key is Ctrl+Shift+T)
+ * add: [Ann] Added feature to reload files using specified Japanese character encodings
 
 == 1.7.4 (2012-12-22) ==
  * add: Added a highlighter for Diff/Patch file format

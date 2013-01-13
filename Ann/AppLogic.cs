@@ -1360,8 +1360,8 @@ namespace Sgry.Ann
 		#region Utilities
 		public DialogResult ConfirmReloadOrJustChangeEncoding( Document doc, Encoding enc )
 		{
-			return Alert( "Encoding \"" + enc.WebName + "\" will be used when you save"
-						  + " this document next time.\n"
+			return Alert( "Encoding \"" + AnnForm.Utl.ToString(enc) + "\" will be used"
+						  + " when you save this document next time.\n"
 						  + "Do you also want to reload this file using the encoding?",
 						  MessageBoxButtons.YesNo,
 						  MessageBoxIcon.Question );

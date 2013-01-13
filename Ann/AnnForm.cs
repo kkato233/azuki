@@ -671,6 +671,7 @@ namespace Sgry.Ann
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_EUCJP );
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF8 );
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16LE );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16BE );
 			_MI_File.MenuItems.Add( _MI_File_Close );
 			_MI_File.MenuItems.Add( _MI_File_Sep1 );
 			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
@@ -943,7 +944,7 @@ namespace Sgry.Ann
 		#endregion
 
 		#region Utilities
-		static class Utl
+		public static class Utl
 		{
 			public static string ToString( Keys keyData )
 			{

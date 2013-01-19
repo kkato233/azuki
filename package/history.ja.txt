@@ -1,10 +1,11 @@
-== 1.8.0 (2013-xx-xx) ==
+== 1.7.5 (2013-xx-xx) ==
  * add: 選択行から行末の空白文字をまとめて削除する Action.TrimTrailingSpace を追加
  * add: 選択行から行頭の空白文字をまとめて削除する Action.TrimLeadingSpace を追加
  * add: 選択範囲中にあるタブ文字を空白文字に変換する Action.ConvertTabsToSpaces を追加
  * add: 選択範囲中にある空白文字をタブ文字に変換する Action.ConvertSpacesToTabs を追加
  * fix: 効果が無いグループ UNDO は記録しないように
  * fix: LaTeXハイライタで見出しのハイライトが正常に更新されないことがある問題を修正
+ * fix: 非GUIスレッドの終了時に例外が発生する不具合を修正（印刷処理直後に例外が発生していた原因）
  * add: [Ann] Ctrl+Shift+R で選択行の行末にある空白文字をまとめて削除する機能を追加
  * add: [Ann] Ctrl+Shift+L で選択行の行頭にある空白文字をまとめて削除する機能を追加
  * add: [Ann] Ctrl+Shift+P で選択テキスト中のタブ文字を空白文字に変換する機能を追加

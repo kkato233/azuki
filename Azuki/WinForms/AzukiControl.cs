@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using System.Threading;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -106,11 +105,6 @@ namespace Sgry.Azuki.WinForms
 
 			// setup default keybind
 			ResetKeyBind();
-
-			// install exit event handler to dispose resources propely
-#			if !PocketPC
-			Application.ThreadExit += OnThreadExit;
-#			endif
 		}
 
 		/// <summary>
@@ -123,20 +117,8 @@ namespace Sgry.Azuki.WinForms
 			{
 				_Impl.Dispose();
 				_Impl = null;
-#				if !PocketPC
-				Application.ThreadExit -= OnThreadExit;
-#				endif
 			}
 		}
-
-#		if !PocketPC
-		void OnThreadExit( object sender, EventArgs e )
-		{
-			// if the GUI thread ended before this AzukiControl was disposed,
-			// dispose this to ensure that the child threads are terminated.
-			Dispose( true );
-		}
-#		endif
 
 		/// <summary>
 		/// Invokes HandleCreated event.

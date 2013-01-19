@@ -1,10 +1,11 @@
-== 1.8.0 (2013-xx-xx) ==
+== 1.7.5 (2013-xx-xx) ==
  * add: Added Action.TrimTrailingSpace which removes whitespaces from end of selected lines
  * add: Added Action.TrimLeadingSpace which removes whitespaces from beginning of selected lines
  * add: Added Action.ConvertTabsToSpaces which replaces every tab characters in selection range to equivalent amount of space characters
  * add: Added Action.ConvertSpacesToTabs which replaces space characters in selection range to tab characters as much as possible
  * fix: Group undo action will not be stacked if it has no effect at all
  * fix: LaTeX highlighter may not update highlight of headings
+ * fix: An exception occurs every time a non-GUI thread ends (this was the reason of the exception thrown just after a printing)
  * add: [Ann] Added feature to remove spaces from end of each selected lines (shortcut key is Ctrl+Shift+R)
  * add: [Ann] Added feature to remove spaces from beginning of each selected lines (shortcut key is Ctrl+Shift+L)
  * add: [Ann] Added feature to convert tab characters in selected text to equivalent amount of spaces (shortcut key is Ctrl+Shift+P)

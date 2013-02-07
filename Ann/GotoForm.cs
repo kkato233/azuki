@@ -32,7 +32,11 @@ namespace Sgry.Ann
 
 			if( e.KeyCode == Keys.Up || e.KeyCode == Keys.Down )
 			{
-				if( e.KeyData == Keys.Up )
+				if( _LineNumTextBox.Text == "" )
+				{
+					lineNum = 1;
+				}
+				else if( e.KeyData == Keys.Up )
 				{
 					lineNum = Math.Min( Int32.Parse(_LineNumTextBox.Text)+1,
 										Int32.MaxValue );
@@ -61,7 +65,8 @@ namespace Sgry.Ann
 
 		void _LineNumTextBox_KeyPress( object sender, KeyPressEventArgs e )
 		{
-			if( e.KeyChar < '0' || '9' < e.KeyChar )
+			if( (e.KeyChar < '0' || '9' < e.KeyChar)
+				&& e.KeyChar != '\b' )
 				e.Handled = true;
 		}
 

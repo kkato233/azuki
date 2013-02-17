@@ -23,11 +23,10 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Paints a token including special characters.
 		/// </summary>
-		protected void DrawToken(
-				IGraphics g, Document doc, int tokenIndex,
-				string token, CharClass klass,
-				ref Point tokenPos, ref Point tokenEndPos, ref Rectangle clipRect, bool inSelection
-			)
+		protected void DrawToken( IGraphics g, Document doc, int tokenIndex,
+								  string token, CharClass klass,
+								  ref Point tokenPos, ref Point tokenEndPos,
+								  ref Rectangle clipRect, bool inSelection )
 		{
 			Debug.Assert( g != null, "IGraphics must not be null." );
 			Debug.Assert( token != null, "given token is null." );
@@ -41,7 +40,7 @@ namespace Sgry.Azuki
 			textPos.Y += (LinePadding >> 1);
 
 #			if DRAW_SLOWLY
-			if(!Windows.WinApi.IsKeyDownAsync(System.Windows.Forms.Keys.ControlKey))
+			if(!WinForms.WinApi.IsKeyDownAsync(System.Windows.Forms.Keys.ControlKey))
 			{ g.BackColor=Color.Red; g.FillRectangle(tokenPos.X, tokenPos.Y, 2, LineHeight); DebugUtl.Sleep(400); }
 #			endif
 

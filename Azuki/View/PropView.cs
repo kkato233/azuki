@@ -1,7 +1,5 @@
 // file: PropView.cs
 // brief: Platform independent view (proportional).
-// author: YAMAMOTO Suguru
-// update: 2011-09-11
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
@@ -911,9 +909,6 @@ namespace Sgry.Azuki
 						token = token.Substring( 0, visibleCharCount );
 					}
 					end = begin + token.Length;
-
-					// set token end position to the right limit to terminate loop
-					tokenEndPos.X = MeasureTokenEndX( g, token, pos.X );
 				}
 
 				// draw this token

@@ -1338,21 +1338,26 @@ namespace Sgry.Ann
 
 		void ParseIpcFile()
 		{
+			Regex activateCmd = new Regex( @"Activate\d" );
+			Regex openCmd = new Regex( @"OpenDocument\s+(.+)" );
+
 			// read lines and parse them
 			try
 			{
 				foreach( string line in _IpcPipe.ReadLines(10000) )
 				{
 					// parse this line
-					string[] tokens = line.Split( ',' );
-					if( tokens[0] == "Activate" )
+					if( activateCmd.IsMatch(line) )
 					{
 						_MainForm.Invoke( new ThreadStart(_MainForm.Activate) );
+						break;
 					}
-					else if( tokens[0] == "OpenDocument" && 1 < tokens.Length )
+
+					Match m = openCmd.Match( line );
+					if( m.Success && 0 < m.Groups[1].Value.Length )
 					{
 						_MainForm.Invoke( new Action<string>(OpenDocument),
-										  tokens[1] );
+										  m.Groups[1].Value );
 					}
 				}
 			}

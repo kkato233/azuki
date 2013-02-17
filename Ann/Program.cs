@@ -66,10 +66,10 @@ namespace Sgry.Ann
 			try
 			{
 				pipe.Connect( AppLogic.IpcFilePath );
-				pipe.WriteLine( "Activate", 1000 );
+				pipe.WriteLine( "Activate", 10000 );
 				foreach( string path in initOpenFilePaths )
 				{
-					pipe.WriteLine( "OpenDocument," + path, 1000 );
+					pipe.WriteLine( "OpenDocument " + path, 10000 );
 				}
 			}
 			catch

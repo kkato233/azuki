@@ -13,6 +13,7 @@
  * add: [Ann] Added feature to reload files using specified Japanese character encodings
  * add: [Ann] Added feature to change character encoding to be used on saving files
  * fix: [Ann] Now Backspace key can be used in goto line dialog
+ * fix: [Ann] Could not open files with name contains a comma by launching another Ann.exe
  * fix: [Ann] Now opening files triggered by launching another Ann.exe is much stable
 
 == 1.7.4 (2012-12-22) ==

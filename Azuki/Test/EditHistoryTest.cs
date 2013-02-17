@@ -1,5 +1,4 @@
-﻿// 2011-05-04
-#if TEST
+﻿#if TEST
 using System;
 using System.Text;
 
@@ -210,9 +209,9 @@ namespace Sgry.Azuki.Test
 				TestUtl.AssertEquals( "abc", doc.Text );
 				doc.BeginUndo();
 				doc.Redo();
-				TestUtl.AssertEquals( "abc", doc.Text );
+				TestUtl.AssertEquals( "aXbc", doc.Text );
 				doc.EndUndo();
-				TestUtl.AssertEquals( "abc", doc.Text );
+				TestUtl.AssertEquals( "aXbc", doc.Text );
 			}
 			{
 				Document doc = new Document();

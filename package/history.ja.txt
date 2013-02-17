@@ -1,4 +1,4 @@
-== 1.7.5 (2013-xx-xx) ==
+== 1.7.5 (2013-02-17) ==
  * add: 選択行から行末の空白文字をまとめて削除する Action.TrimTrailingSpace を追加
  * add: 選択行から行頭の空白文字をまとめて削除する Action.TrimLeadingSpace を追加
  * add: 選択範囲中にあるタブ文字を空白文字に変換する Action.ConvertTabsToSpaces を追加

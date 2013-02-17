@@ -14,7 +14,7 @@ using System.Resources;
 #endif
 
 [assembly: AssemblyCompany("Suguru YAMAMOTO")]
-[assembly: AssemblyCopyright("Copyright (C) 2008-2012, Suguru YAMAMOTO")]
+[assembly: AssemblyCopyright("Copyright (C) 2008-2013, Suguru YAMAMOTO")]
 
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.7.3.*")]
+[assembly: AssemblyVersion("1.7.5.*")]

@@ -1,4 +1,4 @@
-== 1.7.5 (2013-xx-xx) ==
+== 1.7.5 (2013-02-17) ==
  * add: Added Action.TrimTrailingSpace which removes whitespaces from end of selected lines
  * add: Added Action.TrimLeadingSpace which removes whitespaces from beginning of selected lines
  * add: Added Action.ConvertTabsToSpaces which replaces every tab characters in selection range to equivalent amount of space characters

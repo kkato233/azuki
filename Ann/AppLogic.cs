@@ -1338,21 +1338,27 @@ namespace Sgry.Ann
 
 		void ParseIpcFile()
 		{
-			string[] tokens;
-
 			// read lines and parse them
-			foreach( string line in _IpcPipe.ReadLines(1000) )
+			try
 			{
-				// parse this line
-				tokens = line.Split( ',' );
-				if( tokens[0] == "Activate" )
+				foreach( string line in _IpcPipe.ReadLines(10000) )
 				{
-					_MainForm.Invoke( new ThreadStart(_MainForm.Activate) );
+					// parse this line
+					string[] tokens = line.Split( ',' );
+					if( tokens[0] == "Activate" )
+					{
+						_MainForm.Invoke( new ThreadStart(_MainForm.Activate) );
+					}
+					else if( tokens[0] == "OpenDocument" && 1 < tokens.Length )
+					{
+						_MainForm.Invoke( new Action<string>(OpenDocument),
+										  tokens[1] );
+					}
 				}
-				else if( tokens[0] == "OpenDocument" && 1 < tokens.Length )
-				{
-					_MainForm.Invoke( new Action<string>(OpenDocument), tokens[1] );
-				}
+			}
+			catch( TimeoutException )
+			{
+				// Here we should show a message to user and ask whether to retry.
 			}
 		}
 		#endregion
@@ -1411,15 +1417,25 @@ namespace Sgry.Ann
 			Alert( ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
 		}
 
-		DialogResult Alert( string text, MessageBoxButtons buttons, MessageBoxIcon icon )
+		DialogResult Alert( string text,
+							MessageBoxButtons buttons,
+							MessageBoxIcon icon )
 		{
 			return Alert( text, buttons, icon, MessageBoxDefaultButton.Button1 );
 		}
 
-		DialogResult Alert( string text, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton )
+		DialogResult Alert( string text,
+							MessageBoxButtons buttons,
+							MessageBoxIcon icon,
+							MessageBoxDefaultButton defaultButton )
 		{
 #			if !PocketPC
-			return MessageBox.Show( _MainForm, text, "Ann", buttons, icon, defaultButton );
+			return MessageBox.Show( _MainForm,
+									text,
+									"Ann",
+									buttons,
+									icon,
+									defaultButton );
 #			else
 			return MessageBox.Show( text, "Ann", buttons, icon, defaultButton );
 #			endif

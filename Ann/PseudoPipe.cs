@@ -89,6 +89,7 @@ namespace Sgry.Ann
 		/// <summary>
 		/// Reads all lines from pseudo pipe.
 		/// </summary>
+		/// <exception cref="TimeoutException">Timed out</exception>
 		public string[] ReadLines( int millisecondsTimeout )
 		{
 			bool owned;
@@ -100,7 +101,7 @@ namespace Sgry.Ann
 			owned = _Mutex.WaitOne( millisecondsTimeout );
 			if( owned == false )
 			{
-				return lines.ToArray(); // timeout
+				throw new TimeoutException();
 			}
 
 			try

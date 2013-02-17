@@ -6,6 +6,7 @@
  * fix: Group undo action will not be stacked if it has no effect at all
  * fix: LaTeX highlighter may not update highlight of headings
  * fix: An exception occurs every time a non-GUI thread ends (this was the reason of the exception thrown just after a printing)
+ * fix: Does not scrolls to caret if caret does not move by pressing an arrow key, and if Azuki is in read-only mode
  * add: [Ann] Added feature to remove spaces from end of each selected lines (shortcut key is Ctrl+Shift+R)
  * add: [Ann] Added feature to remove spaces from beginning of each selected lines (shortcut key is Ctrl+Shift+L)
  * add: [Ann] Added feature to convert tab characters in selected text to equivalent amount of spaces (shortcut key is Ctrl+Shift+P)

@@ -199,6 +199,38 @@ namespace Sgry.Ann
 			// Disable encoding menu if the document is newly created one
 			_MI_File_Encoding_Auto.Enabled = (doc.FilePath != null);
 
+			// Update check of encoding menu
+			foreach( MenuItem mi in _MI_File_Encoding.MenuItems )
+			{
+				mi.Checked = false;
+			}
+			MenuItem encMI;
+			switch( _App.ActiveDocument.Encoding.WebName )
+			{
+				case "euc-jp":
+					encMI = _MI_File_Encoding_EUCJP;
+					break;
+				case "iso-2022-jp":
+					encMI = _MI_File_Encoding_JIS;
+					break;
+				case "utf-8":
+					encMI = (_App.ActiveDocument.WithBom) ? _MI_File_Encoding_UTF8B
+														  : _MI_File_Encoding_UTF8;
+					break;
+				case "utf-16":
+					encMI = (_App.ActiveDocument.WithBom) ? _MI_File_Encoding_UTF16LEB
+														  : _MI_File_Encoding_UTF16LE;
+					break;
+				case "unicodeFFFE":
+					encMI = (_App.ActiveDocument.WithBom) ? _MI_File_Encoding_UTF16BEB
+														  : _MI_File_Encoding_UTF16BE;
+					break;
+				default:
+					encMI = _MI_File_Encoding_SJIS;
+					break;
+			}
+			encMI.Checked = true;
+
 			// update radio check of file type menu
 			foreach( MenuItem mi in _MI_Mode.MenuItems )
 			{
@@ -293,8 +325,11 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_File_Encoding_JIS ]		= Actions.ChangeEncoding_JIS;
 			_MenuMap[ _MI_File_Encoding_EUCJP ]		= Actions.ChangeEncoding_EUCJP;
 			_MenuMap[ _MI_File_Encoding_UTF8 ]		= Actions.ChangeEncoding_UTF8;
+			_MenuMap[ _MI_File_Encoding_UTF8B ]		= Actions.ChangeEncoding_UTF8B;
 			_MenuMap[ _MI_File_Encoding_UTF16LE ]	= Actions.ChangeEncoding_UTF16LE;
+			_MenuMap[ _MI_File_Encoding_UTF16LEB ]	= Actions.ChangeEncoding_UTF16LEB;
 			_MenuMap[ _MI_File_Encoding_UTF16BE ]	= Actions.ChangeEncoding_UTF16BE;
+			_MenuMap[ _MI_File_Encoding_UTF16BEB ]	= Actions.ChangeEncoding_UTF16BEB;
 			_MenuMap[ _MI_File_Close ]		= Actions.CloseDocument;
 			_MenuMap[ _MI_File_ReadOnly ]	= Actions.ToggleReadOnlyMode;
 			_MenuMap[ _MI_File_Exit ]		= Actions.Exit;
@@ -670,8 +705,11 @@ namespace Sgry.Ann
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_JIS );
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_EUCJP );
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF8 );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF8B );
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16LE );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16LEB );
 			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16BE );
+			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16BEB );
 			_MI_File.MenuItems.Add( _MI_File_Close );
 			_MI_File.MenuItems.Add( _MI_File_Sep1 );
 			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
@@ -738,8 +776,11 @@ namespace Sgry.Ann
 			_MI_File_Encoding_JIS.Text = "&JIS (iso-2022-jp)";
 			_MI_File_Encoding_EUCJP.Text = "&EUC-JP";
 			_MI_File_Encoding_UTF8.Text = "UTF-&8";
+			_MI_File_Encoding_UTF8B.Text = "UTF-&8 + BOM";
 			_MI_File_Encoding_UTF16LE.Text = "&UTF-16";
+			_MI_File_Encoding_UTF16LEB.Text = "&UTF-16 + BOM";
 			_MI_File_Encoding_UTF16BE.Text = "&UTF-16 (Big Endian)";
+			_MI_File_Encoding_UTF16BEB.Text = "&UTF-16 + BOM (Big Endian)";
 			_MI_File_Close.Text = "&Close";
 			_MI_File_Sep1.Text = "-";
 			_MI_File_ReadOnly.Text = "Read onl&y";
@@ -876,8 +917,11 @@ namespace Sgry.Ann
 		MenuItem _MI_File_Encoding_JIS		= new MenuItem();
 		MenuItem _MI_File_Encoding_EUCJP	= new MenuItem();
 		MenuItem _MI_File_Encoding_UTF8		= new MenuItem();
+		MenuItem _MI_File_Encoding_UTF8B	= new MenuItem();
 		MenuItem _MI_File_Encoding_UTF16LE	= new MenuItem();
+		MenuItem _MI_File_Encoding_UTF16LEB	= new MenuItem();
 		MenuItem _MI_File_Encoding_UTF16BE	= new MenuItem();
+		MenuItem _MI_File_Encoding_UTF16BEB	= new MenuItem();
 		MenuItem _MI_File_Close		= new MenuItem();
 		MenuItem _MI_File_Sep1		= new MenuItem();
 		MenuItem _MI_File_ReadOnly	= new MenuItem();

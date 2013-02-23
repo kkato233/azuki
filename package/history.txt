@@ -1,4 +1,5 @@
 == 1.7.6 (2013-xx-xx) ==
+ * add: [Ann] Added UTF-8 + BOM, UTF-16LE + BOM, and UTF-16BE + BOM to encoding menu
  * fix: [Ann] Reloading newly created document raises an exception
 
 == 1.7.5 (2013-02-17) ==

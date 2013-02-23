@@ -48,37 +48,52 @@ namespace Sgry.Ann
 
 		public static void ChangeEncoding_Auto( AppLogic app )
 		{
-			ChangeEncoding( app, null );
+			ChangeEncoding( app, null, null );
 		}
 
 		public static void ChangeEncoding_SJIS( AppLogic app )
 		{
-			ChangeEncoding( app, Encoding.GetEncoding("Shift_JIS") );
+			ChangeEncoding( app, Encoding.GetEncoding("Shift_JIS"), false );
 		}
 
 		public static void ChangeEncoding_JIS( AppLogic app )
 		{
-			ChangeEncoding( app, Encoding.GetEncoding("iso-2022-jp") );
+			ChangeEncoding( app, Encoding.GetEncoding("iso-2022-jp"), false );
 		}
 
 		public static void ChangeEncoding_EUCJP( AppLogic app )
 		{
-			ChangeEncoding( app, Encoding.GetEncoding("EUC-JP") );
+			ChangeEncoding( app, Encoding.GetEncoding("EUC-JP"), false );
 		}
 
 		public static void ChangeEncoding_UTF8( AppLogic app )
 		{
-			ChangeEncoding( app, Encoding.UTF8 );
+			ChangeEncoding( app, Encoding.UTF8, false );
+		}
+
+		public static void ChangeEncoding_UTF8B( AppLogic app )
+		{
+			ChangeEncoding( app, Encoding.UTF8, true );
 		}
 
 		public static void ChangeEncoding_UTF16LE( AppLogic app )
 		{
-			ChangeEncoding( app, Encoding.Unicode );
+			ChangeEncoding( app, Encoding.Unicode, false );
+		}
+
+		public static void ChangeEncoding_UTF16LEB( AppLogic app )
+		{
+			ChangeEncoding( app, Encoding.Unicode, true );
 		}
 
 		public static void ChangeEncoding_UTF16BE( AppLogic app )
 		{
-			ChangeEncoding( app, Encoding.BigEndianUnicode );
+			ChangeEncoding( app, Encoding.BigEndianUnicode, false );
+		}
+
+		public static void ChangeEncoding_UTF16BEB( AppLogic app )
+		{
+			ChangeEncoding( app, Encoding.BigEndianUnicode, true );
 		}
 
 		/// <summary>
@@ -113,11 +128,12 @@ namespace Sgry.Ann
 		};
 		#endregion
 
-		static void ChangeEncoding( AppLogic app, Encoding enc )
+		static void ChangeEncoding( AppLogic app, Encoding enc, bool? withBom )
 		{
 			Document doc = app.ActiveDocument;
 
 			doc.Encoding = enc;
+			doc.WithBom = withBom ?? false;
 			if( enc != null && doc.FilePath != null )
 			{
 				DialogResult result = app.ConfirmReloadOrJustChangeEncoding(doc, enc);

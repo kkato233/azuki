@@ -1,3 +1,6 @@
+== 1.7.6 (2013-xx-xx) ==
+ * fix: [Ann] Reloading newly created document raises an exception
+
 == 1.7.5 (2013-02-17) ==
  * add: Added Action.TrimTrailingSpace which removes whitespaces from end of selected lines
  * add: Added Action.TrimLeadingSpace which removes whitespaces from beginning of selected lines

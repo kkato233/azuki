@@ -137,7 +137,15 @@ namespace Sgry.Ann
 					return;
 				}
 			}
-			app.ReloadDocument( app.ActiveDocument, enc, false );
+
+			if( app.ActiveDocument.FilePath != null )
+			{
+				app.ReloadDocument( app.ActiveDocument, enc, false );
+			}
+			else
+			{
+				app.MainForm.UpdateUI();
+			}
 		}
 	}
 }

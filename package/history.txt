@@ -1,4 +1,5 @@
 == 1.7.6 (2013-xx-xx) ==
+ * fix: Deleting a marked segment causes internal problem which may cause an exception
  * add: [Ann] Added UTF-8 + BOM, UTF-16LE + BOM, and UTF-16BE + BOM to encoding menu
  * fix: [Ann] Reloading newly created document raises an exception
 

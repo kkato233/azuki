@@ -1,6 +1,5 @@
 // file: DebugUtl.cs
 // brief: Sgry's utilities for debug
-// update: 2012-05-05
 //=========================================================
 using System;
 using System.IO;
@@ -144,6 +143,13 @@ namespace Sgry
 		{
 			if( !condition )
 				throw new AssertException( message );
+		}
+
+		[Conditional("DEBUG")]
+		public static void Assert( bool condition, string format, params object[] args )
+		{
+			if( !condition )
+				throw new AssertException( String.Format(format, args) );
 		}
 		#endregion
 	}

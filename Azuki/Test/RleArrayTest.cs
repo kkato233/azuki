@@ -1,4 +1,3 @@
-// 2011-09-23
 #if TEST
 using System;
 using System.Text;
@@ -212,53 +211,28 @@ namespace Sgry.Azuki.Test
 			RleArray<char> chars = new RleArray<char>();
 
 			{
-				try{ chars.RemoveAt(-1); throw new Exception(); }
+				// In a node
+				Set( chars, "aa" );
+				chars.RemoveAt( 0 );
+				TestUtl.AssertEquals( 1, chars.Count );
+				TestUtl.AssertEquals( "[1|a]", chars._Nodes.ToString() );
+				chars.RemoveAt( 0 );
+				TestUtl.AssertEquals( 0, chars.Count );
+				TestUtl.AssertEquals( "", chars._Nodes.ToString() );
+				try{ chars.RemoveAt(0); throw new Exception(); }
 				catch( Exception ex ){ TestUtl.AssertExceptionType<ArgumentOutOfRangeException>(ex); }
 
-				Set( chars, "aabb" );
-				chars.RemoveAt( 0 );
-				TestUtl.AssertEquals( 3, chars.Count );
-				TestUtl.AssertEquals( "a b b", chars.ToString() );
-
-				Set( chars, "aabb" );
-				chars.RemoveAt( 1 );
-				TestUtl.AssertEquals( 3, chars.Count );
-				TestUtl.AssertEquals( "a b b", chars.ToString() );
-
-				Set( chars, "aabb" );
-				chars.RemoveAt( 2 );
-				TestUtl.AssertEquals( 3, chars.Count );
-				TestUtl.AssertEquals( "a a b", chars.ToString() );
-
-				Set( chars, "aabb" );
+				// Removing a node
+				Set( chars, "aaabc" );
 				chars.RemoveAt( 3 );
-				TestUtl.AssertEquals( 3, chars.Count );
-				TestUtl.AssertEquals( "a a b", chars.ToString() );
+				TestUtl.AssertEquals( 4, chars.Count );
+				TestUtl.AssertEquals( "[3|a] [1|c]", chars._Nodes.ToString() );
 
-				try{ chars.RemoveAt(4); throw new Exception(); }
-				catch( Exception ex ){ TestUtl.AssertExceptionType<ArgumentOutOfRangeException>(ex); }
-			}
-				
-			{
-				Set( chars, "abc" );
-				chars.RemoveAt( 0 );
-				TestUtl.AssertEquals( 2, chars.Count );
-				TestUtl.AssertEquals( "b c", chars.ToString() );
-
-				Set( chars, "abc" );
-				chars.RemoveAt( 1 );
-				TestUtl.AssertEquals( 2, chars.Count );
-				TestUtl.AssertEquals( "a c", chars.ToString() );
-
-				Set( chars, "abc" );
+				// Combining nodes
+				Set( chars, "aabaa" );
 				chars.RemoveAt( 2 );
-				TestUtl.AssertEquals( 2, chars.Count );
-				TestUtl.AssertEquals( "a b", chars.ToString() );
-
-				Set( chars, "_A_" );
-				chars.RemoveAt( 1 );
-				TestUtl.AssertEquals( 2, chars.Count );
-				TestUtl.AssertEquals( "_ _", chars.ToString() );
+				TestUtl.AssertEquals( 4, chars.Count );
+				TestUtl.AssertEquals( "[4|a]", chars._Nodes.ToString() );
 			}
 		}
 		

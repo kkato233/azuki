@@ -308,7 +308,11 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection Method</seealso>
 		public int CaretIndex
 		{
-			get{ return _SelMan.CaretIndex; }
+			get
+			{
+				Debug.Assert( _SelMan.CaretIndex <= Length );
+				return _SelMan.CaretIndex;
+			}
 		}
 
 		/// <summary>
@@ -331,7 +335,11 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Document.SetSelection(int, int)">Document.SetSelection Method</seealso>
 		public int AnchorIndex
 		{
-			get{ return _SelMan.AnchorIndex; }
+			get
+			{
+				Debug.Assert( _SelMan.AnchorIndex <= Length );
+				return _SelMan.AnchorIndex;
+			}
 		}
 
 		/// <summary>
@@ -473,6 +481,9 @@ namespace Sgry.Azuki
 		public void GetSelection( out int begin, out int end )
 		{
 			_SelMan.GetSelection( out begin, out end );
+			DebugUtl.Assert( 0 <= begin && begin <= Length, "begin:{0}, Length:{1}", begin, Length );
+			DebugUtl.Assert( 0 <= end && end <= Length, "end:{0}, Length:{1}", end, Length );
+			DebugUtl.Assert( begin <= end, "begin:{0}, end:{1}", begin, end );
 		}
 
 		/// <summary>

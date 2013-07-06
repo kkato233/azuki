@@ -1,7 +1,5 @@
 ﻿// file: RleArray.cs
 // brief: Array of items which compresses contents with RLE compression method.
-// author: YAMAMOTO Suguru
-// update: 2011-09-23
 //=========================================================
 //#define RLE_ARRAY_ENABLE_SANITY_CHECK
 using System;
@@ -200,7 +198,7 @@ namespace Sgry.Azuki
 
 			__check_sanity__();
 		}
-		
+
 		/// <summary>
 		/// Removes an item at specified index.
 		/// </summary>
@@ -212,21 +210,21 @@ namespace Sgry.Azuki
 		{
 			if( index < 0 || _TotalCount <= index )
 				throw new ArgumentOutOfRangeException( "index",
-													   "Specified index is out of valid range."
-													   + " (index:"+index+", this.Count:"+Count+")" );
-			
+													   "Specified index is out of valid range. ("
+													   +"index:"+index+", this.Count:"+Count+")");
+
 			int nodeIndex;
 			int indexInNode;
-			
+
 			// find the node which contains the item at specified index
 			FindNodeIndex( index, out nodeIndex, out indexInNode );
-			
+
 			// if the node contains only the item to be removed,
 			// remove the node itself.
-			if( indexInNode <= 0 && _Nodes[indexInNode].Length <= 1 )
+			if( _Nodes[nodeIndex].Length <= 1 )
 			{
-				Debug.Assert( indexInNode == 0 );
-				Debug.Assert( _Nodes[indexInNode].Length == 1 );
+				DebugUtl.Assert( indexInNode == 0, "indexInNode must be 0 on this context but"
+								 + " actually {0}. Something is wrong...", indexInNode );
 				_Nodes.RemoveAt( nodeIndex );
 				if( 0 <= nodeIndex-1 && nodeIndex < _Nodes.Count
 					&& _Nodes[nodeIndex-1].Value.Equals(_Nodes[nodeIndex].Value) )
@@ -520,9 +518,9 @@ namespace Sgry.Azuki
 		void FindNodeIndex( int index, out int nodeIndex, out int indexInNode )
 		{
 			Debug.Assert( 0 <= index );
-			
+
 			int sum = 0;
-						
+
 			for( int i=0; i<_Nodes.Count; i++ )
 			{
 				Node node = _Nodes[i];
@@ -540,6 +538,7 @@ namespace Sgry.Azuki
 			indexInNode = -1;
 		}
 
+		[Conditional("TEST")]
 		[Conditional("RLE_ARRAY_ENABLE_SANITY_CHECK")]
 		void __check_sanity__()
 		{
@@ -548,6 +547,7 @@ namespace Sgry.Azuki
 			foreach( Node item in _Nodes )
 			{
 				count += item.Length;
+				Debug.Assert( 0 < item.Length );
 			}
 
 			Debug.Assert( count == _TotalCount );
@@ -555,14 +555,29 @@ namespace Sgry.Azuki
 
 		internal class Node
 		{
+			int _Length;
+			T _Value;
+
 			public Node( int length, T value )
 			{
 				Length = length;
 				Value = value;
 			}
 
-			public int Length;
-			public T Value;
+			public int Length
+			{
+				get{ return _Length; }
+				set
+				{
+					DebugUtl.Assert( 0 <= value, "RleArray<{0}>.Length must be more than 0 but actually {1}.", typeof(T).Name, Length );
+					_Length = value;
+				}
+			}
+			public T Value
+			{
+				get{ return _Value; }
+				set{ _Value = value; }
+			}
 
 			public override string ToString()
 			{

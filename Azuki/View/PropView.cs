@@ -410,13 +410,13 @@ namespace Sgry.Azuki
 			beginLineHead = GetLineHeadIndex( beginL );
 			if( beginLineHead < begin )
 			{
-				token = Document.GetTextInRange( ref beginLineHead, ref begin );
+				token = Document.GetTextInRangeRef( ref beginLineHead, ref begin );
 			}
 			
 			// calculate invalid rect
 			rect.X = MeasureTokenEndX( g, token, 0 );
 			rect.Y = YofLine( beginL );
-			token = Document.GetTextInRange( ref beginLineHead, ref end );
+			token = Document.GetTextInRangeRef( ref beginLineHead, ref end );
 			rect.Width = MeasureTokenEndX( g, token, 0 ) - rect.X;
 			rect.Height = LineSpacing;
 
@@ -646,12 +646,12 @@ namespace Sgry.Azuki
 			string textSelected;
 
 			// calculate position of the invalid rect
-			textBeforeSelBegin = Document.GetTextInRange( ref beginLineHead, ref begin );
+			textBeforeSelBegin = Document.GetTextInRangeRef( ref beginLineHead, ref begin );
 			rect.X = MeasureTokenEndX( g, textBeforeSelBegin, 0 );
 			rect.Y = YofLine( beginL );
 
 			// calculate width and height of the invalid rect
-			textSelected = Document.GetTextInRange( ref begin, ref end );
+			textSelected = Document.GetTextInRangeRef( ref begin, ref end );
 			rect.Width = MeasureTokenEndX( g, textSelected, rect.X ) - rect.X;
 			rect.Height = LineSpacing;
 			Debug.Assert( 0 <= rect.Width );
@@ -851,7 +851,7 @@ namespace Sgry.Azuki
 				&& end != -1 ) // or reaches the end of text
 			{
 				// get this token
-				token = Document.GetTextInRange( ref begin, ref end );
+				token = Document.GetTextInRangeRef( ref begin, ref end );
 				DebugUtl.Assert( 0 < token.Length );
 
 				// calc next drawing pos before drawing text

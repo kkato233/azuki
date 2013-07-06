@@ -1,7 +1,5 @@
 // file: PropWrapView.cs
 // brief: Platform independent view (proportional, line-wrap).
-// author: YAMAMOTO Suguru
-// update: 2011-09-11
 //=========================================================
 //DEBUG//#define PLHI_DEBUG
 //DEBUG//#define DRAW_SLOWLY
@@ -665,7 +663,7 @@ namespace Sgry.Azuki
 				}
 
 				// get next segment
-				string str = doc.GetTextInRange( ref begin, ref end );
+				string str = doc.GetTextInRangeRef( ref begin, ref end );
 				x = MeasureTokenEndX( g, str, x, TextAreaWidth, out drawableLen );
 
 				// can this segment be written in this screen line?
@@ -858,7 +856,7 @@ namespace Sgry.Azuki
 			while( end <= lineEnd && end != -1 )
 			{
 				// get this token
-				token = Document.GetTextInRange( ref begin, ref end );
+				token = Document.GetTextInRangeRef( ref begin, ref end );
 				Debug.Assert( 0 < token.Length, "@View.Paint. NextPaintToken returns empty range." );
 
 				// calc next drawing pos before drawing text

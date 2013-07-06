@@ -613,7 +613,7 @@ namespace Sgry.Azuki
 				return String.Empty;
 			}
 
-			return GetTextInRange( ref begin, ref end );
+			return GetTextInRangeRef( ref begin, ref end );
 		}
 
 		/// <summary>
@@ -805,14 +805,13 @@ namespace Sgry.Azuki
 		///   given range will be automatically expanded to avoid dividing the pair.
 		///   </para>
 		///   <para>
-		///   If expanded range is needed, use
-		///   <see cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">another overload</see>.
+		///   If expanded range is needed, use <see cref="Sgry.Azuki.Document.GetTextInRangeRef"/>.
 		///   </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(ref int, ref int)">Document.GetTextInRange(ref int, ref int) method</seealso>.
+		/// <seealso cref="Sgry.Azuki.Document.GetTextInRangeRef"/>
 		public string GetTextInRange( int begin, int end )
 		{
-			return GetTextInRange( ref begin, ref end );
+			return GetTextInRangeRef( ref begin, ref end );
 		}
 
 		/// <summary>
@@ -831,7 +830,7 @@ namespace Sgry.Azuki
 		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.GetTextInRange(int, int)">Document.GetTextInRange(int, int) method</seealso>.
-		public string GetTextInRange( ref int begin, ref int end )
+		public string GetTextInRangeRef( ref int begin, ref int end )
 		{
 			if( end < 0 || _Buffer.Count < end )
 				throw new ArgumentOutOfRangeException( "end", "Invalid index was given (end:"+end+", this.Length:"+Length+")." );

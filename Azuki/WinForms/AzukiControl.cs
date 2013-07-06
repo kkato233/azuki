@@ -2521,7 +2521,7 @@ namespace Sgry.Azuki.WinForms
 				}
 
 				// get selected text
-				stringBody = Document.GetTextInRange( ref selBegin, ref end );
+				stringBody = Document.GetTextInRangeRef( ref selBegin, ref end );
 				stringBodyIndex = selBegin;
 			}
 			else
@@ -2540,7 +2540,7 @@ namespace Sgry.Azuki.WinForms
 				end = Math.Min( selBegin + (MaxRangeLength / 2), lineEndIndex );
 
 				// get current line content
-				stringBody = Document.GetTextInRange( ref begin, ref end );
+				stringBody = Document.GetTextInRangeRef( ref begin, ref end );
 				stringBodyIndex = begin;
 			}
 

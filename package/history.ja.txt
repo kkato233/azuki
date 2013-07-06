@@ -1,4 +1,5 @@
 == 1.7.6 (2013-xx-xx) ==
+ * add: AzukiControl (IUserInterface) に VScroll イベントと HScroll イベントを追加
  * mod: Document.GetTextInRangeの参照渡し版をDocument.GetTextInRangeRefに名前を変更（こうしないとVB.NETから呼べないため）
  * fix: マークした箇所を削除すると内部的な異常状態になり例外を誘発する問題を修正
  * add: [Ann] 文字コードメニューにUTF-8 + BOM, UTF-16LE + BOM, UTF-16BE + BOM を追加

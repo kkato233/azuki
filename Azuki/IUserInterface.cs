@@ -822,6 +822,26 @@ namespace Sgry.Azuki
 		/// Invokes LineDrawn event.
 		/// </summary>
 		bool InvokeLineDrawn( IGraphics g, int lineIndex, Point pos );
+
+		/// <summary>
+		/// Occurres after vertical scroll happened.
+		/// </summary>
+		event EventHandler VScroll;
+
+		/// <summary>
+		/// (Internal use only.) Invokes VScroll event.
+		/// </summary>
+		void InvokeVScroll();
+
+		/// <summary>
+		/// Occurres after vertical scroll happened.
+		/// </summary>
+		event EventHandler HScroll;
+
+		/// <summary>
+		/// (Internal use only.) Invokes HScroll event.
+		/// </summary>
+		void InvokeHScroll();
 		#endregion
 
 		#region Scroll

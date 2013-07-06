@@ -1140,6 +1140,8 @@ namespace Sgry.Azuki
 			{
 				delta = lineDelta;
 			}
+			if( delta == 0 )
+				return;
 
 			// make clipping rectangle
 			clipRect = new Rectangle( 0, YofTextArea, _VisibleSize.Width, _VisibleSize.Height );
@@ -1148,6 +1150,8 @@ namespace Sgry.Azuki
 			FirstVisibleLine += delta;
 			_UI.Scroll( clipRect, 0, -(delta * LineSpacing) );
 			_UI.UpdateCaretGraphic();
+
+			_UI.InvokeVScroll();
 		}
 
 		/// <summary>
@@ -1206,6 +1210,8 @@ namespace Sgry.Azuki
 			// do scroll
 			ScrollPosX += deltaInPx;
 			_UI.Scroll( clipRect, -deltaInPx, 0 );
+
+			_UI.InvokeHScroll();
 		}
 
 		/// <summary>

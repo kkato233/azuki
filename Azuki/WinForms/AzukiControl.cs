@@ -1937,6 +1937,34 @@ namespace Sgry.Azuki.WinForms
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Occurres after vertical scroll happened.
+		/// </summary>
+		public event EventHandler VScroll;
+
+		/// <summary>
+		/// Invokes VScroll event.
+		/// </summary>
+		public void InvokeVScroll()
+		{
+			if( VScroll != null )
+				VScroll( this, EventArgs.Empty );
+		}
+
+		/// <summary>
+		/// Occurres after norizontal scroll happened.
+		/// </summary>
+		public event EventHandler HScroll;
+
+		/// <summary>
+		/// Invokes HScroll event.
+		/// </summary>
+		public void InvokeHScroll()
+		{
+			if( HScroll != null )
+				HScroll( this, EventArgs.Empty );
+		}
 		#endregion
 
 		#region IUserInterface - Scroll

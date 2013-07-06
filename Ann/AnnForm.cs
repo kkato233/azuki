@@ -157,24 +157,20 @@ namespace Sgry.Ann
 					_Status_SelectionMode.Text = "";
 					break;
 			}
-			_Status_InsertionMode.Text = (Azuki.IsOverwriteMode)
-										 ? "O/W"
-										 : "Ins";
+			_Status_InsertionMode.Text = (Azuki.IsOverwriteMode) ? "O/W"
+																 : "Ins";
 			_Azuki_CaretMoved( this, EventArgs.Empty ); // update caret pos
 #			endif
 
 			// apply read-only mode
 			_MI_File_ReadOnly.Checked = readOnly;
-			_MI_File_Save.Enabled
-				= _MI_Edit_Undo.Enabled
-				= _MI_Edit_Redo.Enabled
-				= _MI_Edit_Cut.Enabled
-				= _MI_Edit_Paste.Enabled = !readOnly;
+			_MI_File_Save.Enabled = _MI_Edit_Undo.Enabled
+								  = _MI_Edit_Redo.Enabled
+								  = _MI_Edit_Cut.Enabled
+								  = _MI_Edit_Paste.Enabled = !readOnly;
 
 			// apply wrap-line mode
-			_MI_View_WrapLines.Checked
-				= (_Azuki.ViewType == ViewType.WrappedProportional)
-				? true : false;
+			_MI_View_WrapLines.Checked = (_Azuki.ViewType == ViewType.WrappedProportional);
 
 			// update radio check of EOL code menu items
 			if( _Azuki.Document.EolCode == "\r\n" )
@@ -416,7 +412,29 @@ namespace Sgry.Ann
 		#region GUI Event Handlers
 		void _MI_File_Popup( object sender, EventArgs e )
 		{
+			// Make the 'save' menu item disabled if it's not modified
 			_MI_File_Save.Enabled = _Azuki.Document.IsDirty;
+
+			// Refresh MRU menu items
+			_MI_File_Mru.MenuItems.Clear();
+			for( int i=0; i<AppConfig.MruFiles.Count; i++ )
+			{
+				_MI_File_Mru.MenuItems.Add( "&" + i + " " + AppConfig.MruFiles[i].Path,
+											_MI_File_Mru_Foo_Clicked );
+			}
+			_MI_File_Mru.Enabled = (0 < _MI_File_Mru.MenuItems.Count);
+		}
+
+		void _MI_File_Mru_Foo_Clicked( object sender, EventArgs e )
+		{
+			for( int i=0; i<_MI_File_Mru.MenuItems.Count; i++ )
+			{
+				if( _MI_File_Mru.MenuItems[i] == sender )
+				{
+					_App.OpenDocument( AppConfig.MruFiles[i].Path );
+					break;
+				}
+			}
 		}
 
 		void _MI_Edit_Popup( object sender, EventArgs e )
@@ -714,6 +732,8 @@ namespace Sgry.Ann
 			_MI_File.MenuItems.Add( _MI_File_Sep1 );
 			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
 			_MI_File.MenuItems.Add( _MI_File_Sep2 );
+			_MI_File.MenuItems.Add( _MI_File_Mru );
+			_MI_File.MenuItems.Add( _MI_File_Sep3 );
 			_MI_File.MenuItems.Add( _MI_File_Exit );
 
 			_MI_Edit.MenuItems.Add( _MI_Edit_Undo );
@@ -785,6 +805,8 @@ namespace Sgry.Ann
 			_MI_File_Sep1.Text = "-";
 			_MI_File_ReadOnly.Text = "Read onl&y";
 			_MI_File_Sep2.Text = "-";
+			_MI_File_Mru.Text = "Recent &files";
+			_MI_File_Sep3.Text = "-";
 			_MI_File_Exit.Text = "E&xit";
 			_MI_Edit.Text = "&Edit";
 			_MI_Edit_Undo.Text = "&Undo";
@@ -926,6 +948,8 @@ namespace Sgry.Ann
 		MenuItem _MI_File_Sep1		= new MenuItem();
 		MenuItem _MI_File_ReadOnly	= new MenuItem();
 		MenuItem _MI_File_Sep2		= new MenuItem();
+		MenuItem _MI_File_Mru		= new MenuItem();
+		MenuItem _MI_File_Sep3		= new MenuItem();
 		MenuItem _MI_File_Exit		= new MenuItem();
 		MenuItem _MI_Edit			= new MenuItem();
 		MenuItem _MI_Edit_Undo		= new MenuItem();

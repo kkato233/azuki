@@ -35,6 +35,7 @@ namespace Sgry.Ann
 		public static bool ConvertsFullWidthSpaceToSpace = true;
 		public static HRulerIndicatorType HRulerIndicatorType = HRulerIndicatorType.Segment;
 		public static bool ScrollsBeyondLastLine = true;
+		public static MruFileList MruFiles = new MruFileList();
 		public static Ini Ini = new Ini();
 
 		/// <summary>
@@ -76,6 +77,7 @@ namespace Sgry.Ann
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
 				AppConfig.HRulerIndicatorType		= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
 				AppConfig.ScrollsBeyondLastLine		= Ini.Get( "Default", "ScrollsBeyondLastLine", true );
+				AppConfig.MruFiles.Load( Ini.Get("Default", "Mru", "") );
 
 				UserPref.Antialias					= Ini.Get( "Default", "Antialias", UserPref.Antialias );
 				UserPref.AutoScrollMargin			= Ini.Get( "Default", "AutoScrollMargin", UserPref.AutoScrollMargin );
@@ -118,6 +120,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );
 				Ini.Set( "Default", "HRulerIndicatorType",		AppConfig.HRulerIndicatorType );
 				Ini.Set( "Default", "ScrollsBeyondLastLine",	AppConfig.ScrollsBeyondLastLine );
+				Ini.Set( "Default", "Mru",						AppConfig.MruFiles.ToString() );
 				Ini.Set( "Default", "Antialias",				UserPref.Antialias );
 
 				Ini.Save( IniFilePath, Encoding.UTF8, "\r\n" );

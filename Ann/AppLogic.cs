@@ -509,6 +509,8 @@ namespace Sgry.Ann
 		public void OpenDocument( string filePath )
 		{
 			Document doc;
+			MruFile mru;
+			int initialLine=0, initialColumn=0;
 
 			// if specified file was already opened, just return the document
 			foreach( Document d in Documents )
@@ -516,6 +518,8 @@ namespace Sgry.Ann
 				if( String.Compare(d.FilePath, filePath, true) == 0 )
 				{
 					ActiveDocument = d;
+					d.GetLineColumnIndexFromCharIndex( d.CaretIndex, out initialLine, out initialColumn );
+					AppConfig.MruFiles.Put( d.FilePath, initialLine, initialColumn );
 					return;
 				}
 			}
@@ -533,10 +537,19 @@ namespace Sgry.Ann
 				AddDocument( doc );
 			}
 
+			// If this file was recently opened, use restore editing state
+			if( AppConfig.MruFiles.TryGet(filePath, out mru) )
+			{
+				initialLine = mru.LineIndex;
+				initialColumn = mru.ColumnIndex;
+			}
+			AppConfig.MruFiles.Put( filePath );
+
 			// activate it
 			ActiveDocument = doc;
 			SetFileType( doc, FileType.GetFileTypeByFileName(filePath) );
-			MainForm.Azuki.SetSelection( 0, 0 );
+			doc.SetCaretIndex( initialLine, initialColumn );
+			MainForm.Azuki.SetSelection( doc.CaretIndex, doc.CaretIndex ); // set desired column
 			MainForm.Azuki.ScrollToCaret();
 		}
 
@@ -760,6 +773,7 @@ namespace Sgry.Ann
 		public void CloseDocument( Document doc )
 		{
 			DialogResult result;
+			int line, column;
 
 			// confirm to discard modification
 			if( doc.IsDirty )
@@ -774,6 +788,10 @@ namespace Sgry.Ann
 					return;
 				}
 			}
+
+			// Record current editing state
+			doc.GetLineColumnIndexFromCharIndex( doc.CaretIndex, out line, out column );
+			AppConfig.MruFiles.Put( doc.FilePath, line, column );
 
 			// close
 			RemoveDocument( doc );
@@ -1148,6 +1166,15 @@ namespace Sgry.Ann
 
 		void MainForm_Closed( object sender, EventArgs e )
 		{
+			// Record current editing state
+			foreach( Document doc in Documents )
+			{
+				int line, column;
+				doc.GetLineColumnIndexFromCharIndex( doc.CaretIndex, out line, out column );
+				AppConfig.MruFiles.Put( doc.FilePath, line, column );
+			}
+
+			// Save all configurations
 			SaveConfig();
 		}
 

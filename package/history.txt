@@ -2,6 +2,7 @@
  * add: Added VScroll event and HScroll event for AzukiControl (IUserInterface)
  * mod: Renamed Document.GetTextInRange(ref int, ref int) to Document.GetTextInRangeRef so that VB.NET can call the method correctly.
  * fix: Deleting a marked segment causes internal problem which may cause an exception
+ * add: [Ann] Now Ann remembers recently opened file's path and caret position
  * add: [Ann] Added UTF-8 + BOM, UTF-16LE + BOM, and UTF-16BE + BOM to encoding menu
  * fix: [Ann] Reloading newly created document raises an exception
 

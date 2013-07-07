@@ -1,4 +1,4 @@
-== 1.7.6 (2013-xx-xx) ==
+== 1.7.6 (2013-07-07) ==
  * add: Added VScroll event and HScroll event for AzukiControl (IUserInterface)
  * mod: Renamed Document.GetTextInRange(ref int, ref int) to Document.GetTextInRangeRef so that VB.NET can call the method correctly.
  * fix: Deleting a marked segment causes internal problem which may cause an exception

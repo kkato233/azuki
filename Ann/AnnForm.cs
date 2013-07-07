@@ -419,8 +419,10 @@ namespace Sgry.Ann
 			_MI_File_Mru.MenuItems.Clear();
 			for( int i=0; i<AppConfig.MruFiles.Count; i++ )
 			{
-				_MI_File_Mru.MenuItems.Add( "&" + i + " " + AppConfig.MruFiles[i].Path,
-											_MI_File_Mru_Foo_Clicked );
+				MenuItem mi = new MenuItem();
+				mi.Text = "&" + i + " " + AppConfig.MruFiles[i].Path;
+				mi.Click += _MI_File_Mru_Foo_Clicked;
+				_MI_File_Mru.MenuItems.Add( mi );
 			}
 			_MI_File_Mru.Enabled = (0 < _MI_File_Mru.MenuItems.Count);
 		}

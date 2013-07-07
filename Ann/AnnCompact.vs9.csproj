@@ -62,6 +62,7 @@
     <Compile Include="GotoForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Mru.cs" />
     <Compile Include="MyMutex.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Actions.File.cs" />

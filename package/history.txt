@@ -1,3 +1,6 @@
+== 1.7.7 (2013-xx-xx) ==
+ * fix: [Ann] Now newly created documents never be recorded in MRU history (recently opened documents.)
+
 == 1.7.6 (2013-07-07) ==
  * add: Added VScroll event and HScroll event for AzukiControl (IUserInterface)
  * mod: Renamed Document.GetTextInRange(ref int, ref int) to Document.GetTextInRangeRef so that VB.NET can call the method correctly.

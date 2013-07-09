@@ -28,6 +28,9 @@ namespace Sgry.Ann
 
 		public void Put( string path, int line, int column )
 		{
+			if( String.IsNullOrEmpty(path) )
+				return;
+
 			// Remove existing its record if exists
 			for( int i=0; i<Count; i++ )
 			{

@@ -1,3 +1,6 @@
+== 1.7.7 (2013-xx-xx) ==
+ * fix: [Ann] 最近開いたファイルの場所として未保存ドキュメントの履歴が残ってしまう問題を修正
+
 == 1.7.6 (2013-07-07) ==
  * add: AzukiControl (IUserInterface) に VScroll イベントと HScroll イベントを追加
  * mod: Document.GetTextInRangeの参照渡し版をDocument.GetTextInRangeRefに名前を変更（こうしないとVB.NETから呼べないため）

@@ -1,4 +1,5 @@
 == 1.7.7 (2013-xx-xx) ==
+ * fix: Built-in diff highlighter highlights a line like "+    aaa:" not as a inserted line but as a comment line
  * fix: [Ann] Now newly created documents never be recorded in MRU history (recently opened documents.)
 
 == 1.7.6 (2013-07-07) ==

@@ -16,7 +16,7 @@ namespace Sgry.Azuki.Highlighter
 			AddRegex( @"^[<+](?!\+\+ ).*", CharClass.AddedLine );
 			AddRegex( @"^[>-](?!-- ).*", CharClass.RemovedLine );
 			AddRegex( @"^!.*$", CharClass.ChangedLine );
-			AddRegex( @"^[^- :I][^ :]+:.*", CharClass.Comment );
+			AddRegex( @"^[^-+ :I][^ :]+:.*", CharClass.Comment );
 		}
 
 		public override void Highlight( Document doc,

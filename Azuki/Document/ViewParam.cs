@@ -45,7 +45,7 @@ namespace Sgry.Azuki
 		/// <summary>Ending position of the range which was already highlighted.</summary>
 		public int H_ValidRangeEnd = 0;
 		/// <summary>Index of the bracket at caret position used to redraw (erase) previously highlighted bracket.</summary>
-		public int MatchedBracketIndex1 = 0;
+		public int MatchedBracketIndex1 = -1;
 		/// <summary>Index of the lastly found matched bracket used to redraw previously highlighted bracket.</summary>
 		public int MatchedBracketIndex2 = -1;
 		/// <summary>Whether to mark URIs in the document with built-in URI marker or not.</summary>

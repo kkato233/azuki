@@ -1,6 +1,7 @@
 == 1.7.7 (2013-xx-xx) ==
  * fix: Under rare condition, the very first character in a newly opened document will be highlighted as a "matched bracket."
  * fix: Built-in diff highlighter highlights a line like "+    aaa:" not as a inserted line but as a comment line
+ * fix: Nested call of group UNDO (Document.BeginUndo and Document.EndUndo) does not work properly
  * fix: [Ann] Now newly created documents never be recorded in MRU history (recently opened documents.)
 
 == 1.7.6 (2013-07-07) ==

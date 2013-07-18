@@ -138,6 +138,7 @@ namespace Sgry.Azuki.Test
 			{
 				EditHistory history = new EditHistory();
 				history.EndUndo();
+				history.EndUndo();
 			}
 
 			// double call of begin
@@ -151,6 +152,7 @@ namespace Sgry.Azuki.Test
 			// double call of end
 			{
 				EditHistory history = new EditHistory();
+				history.BeginUndo();
 				history.EndUndo();
 				history.EndUndo();
 			}
@@ -226,6 +228,32 @@ namespace Sgry.Azuki.Test
 				TestUtl.AssertEquals( "aYbc", doc.Text );
 				doc.EndUndo();
 				TestUtl.AssertEquals( "aYbc", doc.Text );
+			}
+
+			// Nested call of group undo
+			{
+				Document doc = new Document();
+				doc.Replace( "a", doc.Length, doc.Length );
+				doc.BeginUndo();
+				doc.Replace( "b", doc.Length, doc.Length );
+				doc.BeginUndo();
+				doc.Replace( "c", doc.Length, doc.Length );
+				doc.EndUndo();
+				doc.Replace( "d", doc.Length, doc.Length );
+				doc.EndUndo();
+				TestUtl.AssertEquals( "abcd", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "a", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "", doc.Text );
+				doc.Undo();
+				TestUtl.AssertEquals( "", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "a", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "abcd", doc.Text );
+				doc.Redo();
+				TestUtl.AssertEquals( "abcd", doc.Text );
 			}
 		}
 

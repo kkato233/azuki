@@ -3,6 +3,7 @@
  * fix: Built-in diff highlighter highlights a line like "+    aaa:" not as a inserted line but as a comment line
  * fix: Nested call of group UNDO (Document.BeginUndo and Document.EndUndo) does not work properly
  * fix: [Ann] Now newly created documents never be recorded in MRU history (recently opened documents.)
+ * fix: [Ann] An exception occures on opening a file if recorded caret position was invalid in the file
 
 == 1.7.6 (2013-07-07) ==
  * add: Added VScroll event and HScroll event for AzukiControl (IUserInterface)

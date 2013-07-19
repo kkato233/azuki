@@ -540,8 +540,8 @@ namespace Sgry.Ann
 			// If this file was recently opened, use restore editing state
 			if( AppConfig.MruFiles.TryGet(filePath, out mru) )
 			{
-				initialLine = mru.LineIndex;
-				initialColumn = mru.ColumnIndex;
+				initialLine = Math.Min( mru.LineIndex, doc.LineCount-1 );
+				initialColumn = Math.Min( mru.ColumnIndex, doc.GetLineLength(initialLine) );
 			}
 			AppConfig.MruFiles.Put( filePath );
 

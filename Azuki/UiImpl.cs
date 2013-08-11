@@ -1252,6 +1252,7 @@ namespace Sgry.Azuki
 		public void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Debug.Assert( _IsDisposed == false );
+			ViewParam param = Document.ViewParam;
 
 			// delegate to marker objects
 			if( _Document.MarksUri )
@@ -1267,23 +1268,18 @@ namespace Sgry.Azuki
 			_UI.UpdateCaretGraphic();
 
 			// update matched bracket positions
-			if( e.Index + e.OldText.Length < _Document.ViewParam.IndexOfBracketBeforeCaret )
+			for( int i=0; i<param.MatchedBracketIndexes.Length; i++ )
 			{
-				_Document.ViewParam.IndexOfBracketBeforeCaret =
-					_Document.ViewParam.IndexOfBracketBeforeCaret - e.OldText.Length + e.NewText.Length;
-			}
-			else if( e.Index <= _Document.ViewParam.IndexOfBracketBeforeCaret )
-			{
-				_Document.ViewParam.IndexOfBracketBeforeCaret = e.Index + e.NewText.Length;
-			}
-			if( e.Index + e.OldText.Length < _Document.ViewParam.IndexOfMatchedBracketBeforeCaret )
-			{
-				_Document.ViewParam.IndexOfMatchedBracketBeforeCaret =
-					_Document.ViewParam.IndexOfMatchedBracketBeforeCaret - e.OldText.Length + e.NewText.Length;
-			}
-			else if( e.Index <= _Document.ViewParam.IndexOfMatchedBracketBeforeCaret )
-			{
-				_Document.ViewParam.IndexOfMatchedBracketBeforeCaret = e.Index + e.NewText.Length;
+				if( e.Index + e.OldText.Length < param.MatchedBracketIndexes[i] )
+				{
+					param.MatchedBracketIndexes[i] = param.MatchedBracketIndexes[i]
+													 - e.OldText.Length
+													 + e.NewText.Length;
+				}
+				else if( e.Index <= param.MatchedBracketIndexes[i] )
+				{
+					param.MatchedBracketIndexes[i] = e.Index + e.NewText.Length;
+				}
 			}
 			UpdateMatchedBracketPosition();
 
@@ -1291,7 +1287,6 @@ namespace Sgry.Azuki
 			_UI.UpdateScrollBarRange();
 
 			// update range of text which should be highlighted
-			ViewParam param = Document.ViewParam;
 			if( e.Index < param.H_InvalidRangeBegin )
 			{
 				param.H_InvalidRangeBegin = e.Index;
@@ -1323,18 +1318,27 @@ namespace Sgry.Azuki
 
 		void UpdateMatchedBracketPosition()
 		{
+			UpdateMatchedBracketPosition( _Document.CaretIndex, true );
+			UpdateMatchedBracketPosition( _Document.CaretIndex-1, false );
+		}
+
+		void UpdateMatchedBracketPosition( int bracketIndex, bool afterCaret )
+		{
+			ViewParam param = _Document.ViewParam;
+			int offset = afterCaret ? 0 : 2;
+
 			// Reset matched bracket positions
-			int oldIbbc = _Document.ViewParam.IndexOfBracketBeforeCaret;
-			int oldImbbc = _Document.ViewParam.IndexOfMatchedBracketBeforeCaret;
-			_Document.ViewParam.IndexOfBracketBeforeCaret = -1;
-			_Document.ViewParam.IndexOfMatchedBracketBeforeCaret = -1;
+			int oldIbbc = param.MatchedBracketIndexes[offset];
+			int oldImbbc = param.MatchedBracketIndexes[offset+1];
+			param.MatchedBracketIndexes[offset] = -1;
+			param.MatchedBracketIndexes[offset+1] = -1;
 			if( View.HighlightsMatchedBracket == false )
 			{
 				return;
 			}
 
 			// Find matched brackets
-			int newIbbc = _Document.CaretIndex;
+			int newIbbc = bracketIndex;
 			int newImbbc = _Document.FindMatchedBracket( newIbbc, MaxMatchedBracketSearchLength );
 
 			// Update matched bracket positions and graphics
@@ -1354,9 +1358,9 @@ namespace Sgry.Azuki
 					View.Invalidate( newImbbc, newImbbc+1 );
 
 				// Update matched bracket positions
-				_Document.ViewParam.IndexOfMatchedBracketBeforeCaret = newImbbc;
+				param.MatchedBracketIndexes[offset+1] = newImbbc;
 				if( 0 <= newImbbc )
-					_Document.ViewParam.IndexOfBracketBeforeCaret = newIbbc;
+					param.MatchedBracketIndexes[offset] = newIbbc;
 			}
 		}
 		#endregion

@@ -44,10 +44,9 @@ namespace Sgry.Azuki
 		public int H_ValidRangeBegin = 0;
 		/// <summary>Ending position of the range which was already highlighted.</summary>
 		public int H_ValidRangeEnd = 0;
-		/// <summary>Index of a bracket before the caret.</summary>
-		public int IndexOfBracketBeforeCaret = -1;
-		/// <summary>Index of a counterpart of a bracket before the caret.</summary>
-		public int IndexOfMatchedBracketBeforeCaret = -1;
+		/// <summary>Index of a matched brackets; Index of a bracket after caret, counterpart of
+		/// it, a bracket before caret, and counterpart of it.</summary>
+		public readonly int[] MatchedBracketIndexes = {-1, -1, -1, -1};
 		/// <summary>Whether to mark URIs in the document with built-in URI marker or not.</summary>
 		public bool MarksUri = false;
 		#endregion

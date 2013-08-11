@@ -2330,29 +2330,28 @@ namespace Sgry.Azuki
 			bool isOpenBracket = false;
 			int depth;
 
-			// if given index is the end position,
-			// there is no char at the index so search must be fail
+			// Quit searching; there is no matched bracket if given index is the end position
 			if( Length == index || IsCDATA(index) )
 			{
 				return -1;
 			}
 
-			// get the bracket and its pair
+			// Get the bracket and its pair
 			bracket = this[index];
 			pairBracket = '\0';
 			for( int i=0; i<_PairBracketTable.Length; i++ )
 			{
 				if( bracket == _PairBracketTable[i] )
 				{
-					if( (i % 2) == 0 )
+					if( (i & 0x01) == 0 )
 					{
-						// found bracket is an opener. get paired closer
+						// Found bracket is an opener. get paired closer
 						pairBracket = _PairBracketTable[i+1];
 						isOpenBracket = true;
 					}
 					else
 					{
-						// found bracket is a closer. get paired opener
+						// Found bracket is a closer. get paired opener
 						pairBracket = _PairBracketTable[i-1];
 						isOpenBracket = false;
 					}
@@ -2887,8 +2886,7 @@ namespace Sgry.Azuki
 		{
 			Debug.Assert( 0 <= index && index < Length );
 
-			if( index == ViewParam.IndexOfMatchedBracketBeforeCaret
-				|| index == ViewParam.IndexOfBracketBeforeCaret )
+			if( 0 <= Array.IndexOf(ViewParam.MatchedBracketIndexes, index) )
 			{
 				return true;
 			}

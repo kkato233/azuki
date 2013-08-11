@@ -1267,23 +1267,23 @@ namespace Sgry.Azuki
 			_UI.UpdateCaretGraphic();
 
 			// update matched bracket positions
-			if( e.Index + e.OldText.Length < _Document.ViewParam.MatchedBracketIndex1 )
+			if( e.Index + e.OldText.Length < _Document.ViewParam.IndexOfBracketBeforeCaret )
 			{
-				_Document.ViewParam.MatchedBracketIndex1 =
-					_Document.ViewParam.MatchedBracketIndex1 - e.OldText.Length + e.NewText.Length;
+				_Document.ViewParam.IndexOfBracketBeforeCaret =
+					_Document.ViewParam.IndexOfBracketBeforeCaret - e.OldText.Length + e.NewText.Length;
 			}
-			else if( e.Index <= _Document.ViewParam.MatchedBracketIndex1 )
+			else if( e.Index <= _Document.ViewParam.IndexOfBracketBeforeCaret )
 			{
-				_Document.ViewParam.MatchedBracketIndex1 = e.Index + e.NewText.Length;
+				_Document.ViewParam.IndexOfBracketBeforeCaret = e.Index + e.NewText.Length;
 			}
-			if( e.Index + e.OldText.Length < _Document.ViewParam.MatchedBracketIndex2 )
+			if( e.Index + e.OldText.Length < _Document.ViewParam.IndexOfMatchedBracketBeforeCaret )
 			{
-				_Document.ViewParam.MatchedBracketIndex2 =
-					_Document.ViewParam.MatchedBracketIndex2 - e.OldText.Length + e.NewText.Length;
+				_Document.ViewParam.IndexOfMatchedBracketBeforeCaret =
+					_Document.ViewParam.IndexOfMatchedBracketBeforeCaret - e.OldText.Length + e.NewText.Length;
 			}
-			else if( e.Index <= _Document.ViewParam.MatchedBracketIndex2 )
+			else if( e.Index <= _Document.ViewParam.IndexOfMatchedBracketBeforeCaret )
 			{
-				_Document.ViewParam.MatchedBracketIndex2 = e.Index + e.NewText.Length;
+				_Document.ViewParam.IndexOfMatchedBracketBeforeCaret = e.Index + e.NewText.Length;
 			}
 			UpdateMatchedBracketPosition();
 
@@ -1323,40 +1323,40 @@ namespace Sgry.Azuki
 
 		void UpdateMatchedBracketPosition()
 		{
-			// reset matched bracket positions
-			int oldMbi1 = _Document.ViewParam.MatchedBracketIndex1;
-			int oldMbi2 = _Document.ViewParam.MatchedBracketIndex2;
-			_Document.ViewParam.MatchedBracketIndex1 = -1;
-			_Document.ViewParam.MatchedBracketIndex2 = -1;
+			// Reset matched bracket positions
+			int oldIbbc = _Document.ViewParam.IndexOfBracketBeforeCaret;
+			int oldImbbc = _Document.ViewParam.IndexOfMatchedBracketBeforeCaret;
+			_Document.ViewParam.IndexOfBracketBeforeCaret = -1;
+			_Document.ViewParam.IndexOfMatchedBracketBeforeCaret = -1;
 			if( View.HighlightsMatchedBracket == false )
 			{
 				return;
 			}
 
-			// find matched bracket
-			int newMbi1 = _Document.CaretIndex;
-			int newMbi2 = _Document.FindMatchedBracket( newMbi1, MaxMatchedBracketSearchLength );
+			// Find matched brackets
+			int newIbbc = _Document.CaretIndex;
+			int newImbbc = _Document.FindMatchedBracket( newIbbc, MaxMatchedBracketSearchLength );
 
-			// update matched bracket positions and graphics
-			if( (0 <= newMbi2) != (0 <= oldMbi2) // ON --> OFF, OFF --> ON
-				|| (0 <= newMbi1 && 0 <= newMbi2) ) // ON --> ON
+			// Update matched bracket positions and graphics
+			if( (0 <= newImbbc) != (0 <= oldImbbc) // ON --> OFF, OFF --> ON
+				|| (0 <= newIbbc && 0 <= newImbbc) ) // ON --> ON
 			{
-				// erase old matched bracket
-				if( 0 <= oldMbi1 && oldMbi1+1 <= Document.Length )
-					View.Invalidate( oldMbi1, oldMbi1+1 );
-				if( 0 <= oldMbi2 && oldMbi2+1 <= Document.Length )
-					View.Invalidate( oldMbi2, oldMbi2+1 );
+				// Erase old matched bracket highlight
+				if( 0 <= oldIbbc && oldIbbc+1 <= Document.Length )
+					View.Invalidate( oldIbbc, oldIbbc+1 );
+				if( 0 <= oldImbbc && oldImbbc+1 <= Document.Length )
+					View.Invalidate( oldImbbc, oldImbbc+1 );
 
-				// draw new matched bracket
-				if( 0 <= newMbi1 && newMbi1+1 <= Document.Length )
-					View.Invalidate( newMbi1, newMbi1+1 );
-				if( 0 <= newMbi2 && newMbi2+1 <= Document.Length )
-					View.Invalidate( newMbi2, newMbi2+1 );
+				// Reraw new matched bracket highlight
+				if( 0 <= newIbbc && newIbbc+1 <= Document.Length )
+					View.Invalidate( newIbbc, newIbbc+1 );
+				if( 0 <= newImbbc && newImbbc+1 <= Document.Length )
+					View.Invalidate( newImbbc, newImbbc+1 );
 
-				// update matched bracket positions
-				_Document.ViewParam.MatchedBracketIndex2 = newMbi2;
-				if( 0 <= newMbi2 )
-					_Document.ViewParam.MatchedBracketIndex1 = newMbi1;
+				// Update matched bracket positions
+				_Document.ViewParam.IndexOfMatchedBracketBeforeCaret = newImbbc;
+				if( 0 <= newImbbc )
+					_Document.ViewParam.IndexOfBracketBeforeCaret = newIbbc;
 			}
 		}
 		#endregion

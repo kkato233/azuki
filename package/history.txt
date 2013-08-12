@@ -1,5 +1,6 @@
 == 1.7.8 (2013-xx-xx) ==
  * add: Now a matched bracket of a bracket before the caret is also highlighted
+ * add: Added AzukiControl.ScrollPos property to set/get scroll position
 
 == 1.7.7 (2013-07-20) ==
  * fix: Under rare condition, the very first character in a newly opened document will be highlighted as a "matched bracket."

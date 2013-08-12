@@ -849,7 +849,15 @@ namespace Sgry.Azuki
 		/// Scrolls a portion of the window.
 		/// </summary>
 		void Scroll( Rectangle rect, int vOffset, int hOffset );
-		
+
+		/// <summary>
+		/// Gets or sets virtual location of currently visible area.
+		/// </summary>
+		Point ScrollPos
+		{
+			get; set;
+		}
+
 		/// <summary>
 		/// Scrolls to where the caret is.
 		/// </summary>

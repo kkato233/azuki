@@ -2025,6 +2025,15 @@ namespace Sgry.Azuki.WinForms
 			WinApi.SetScrollPos( Handle, false, _Impl.View.FirstVisibleLine );
 			WinApi.SetScrollPos( Handle, true, _Impl.View.ScrollPosX );
 		}
+
+		/// <summary>
+		/// Gets or sets virtual location of currently visible area.
+		/// </summary>
+		public Point ScrollPos
+		{
+			get{ return View.ScrollPos; }
+			set{ View.ScrollPos = value; }
+		}
 		#endregion
 
 		#region IUserInterface - Others

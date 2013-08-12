@@ -1,7 +1,5 @@
 ﻿// file: IView.cs
 // brief: Interface for view implementations.
-// author: YAMAMOTO Suguru
-// update: 2011-07-07
 //=========================================================
 using System;
 using System.Drawing;
@@ -493,6 +491,14 @@ namespace Sgry.Azuki
 		/// Gets or sets index of the line which is displayed at top of this view.
 		/// </summary>
 		int FirstVisibleLine
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets virtual location of currently visible area.
+		/// </summary>
+		Point ScrollPos
 		{
 			get; set;
 		}

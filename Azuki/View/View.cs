@@ -600,6 +600,20 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets virtual location of currently visible area.
+		/// </summary>
+		public Point ScrollPos
+		{
+			get{ return new Point(ScrollPosX, FirstVisibleLine * LineSpacing); }
+			set
+			{
+				ScrollPosX = value.X;
+				FirstVisibleLine = (value.Y / LineSpacing);
+				Invalidate();
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets x-coordinate of the view's origin.
 		/// </summary>
 		/// <remarks>

@@ -1319,11 +1319,14 @@ namespace Sgry.Azuki
 		void UpdateMatchedBracketPosition()
 		{
 			UpdateMatchedBracketPosition( _Document.CaretIndex, true );
-			UpdateMatchedBracketPosition( _Document.CaretIndex-1, false );
+			if( 0 < _Document.CaretIndex )
+				UpdateMatchedBracketPosition( _Document.CaretIndex-1, false );
 		}
 
 		void UpdateMatchedBracketPosition( int bracketIndex, bool afterCaret )
 		{
+			Debug.Assert( 0 <= bracketIndex );
+			Debug.Assert( bracketIndex <= _Document.Length );
 			ViewParam param = _Document.ViewParam;
 			int offset = afterCaret ? 0 : 2;
 

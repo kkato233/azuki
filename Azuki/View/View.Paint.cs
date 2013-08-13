@@ -1161,7 +1161,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Class containing small utilities for class View.
 		/// </summary>
-		protected partial class Utl
+		protected class Utl
 		{
 			/// <summary>
 			/// Gets fore/back color pair from scheme according to char class.
@@ -1171,18 +1171,16 @@ namespace Sgry.Azuki
 					out Color fore, out Color back
 				)
 			{
-				// set fore and back color
+				// Get appropriate fore and back color in the context
+				cs.GetColor( klass, out fore, out back );
+
+				// Fallback
 				if( inSelection )
 				{
-					fore = cs.SelectionFore;
 					back = cs.SelectionBack;
+					if( cs.SelectionFore != Color.Transparent )
+						fore = cs.SelectionFore;
 				}
-				else
-				{
-					cs.GetColor( klass, out fore, out back );
-				}
-
-				// fallback if it is transparent
 				if( fore == Color.Transparent )
 				{
 					fore = cs.ForeColor;

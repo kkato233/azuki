@@ -55,12 +55,7 @@ namespace Sgry.Azuki
 		public T[] ToArray()
 		{
 			T[] array = new T[ _Count ];
-
-			for( int i=0; i<_Count; i++ )
-			{
-				array[i] = GetAt( i );
-			}
-
+			CopyTo( 0, _Count, array, 0 );
 			return array;
 		}
 		#endregion
@@ -137,9 +132,17 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( 0 <= arrayIndex && arrayIndex < array.Length, "parameter 'arrayIndex' is out of range. (arrayIndex:"+arrayIndex+", array.Length:"+array.Length+")" );
 			DebugUtl.Assert( end - begin <= array.Length - arrayIndex, "size of the given array is not sufficient. (begin:"+begin+", end:"+end+", arrayIndex:"+arrayIndex+", array.Length:"+array.Length+")" );
 
-			int count = end - begin;
-			for( int i=0; i<count; i++ )
-				array[ arrayIndex + i ] = GetAt( begin + i );
+			int length = end - begin;
+			if( length < _GapPos )
+			{
+				Array.Copy( _Data, begin, array, arrayIndex, length );
+			}
+			else
+			{
+				Array.Copy( _Data, begin, array, arrayIndex, _GapPos );
+				Array.Copy( _Data, _GapPos + _GapLen, array, arrayIndex + _GapPos,
+							length - _GapPos );
+			}
 		}
 
 		/// <summary>

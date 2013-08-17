@@ -132,16 +132,26 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( 0 <= arrayIndex && arrayIndex < array.Length, "parameter 'arrayIndex' is out of range. (arrayIndex:"+arrayIndex+", array.Length:"+array.Length+")" );
 			DebugUtl.Assert( end - begin <= array.Length - arrayIndex, "size of the given array is not sufficient. (begin:"+begin+", end:"+end+", arrayIndex:"+arrayIndex+", array.Length:"+array.Length+")" );
 
-			int length = end - begin;
-			if( length < _GapPos )
+			if( end <= _GapPos )
 			{
-				Array.Copy( _Data, begin, array, arrayIndex, length );
+				Array.Copy( _Data, begin, array, arrayIndex, end - begin ); // [begin, end)
+			}
+			else if( begin < _GapPos )
+			{
+				int gapBegin = _GapPos;
+				int gapEnd = _GapPos + _GapLen;
+				Array.Copy( _Data, begin,
+							array, arrayIndex,
+							gapBegin - begin );						// [begin, gapBegin)
+				Array.Copy( _Data, gapEnd,
+							array, arrayIndex + (gapBegin - begin),
+							_GapLen + end - gapEnd );				// [gapEnd, gapLen+end)
 			}
 			else
 			{
-				Array.Copy( _Data, begin, array, arrayIndex, _GapPos );
-				Array.Copy( _Data, _GapPos + _GapLen, array, arrayIndex + _GapPos,
-							length - _GapPos );
+				Array.Copy( _Data, _GapLen + begin,
+							array, arrayIndex,
+							end - begin );							// [gapLen+begin, gapLen+end)
 			}
 		}
 

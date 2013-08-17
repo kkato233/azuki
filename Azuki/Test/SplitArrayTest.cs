@@ -352,6 +352,24 @@ namespace Sgry.Azuki.Test
 			buf = initBufContent.ToCharArray();
 			try{ sary.CopyTo(5, 9, buf); Debug.Fail("Exception wasn't thrown as expected."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
+
+			// Range before the gap
+			MoveGap( sary, 2 );
+			buf = initBufContent.ToCharArray();
+			sary.CopyTo( 0, 1, buf );
+			TestUtl.AssertEquals( "h23456", new String(buf) );
+
+			// Range including the gap
+			MoveGap( sary, 2 );
+			buf = initBufContent.ToCharArray();
+			sary.CopyTo( 0, 4, buf );
+			TestUtl.AssertEquals( "hoge56", new String(buf) );
+
+			// Range after the gap
+			MoveGap( sary, 2 );
+			buf = initBufContent.ToCharArray();
+			sary.CopyTo( 4, 8, buf );
+			TestUtl.AssertEquals( "piyo56", new String(buf) );
 		}
 
 		static void Test_BinarySearch()
@@ -391,6 +409,11 @@ namespace Sgry.Azuki.Test
 		static string ToString( SplitArray<char> sary )
 		{
 			return new string( sary.ToArray() );
+		}
+
+		static void MoveGap( SplitArray<char> sary, int index )
+		{
+			sary.Insert( index, new char[]{} );
 		}
 	}
 }

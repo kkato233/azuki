@@ -71,8 +71,7 @@ namespace Sgry.Azuki
 				return doc.Length;
 			}
 			
-			// avoid placing caret at middle of a CR-LF, a surrogate pair,
-			// or a combining character sequence
+			// Avoid placing caret at middle of an undividable character sequences.
 			int newCaretIndex = doc.CaretIndex + 1;
 			while( doc.IsNotDividableIndex(newCaretIndex) )
 			{
@@ -94,8 +93,7 @@ namespace Sgry.Azuki
 				return 0;
 			}
 
-			// avoid placing caret at middle of a CR-LF, a surrogate pair,
-			// or a combining character sequence
+			// Avoid placing caret at middle of an undividable character sequences.
 			int newCaretIndex = doc.CaretIndex - 1;
 			while( doc.IsNotDividableIndex(newCaretIndex) )
 			{

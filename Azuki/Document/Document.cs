@@ -622,10 +622,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		///   <para>
-		///   This property is the number of characters currently held in this document.
-		///   Since Azuki stores characters in form of UTF-16,
-		///   surrogate pairs or combining characters will not be counted as
-		///   "1 character" in this property.
+ 		///   This property returns the number of characters in this document. Note that because
+ 		///   Azuki's internal character encoding is UTF-16, characters consisted with more than
+ 		///   one characters will NOT be counted as one (e.g. surrogate pairs, combining character
+		///   sequences, and variation sequences.)
 		///   </para>
 		/// </remarks>
 		public int Length
@@ -2640,6 +2640,7 @@ namespace Sgry.Azuki
 		///     <item>CR+LF</item>
 		///     <item>Surrogate pair</item>
 		///     <item>Combining character sequence</item>
+		///     <item>Variation sequence (including IVS)</item>
 		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
@@ -2683,6 +2684,7 @@ namespace Sgry.Azuki
 		///     <item>CR+LF</item>
 		///     <item>Surrogate pair</item>
 		///     <item>Combining character sequence</item>
+		///     <item>Variation sequence (including IVS)</item>
 		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
@@ -2772,6 +2774,7 @@ namespace Sgry.Azuki
 		///     <item>CR+LF</item>
 		///     <item>Surrogate pair</item>
 		///     <item>Combining character sequence</item>
+		///     <item>Variation sequence (including IVS)</item>
 		///   </list>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</seealso>
@@ -2781,7 +2784,10 @@ namespace Sgry.Azuki
 			if( index <= 0 || Length <= index )
 				return false;
 
-			return Document.IsNotDividableIndex( this[index-1], this[index] );
+			return IsNotDividableIndex( this[index-1],
+										this[index],
+										(index+1 < Length) ? this[index+1]
+														   : '\0' );
 		}
 
 		/// <summary>
@@ -2804,13 +2810,16 @@ namespace Sgry.Azuki
 			if( text == null || index <= 0 || text.Length <= index )
 				return false;
 
-			return IsNotDividableIndex( text[index-1], text[index] );
+			return IsNotDividableIndex( text[index-1],
+										text[index],
+										(index+1 < text.Length) ? text[index+1]
+																: '\0' );
 		}
 
 		/// <summary>
 		/// Determines whether text can not be divided at given index or not.
 		/// </summary>
-		static bool IsNotDividableIndex( char prevCh, char ch )
+		static bool IsNotDividableIndex( char prevCh, char ch, char nextCh )
 		{
 			if( prevCh == '\r' && ch == '\n' )
 			{
@@ -2821,6 +2830,10 @@ namespace Sgry.Azuki
 				return true;
 			}
 			if( IsCombiningCharacter(ch) && LineLogic.IsEolChar(prevCh) == false )
+			{
+				return true;
+			}
+			if( IsVariationSelector(ch, nextCh) )
 			{
 				return true;
 			}
@@ -2876,6 +2889,36 @@ namespace Sgry.Azuki
 					|| category == UnicodeCategory.SpacingCombiningMark
 					|| category == UnicodeCategory.EnclosingMark
 				);
+		}
+
+		/// <summary>
+		/// Determines whether given character(s) is a variation selector or not.
+		/// </summary>
+		internal bool IsVariationSelector( int index )
+		{
+			if( index < 0 || Length <= index+1 )
+				return false;
+
+			return IsVariationSelector( this[index], this[index+1] );
+		}
+
+		/// <summary>
+		/// Determines whether given character(s) is a variation selector or not.
+		/// </summary>
+		internal static bool IsVariationSelector( char ch, char nextCh )
+		{
+			if( 0xfe00 <= ch && ch <= 0xfe0f )
+			{
+				return true; // Standard Variation Selectors
+			}
+			if( ch == 0xdb40 && 0xdd00 <= nextCh && nextCh <= 0xddef )
+			{
+				// Code range of an ideographic variation selector is from 0xE0100 to 0xE01EF,
+				// that is, from "db40 dd00" to "db40" "ddef" in UTF-16.
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>

@@ -61,15 +61,19 @@ namespace Sgry.Azuki
 					return;
 				}
 
-				// avoid dividing a CR-LF or a surrogate pair,
-				// but not combining character sequence
-				if( 0 <= caret-2 )
+				// Avoid dividing an undividable sequences such as CR-LF, surrogate pairs,
+				// variation sequences. But if it's a combining character sequence (which isn't a
+				// variation sequence), delete just one character.
+				int prevIndex = doc.PrevGraphemeClusterIndex( caret );
+				if( 0 <= prevIndex && 1 < caret - prevIndex
+					&& doc.IsCombiningCharacter(prevIndex+1)
+					&& !doc.IsVariationSelector(prevIndex+1) )
 				{
-					if( doc.IsNotDividableIndex(caret-1)
-						&& doc.IsCombiningCharacter(caret-1) == false )
-					{
-						delLen = 2;
-					}
+					delLen = 1;
+				}
+				else
+				{
+					delLen = caret - prevIndex;
 				}
 
 				// delete char(s).

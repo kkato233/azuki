@@ -946,7 +946,7 @@ namespace Sgry.Azuki
 						Document.SetSelection( clickedIndex, clickedIndex );
 					}
 					View.SetDesiredColumn( g );
-					View.ScrollToCaret( g );
+					View.ScrollToCaret( g, 0 );
 				}
 			}
 		}
@@ -1102,7 +1102,7 @@ namespace Sgry.Azuki
 				}
 			}
 			View.SetDesiredColumn( g );
-			View.ScrollToCaret( g );
+			View.ScrollToCaret( g, 0 );
 		}
 
 		void ClearDragState( Nullable<Point> cursorScreenPos )

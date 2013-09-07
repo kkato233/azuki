@@ -1,8 +1,5 @@
 // file: UserPref.cs
 // brief: User preferences that affects all Azuki instances.
-// author: YAMAMOTO Suguru
-// encoding: UTF-8
-// update: 2010-07-04
 //=========================================================
 using System;
 using System.Text;
@@ -65,14 +62,13 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets how close the caret can come to window borders at top or bottom, in line count.
+		/// Gets or sets how many lines	are kept visible on moving caret by keyboard.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// When user moves caret with keyboard or mouse,
-		/// Azuki automatically scrolls to ensure the caret always be in screen.
-		/// This property determines
-		/// how many lines the caret is distant at most from top or bottom of the window.
+		/// When user moves caret with keyboard, Azuki automatically scrolls to ensure the caret
+		/// always be in screen. This property determines how many lines the caret is distant at
+		/// most from top or bottom of the window.
 		/// </para>
 		/// </remarks>
 		public static int AutoScrollMargin

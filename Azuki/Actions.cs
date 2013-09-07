@@ -505,7 +505,7 @@ namespace Sgry.Azuki
 			{
 				ui.View.SetDesiredColumn();
 			}
-			ui.View.ScrollToCaret();
+			ui.ScrollToCaret();
 		}
 		#endregion
 

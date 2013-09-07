@@ -1039,7 +1039,7 @@ namespace Sgry.Azuki
 		{
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-				ScrollToCaret( g );
+				ScrollToCaret( g, UserPref.AutoScrollMargin );
 			}
 		}
 
@@ -1047,6 +1047,14 @@ namespace Sgry.Azuki
 		/// Scroll to where the caret is.
 		/// </summary>
 		public void ScrollToCaret( IGraphics g )
+		{
+			ScrollToCaret( g, UserPref.AutoScrollMargin );
+		}
+
+		/// <summary>
+		/// Scroll to where the caret is.
+		/// </summary>
+		public void ScrollToCaret( IGraphics g, int autoScrollMargin )
 		{
 			Rectangle threshRect = new Rectangle();
 			Point caretPos;
@@ -1059,9 +1067,9 @@ namespace Sgry.Azuki
 			threshRect.Height = (_VisibleSize.Height - YofTextArea) - LineSpacing;
 
 			// shrink the rectangle if some lines must be visible
-			if( 0 < UserPref.AutoScrollMargin )
+			if( 0 < autoScrollMargin )
 			{
-				int yMargin = Math.Max( 0, UserPref.AutoScrollMargin * LineSpacing );
+				int yMargin = Math.Max( 0, autoScrollMargin * LineSpacing );
 				threshRect.Y += yMargin;
 				threshRect.Height -= (yMargin * 2);
 			}

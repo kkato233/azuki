@@ -40,9 +40,9 @@ namespace Sgry.Azuki.Highlighter
 
 			AddRegex( @"(?<=if )not", true, CC.Keyword );
 			AddRegex( @"@?echo (on|off)", true, CC.Keyword2 );
+			AddRegex( @"%\w+(:[^%]+)?%", false, CC.Variable );
 			AddRegex( @"%~?[0-9\*]", false, CC.Variable );
 			AddRegex( @"%%?~?[fdpnxsatz]*[0-9a-zA-Z]", false, CC.Variable );
-			AddRegex( @"%\w+%", false, CC.Variable );
 			AddRegex( @"^:\w+", true, CC.Label );
 		}
 	}

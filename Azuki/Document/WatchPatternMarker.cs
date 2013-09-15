@@ -94,8 +94,7 @@ namespace Sgry.Azuki
 			foreach( WatchPattern wp in doc.WatchPatterns )
 			{
 				// do nothing if invalid pattern was set
-				if( wp.Pattern == null
-					|| wp.Pattern.ToString() == String.Empty )
+				if( wp.Pattern == null )
 				{
 					continue;
 				}

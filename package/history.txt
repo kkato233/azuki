@@ -5,6 +5,7 @@
  * add: Now IVS (Ideographic Variation Sequences) can be treated as one character
  * mod: Now moving caret near border by mouse operation does not scroll the viewport
  * fix: Built-in highlighter for batch file could not highlight complex variable properly (ex. %DATE:/=%)
+ * fix: Now WatchPattern whose pattern is an empty string can be used with Document.WatchPattern to unmark text (more efficient than unmarking entire document at once)
  * fix: Document.WatchPattern does nothing if the document contains only one line (Special thanks: Bracketter)
  * fix: Improved performance of extracting strings from Document (Special thanks: Bracketter)
 

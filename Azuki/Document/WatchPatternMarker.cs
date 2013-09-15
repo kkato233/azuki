@@ -1,7 +1,5 @@
 ﻿// file: WatchPatternMarker.cs
 // brief: a singleton class which marks up watching text patterns in document.
-// author: YAMAMOTO Suguru
-// update: 2011-08-20
 //=========================================================
 using System;
 using System.Text.RegularExpressions;
@@ -57,11 +55,10 @@ namespace Sgry.Azuki
 			// Mark up all URIs in the logical line
 			int scrernLineHeadIndex = ui.View.GetLineHeadIndex( e.LineIndex );
 			int logicalLineIndex = ui.Document.GetLineIndexFromCharIndex( scrernLineHeadIndex );
-			if( logicalLineIndex == _LastDrawnLogicalLineIndex )
+			if( logicalLineIndex != e.LineIndex
+				&& logicalLineIndex == _LastDrawnLogicalLineIndex )
 			{
-				// Skip marking already marked line
-				// (more optimization can be done though)
-				return;
+				return; // except continuation lines
 			}
 			_LastDrawnLogicalLineIndex = logicalLineIndex;
 

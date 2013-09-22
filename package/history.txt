@@ -7,6 +7,7 @@
  * fix: Built-in highlighter for batch file could not highlight complex variable properly (ex. %DATE:/=%)
  * fix: Now WatchPattern whose pattern is an empty string can be used with Document.WatchPattern to unmark text (more efficient than unmarking entire document at once)
  * fix: Document.WatchPattern does nothing if the document contains only one line (Special thanks: Bracketter)
+ * fix: Document.WatchPattern throws an exception if there is a text line which contains the two or more watching patterns (Special thanks: rokos)
  * fix: Improved performance of extracting strings from Document (Special thanks: Bracketter)
 
 == 1.7.7 (2013-07-20) ==

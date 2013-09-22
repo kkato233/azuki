@@ -1,4 +1,4 @@
-== 1.7.8 (2013-xx-xx) ==
+== 1.7.8 (2013-09-22) ==
  * add: キャレットの前にカッコがある場合にもそれに対応するカッコをハイライトするように
  * add: AzukiControl.ScrollPos でスクロール位置を取得・設定できるように
  * add: ColorScheme.SelectionBack を Color.Transparent にすると、文字列を選択しても文字色が変わらないように修正

@@ -989,10 +989,6 @@ namespace Sgry.Azuki
 			{
 				return;
 			}
-
-			// make sure that these coordinates are positive value
-			pos.X = Math.Max( 0, pos.X );
-			pos.Y = Math.Max( 0, pos.Y );
 			View.ScreenToVirtual( ref pos );
 
 			// if it was slight movement, ignore

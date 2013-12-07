@@ -1,7 +1,5 @@
 ﻿// file: AutoIndentLogic.cs
 // brief: Logic around auto-indentation.
-// author: YAMAMOTO Suguru
-// update: 2011-07-31
 //=========================================================
 using System;
 using System.Text;
@@ -13,31 +11,38 @@ namespace Sgry.Azuki
 	/// Hook delegate called every time a character was inserted.
 	/// </summary>
 	/// <param name="ui">User interface object such as AzukiControl.</param>
-	/// <param name="ch">Character about to be inserted.</param>
+	/// <param name="ch">The character to be inserted.</param>
 	/// <returns>
-	/// Whether this hook delegate successfully executed or not.
-	/// If true, Azuki itself will input nothing.
+	/// Whether the hook handles input successfully or not.
 	/// </returns>
+	/// <remarks>
+	///   <para>
+	///   AutoIndentHook is the type of delegate which is used to override (hook and change)
+	///   Azuki's built-in input handling logic. If a hook of this type was installed, it is called
+	///   every time a character is inserted and if it returned true, Azuki suppresses built-in
+	///   input handling logic.
+	///   </para>
+	/// </remarks>
+	/// <seealso cref="IUserInterface.AutoIndentHook"/>
+	/// <seealso cref="AutoIndentHooks"/>
 	public delegate bool AutoIndentHook( IUserInterface ui, char ch );
 
 	/// <summary>
-	/// Static class containing hook delegates for auto-indentation.
+	/// Static class containing built-in hook delegates for auto-indentation.
 	/// </summary>
-	/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
+	/// <seealso cref="IUserInterface.AutoIndentHook"/>
+	/// <seealso cref="WinForms.AzukiControl.AutoIndentHook"/>
 	public static class AutoIndentHooks
 	{
 		/// <summary>
-		/// Hook delegate to execute basic auto-indentation;
-		/// indent same amount of spaces as the previous line.
+		/// Basic auto-indent hook.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This member is a hook delegate to execute auto-indentation.
-		/// This delegate just copies previous indentation characters
-		/// on making a new line.
-		/// </para>
+		///   <para>
+		///   This hook executes most basic auto-indentation; it just copies previous indentation
+		///   characters every time the user creates a new line.
+		///   </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
 		public static readonly AutoIndentHook GenericHook = delegate( IUserInterface ui, char ch )
 		{
 			Document doc = ui.Document;
@@ -78,25 +83,32 @@ namespace Sgry.Azuki
 		};
 
 		/// <summary>
-		/// Hook delegate to execute auto-indentation for C styled source code.
+		/// Auto-indent hook for C styled source code.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This member is a hook delegate to execute auto-indentation for C styled source code.
-		/// Here 'C style' means that curly brackets are used to enclose each logical block.
-		/// </para>
-		/// <para>
-		/// Note that if user hits the Enter key on a line
-		///	that ends with a closing curly bracket (<c> } </c>),
-		///	newly generated line will be indented one more level
-		///	by inserting additional indent characters.
-		///	The additional indent characters will be chosen according to the value of
-		///	<see cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">AzukiControl.UsesTabForIndent</see>
-		/// property.
-		/// </para>
+		///   <para>
+		///   This hook delegate provides a special indentation logic for C styled source code.
+		///   Here 'C style' means that curly brackets are used to enclose each logical block, such
+		///   as C++, Java, C#, and so on.
+		///   </para>
+		///   <para>
+		///   The differences between this and generic auto-indentation are below:
+		///   </para>
+		///   <list type="bullet">
+		///     <item>
+		///     Pressing Enter key increases indentation level if the line was terminated with a
+		///     closing curly bracket (<c> } </c>)
+		///     </item>
+		///     <item>
+		///     Inserting an opening curly bracket (<c> { </c>) decreases indentation level if the
+		///     line was consisted only with whitespace characters.
+		///     </item>
+		///   </list>
+		///   <para>
+		///	  Note that the characters to be used to create indentation will be chosen according to
+		///	  the value of <see cref="IUserInterface.UsesTabForIndent"/> property.
+		///   </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.AutoIndentHook">AzukiControl.AutoIndentHook property</seealso>
-		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.UsesTabForIndent">AzukiControl.UsesTabForIndent property</seealso>
 		public static readonly AutoIndentHook CHook = delegate( IUserInterface ui, char ch )
 		{
 			Document doc = ui.Document;

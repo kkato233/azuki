@@ -766,19 +766,23 @@ namespace Sgry.Azuki.WinForms
 			set
 			{
 				_ShowsVScrollBar = value;
-
-				// make new style bits
-				long style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
-				if( _ShowsVScrollBar )
-					style |= WinApi.WS_VSCROLL;
-				else
-					style &= ~(WinApi.WS_VSCROLL);
-
-				// apply
-				WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
-				WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
+				SetVScrollBarVisibility( value );
 				UpdateScrollBarRange();
 			}
+		}
+
+		void SetVScrollBarVisibility( bool visible )
+		{
+			// make new style bits
+			long style = WinApi.GetWindowLong( Handle, WinApi.GWL_STYLE ).ToInt64();
+			if( _ShowsVScrollBar )
+				style |= WinApi.WS_VSCROLL;
+			else
+				style &= ~(WinApi.WS_VSCROLL);
+
+			// apply
+			WinApi.SetWindowLong( Handle, WinApi.GWL_STYLE, new IntPtr(style) );
+			WinApi.SetWindowPos( Handle, IntPtr.Zero, Left, Top, Width, Height, WinApi.SWP_FRAMECHANGED );
 		}
 
 		/// <summary>
@@ -2024,6 +2028,11 @@ namespace Sgry.Azuki.WinForms
 			// then, update scroll position and caret graphic
 			WinApi.SetScrollPos( Handle, false, _Impl.View.FirstVisibleLine );
 			WinApi.SetScrollPos( Handle, true, _Impl.View.ScrollPosX );
+
+			// Using SetScrollRange() makes the vertical scroll bar visible so hide it again if
+			// needed
+			if( !ShowsVScrollBar )
+				SetVScrollBarVisibility( false );
 		}
 
 		/// <summary>

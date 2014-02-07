@@ -1,5 +1,6 @@
 == 1.7.9 (2013-xx-xx) ==
  * fix: Dragging mouse on line number area does not expand selection properly under specific condition (Special thanks: Bracketter)
+ * fix: Resizing AzukiControl whose vertical scroll bar is not visible forces the scroll bar visible (Special thanks: rokos)
 
 == 1.7.8 (2013-09-22) ==
  * add: Now a matched bracket of a bracket before the caret is also highlighted

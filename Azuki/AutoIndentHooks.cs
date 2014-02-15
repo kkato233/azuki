@@ -248,6 +248,161 @@ namespace Sgry.Azuki
 			return false;
 		};
 
+		/// <summary>
+		/// Auto-indent hook for Python script.
+		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   This hook delegate provides a special indentation logic for Python programming
+		///   language.
+		///   </para>
+		///   <list type="bullet">
+		///     <item>
+		///     Pressing Enter key increases indentation level if the line was terminated with a
+		///     colon (<c> : </c>).
+		///     </item>
+		///     <item>
+		///     When the caret is in a middle of a paired parentheses, additional spaces will be
+		///     inserted so that the caret's column position will be the same as the previous
+		///     opening parenthesis. For example, if there is a code like next:
+		///     <pre><code lang="Python">
+		///     fruits = ('apple', 'orange')
+		///     </code></pre>
+		///     and pressing Enter when the caret is at one character ahead of a comma will result:
+		///     <pre><code lang="Python">
+		///     fruits = ('apple',
+		///               'orange')
+		///     </code></pre>
+		///     </item>
+		///   </list>
+		///   <para>
+		///	  Note that the characters to be used to create indentation will be chosen according to
+		///	  the value of <see cref="IUserInterface.UsesTabForIndent"/> property.
+		///   </para>
+		/// </remarks>
+		public static readonly AutoIndentHook PythonHook = delegate( IUserInterface ui, char ch )
+		{
+			// Do nothing if Azuki is in single line mode
+			if( ui.IsSingleLineMode )
+			{
+				return false;
+			}
+
+			if( LineLogic.IsEolChar(ch) )
+			{
+				Document doc = ui.Document;
+				View view = (View)ui.View;
+				StringBuilder indentChars = new StringBuilder( doc.EolCode, 128 );
+
+				// First of all, remove selected text
+				doc.Replace( "" );
+
+				int lineIndex = doc.GetLineIndexFromCharIndex( doc.CaretIndex );
+				int lineBegin = doc.GetLineHeadIndex( lineIndex );
+				int lineEnd = (lineIndex+1 < doc.LineCount) ? doc.GetLineHeadIndex( lineIndex + 1 )
+															: doc.Length;
+
+				// Determine whether an extra padding is needed
+				bool levelUp = false;
+				{
+					for( int i=doc.CaretIndex-1; lineBegin <= i; i-- )
+					{
+						if( doc[i] == ':' )
+						{
+							levelUp = true;
+							break;
+						}
+						else if( " \t".IndexOf(doc[i]) < 0 )
+						{
+							break;
+						}
+					}
+				}
+
+				int lastOpenParenIndex = -1;
+				if( !levelUp )
+				{
+					char[] openers = new char[]{'(', '[', '{'};
+					char[] closers = new char[]{')', ']', '}'};
+					int[] levels = new int[3]{0, 0, 0};
+					for( int i=doc.CaretIndex-1; lineBegin <= i; i-- )
+					{
+						int type = Array.IndexOf( openers, doc[i] );
+						if( 0 <= type )
+						{
+							if( levels[type] == 0 )
+							{
+								lastOpenParenIndex = i;
+								break;
+							}
+							else
+							{
+								levels[type]--;
+							}
+						}
+						type = Array.IndexOf( closers, doc[i] );
+						if( 0 <= type )
+						{
+							levels[type]++;
+						}
+					}
+				}
+
+				// Get indent chars
+				for( int i=lineBegin; i<doc.CaretIndex; i++ )
+				{
+					if( doc[i] == ' ' || doc[i] == '\t' || doc[i] == '\x3000' )
+						indentChars.Append( doc[i] );
+					else
+						break;
+				}
+
+				// Remove whitespaces just after the caret
+				int extraSpaceCount = 0;
+				for( int i=doc.CaretIndex; i<lineEnd; i++ )
+				{
+					if( 0 <= " \t".IndexOf(doc[i]) )
+						extraSpaceCount++;
+				}
+
+				// Replace selection
+				int newCaretIndex = Math.Min( doc.AnchorIndex, doc.CaretIndex ) + indentChars.Length;
+				doc.Replace( indentChars.ToString(), doc.CaretIndex, doc.CaretIndex+extraSpaceCount );
+				doc.SetSelection( newCaretIndex, newCaretIndex );
+
+				// Add indent level
+				if( levelUp )
+				{
+					Point pos = view.GetVirPosFromIndex( doc.CaretIndex );
+					pos.X += view.TabWidthInPx;
+					indentChars.Length = 0;
+					indentChars.Append( UiImpl.GetNeededPaddingChars(ui, pos, true) );
+					doc.Replace( indentChars.ToString() );
+					newCaretIndex += indentChars.Length;
+					doc.SetSelection( newCaretIndex, newCaretIndex );
+				}
+				else if( 0 <= lastOpenParenIndex )
+				{
+					int index = lastOpenParenIndex + 1;
+					while( index < lineEnd && (doc[index] == ' ' || doc[index] == '\t' ) )
+						index++;
+					int caretX = view.GetVirPosFromIndex( doc.CaretIndex ).X;
+					int destX = view.GetVirPosFromIndex( index ).X;
+					int spaceCount = (destX - caretX) / view.SpaceWidthInPx;
+					indentChars.Length = 0;
+					for( int i=0; i<spaceCount; i++ )
+						indentChars.Append( ' ' );
+					doc.Replace( indentChars.ToString() );
+					newCaretIndex += indentChars.Length;
+					doc.SetSelection( newCaretIndex, newCaretIndex );
+				}
+
+				return true;
+			}
+
+			return false;
+		};
+
 		#region Utilities
 		static class Utl
 		{

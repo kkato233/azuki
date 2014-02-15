@@ -25,7 +25,7 @@ namespace Sgry.Azuki
 		public static void BackSpace( IUserInterface ui )
 		{
 			Document doc = ui.Document;
-			IView view = ui.View;
+			View view = (View)ui.View;
 
 			// do nothing if the document is read-only
 			if( doc.IsReadOnly )
@@ -61,19 +61,46 @@ namespace Sgry.Azuki
 					return;
 				}
 
-				// Avoid dividing an undividable sequences such as CR-LF, surrogate pairs,
-				// variation sequences. But if it's a combining character sequence (which isn't a
-				// variation sequence), delete just one character.
-				int prevIndex = doc.PrevGraphemeClusterIndex( caret );
-				if( 0 <= prevIndex && 1 < caret - prevIndex
-					&& doc.IsCombiningCharacter(prevIndex+1)
-					&& !doc.IsVariationSelector(prevIndex+1) )
+				if( ui.UnindentsWithBackspace
+					&& 0 <= caret-1
+					&& (caret == doc.Length || LineLogic.IsEolChar(doc[caret]))
+					&& 0 <= " \r\x3000".IndexOf(doc[caret-1]) )
 				{
-					delLen = 1;
+					// Remove whitespace characters to previous tab-stop
+					Point caretPos = view.GetVirPosFromIndex( caret );
+					int x;
+					int nextX = 0;
+					do
+					{
+						x = nextX;
+						nextX = view.NextTabStopX( x );
+					}
+					while( nextX < caretPos.X );
+					int newLineEnd = view.GetIndexFromVirPos( new Point(x, caretPos.Y) );
+					delLen = 0;
+					for( int i=caret-1; newLineEnd <= i; i-- )
+					{
+						if( " \r\x3000".IndexOf(doc[i]) < 0 )
+							break;
+						delLen++;
+					}
 				}
 				else
 				{
-					delLen = caret - prevIndex;
+					// Avoid dividing an undividable sequences such as CR-LF, surrogate pairs,
+					// variation sequences. But if it's a combining character sequence (which isn't a
+					// variation sequence), delete just one character.
+					int prevIndex = doc.PrevGraphemeClusterIndex( caret );
+					if( 0 <= prevIndex && 1 < caret - prevIndex
+						&& doc.IsCombiningCharacter(prevIndex+1)
+						&& !doc.IsVariationSelector(prevIndex+1) )
+					{
+						delLen = 1;
+					}
+					else
+					{
+						delLen = caret - prevIndex;
+					}
 				}
 
 				// delete char(s).

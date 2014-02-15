@@ -1182,6 +1182,27 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
+		/// Gets or sets whether to reduce an indent level with Backspace key rather than removing
+		/// a character.
+		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   Note that unindentation will be performed only when the caret is at the end of a
+		///   line which ends with a whitespace.
+		///   </para>
+		/// </remarks>
+#		if !PocketPC
+		[Category("Behavior")]
+		[DefaultValue(true)]
+		[Description("If true, pressing Backspace will perform unindentation if the caret is at the end of a line.")]
+#		endif
+		public bool UnindentsWithBackspace
+		{
+			get{ return _Impl.UnindentsWithBackspace; }
+			set{ _Impl.UnindentsWithBackspace = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets whether the content will be limited to a single line.
 		/// </summary>
 		/// <remarks>

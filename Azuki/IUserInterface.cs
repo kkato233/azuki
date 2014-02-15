@@ -413,6 +413,21 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets whether to reduce an indent level with Backspace key rather than removing
+		/// a character.
+		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   Note that unindentation will be performed only when the caret is at the end of a
+		///   line which ends with a whitespace.
+		///   </para>
+		/// </remarks>
+		bool UnindentsWithBackspace
+		{
+			get; set;
+		}
+
+		/// <summary>
 		/// Gets whether Azuki is in rectangle selection mode or not.
 		/// </summary>
 		bool IsRectSelectMode

@@ -35,6 +35,7 @@ namespace Sgry.Azuki
 		bool _IsOverwriteMode = false;
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
+		bool _UnindentsWithBackspace = true;
 		bool _UsesStickyCaret = false;
 		bool _IsSingleLineMode = false;
 
@@ -275,6 +276,12 @@ namespace Sgry.Azuki
 				Debug.Assert( _IsDisposed == false );
 				_ConvertsFullWidthSpaceToSpace = value;
 			}
+		}
+
+		public bool UnindentsWithBackspace
+		{
+			get{ return _UnindentsWithBackspace; }
+			set{ _UnindentsWithBackspace = value; }
 		}
 
 		/// <summary>

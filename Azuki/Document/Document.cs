@@ -2620,21 +2620,20 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="index">The index to start the search from.</param>
 		/// <returns>The index of the character which starts next grapheme cluster.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"/>
 		/// <remarks>
 		///   <para>
-		///   This method searches document for a grapheme cluster
-		///   from given <paramref name="index"/> forward.
-		///   Note that this method always return an index greater than given '<paramref name="index"/>'.
+		///   This method searches document for a grapheme cluster from given
+		///   <paramref name="index"/> forward. Note that this method always return an index
+		///   greater than given '<paramref name="index"/>'.
 		///   </para>
 		///   <para>
-		///   'Grapheme cluster' is a sequence of characters
-		///   which consists one 'user perceived character'
-		///   such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
-		///   In most cases, such sequence should not be divided unless user wishes to do so.
+		///   "Grapheme cluster" is a sequence of characters which consists one "user perceived
+		///   character" such as '&#x0041;&#x0300;' - sequence of U+0041 and U+0300; a capital 'A'
+		///   with grave.
 		///   </para>
 		///   <para>
-		///   This method determines an index pointing the middle of character sequences next as undividable:
+		///   This method recognizes character sequences below as a grapheme cluster:
 		///   </para>
 		///   <list type="bullet">
 		///     <item>CR+LF</item>
@@ -2643,8 +2642,8 @@ namespace Sgry.Azuki
 		///     <item>Variation sequence (including IVS)</item>
 		///   </list>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
-		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
+		/// <seealso cref="PrevGraphemeClusterIndex"/>
+		/// <seealso cref="IsNotDividableIndex(int)"/>
 		public int NextGraphemeClusterIndex( int index )
 		{
 			if( index < 0 || Length < index )
@@ -2664,21 +2663,20 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="index">The index to start the search from.</param>
 		/// <returns>The index of the character which starts previous grapheme cluster.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Parameter '<paramref name="index"/>' is out of valid range.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"/>
 		/// <remarks>
 		///   <para>
-		///   This method searches document for a grapheme cluster
-		///   from given <paramref name="index"/> backward.
-		///   Note that this method always return an index less than given '<paramref name="index"/>'.
+		///   This method searches text for a grapheme cluster from given <paramref name="index"/>
+		///   backward. Note that this method always return an index less than given
+		///   '<paramref name="index"/>'.
 		///   </para>
 		///   <para>
-		///   'Grapheme cluster' is a sequence of characters
-		///   which consists one 'user perceived character'
-		///   such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
-		///   In most cases, such sequence should not be divided unless user wishes to do so.
+		///   "Grapheme cluster" is a sequence of characters which consists one "user perceived
+		///   character" such as '&#x0041;&#x0300;' - sequence of U+0041 and U+0300; a capital 'A'
+		///   with grave.
 		///   </para>
 		///   <para>
-		///   This method determines an index pointing the middle of character sequences next as undividable:
+		///   This method recognizes character sequences below as a grapheme cluster:
 		///   </para>
 		///   <list type="bullet">
 		///     <item>CR+LF</item>
@@ -2687,8 +2685,8 @@ namespace Sgry.Azuki
 		///     <item>Variation sequence (including IVS)</item>
 		///   </list>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
-		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
+		/// <seealso cref="PrevGraphemeClusterIndex"/>
+		/// <seealso cref="IsNotDividableIndex(int)"/>
 		public int PrevGraphemeClusterIndex( int index )
 		{
 			if( index < 0 || Length < index )
@@ -2748,27 +2746,24 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Determines whether text can not be divided at given index or not.
+		/// Determines whether text should not be divided at given index or not.
 		/// </summary>
-		/// <param name="index">The index to determine whether it points to middle of an undividable character sequence or not.</param>
+		/// <param name="index">
+		///   The index to determine whether it points to middle of an undividable character
+		///   sequence or not.
+		/// </param>
 		/// <returns>Whether charcter sequence can not be divided at the index or not.</returns>
 		/// <remarks>
 		///   <para>
-		///   This method determines whether text can not be divided at given index or not.
-		///   To seek document through grapheme cluster by grapheme cluster,
-		///   please consider to use
-		///   <see cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</see>
-		///   or
-		///   <see cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</see>.
+		///   This method determines whether text should not be divided at given index or not. To seek
+		///   grapheme clusters in a document one by one, please consider to use
+		///   <see cref="NextGraphemeClusterIndex"/> and <see cref="PrevGraphemeClusterIndex"/>.
+		///   ("Grapheme cluster" is a sequence of characters which consists one "user perceived
+		///   character" such as '&#x0041;&#x0300;' - sequence of U+0041 and U+0300, a capital 'A'
+		///   with grave.)
 		///   </para>
 		///   <para>
-		///   This method determines an index pointing the middle of character sequences next as undividable:
-		///   </para>
-		///   <para>
-		///   'Grapheme cluster' is a sequence of characters
-		///   which consists one 'user perceived character'
-		///   such as sequence of U+0041 and U+0300; a capital 'A' with grave (&#x0041;&#x0300;).
-		///   In most cases, such sequence should not be divided unless user wishes to do so.
+		///   The sequences which should not be divided are:
 		///   </para>
 		///   <list type="bullet">
 		///     <item>CR+LF</item>
@@ -2777,8 +2772,8 @@ namespace Sgry.Azuki
 		///     <item>Variation sequence (including IVS)</item>
 		///   </list>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.NextGraphemeClusterIndex">Document.NextGraphemeClusterIndex method</seealso>
-		/// <seealso cref="Sgry.Azuki.Document.PrevGraphemeClusterIndex">Document.PrevGraphemeClusterIndex method</seealso>
+		/// <seealso cref="NextGraphemeClusterIndex"/>
+		/// <seealso cref="PrevGraphemeClusterIndex"/>
 		public bool IsNotDividableIndex( int index )
 		{
 			if( index <= 0 || Length <= index )
@@ -2791,20 +2786,20 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Determines whether text can not be divided at given index or not.
+		/// Determines whether text should not be divided at given index or not.
 		/// </summary>
 		/// <param name="text">The text to be examined.</param>
-		/// <param name="index">The index to determine whether it points to middle of an undividable character sequence or not.</param>
+		/// <param name="index">
+		///   The index to determine whether it points to middle of an undividable character sequence
+		///   or not.
+		/// </param>
 		/// <remarks>
 		///   <para>
-		///   This method determines whether a string can not be divided at given index or not.
-		///   This is only an utility method.
-		///   Please refer to the document of
-		///   <see cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex instance method</see>
-		///   for detail.
+		///   This method determines whether a string should not be divided at given index or not.
+		///   Please refer to the document of <see cref="IsNotDividableIndex(int)"/> for detail.
 		///   </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.Document.IsNotDividableIndex(int)">Document.IsNotDividableIndex method</seealso>
+		/// <seealso cref="IsNotDividableIndex(int)"/>
 		public static bool IsNotDividableIndex( string text, int index )
 		{
 			if( text == null || index <= 0 || text.Length <= index )
@@ -2817,26 +2812,18 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Determines whether text can not be divided at given index or not.
+		/// Determines whether text should not be divided at given index or not.
 		/// </summary>
 		static bool IsNotDividableIndex( char prevCh, char ch, char nextCh )
 		{
 			if( prevCh == '\r' && ch == '\n' )
-			{
 				return true;
-			}
 			if( IsHighSurrogate(prevCh) && IsLowSurrogate(ch) )
-			{
 				return true;
-			}
 			if( IsCombiningCharacter(ch) && LineLogic.IsEolChar(prevCh) == false )
-			{
 				return true;
-			}
 			if( IsVariationSelector(ch, nextCh) )
-			{
 				return true;
-			}
 
 			return false;
 		}
@@ -2885,10 +2872,9 @@ namespace Sgry.Azuki
 		public static bool IsCombiningCharacter( char ch )
 		{
 			UnicodeCategory category = Char.GetUnicodeCategory( ch );
-			return ( category == UnicodeCategory.NonSpacingMark
+			return (category == UnicodeCategory.NonSpacingMark
 					|| category == UnicodeCategory.SpacingCombiningMark
-					|| category == UnicodeCategory.EnclosingMark
-				);
+					|| category == UnicodeCategory.EnclosingMark);
 		}
 
 		/// <summary>

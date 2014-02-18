@@ -363,6 +363,8 @@ namespace Sgry.Azuki
 				{
 					if( 0 <= " \t".IndexOf(doc[i]) )
 						extraSpaceCount++;
+					else
+						break;
 				}
 
 				// Replace selection

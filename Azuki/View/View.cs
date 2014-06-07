@@ -266,6 +266,7 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Screen Line
 		/// <summary>
 		/// Gets length of the pysical line.
 		/// </summary>
@@ -301,6 +302,19 @@ namespace Sgry.Azuki
 
 			return lineEndIndex - lineHeadIndex;
 		}
+
+		public bool IsLineHeadIndex( int index )
+		{
+			if( index < 0 )
+				return false;
+			else if( index == 0 )
+				return true;
+			else if( index < Document.Length )
+				return (GetLineHeadIndexFromCharIndex(index) == index);
+			else
+				return false;
+		}
+		#endregion
 
 		#region Drawing Options
 		/// <summary>

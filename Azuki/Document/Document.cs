@@ -3054,30 +3054,6 @@ namespace Sgry.Azuki
 					}
 				}
 			}
-
-			public static bool IsLineHead( Document doc, IView view, int index )
-			{
-				DebugUtl.Assert( doc != null );
-				DebugUtl.Assert( view != null );
-
-				if( index < 0 )
-				{
-					return false;
-				}
-				else if( index == 0 )
-				{
-					return true;
-				}
-				else if( index < doc.Length )
-				{
-					int lineHeadIndex = view.GetLineHeadIndexFromCharIndex( index );
-					return (lineHeadIndex == index);
-				}
-				else
-				{
-					return false;
-				}
-			}
 		}
 
 		bool IsEmptyLine( int index )

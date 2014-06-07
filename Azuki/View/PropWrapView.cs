@@ -164,7 +164,8 @@ namespace Sgry.Azuki
 			{
 				// get partial content of the line which exists before the caret
 				int lineBegin, lineEnd;
-				LineLogic.GetLineRangeWithEol( Document.InternalBuffer, PLHI, lineIndex, out lineBegin, out lineEnd );
+				LineLogic.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, true,
+										out lineBegin, out lineEnd );
 				string leftPart = Document.GetTextInRange( lineBegin, lineBegin+columnIndex );
 
 				// measure the characters
@@ -206,7 +207,8 @@ namespace Sgry.Azuki
 				bool isWrapLine = false;
 				
 				// get content of the line
-				LineLogic.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, out begin, out end );
+				LineLogic.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, false,
+										out begin, out end );
 				line = Document.GetTextInRange( begin, end );
 				if( end+1 < Document.Length
 					&& !LineLogic.IsEolChar(Document[end]) )

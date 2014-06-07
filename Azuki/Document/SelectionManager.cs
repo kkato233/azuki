@@ -109,12 +109,29 @@ namespace Sgry.Azuki
 
 		public void SetSelection( int anchor, int caret, IViewInternal view )
 		{
-			Debug.Assert( 0 <= anchor && anchor <= _Document.Length, "parameter 'anchor' out of range (anchor:"+anchor+", Document.Length:"+_Document.Length+")" );
-			Debug.Assert( 0 <= caret && caret <= _Document.Length, "parameter 'caret' out of range (anchor:"+anchor+", Document.Length:"+_Document.Length+")" );
+			Debug.Assert( 0 <= anchor && anchor <= _Document.Length, "parameter 'anchor' out of"
+						  + " range (anchor:" + anchor + ", Document.Length:"
+						  + _Document.Length + ")" );
+			Debug.Assert( 0 <= caret && caret <= _Document.Length, "parameter 'caret' out of range"
+						  + " (anchor:" + anchor + ", Document.Length:" + _Document.Length + ")" );
 			Debug.Assert( _SelectionMode == TextDataType.Normal || view != null );
 
 			// ensure that document can be divided at given index
-			Document.Utl.ConstrainIndex( _Document, ref anchor, ref caret );
+			if( anchor < caret )
+			{
+				while( _Document.IsNotDividableIndex(anchor) )	anchor--;
+				while( _Document.IsNotDividableIndex(caret) )	caret++;
+			}
+			else if( caret < anchor )
+			{
+				while( _Document.IsNotDividableIndex(caret) )	caret--;
+				while( _Document.IsNotDividableIndex(anchor) )	anchor++;
+			}
+			else// if( anchor == caret )
+			{
+				while( _Document.IsNotDividableIndex(caret) )	caret--;
+				anchor = caret;
+			}
 
 			// set selection
 			if( SelectionMode == TextDataType.Rectangle )

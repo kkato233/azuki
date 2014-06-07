@@ -890,7 +890,8 @@ namespace Sgry.Azuki
 			}
 
 			// constrain indexes to avoid dividing a grapheme cluster
-			Utl.ConstrainIndex( this, ref begin, ref end );
+			while( IsNotDividableIndex(begin) )	begin--;
+			while( IsNotDividableIndex(end) )	end++;
 			
 			// retrieve a part of the content
 			char[] buf = new char[end - begin];
@@ -3024,35 +3025,6 @@ namespace Sgry.Azuki
 			{
 				selEndL++; // Target the final line too unless multiple lines
 						   // are selected and at least one char is selected
-			}
-		}
-
-		internal class Utl
-		{
-			public static void ConstrainIndex( Document doc, ref int anchor, ref int caret )
-			{
-				if( anchor < caret )
-				{
-					while( doc.IsNotDividableIndex(anchor) )
-						anchor--;
-					while( doc.IsNotDividableIndex(caret) )
-						caret++;
-				}
-				else if( caret < anchor )
-				{
-					while( doc.IsNotDividableIndex(caret) )
-						caret--;
-					while( doc.IsNotDividableIndex(anchor) )
-						anchor++;
-				}
-				else// if( anchor == caret )
-				{
-					while( doc.IsNotDividableIndex(caret) )
-					{
-						anchor--;
-						caret--;
-					}
-				}
 			}
 		}
 

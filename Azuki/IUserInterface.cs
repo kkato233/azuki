@@ -414,14 +414,21 @@ namespace Sgry.Azuki
 
 		/// <summary>
 		/// Gets or sets whether to reduce an indent level with Backspace key rather than removing
-		/// a character.
+		/// a single space character.
 		/// </summary>
 		/// <remarks>
 		///   <para>
-		///   Note that unindentation will be performed only when the caret is at the end of a
-		///   line which ends with a whitespace.
+		///   If this property is set to true, pressing Backspace key removes multiple whitespace
+		///   characters at once so that the indentation level of the line is decreased. Azuki
+		///   performs this action only if the caret is at end of a line or end of the document.
+		///   </para>
+		///   <para>
+		///   This feature is useful for editing source files in which space characters are used
+		///   to make indentation. To insert space characters to make indentation by pressing Tab
+		///   key, use <see cref="UsesTabForIndent"/> property.
 		///   </para>
 		/// </remarks>
+		/// <seealso cref="UsesTabForIndent"/>
 		bool UnindentsWithBackspace
 		{
 			get; set;

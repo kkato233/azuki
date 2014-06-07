@@ -61,10 +61,7 @@ namespace Sgry.Azuki
 					return;
 				}
 
-				if( ui.UnindentsWithBackspace
-					&& 0 <= caret-1
-					&& (caret == doc.Length || LineLogic.IsEolChar(doc[caret]))
-					&& 0 <= " \r\x3000".IndexOf(doc[caret-1]) )
+				if( ui.UnindentsWithBackspace && ShouldUnindentWithBackspace(ui) )
 				{
 					// Remove whitespace characters to previous tab-stop
 					Point caretPos = view.GetVirPosFromIndex( caret );
@@ -204,7 +201,7 @@ namespace Sgry.Azuki
 				int end = begin + 1;
 
 				// if the caret is at document end, there is no chars to delete
-				if( doc.Length <= doc.CaretIndex )
+				if( doc.Length <= begin )
 				{
 					Plat.Inst.MessageBeep();
 					return;
@@ -1031,6 +1028,28 @@ namespace Sgry.Azuki
 				doc.GetSelection( out begin, out end );
 				predicate( ui, begin, end, ref delta );
 			}
+		}
+
+		static bool ShouldUnindentWithBackspace( IUserInterface ui )
+		{
+			Document doc = ui.Document;
+			int caret = ui.CaretIndex;
+
+			// Is the caret is at end of a line or at non-whitespace character?
+			if( caret == doc.Length
+				|| 0 <= "\r\n".IndexOf(doc[caret])
+				|| " \t".IndexOf(doc[caret]) < 0 )
+			{
+				// And isn't there a non-whitespace character before the caret?
+				int lineBegin = doc.GetLineHeadIndexFromCharIndex( caret );
+				for( int i=lineBegin; i<caret; i++ )
+				{
+					if( " \t".IndexOf(doc[i]) < 0 )
+						return false; // There is; do not unindent
+				}
+				return true;
+			}
+			return false;
 		}
 		#endregion
 	}

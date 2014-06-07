@@ -3,7 +3,6 @@
 //=========================================================
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using Debug = System.Diagnostics.Debug;
 
@@ -490,7 +489,6 @@ namespace Sgry.Azuki.Highlighter
 			KeywordSet set = new KeywordSet();
 
 			// ensure keywords are sorted alphabetically
-#			if !PocketPC
 			for( int i=0; i<keywords.Length-1; i++ )
 				if( 0 <= keywords[i].CompareTo(keywords[i+1]) )
 					throw new ArgumentException(
@@ -500,7 +498,6 @@ namespace Sgry.Azuki.Highlighter
 							+ " '{1}' but not greater.",
 							keywords[i+1], keywords[i]),
 						"value" );
-#			endif
 
 			// parse and generate keyword tree
 			for( int i=0; i<keywords.Length; i++ )
@@ -633,7 +630,6 @@ namespace Sgry.Azuki.Highlighter
 			set
 			{
 				// ensure word characters are sorted alphabetically
-#				if !PocketPC
 				for( int i=0; i<value.Length-1; i++ )
 					if( value[i+1] < value[i] )
 						throw new ArgumentException(
@@ -646,7 +642,6 @@ namespace Sgry.Azuki.Highlighter
 								value[i], (int)value[i] ),
 							"value"
 						);
-#				endif
 
 				_WordCharSet = value;
 			}

@@ -1128,7 +1128,6 @@ namespace Sgry.Azuki
 
 		public void ResetCursorGraphic( Nullable<Point> cursorScreenPos )
 		{
-#			if !PocketPC
 			// check state
 			bool onLineNumberArea = false;
 			bool onHRulerArea = false;
@@ -1196,7 +1195,6 @@ namespace Sgry.Azuki
 			{
 				_UI.SetCursorGraphic( MouseCursor.IBeam );
 			}
-#			endif
 		}
 
 		void _MouseDragEditDelayTimer_Tick( object param )

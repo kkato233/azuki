@@ -1,4 +1,5 @@
 == 1.8.0 (2014-xx-xx) ==
+ * mod: Windows Mobile is not supported any more as a runtime environment
  * mod: Visual Studio 2005 (C# language 2.0) is not supported any more as a development environment
 
 == 1.7.10 (2014-06-07) ==

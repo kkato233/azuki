@@ -16,17 +16,10 @@ namespace Sgry.Azuki.WinForms
 	static class WinApi
 	{
 		#region DLL Names
-#		if !PocketPC
 		const string kernel32_dll = "kernel32";
 		const string user32_dll = "user32";
 		const string gdi32_dll = "gdi32";
 		const string imm32_dll = "imm32";
-#		else
-		const string kernel32_dll = "coredll";
-		const string user32_dll = "coredll";
-		const string gdi32_dll = "coredll";
-		const string imm32_dll = "coredll";
-#		endif
 		#endregion
 
 		#region Constants

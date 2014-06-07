@@ -1,10 +1,8 @@
-// 2009-11-28
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using ListViewSubItem = System.Windows.Forms.ListViewItem.ListViewSubItem;
 
 namespace Sgry.Ann
 {
@@ -22,12 +20,10 @@ namespace Sgry.Ann
 		public DocumentListForm()
 		{
 			InitializeComponent();
-#			if !PocketPC
 			_ListView.ListViewItemSorter = new SimplestListViewItemComparer();
 			StartPosition = FormStartPosition.CenterParent;
 			AutoScaleMode = AutoScaleMode.Font;
 			Font = SystemInformation.MenuFont;
-#			endif
 			_ListView.KeyDown += CloseFormOnEscape;
 			Load += Form_Load;
 		}
@@ -80,9 +76,7 @@ namespace Sgry.Ann
 				_CH_Directory.Width = -2; // expand for maximum width available
 
 				// sort items
-#				if !PocketPC
 				_ListView.Sort();
-#				endif
 			}
 		}
 

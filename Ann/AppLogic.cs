@@ -663,13 +663,11 @@ namespace Sgry.Ann
 				if( doc.FilePath != null )
 				{
 					// set initial directory to that containing currently active file if exists
-#					if !PocketPC
 					string dirPath = Path.GetDirectoryName( doc.FilePath );
 					if( Directory.Exists(dirPath) )
 					{
 						dialog.InitialDirectory = dirPath;
 					}
-#					endif
 
 					// set initial file name
 					dialog.FileName = Path.GetFileName( doc.FilePath );
@@ -687,18 +685,6 @@ namespace Sgry.Ann
 			}
 
 			// associate the file path and reset attributes
-#			if PocketPC
-			// In Windows Mobile's SaveFileDialog,
-			// if we select filter item "Text File|*.txt;*.log"
-			// and enter file name "foo" and tap OK button, then,
-			// FileName property value will be "foo.txt;*.log".
-			// Of cource this is not expected so we cut off trailing garbages here.
-			Match match = Regex.Match( fileName, @"(;\*\.[a-zA-Z0-9_#!$~]+)+" );
-			if( match.Success )
-			{
-				fileName = fileName.Substring( 0, fileName.Length - match.Length );
-			}
-#			endif
 			doc.FilePath = fileName;
 			doc.IsReadOnly = false;
 
@@ -863,12 +849,10 @@ namespace Sgry.Ann
 			}
 			finally
 			{
-#				if !PocketPC
 				if( file != null )
 					file.Dispose();
 				if( stream != null )
 					stream.Dispose();
-#				endif
 			}
 
 			// set document properties
@@ -1461,16 +1445,12 @@ namespace Sgry.Ann
 							MessageBoxIcon icon,
 							MessageBoxDefaultButton defaultButton )
 		{
-#			if !PocketPC
 			return MessageBox.Show( _MainForm,
 									text,
 									"Ann",
 									buttons,
 									icon,
 									defaultButton );
-#			else
-			return MessageBox.Show( text, "Ann", buttons, icon, defaultButton );
-#			endif
 		}
 
 		static class Utl

@@ -55,7 +55,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Mru.cs" />
-    <Compile Include="MyMutex.cs" />
     <Compile Include="PseudoPipe.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>

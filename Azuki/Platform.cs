@@ -4,10 +4,7 @@
 // update: 2011-02-20
 //=========================================================
 using System;
-using System.Text;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
@@ -224,15 +221,9 @@ namespace Sgry.Azuki
 		/// </summary>
 		public FontInfo()
 		{
-#			if PocketPC
-			_Name = FontFamily.GenericSansSerif.Name;
-			_Size = 10;
-			_Style = FontStyle.Regular;
-#			else
 			_Name = SystemFonts.DefaultFont.Name;
 			_Size = (int)SystemFonts.DefaultFont.Size;
 			_Style = SystemFonts.DefaultFont.Style;
-#			endif
 		}
 
 		/// <summary>

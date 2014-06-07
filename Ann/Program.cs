@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -8,17 +7,15 @@ namespace Sgry.Ann
 {
 	class Program
 	{
-#		if !PocketPC
 		[STAThread]
-#		endif
 		static void Main( string[] args )
 		{
-			MyMutex mutex;
+			Mutex mutex;
 			bool owned;
 			List<string> initOpenFilePaths = new List<string>();
 
 			// get mutex object to control application instance
-			using( mutex = new MyMutex(true, AppLogic.AppInstanceMutexName) )
+			using( mutex = new Mutex(true, AppLogic.AppInstanceMutexName) )
 			{
 				owned = mutex.WaitOne( 0 );
 
@@ -51,9 +48,7 @@ namespace Sgry.Ann
 				app.MainForm = new AnnForm( app );
 				app.LoadConfig( true );
 
-#				if !PocketPC
 				Application.EnableVisualStyles();
-#				endif
 				Application.Run( app.MainForm );
 			}
 		}

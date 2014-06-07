@@ -543,15 +543,16 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void Undo( IUserInterface ui )
 		{
-			IView view = ui.View;
-			if( view.Document.CanUndo == false
-				|| view.Document.IsReadOnly )
+			var view = ui.View as IViewInternal;
+			var doc = view.Document;
+			if( doc.CanUndo == false
+				|| doc.IsReadOnly )
 			{
 				return;
 			}
 
 			// undo
-			view.Document.Undo();
+			doc.Undo();
 			if( ui.UsesStickyCaret == false )
 			{
 				view.SetDesiredColumn();
@@ -561,7 +562,7 @@ namespace Sgry.Azuki
 			// redraw graphic of dirt-bar
 			if( ui.ShowsDirtBar )
 			{
-				ui.View.Invalidate( ui.View.DirtBarRectangle );
+				view.Invalidate( view.DirtBarRectangle );
 			}
 		}
 

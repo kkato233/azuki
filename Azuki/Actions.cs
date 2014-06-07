@@ -543,7 +543,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void Undo( IUserInterface ui )
 		{
-			var view = ui.View as IViewInternal;
+			var view = ui.View;
 			var doc = view.Document;
 			if( doc.CanUndo == false
 				|| doc.IsReadOnly )

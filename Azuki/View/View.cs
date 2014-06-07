@@ -12,7 +12,7 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Platform independent view of Azuki.
 	/// </summary>
-	abstract partial class View : IView, IDisposable
+	abstract partial class View : IViewInternal, IDisposable
 	{
 		#region Fields and Types
 		const float GoldenRatio = 1.6180339887f;

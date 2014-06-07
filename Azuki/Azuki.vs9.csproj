@@ -95,14 +95,15 @@
     <Compile Include="Highlighter\JavaScriptHighlighter.cs" />
     <Compile Include="IUserInterface.cs" />
     <Compile Include="IWordProc.cs" />
-    <Compile Include="LineLogic.cs" />
     <Compile Include="Platform.cs" />
+    <Compile Include="TextUtil.cs" />
     <Compile Include="UiImpl.cs" />
     <Compile Include="UserPref.cs" />
     <Compile Include="View\ColorScheme.cs" />
     <Compile Include="View\DrawingOption.cs" />
     <Compile Include="View\HRulerIndicatorType.cs" />
     <Compile Include="View\IView.cs" />
+    <Compile Include="View\IViewInternal.cs" />
     <Compile Include="View\MouseCursor.cs" />
     <Compile Include="View\PropView.cs" />
     <Compile Include="View\PropWrapView.cs" />

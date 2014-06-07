@@ -1,7 +1,5 @@
 ﻿// file: SelectionManager.cs
 // brief: Internal class to manage text selection range.
-// author: YAMAMOTO Suguru
-// update: 2010-08-13
 //=========================================================
 using System;
 using System.Diagnostics;
@@ -109,7 +107,7 @@ namespace Sgry.Azuki
 			}
 		}
 
-		public void SetSelection( int anchor, int caret, IView view )
+		public void SetSelection( int anchor, int caret, IViewInternal view )
 		{
 			Debug.Assert( 0 <= anchor && anchor <= _Document.Length, "parameter 'anchor' out of range (anchor:"+anchor+", Document.Length:"+_Document.Length+")" );
 			Debug.Assert( 0 <= caret && caret <= _Document.Length, "parameter 'caret' out of range (anchor:"+anchor+", Document.Length:"+_Document.Length+")" );
@@ -178,7 +176,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Internal Logic
-		void SetSelection_Rect( int anchor, int caret, IView view )
+		void SetSelection_Rect( int anchor, int caret, IViewInternal view )
 		{
 			// calculate graphical position of both anchor and new caret
 			Point anchorPos = view.GetVirPosFromIndex( anchor );
@@ -193,7 +191,7 @@ namespace Sgry.Azuki
 			SetSelection_Normal( anchor, caret );
 		}
 
-		void SetSelection_Line( int anchor, int caret, IView view )
+		void SetSelection_Line( int anchor, int caret, IViewInternal view )
 		{
 			int toLineIndex;
 

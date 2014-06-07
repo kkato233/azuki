@@ -24,8 +24,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void BackSpace( IUserInterface ui )
 		{
-			Document doc = ui.Document;
-			View view = (View)ui.View;
+			var doc = ui.Document;
+			var view = ui.View as View;
 
 			// do nothing if the document is read-only
 			if( doc.IsReadOnly )
@@ -117,8 +117,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void BackSpaceWord( IUserInterface ui )
 		{
-			Document doc = ui.Document;
-			IView view = ui.View;
+			var doc = ui.Document;
+			var view = ui.View as IViewInternal;
 
 			// do nothing if the document is read-only
 			if( doc.IsReadOnly )
@@ -231,8 +231,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static void DeleteWord( IUserInterface ui )
 		{
-			Document doc = ui.Document;
-			IView view = ui.View;
+			var doc = ui.Document;
+			var view = ui.View as IViewInternal;
 
 			// do nothing if the document is read-only
 			if( doc.IsReadOnly )
@@ -1018,10 +1018,9 @@ namespace Sgry.Azuki
 
 				int lastIndex = doc.RectSelectRanges.Length - 1;
 				doc.SelectionMode = TextDataType.Rectangle;
-				doc.SelectionManager.SetSelection(
-						doc.RectSelectRanges[0],
-						doc.RectSelectRanges[lastIndex] + delta,
-						ui.View );
+				doc.SelectionManager.SetSelection( doc.RectSelectRanges[0],
+												   doc.RectSelectRanges[lastIndex] + delta,
+												   (IViewInternal)ui.View );
 			}
 			else
 			{

@@ -487,7 +487,7 @@ namespace Sgry.Azuki
 												 + " SelectionMode is not TextDataType.Normal."
 												 + " (SelectionMode:" + SelectionMode + ")." );
 
-			_SelMan.SetSelection( anchor, caret, view );
+			_SelMan.SetSelection( anchor, caret, (IViewInternal)view );
 		}
 
 		/// <summary>

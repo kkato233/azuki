@@ -1,4 +1,4 @@
-== 1.7.10 (2014-xx-xx) ==
+== 1.7.10 (2014-06-07) ==
  * add: Added AutoIndentHooks.Python; an auto-indentation logic for Python
  * add: Now pressing Backspace key unindents the line when the caret is at end of a line which ends with whitespace (Can be turned off by IUserInterface.UnindentsWithBackspace)
  * fix: Changing ViewType resets AzukiControl.ScrollsBeyondLastLine to true (Special thanks: dck)

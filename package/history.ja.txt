@@ -1,4 +1,4 @@
-== 1.7.10 (2014-xx-xx) ==
+== 1.7.10 (2014-06-07) ==
  * add: Python用の自動インデントフックAutoIndentHooks.Pythonを追加
  * add: 空白で終わる行の末尾でBackspaceキーを押すと逆インデントするように改善（IUserInterface.UnindentsWithBackspaceで機能無効化可能）
  * fix: ViewTypeを切り替えるとAzukiControl.ScrollsBeyondLastLineがtrueにリセットされてしまう問題を修正（dckさんに感謝）

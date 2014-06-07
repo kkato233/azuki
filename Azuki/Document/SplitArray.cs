@@ -537,7 +537,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		public IEnumerator<T> GetEnumerator()
 		{
-			return new SplitArrayEnumerator<T>( this );
+			for( int i=0; i<Count; i++ )
+				yield return GetAt( i );
 		}
 
 		/// <summary>
@@ -545,7 +546,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return new SplitArrayEnumerator<T>( this );
+			return GetEnumerator();
 		}
 
 		/// <summary>
@@ -633,70 +634,4 @@ namespace Sgry.Azuki
 		}
 		#endregion
 	}
-
-	#region Enumerator
-	/// <summary>
-	/// The enumerator class for the SplitArray.
-	/// </summary>
-	class SplitArrayEnumerator<T> : IEnumerator<T>
-	{
-		SplitArray<T> _Array;
-		int _Index = -1;
-
-		#region Init / Dispose
-		/// <summary>
-		/// Creates a new instance.
-		/// </summary>
-		public SplitArrayEnumerator( SplitArray<T> array )
-		{
-			_Array = array;
-		}
-
-		/// <summary>
-		/// Disposes resources.
-		/// </summary>
-		public void Dispose()
-		{}
-		#endregion
-
-		#region IEnumerator Interface
-		/// <summary>
-		/// Retrieves the element at where this enumerator points.
-		/// </summary>
-		public T Current
-		{
-			get{ return _Array.GetAt(_Index); }
-		}
-
-		/// <summary>
-		/// Retrieves the element at where this enumerator points.
-		/// </summary>
-		object IEnumerator.Current
-		{
-			get{ return _Array.GetAt(_Index); }
-		}
-
-		/// <summary>
-		/// Moves location to next.
-		/// </summary>
-		/// <returns>true if successfuly moved to next</returns>
-		public bool MoveNext()
-		{
-			if( _Array.Count <= _Index+1 )
-				return false;
-
-			_Index++;
-			return true;
-		}
-
-		/// <summary>
-		/// Resets location of this enumerator
-		/// </summary>
-		public void Reset()
-		{
-			_Index = 0;
-		}
-		#endregion
-	}
-	#endregion
 }

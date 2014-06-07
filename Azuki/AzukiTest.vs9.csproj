@@ -85,7 +85,7 @@
     <Compile Include="Highlighter\XmlHighlighter.cs" />
     <Compile Include="IUserInterface.cs" />
     <Compile Include="IWordProc.cs" />
-    <Compile Include="LineLogic.cs" />
+    <Compile Include="TextUtil.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Test\CaretMoveLogicTest.cs" />
     <Compile Include="Test\DefaultWordProcTest.cs" />
@@ -93,7 +93,7 @@
     <Compile Include="Test\EditHistoryTest.cs" />
     <Compile Include="Test\FixedBugsTest.cs" />
     <Compile Include="Test\KeywordHighlighterTest.cs" />
-    <Compile Include="Test\LineLogicTest.cs" />
+    <Compile Include="Test\TextUtilTest.cs" />
     <Compile Include="Test\RleArrayTest.cs" />
     <Compile Include="Test\SplitArrayTest.cs" />
     <Compile Include="Test\TestDriver.cs" />

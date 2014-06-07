@@ -477,7 +477,7 @@ namespace Sgry.Azuki
 				// Insert every row at same column position
 				insertPos = ui.View.GetVirPosFromIndex( doc.CaretIndex );
 				rowBegin = 0;
-				rowEnd = LineLogic.NextLineHead( clipboardText, rowBegin );
+				rowEnd = TextUtil.NextLineHead( clipboardText, rowBegin );
 				while( 0 <= rowEnd )
 				{
 					// get this row content
@@ -507,7 +507,7 @@ namespace Sgry.Azuki
 					// goto next line
 					insertPos.Y += ui.LineSpacing;
 					rowBegin = rowEnd;
-					rowEnd = LineLogic.NextLineHead( clipboardText, rowBegin );
+					rowEnd = TextUtil.NextLineHead( clipboardText, rowBegin );
 				}
 			}
 			else

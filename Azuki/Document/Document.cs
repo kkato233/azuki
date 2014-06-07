@@ -381,7 +381,7 @@ namespace Sgry.Azuki
 													  + " (lineIndex:" + lineIndex + ", actual"
 													  + " line count:" + _LHI.Count + ")" );
 			
-			int caretIndex = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer, _LHI,
+			int caretIndex = TextUtil.GetCharIndexFromLineColumnIndex( _Buffer, _LHI,
 																		lineIndex, columnIndex );
 			SetSelection( caretIndex, caretIndex );
 		}
@@ -769,7 +769,7 @@ namespace Sgry.Azuki
 			int begin, end;
 
 			// get line range
-			LineLogic.GetLineRange( _Buffer, _LHI, lineIndex, includesEolCode,
+			TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, includesEolCode,
 									out begin, out end );
 
 			// return length
@@ -793,7 +793,7 @@ namespace Sgry.Azuki
 			char[] lineContent;
 
 			// prepare buffer to store line content
-			LineLogic.GetLineRange( _Buffer, _LHI, lineIndex, false, out begin, out end );
+			TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, false, out begin, out end );
 			if( end <= begin )
 			{
 				return String.Empty;
@@ -823,7 +823,7 @@ namespace Sgry.Azuki
 			char[] lineContent;
 
 			// prepare buffer to store line content
-			LineLogic.GetLineRange( _Buffer, _LHI, lineIndex, true, out begin, out end );
+			TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, true, out begin, out end );
 			if( end <= begin )
 			{
 				return String.Empty;
@@ -1087,7 +1087,7 @@ namespace Sgry.Azuki
 			if( begin < end )
 			{
 				// manage line head indexes and delete content
-				LineLogic.LHI_Delete( _LHI, _LDS, _Buffer, begin, end );
+				TextUtil.LHI_Delete( _LHI, _LDS, _Buffer, begin, end );
 				_Buffer.RemoveRange( begin, end );
 
 				// manage caret/anchor index
@@ -1109,7 +1109,7 @@ namespace Sgry.Azuki
 			if( 0 < text.Length )
 			{
 				// manage line head indexes and insert content
-				LineLogic.LHI_Insert( _LHI, _LDS, _Buffer, text, begin );
+				TextUtil.LHI_Insert( _LHI, _LDS, _Buffer, text, begin );
 				_Buffer.Insert( begin, text.ToCharArray() );
 
 				// manage caret/anchor index
@@ -1761,7 +1761,7 @@ namespace Sgry.Azuki
 													   + " (charIndex:" + charIndex
 													   + ", Length:" + Length + ")." );
 
-			return LineLogic.GetLineHeadIndexFromCharIndex( _Buffer, _LHI, charIndex );
+			return TextUtil.GetLineHeadIndexFromCharIndex( _Buffer, _LHI, charIndex );
 		}
 
 		/// <summary>
@@ -1795,7 +1795,7 @@ namespace Sgry.Azuki
 					"Invalid index was given (charIndex:" + charIndex
 					+ ", document.Length:" + Length + ")." );
 
-			return LineLogic.GetLineIndexFromCharIndex( _LHI, charIndex );
+			return TextUtil.GetLineIndexFromCharIndex( _LHI, charIndex );
 		}
 
 		/// <summary>
@@ -1813,7 +1813,7 @@ namespace Sgry.Azuki
 					"Invalid index was given (charIndex:" + charIndex
 					+ ", document.Length:" + Length + ")." );
 
-			LineLogic.GetLineColumnIndexFromCharIndex( _Buffer,
+			TextUtil.GetLineColumnIndexFromCharIndex( _Buffer,
 													   _LHI,
 													   charIndex,
 													   out lineIndex,
@@ -1840,7 +1840,7 @@ namespace Sgry.Azuki
 
 			int index;
 
-			index = LineLogic.GetCharIndexFromLineColumnIndex( _Buffer,
+			index = TextUtil.GetCharIndexFromLineColumnIndex( _Buffer,
 															   _LHI,
 															   lineIndex,
 															   columnIndex );
@@ -2883,7 +2883,7 @@ namespace Sgry.Azuki
 				return true;
 			if( IsHighSurrogate(prevCh) && IsLowSurrogate(ch) )
 				return true;
-			if( IsCombiningCharacter(ch) && LineLogic.IsEolChar(prevCh) == false )
+			if( IsCombiningCharacter(ch) && TextUtil.IsEolChar(prevCh) == false )
 				return true;
 			if( IsVariationSelector(ch, nextCh) )
 				return true;
@@ -3084,11 +3084,11 @@ namespace Sgry.Azuki
 		{
 			// is the index indicates end of the document or end of a line?
 			if( index == Length
-				|| index < Length && LineLogic.IsEolChar(this[index]))
+				|| index < Length && TextUtil.IsEolChar(this[index]))
 			{
 				// is the index indicates start of the document or start of a line?
 				if( index == 0
-					|| 0 <= index-1 && LineLogic.IsEolChar(this[index-1]) )
+					|| 0 <= index-1 && TextUtil.IsEolChar(this[index-1]) )
 				{
 					return true;
 				}

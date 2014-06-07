@@ -559,7 +559,7 @@ namespace Sgry.Azuki
 
 				// invalidate all lines below caret
 				// if old text or new text contains multiple lines
-				if( LineLogic.IsMultiLine(e.OldText) || LineLogic.IsMultiLine(e.NewText) )
+				if( TextUtil.IsMultiLine(e.OldText) || TextUtil.IsMultiLine(e.NewText) )
 				{
 					//NO_NEED//invalidRect2.X = 0;
 					invalidRect2.Y = invalidRect1.Bottom;
@@ -926,7 +926,7 @@ namespace Sgry.Azuki
 			{
 				DebugUtl.Assert( lineHead <= lineEnd );
 				if( lineHead == lineEnd
-					|| (0 < lineEnd && LineLogic.IsEolChar(Document[lineEnd-1]) == false) )
+					|| (0 < lineEnd && TextUtil.IsEolChar(Document[lineEnd-1]) == false) )
 				{
 					DrawEofMark( g, ref pos );
 				}

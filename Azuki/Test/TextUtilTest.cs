@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Sgry.Azuki.Test
 {
-	static class LineLogicTest
+	static class TextUtilTest
 	{
 		// --------------------
 		// "keep it as simple as possible\r\n (head: 0, len:31)
@@ -22,7 +22,7 @@ namespace Sgry.Azuki.Test
 		{
 			int testNum = 0;
 
-			Console.WriteLine( "[Test for Azuki.LineLogic]" );
+			Console.WriteLine( "[Test for Azuki.TextUtil]" );
 
 			Console.WriteLine( "test {0} - LHI_Insert()", testNum++ );
 			TestUtl.Do( Test_LHI_Insert );
@@ -66,13 +66,13 @@ namespace Sgry.Azuki.Test
 
 			MakeTestData( out text, out lhi, out lds );
 
-			TestUtl.AssertEquals(  0, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 0,  0) );
-			TestUtl.AssertEquals( 34, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 2,  1) );
-			TestUtl.AssertEquals( 71, LineLogic.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) );
+			TestUtl.AssertEquals(  0, TextUtil.GetCharIndexFromLineColumnIndex(text, lhi, 0,  0) );
+			TestUtl.AssertEquals( 34, TextUtil.GetCharIndexFromLineColumnIndex(text, lhi, 2,  1) );
+			TestUtl.AssertEquals( 71, TextUtil.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) );
 
 			try
 			{
-				LineLogic.GetCharIndexFromLineColumnIndex( text, lhi, 6, 19 );
+				TextUtil.GetCharIndexFromLineColumnIndex( text, lhi, 6, 19 );
 				TestUtl.Fail( "exception must be thrown here." );
 			}
 			catch( Exception ex )
@@ -82,7 +82,7 @@ namespace Sgry.Azuki.Test
 
 			try
 			{
-				LineLogic.GetCharIndexFromLineColumnIndex( text, lhi, 0, 100 );
+				TextUtil.GetCharIndexFromLineColumnIndex( text, lhi, 0, 100 );
 				TestUtl.Fail( "exception must be thrown here." );
 			}
 			catch( Exception ex )
@@ -99,7 +99,7 @@ namespace Sgry.Azuki.Test
 
 			try
 			{
-				LineLogic.NextLineHead( text, -1 );
+				TextUtil.NextLineHead( text, -1 );
 				TestUtl.Fail( "exception must be thrown here." );
 			}
 			catch( Exception ex )
@@ -109,20 +109,20 @@ namespace Sgry.Azuki.Test
 
 			int i = 0;
 			for( ; i<32; i++ )
-				TestUtl.AssertEquals( 32, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( 32, TextUtil.NextLineHead(text, i) );
 			for( ; i<33; i++ )
-				TestUtl.AssertEquals( 33, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( 33, TextUtil.NextLineHead(text, i) );
 			for( ; i<37; i++ )
-				TestUtl.AssertEquals( 37, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( 37, TextUtil.NextLineHead(text, i) );
 			for( ; i<38; i++ )
-				TestUtl.AssertEquals( 38, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( 38, TextUtil.NextLineHead(text, i) );
 			for( ; i<52; i++ )
-				TestUtl.AssertEquals( 52, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( 52, TextUtil.NextLineHead(text, i) );
 			for( ; i<53; i++ )
-				TestUtl.AssertEquals( 53, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( 53, TextUtil.NextLineHead(text, i) );
 			for( ; i<71; i++ )
-				TestUtl.AssertEquals( -1, LineLogic.NextLineHead(text, i) );
-			TestUtl.AssertEquals( -1, LineLogic.NextLineHead(text, i) );
+				TestUtl.AssertEquals( -1, TextUtil.NextLineHead(text, i) );
+			TestUtl.AssertEquals( -1, TextUtil.NextLineHead(text, i) );
 		}
 
 		static void Test_PrevLineHead()
@@ -133,19 +133,19 @@ namespace Sgry.Azuki.Test
 
 			int i=71;
 			for( ; 53<=i; i-- )
-				TestUtl.AssertEquals( 53, LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 53, TextUtil.PrevLineHead(text, i) );
 			for( ; 52<=i; i-- )
-				TestUtl.AssertEquals( 52, LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 52, TextUtil.PrevLineHead(text, i) );
 			for( ; 38<=i; i-- )
-				TestUtl.AssertEquals( 38, LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 38, TextUtil.PrevLineHead(text, i) );
 			for( ; 37<=i; i-- )
-				TestUtl.AssertEquals( 37, LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 37, TextUtil.PrevLineHead(text, i) );
 			for( ; 33<=i; i-- )
-				TestUtl.AssertEquals( 33, LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 33, TextUtil.PrevLineHead(text, i) );
 			for( ; 32<=i; i-- )
-				TestUtl.AssertEquals( 32, LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 32, TextUtil.PrevLineHead(text, i) );
 			for( ; 0<=i; i-- )
-				TestUtl.AssertEquals( 0,  LineLogic.PrevLineHead(text, i) );
+				TestUtl.AssertEquals( 0,  TextUtil.PrevLineHead(text, i) );
 		}
 
 		static void Test_GetLineLengthByCharIndex()
@@ -156,20 +156,20 @@ namespace Sgry.Azuki.Test
 			text.Insert( 0, TestData.ToCharArray() );
 
 			for( ; i<32; i++ )
-				TestUtl.AssertEquals( 32, LineLogic.GetLineLengthByCharIndex(text, i) );
+				TestUtl.AssertEquals( 32, TextUtil.GetLineLengthByCharIndex(text, i) );
 			for( ; i<33; i++ )
-				TestUtl.AssertEquals(  1, LineLogic.GetLineLengthByCharIndex(text, i) );
+				TestUtl.AssertEquals(  1, TextUtil.GetLineLengthByCharIndex(text, i) );
 			for( ; i<37; i++ )
-				TestUtl.AssertEquals(  4, LineLogic.GetLineLengthByCharIndex(text, i) );
+				TestUtl.AssertEquals(  4, TextUtil.GetLineLengthByCharIndex(text, i) );
 			for( ; i<38; i++ )
-				TestUtl.AssertEquals(  1, LineLogic.GetLineLengthByCharIndex(text, i) );
+				TestUtl.AssertEquals(  1, TextUtil.GetLineLengthByCharIndex(text, i) );
 			for( ; i<52; i++ )
-				TestUtl.AssertEquals( 14, LineLogic.GetLineLengthByCharIndex(text, i) );
+				TestUtl.AssertEquals( 14, TextUtil.GetLineLengthByCharIndex(text, i) );
 			for( ; i<53; i++ )
-				TestUtl.AssertEquals(  1, LineLogic.GetLineLengthByCharIndex(text, i) );
+				TestUtl.AssertEquals(  1, TextUtil.GetLineLengthByCharIndex(text, i) );
 			for( ; i<71; i++ )
-				TestUtl.AssertEquals( 17, LineLogic.GetLineLengthByCharIndex(text, i) );
-			TestUtl.AssertEquals( 17, LineLogic.GetLineLengthByCharIndex(text, i) ); // EOF
+				TestUtl.AssertEquals( 17, TextUtil.GetLineLengthByCharIndex(text, i) );
+			TestUtl.AssertEquals( 17, TextUtil.GetLineLengthByCharIndex(text, i) ); // EOF
 		}
 
 		static void Test_GetLineRange()
@@ -181,52 +181,52 @@ namespace Sgry.Azuki.Test
 
 			MakeTestData( out text, out lhi, out lds );
 
-			LineLogic.GetLineRange( text, lhi, 0, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 0, false, out head, out end );
 			TestUtl.AssertEquals( 0, head );
 			TestUtl.AssertEquals( 30, end );
-			LineLogic.GetLineRange( text, lhi, 0, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 0, true, out head, out end );
 			TestUtl.AssertEquals( 0, head );
 			TestUtl.AssertEquals( 32, end );
 
-			LineLogic.GetLineRange( text, lhi, 1, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 1, false, out head, out end );
 			TestUtl.AssertEquals( 32, head );
 			TestUtl.AssertEquals( 32, end );
-			LineLogic.GetLineRange( text, lhi, 1, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 1, true, out head, out end );
 			TestUtl.AssertEquals( 32, head );
 			TestUtl.AssertEquals( 33, end );
 
-			LineLogic.GetLineRange( text, lhi, 2, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 2, false, out head, out end );
 			TestUtl.AssertEquals( 33, head );
 			TestUtl.AssertEquals( 36, end );
-			LineLogic.GetLineRange( text, lhi, 2, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 2, true, out head, out end );
 			TestUtl.AssertEquals( 33, head );
 			TestUtl.AssertEquals( 37, end );
 
-			LineLogic.GetLineRange( text, lhi, 3, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 3, false, out head, out end );
 			TestUtl.AssertEquals( 37, head );
 			TestUtl.AssertEquals( 37, end );
-			LineLogic.GetLineRange( text, lhi, 3, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 3, true, out head, out end );
 			TestUtl.AssertEquals( 37, head );
 			TestUtl.AssertEquals( 38, end );
 
-			LineLogic.GetLineRange( text, lhi, 4, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 4, false, out head, out end );
 			TestUtl.AssertEquals( 38, head );
 			TestUtl.AssertEquals( 51, end );
-			LineLogic.GetLineRange( text, lhi, 4, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 4, true, out head, out end );
 			TestUtl.AssertEquals( 38, head );
 			TestUtl.AssertEquals( 52, end );
 
-			LineLogic.GetLineRange( text, lhi, 5, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 5, false, out head, out end );
 			TestUtl.AssertEquals( 52, head );
 			TestUtl.AssertEquals( 52, end );
-			LineLogic.GetLineRange( text, lhi, 5, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 5, true, out head, out end );
 			TestUtl.AssertEquals( 52, head );
 			TestUtl.AssertEquals( 53, end );
 
-			LineLogic.GetLineRange( text, lhi, 6, false, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 6, false, out head, out end );
 			TestUtl.AssertEquals( 53, head );
 			TestUtl.AssertEquals( 71, end );
-			LineLogic.GetLineRange( text, lhi, 6, true, out head, out end );
+			TextUtil.GetLineRange( text, lhi, 6, true, out head, out end );
 			TestUtl.AssertEquals( 53, head );
 			TestUtl.AssertEquals( 71, end );
 		}
@@ -244,18 +244,18 @@ namespace Sgry.Azuki.Test
 
 			int i=0;
 			for( ; i<32; i++ )
-				TestUtl.AssertEquals( 0, LineLogic.GetLineIndexFromCharIndex(lhi, i) );
+				TestUtl.AssertEquals( 0, TextUtil.GetLineIndexFromCharIndex(lhi, i) );
 			for( ; i<33; i++ )
-				TestUtl.AssertEquals( 1, LineLogic.GetLineIndexFromCharIndex(lhi, i) );
+				TestUtl.AssertEquals( 1, TextUtil.GetLineIndexFromCharIndex(lhi, i) );
 			for( ; i<37; i++ )
-				TestUtl.AssertEquals( 2, LineLogic.GetLineIndexFromCharIndex(lhi, i) );
+				TestUtl.AssertEquals( 2, TextUtil.GetLineIndexFromCharIndex(lhi, i) );
 			for( ; i<38; i++ )
-				TestUtl.AssertEquals( 3, LineLogic.GetLineIndexFromCharIndex(lhi, i) );
+				TestUtl.AssertEquals( 3, TextUtil.GetLineIndexFromCharIndex(lhi, i) );
 			for( ; i<52; i++ )
-				TestUtl.AssertEquals( 4, LineLogic.GetLineIndexFromCharIndex(lhi, i) );
+				TestUtl.AssertEquals( 4, TextUtil.GetLineIndexFromCharIndex(lhi, i) );
 			for( ; i<53; i++ )
-				TestUtl.AssertEquals( 5, LineLogic.GetLineIndexFromCharIndex(lhi, i) );
-			TestUtl.AssertEquals( 6, LineLogic.GetLineIndexFromCharIndex(lhi, 54) );
+				TestUtl.AssertEquals( 5, TextUtil.GetLineIndexFromCharIndex(lhi, i) );
+			TestUtl.AssertEquals( 6, TextUtil.GetLineIndexFromCharIndex(lhi, 54) );
 		}
 
 		static void Test_GetLineColumnIndexFromCharIndex()
@@ -266,21 +266,21 @@ namespace Sgry.Azuki.Test
 
 			MakeTestData( out text, out lhi );
 
-			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 0, out l, out c );
+			TextUtil.GetLineColumnIndexFromCharIndex( text, lhi, 0, out l, out c );
 			TestUtl.AssertEquals( 0, l );
 			TestUtl.AssertEquals( 0, c );
-			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 2, out l, out c );
+			TextUtil.GetLineColumnIndexFromCharIndex( text, lhi, 2, out l, out c );
 			TestUtl.AssertEquals( 0, l );
 			TestUtl.AssertEquals( 2, c );
-			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 40, out l, out c );
+			TextUtil.GetLineColumnIndexFromCharIndex( text, lhi, 40, out l, out c );
 			TestUtl.AssertEquals( 4, l );
 			TestUtl.AssertEquals( 2, c );
-			LineLogic.GetLineColumnIndexFromCharIndex( text, lhi, 71, out l, out c ); // 71 --> EOF
+			TextUtil.GetLineColumnIndexFromCharIndex( text, lhi, 71, out l, out c ); // 71 --> EOF
 			TestUtl.AssertEquals( 6, l );
 			TestUtl.AssertEquals( 18, c );
 			try
 			{
-				LineLogic.GetLineColumnIndexFromCharIndex(text, lhi, 72, out l, out c);
+				TextUtil.GetLineColumnIndexFromCharIndex(text, lhi, 72, out l, out c);
 				TestUtl.Fail("exception must be thrown here.");
 			}
 			catch( Exception ex )
@@ -298,20 +298,20 @@ namespace Sgry.Azuki.Test
 
 			int i=0;
 			for( ; i<32; i++ )
-				TestUtl.AssertEquals(  0, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+				TestUtl.AssertEquals(  0, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<33; i++ )
-				TestUtl.AssertEquals( 32, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+				TestUtl.AssertEquals( 32, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<37; i++ )
-				TestUtl.AssertEquals( 33, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+				TestUtl.AssertEquals( 33, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<38; i++ )
-				TestUtl.AssertEquals( 37, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+				TestUtl.AssertEquals( 37, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<52; i++ )
-				TestUtl.AssertEquals( 38, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+				TestUtl.AssertEquals( 38, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<53; i++ )
-				TestUtl.AssertEquals( 52, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+				TestUtl.AssertEquals( 52, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<=71; i++ )
-				TestUtl.AssertEquals( 53, LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i) );
-			try{ LineLogic.GetLineHeadIndexFromCharIndex(text, lhi, i); TestUtl.Fail("exception must be thrown here."); }
+				TestUtl.AssertEquals( 53, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
+			try{ TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i); TestUtl.Fail("exception must be thrown here."); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 		}
 
@@ -334,21 +334,21 @@ namespace Sgry.Azuki.Test
 			SplitArray<LineDirtyState> lds = new SplitArray<LineDirtyState>( 1, 1 );
 			lhi.Add( 0 ); lds.Add( LineDirtyState.Clean );
 
-			LineLogic.LHI_Insert( lhi, lds, text, TestData1, 0 );
+			TextUtil.LHI_Insert( lhi, lds, text, TestData1, 0 );
 			text.Add( TestData1.ToCharArray() );
 			TestUtl.AssertEquals( "0 19 20", lhi.ToString() );
 			TestUtl.AssertEquals( "DDD", MakeLdsText(lds) );
 
 			for( int i=0; i<lds.Count; i++ )
 				lds[i] = LineDirtyState.Clean;
-			LineLogic.LHI_Insert( lhi, lds, text, TestData2, 6 );
+			TextUtil.LHI_Insert( lhi, lds, text, TestData2, 6 );
 			text.Insert( 6, TestData2.ToCharArray() );
 			TestUtl.AssertEquals( "0 32 33 36 37 51 52", lhi.ToString() );
 			TestUtl.AssertEquals( "DDDDDCC", MakeLdsText(lds) );
 
 			for( int i=0; i<lds.Count; i++ )
 				lds[i] = LineDirtyState.Clean;
-			LineLogic.LHI_Insert( lhi, lds, text, "u", 34 );
+			TextUtil.LHI_Insert( lhi, lds, text, "u", 34 );
 			text.Insert( 34, "u".ToCharArray() );
 			TestUtl.AssertEquals( "0 32 33 37 38 52 53", lhi.ToString() );
 			TestUtl.AssertEquals( "CCDCCCC", MakeLdsText(lds) );
@@ -361,12 +361,12 @@ namespace Sgry.Azuki.Test
 			// (1)+(2)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
 				text.Add( "foo\r\nbar".ToCharArray() );
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
 
-				LineLogic.LHI_Insert( lhi, lds, text, "\nx", 4 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\nx", 4 );
 				text.Insert( 4, "\nx".ToCharArray() );
 				TestUtl.AssertEquals( "0 5 7", lhi.ToString() );
 				TestUtl.AssertEquals( "DDC", MakeLdsText(lds) );
@@ -375,12 +375,12 @@ namespace Sgry.Azuki.Test
 			// (1)+(3)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
 				text.Add( "foo\r\nbar".ToCharArray() );
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
 
-				LineLogic.LHI_Insert( lhi, lds, text, "x\r", 4 );
+				TextUtil.LHI_Insert( lhi, lds, text, "x\r", 4 );
 				text.Insert( 4, "x\r".ToCharArray() );
 				TestUtl.AssertEquals( "0 4 7", lhi.ToString() );
 				TestUtl.AssertEquals( "DDC", MakeLdsText(lds) );
@@ -389,12 +389,12 @@ namespace Sgry.Azuki.Test
 			// (1)+(2)+(3)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
 				text.Add( "foo\r\nbar".ToCharArray() );
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
 
-				LineLogic.LHI_Insert( lhi, lds, text, "\n\r", 4 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\n\r", 4 );
 				text.Insert( 4, "\n\r".ToCharArray() );
 				TestUtl.AssertEquals( "0 5 7", lhi.ToString() );
 				TestUtl.AssertEquals( "DDC", MakeLdsText(lds) );
@@ -403,12 +403,12 @@ namespace Sgry.Azuki.Test
 			// (2)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\rbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\rbar", 0 );
 				text.Add( "foo\rbar".ToCharArray() );
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
 
-				LineLogic.LHI_Insert( lhi, lds, text, "\nx", 4 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\nx", 4 );
 				text.Insert( 4, "\nx".ToCharArray() );
 				TestUtl.AssertEquals( "0 5", lhi.ToString() );
 				TestUtl.AssertEquals( "DD", MakeLdsText(lds) );
@@ -417,12 +417,12 @@ namespace Sgry.Azuki.Test
 			// (3)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\nbar", 0 );
 				text.Add( "foo\nbar".ToCharArray() );
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
 
-				LineLogic.LHI_Insert( lhi, lds, text, "x\r", 3 );
+				TextUtil.LHI_Insert( lhi, lds, text, "x\r", 3 );
 				text.Insert( 3, "x\r".ToCharArray() );
 				TestUtl.AssertEquals( "0 6", lhi.ToString() );
 				TestUtl.AssertEquals( "DC", MakeLdsText(lds) );
@@ -449,7 +449,7 @@ namespace Sgry.Azuki.Test
 
 			// prepare
 			lhi.Add( 0 );
-			LineLogic.LHI_Insert( lhi, lds, text, TestData, 0 );
+			TextUtil.LHI_Insert( lhi, lds, text, TestData, 0 );
 			text.Add( TestData.ToCharArray() );
 			TestUtl.AssertEquals( "0 32 33 37 38 52 53", lhi.ToString() );
 			TestUtl.AssertEquals( "DDDDDDD", MakeLdsText(lds) );
@@ -458,18 +458,18 @@ namespace Sgry.Azuki.Test
 			
 			//--- delete range in line ---
 			// valid range
-			LineLogic.LHI_Delete( lhi, lds, text, 2, 5 );
+			TextUtil.LHI_Delete( lhi, lds, text, 2, 5 );
 			text.RemoveRange( 2, 5 );
 			TestUtl.AssertEquals( "0 29 30 34 35 49 50", lhi.ToString() );
 			TestUtl.AssertEquals( "DCCCCCC", MakeLdsText(lds) );
 
 			// invalid range (before begin to middle)
-			try{ LineLogic.LHI_Delete(lhi, lds, text, -1, 5); throw new ApplicationException(); }
+			try{ TextUtil.LHI_Delete(lhi, lds, text, -1, 5); throw new ApplicationException(); }
 			catch( Exception ex ){ TestUtl.AssertType<AssertException>(ex); }
 
 			//--- delete range between different lines ---
 			text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-			LineLogic.LHI_Insert( lhi, lds, text, TestData, 0 );
+			TextUtil.LHI_Insert( lhi, lds, text, TestData, 0 );
 			text.Add( TestData.ToCharArray() );
 			// "keep it as simple as possible\r\n (head: 0, len:31)
 			// \n                                 (head:32, len: 1)
@@ -490,7 +490,7 @@ namespace Sgry.Azuki.Test
 			//----
 			for( int i=0; i<lds.Count; i++ )
 				lds[i] = LineDirtyState.Clean;
-			LineLogic.LHI_Delete( lhi, lds, text, 32, 33 );
+			TextUtil.LHI_Delete( lhi, lds, text, 32, 33 );
 			text.RemoveAt( 32 );
 			TestUtl.AssertEquals( "0 32 36 37 51 52", lhi.ToString() );
 			TestUtl.AssertEquals( "CDCCCC", MakeLdsText(lds) );
@@ -503,7 +503,7 @@ namespace Sgry.Azuki.Test
 			//----
 			for( int i=0; i<lds.Count; i++ )
 				lds[i] = LineDirtyState.Clean;
-			LineLogic.LHI_Delete( lhi, lds, text, 22, 37 );
+			TextUtil.LHI_Delete( lhi, lds, text, 22, 37 );
 			text.RemoveRange( 22, 37 );
 			TestUtl.AssertEquals( "0 36 37", lhi.ToString() );
 			TestUtl.AssertEquals( "DCC", MakeLdsText(lds) );
@@ -514,7 +514,7 @@ namespace Sgry.Azuki.Test
 			//----
 			for( int i=0; i<lds.Count; i++ )
 				lds[i] = LineDirtyState.Clean;
-			LineLogic.LHI_Delete( lhi, lds, text, 0, 55 );
+			TextUtil.LHI_Delete( lhi, lds, text, 0, 55 );
 			text.RemoveRange( 0, 55 );
 			TestUtl.AssertEquals( "0", lhi.ToString() );
 			TestUtl.AssertEquals( "D", MakeLdsText(lds) );
@@ -527,12 +527,12 @@ namespace Sgry.Azuki.Test
 			// (1)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\rx\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\rx\nbar", 0 );
 				text.Add( "foo\rx\nbar".ToCharArray() );
 
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
-				LineLogic.LHI_Delete( lhi, lds, text, 4, 5 );
+				TextUtil.LHI_Delete( lhi, lds, text, 4, 5 );
 				text.RemoveRange( 4, 5 );
 				TestUtl.AssertEquals( "0 5", lhi.ToString() );
 				TestUtl.AssertEquals( "DC", MakeLdsText(lds) );
@@ -541,12 +541,12 @@ namespace Sgry.Azuki.Test
 			// (2)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
 				text.Add( "foo\r\nbar".ToCharArray() );
 
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
-				LineLogic.LHI_Delete( lhi, lds, text, 4, 6 );
+				TextUtil.LHI_Delete( lhi, lds, text, 4, 6 );
 				text.RemoveRange( 4, 6 );
 				TestUtl.AssertEquals( "0 4", lhi.ToString() );
 				TestUtl.AssertEquals( "DD", MakeLdsText(lds) );
@@ -555,12 +555,12 @@ namespace Sgry.Azuki.Test
 			// (3)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "foo\r\nbar", 0 );
 				text.Add( "foo\r\nbar".ToCharArray() );
 
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
-				LineLogic.LHI_Delete( lhi, lds, text, 2, 4 );
+				TextUtil.LHI_Delete( lhi, lds, text, 2, 4 );
 				text.RemoveRange( 2, 4 );
 				TestUtl.AssertEquals( "0 3", lhi.ToString() );
 				TestUtl.AssertEquals( "DC", MakeLdsText(lds) );
@@ -569,12 +569,12 @@ namespace Sgry.Azuki.Test
 			// (1)+(2)+(3)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "\r\nfoo\r\n", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\r\nfoo\r\n", 0 );
 				text.Add( "\r\nfoo\r\n".ToCharArray() );
 
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
-				LineLogic.LHI_Delete( lhi, lds, text, 1, 6 );
+				TextUtil.LHI_Delete( lhi, lds, text, 1, 6 );
 				text.RemoveRange( 1, 6 );
 				TestUtl.AssertEquals( "0 2", lhi.ToString() );
 				TestUtl.AssertEquals( "DC", MakeLdsText(lds) );
@@ -584,12 +584,12 @@ namespace Sgry.Azuki.Test
 			// insert "\n" after '\r' at end of document (boundary check for LHI_Insert)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "\r", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\r", 0 );
 				text.Add( "\r".ToCharArray() );
 
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
-				LineLogic.LHI_Insert( lhi, lds, text, "\n", 1 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\n", 1 );
 				text.Add( "\n".ToCharArray() );
 				TestUtl.AssertEquals( "0 2", lhi.ToString() );
 				TestUtl.AssertEquals( "CD", MakeLdsText(lds) );
@@ -598,12 +598,12 @@ namespace Sgry.Azuki.Test
 			// insert "\n" after '\r' at end of document (boundary check for LHI_Delete)
 			{
 				text.Clear(); lhi.Clear(); lhi.Add( 0 ); lds.Clear(); lds.Add( LineDirtyState.Clean );
-				LineLogic.LHI_Insert( lhi, lds, text, "\r\n", 0 );
+				TextUtil.LHI_Insert( lhi, lds, text, "\r\n", 0 );
 				text.Add( "\r\n".ToCharArray() );
 
 				for( int i=0; i<lds.Count; i++ )
 					lds[i] = LineDirtyState.Clean;
-				LineLogic.LHI_Delete( lhi, lds, text, 1, 2 );
+				TextUtil.LHI_Delete( lhi, lds, text, 1, 2 );
 				text.RemoveRange( 1, 2 );
 				TestUtl.AssertEquals( "0 1", lhi.ToString() );
 				TestUtl.AssertEquals( "DD", MakeLdsText(lds) );
@@ -626,7 +626,7 @@ namespace Sgry.Azuki.Test
 			lhi.Add( 0 );
 			lds.Add( LineDirtyState.Clean );
 
-			LineLogic.LHI_Insert( lhi, lds, text, TestData, 0 );
+			TextUtil.LHI_Insert( lhi, lds, text, TestData, 0 );
 			text.Insert( 0, TestData.ToCharArray() );
 		}
 

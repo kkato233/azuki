@@ -137,7 +137,7 @@ namespace Sgry.Azuki
 				}
 			}
 			// EOL-Code
-			else if( LineLogic.IsEolChar(token, 0) )
+			else if( TextUtil.IsEolChar(token, 0) )
 			{
 				int width;
 
@@ -897,7 +897,7 @@ namespace Sgry.Azuki
 					drawableLength++;
 					x = subTokenWidth;
 				}
-				else if( LineLogic.IsEolChar(token, i) )
+				else if( TextUtil.IsEolChar(token, i) )
 				{
 					//--- detected an EOL char ---
 					// calculate drawn length of cached characters

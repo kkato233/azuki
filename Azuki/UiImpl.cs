@@ -467,7 +467,7 @@ namespace Sgry.Azuki
 					}
 
 					// execute built-in hook logic
-					if( LineLogic.IsEolChar(ch) )
+					if( TextUtil.IsEolChar(ch) )
 					{
 						// if an EOL code was found, stop consuming and discard
 						// following inputs
@@ -512,7 +512,7 @@ namespace Sgry.Azuki
 				// calc replacement target range
 				if( IsOverwriteMode
 					&& selBegin == selEnd && selEnd+1 < doc.Length
-					&& LineLogic.IsEolChar(doc[selBegin]) != true )
+					&& TextUtil.IsEolChar(doc[selBegin]) != true )
 				{
 					selEnd++;
 				}

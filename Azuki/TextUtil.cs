@@ -1,16 +1,9 @@
-// file: LineLogic.cs
-// brief: Logics to manipulate line/column in a string.
-//=========================================================
 using System;
 using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
-	/// <summary>
-	/// Logics to handle line/column in a buffer.
-	/// In this logic, "line" means characters with one EOL code at tail.
-	/// </summary>
-	static class LineLogic
+	static class TextUtil
 	{
 		public static readonly char[] EolChars = new char[]{ '\r', '\n' };
 

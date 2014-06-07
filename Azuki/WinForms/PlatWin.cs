@@ -3,7 +3,6 @@
 //=========================================================
 using System;
 using System.Drawing;
-using System.Text;
 using Control = System.Windows.Forms.Control;
 using SystemInformation = System.Windows.Forms.SystemInformation;
 using Marshal = System.Runtime.InteropServices.Marshal;
@@ -19,8 +18,8 @@ namespace Sgry.Azuki.WinForms
 		#region Fields
 		const string LineSelectClipFormatName = "MSDEVLineSelect";
 		const string RectSelectClipFormatName = "MSDEVColumnSelect";
-		UInt32 _CF_LINEOBJECT = WinApi.CF_PRIVATEFIRST + 1;
-		UInt32 _CF_RECTSELECT = WinApi.CF_PRIVATEFIRST + 2;
+		readonly UInt32 _CF_LINEOBJECT = WinApi.CF_PRIVATEFIRST + 1;
+		readonly UInt32 _CF_RECTSELECT = WinApi.CF_PRIVATEFIRST + 2;
 		#endregion
 
 		#region Init / Dispose
@@ -43,22 +42,24 @@ namespace Sgry.Azuki.WinForms
 		/// Gets content of the system clipboard.
 		/// </summary>
 		/// <param name="dataType">The type of the text data in the clipboard</param>
-		/// <returns>Text content retrieved from the clipboard if available. Otherwise null.</returns>
+		/// <returns>
+		/// Text content retrieved from the clipboard if available. Otherwise null.
+		/// </returns>
 		/// <remarks>
-		/// <para>
-		/// This method gets text from the system clipboard.
-		/// If stored text data is a special format (line or rectangle,)
-		/// its data type will be set to <paramref name="dataType"/> parameter.
-		/// </para>
+		///   <para>
+		///   This method gets text from the system clipboard. If stored text data is a special
+		///   format (line or rectangle,) its data type will be set to <paramref name="dataType"/>
+		///   parameter.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.TextDataType">TextDataType enum</seealso>
 		public string GetClipboardText( out TextDataType dataType )
 		{
 			Int32 rc; // result code
-			bool clipboardOpened = false;
-			IntPtr dataHandle = IntPtr.Zero;
-			IntPtr dataPtr = IntPtr.Zero;
-			uint formatID = UInt32.MaxValue;
+			var clipboardOpened = false;
+			var dataHandle = IntPtr.Zero;
+			var dataPtr = IntPtr.Zero;
+			var formatID = UInt32.MaxValue;
 			string data = null;
 
 			dataType = TextDataType.Normal;
@@ -105,7 +106,7 @@ namespace Sgry.Azuki.WinForms
 				}
 
 				// get data pointer by locking the handle
-				dataPtr = Utl.MyGlobalLock( dataHandle );
+				dataPtr = WinApi.GlobalLock( dataHandle );
 				if( dataPtr == IntPtr.Zero )
 				{
 					return null;
@@ -113,7 +114,7 @@ namespace Sgry.Azuki.WinForms
 
 				// retrieve data
 				if( formatID == WinApi.CF_TEXT )
-					data = Utl.MyPtrToStringAnsi( dataPtr );
+					data = Marshal.PtrToStringAnsi(dataPtr);
 				else
 					data = Marshal.PtrToStringUni( dataPtr );
 			}
@@ -122,7 +123,7 @@ namespace Sgry.Azuki.WinForms
 				// unlock handle
 				if( dataPtr != IntPtr.Zero )
 				{
-					Utl.MyGlobalUnlock( dataHandle );
+					WinApi.GlobalUnlock( dataHandle );
 				}
 				if( clipboardOpened )
 				{
@@ -139,12 +140,11 @@ namespace Sgry.Azuki.WinForms
 		/// <param name="text">Text data to set.</param>
 		/// <param name="dataType">Type of the data to set.</param>
 		/// <remarks>
-		/// <para>
-		/// This method set content of the system clipboard.
-		/// If <paramref name="dataType"/> is TextDataType.Normal,
-		/// the text data will be just a character sequence.
-		/// If <paramref name="dataType"/> is TextDataType.Line or TextDataType.Rectangle,
-		/// stored text data would be special format that is compatible with Microsoft Visual Studio.
+		///   <para>
+		///   This method set content of the system clipboard. If <paramref name="dataType"/> is
+		///   TextDataType.Normal, the text data will be just a character sequence. If
+		///   <paramref name="dataType"/> is TextDataType.Line or TextDataType.Rectangle, stored
+		///   text data would be special format that is compatible with Microsoft Visual Studio.
 		/// </para>
 		/// </remarks>
 		public void SetClipboardText( string text, TextDataType dataType )
@@ -167,20 +167,20 @@ namespace Sgry.Azuki.WinForms
 				WinApi.EmptyClipboard();
 
 				// set normal text data
-				dataHdl = Utl.MyStringToHGlobalUni( text );
+				dataHdl = Marshal.StringToHGlobalUni(text);
 				WinApi.SetClipboardData( WinApi.CF_UNICODETEXT, dataHdl );
 
 				// set addional text data
 				if( dataType == TextDataType.Line )
 				{
 					// allocate dummy text (this is needed for PocketPC)
-					dataHdl = Utl.MyStringToHGlobalUni( "" );
+					dataHdl = Marshal.StringToHGlobalUni("");
 					WinApi.SetClipboardData( _CF_LINEOBJECT, dataHdl );
 				}
 				else if( dataType == TextDataType.Rectangle )
 				{
 					// allocate dummy text (this is needed for PocketPC)
-					dataHdl = Utl.MyStringToHGlobalUni( "" );
+					dataHdl = Marshal.StringToHGlobalUni( "" );
 					WinApi.SetClipboardData( _CF_RECTSELECT, dataHdl );
 				}
 			}
@@ -196,8 +196,8 @@ namespace Sgry.Azuki.WinForms
 
 		#region UI parameters
 		/// <summary>
-		/// It will be regarded as a drag operation by the system
-		/// if mouse cursor moved beyond this rectangle.
+		/// It will be regarded as a drag operation by the system if mouse cursor moved beyond this
+		/// rectangle.
 		/// </summary>
 		public Size DragSize
 		{
@@ -214,13 +214,13 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		public IGraphics GetGraphics( object window )
 		{
-			AzukiControl azuki = window as AzukiControl;
+			var azuki = window as AzukiControl;
 			if( azuki != null )
 			{
 				return new GraWin( azuki.Handle, azuki.FontInfo );
 			}
 
-			Control control = window as Control;
+			var  control = window as Control;
 			if( control != null )
 			{
 				if( control.Font == null )
@@ -229,56 +229,8 @@ namespace Sgry.Azuki.WinForms
 					return new GraWin( control.Handle, new FontInfo(control.Font) );
 			}
 
-			throw new ArgumentException( "an object of unexpected type ("+window.GetType()+") was given to PlatWin.GetGraphics.", "window" );
-		}
-		#endregion
-
-		#region Utilities
-		class Utl
-		{
-			#region Handle Allocation
-			public static IntPtr MyGlobalLock( IntPtr handle )
-			{
-				return WinApi.GlobalLock( handle );
-			}
-
-			public static void MyGlobalUnlock( IntPtr handle )
-			{
-				WinApi.GlobalUnlock( handle );
-			}
-			#endregion
-
-			#region String Conversion
-			public static string MyPtrToStringAnsi( IntPtr dataPtr )
-			{
-				unsafe {
-					byte* p = (byte*)dataPtr;
-					int byteCount = 0;
-					
-					// count length
-					for( int i=0; *(p + i) != 0; i++ )
-					{
-						byteCount++;
-					}
-
-					// copy data
-					byte[] data = new byte[ byteCount ];
-					for( int i=0; i<byteCount; i++ )
-					{
-						data[i] = *(p + i);
-					}
-					
-					return new String( Encoding.Default.GetChars(data) );
-				}
-			}
-
-			/// <exception cref="ArgumentOutOfRangeException">Too long text was given.</exception>
-			/// <exception cref="OutOfMemoryException">No enough memory.</exception>
-			public static IntPtr MyStringToHGlobalUni( string text )
-			{
-				return Marshal.StringToHGlobalUni( text );
-			}
-			#endregion
+			throw new ArgumentException( "an object of unexpected type (" + window.GetType()
+										 + ") was given to PlatWin.GetGraphics.", "window" );
 		}
 		#endregion
 	}
@@ -317,10 +269,10 @@ namespace Sgry.Azuki.WinForms
 			WinApi.DeleteDC( _MemDC );
 
 			// free objects lastly used
-			Utl.SafeDeleteObject( _Pen );
-			Utl.SafeDeleteObject( _Brush );
-			Utl.SafeDeleteObject( _NullPen );
-			Utl.SafeDeleteObject( _Font );
+			SafeDeleteObject( _Pen );
+			SafeDeleteObject( _Brush );
+			SafeDeleteObject( _NullPen );
+			SafeDeleteObject( _Font );
 		}
 		#endregion
 
@@ -347,7 +299,8 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		public void EndPaint()
 		{
-			Debug.Assert( _MemDC != IntPtr.Zero, "invalid state; EndPaint was called before BeginPaint." );
+			Debug.Assert( _MemDC != IntPtr.Zero, "invalid state; EndPaint was called before"
+												 + " BeginPaint." );
 			const uint SRCCOPY = 0x00CC0020;
 
 			// flush cached graphic update
@@ -359,7 +312,7 @@ namespace Sgry.Azuki.WinForms
 			WinApi.SelectObject( _MemDC, _OrgMemBmp );
 			WinApi.DeleteDC( _MemDC );
 			_MemDC = IntPtr.Zero;
-			Utl.SafeDeleteObject( _MemBmp );
+			SafeDeleteObject( _MemBmp );
 			_MemBmp = IntPtr.Zero;
 
 			// reset graphic coordinate offset
@@ -375,10 +328,11 @@ namespace Sgry.Azuki.WinForms
 		{
 			set
 			{
-				Debug.Assert( value != null, "invalid operation; PlatWin.Font must not be set as null." );
+				Debug.Assert( value != null, "invalid operation; PlatWin.Font must not be set as"
+											 + " null." );
 				
 				// delete old font
-				Utl.SafeDeleteObject( _Font );
+				SafeDeleteObject( _Font );
 
 				// create font handle from Font instance of .NET
 				unsafe
@@ -415,7 +369,7 @@ namespace Sgry.Azuki.WinForms
 		{
 			set
 			{
-				Utl.SafeDeleteObject( _Pen );
+				SafeDeleteObject( _Pen );
 				_ForeColor = (value.R) | (value.G << 8) | (value.B << 16);
 				_Pen = WinApi.CreatePen( 0, 1, _ForeColor );
 			}
@@ -428,7 +382,7 @@ namespace Sgry.Azuki.WinForms
 		{
 			set
 			{
-				Utl.SafeDeleteObject( _Brush );
+				SafeDeleteObject( _Brush );
 				int colorRef = (value.R) | (value.G << 8) | (value.B << 16);
 				_Brush = WinApi.CreateSolidBrush( colorRef );
 			}
@@ -442,16 +396,16 @@ namespace Sgry.Azuki.WinForms
 			unsafe
 			{
 				// make RECT structure
-				WinApi.RECT r = new WinApi.RECT();
+				var r = new WinApi.RECT();
 				r.left = clipRect.X - _Offset.X;
 				r.top = clipRect.Y - _Offset.Y;
 				r.right = r.left + clipRect.Width;
 				r.bottom = r.top + clipRect.Height;
 
 				// create rectangle region and select it as a clipping region
-				IntPtr clipRegion = WinApi.CreateRectRgnIndirect( &r );
+				var clipRegion = WinApi.CreateRectRgnIndirect( &r );
 				WinApi.SelectClipRgn( DC, clipRegion );
-				WinApi.DeleteObject( clipRegion ); // SelectClipRgn copies given region thus we can delete this
+				WinApi.DeleteObject( clipRegion ); // SelectClipRgn() copies given region
 			}
 		}
 
@@ -471,16 +425,13 @@ namespace Sgry.Azuki.WinForms
 		public void DrawText( string text, ref Point position, Color foreColor )
 		{
 			const int TRANSPARENT = 1;
-			IntPtr oldFont, newFont;
-			Int32 oldForeColor;
-			int x, y;
 
-			x = position.X - _Offset.X;
-			y = position.Y - _Offset.Y;
+			var x = position.X - _Offset.X;
+			var y = position.Y - _Offset.Y;
 
-			newFont = _Font;
-			oldFont = WinApi.SelectObject( DC, newFont );
-			oldForeColor = WinApi.SetTextColor( DC, foreColor );
+			var newFont = _Font;
+			var oldFont = WinApi.SelectObject( DC, newFont );
+			var oldForeColor = WinApi.SetTextColor( DC, foreColor );
 
 			WinApi.SetTextAlign( DC, false );
 			WinApi.SetBkMode( DC, TRANSPARENT );
@@ -505,19 +456,25 @@ namespace Sgry.Azuki.WinForms
 		/// Measures graphical size of the a text within the specified clipping width.
 		/// </summary>
 		/// <param name="text">text to measure</param>
-		/// <param name="clipWidth">width of the clipping area for rendering text (in pixel unit if the context is screen)</param>
-		/// <param name="drawableLength">count of characters which could be drawn within the clipping area width</param>
+		/// <param name="clipWidth">
+		/// width of the clipping area for rendering text (in pixel unit if
+		/// the context is screen)
+		/// </param>
+		/// <param name="drawableLength">
+		/// count of characters which could be drawn within the clipping area width
+		/// </param>
 		/// <returns>size of the text in the graphic device context</returns>
 		public Size MeasureText( string text, int clipWidth, out int drawableLength )
 		{
-			IntPtr oldFont;
-			Size size;
-			int[] extents = new int[text.Length];
-			
-			oldFont = WinApi.SelectObject( DC, _Font ); // measuring do not need to be done in offscreen buffer.
+			var extents = new int[text.Length];
 
-			// calculate width of given text and graphical distance from left end to where the each char is at
-			size = WinApi.GetTextExtent( DC, text, text.Length, clipWidth, out drawableLength, out extents );
+			var oldFont = WinApi.SelectObject( DC, _Font ); // measuring do not need to be done in
+															// offscreen buffer.
+
+			// calculate width of given text and an array of graphical distances of each characters
+			// from left end
+			var size = WinApi.GetTextExtent( DC, text, text.Length, clipWidth,
+											 out drawableLength, out extents );
 
 			// calculate width of the drawable part
 			if( drawableLength == 0 )
@@ -529,8 +486,9 @@ namespace Sgry.Azuki.WinForms
 			else
 			{
 				// there are chars which can be written in clipping area.
-				// so get distance of the char at right most; this is the width of the drawable part of the text
-				// (note: array of extents will always be filled by GetTextExtentExPoint API in WinCE.)
+				// so get distance of the char at right most; this is the width of the drawable
+				// part of the text (note: array of extents will always be filled by
+				// GetTextExtentExPoint API in WinCE.)
 				if( drawableLength < extents.Length )
 				{
 					size.Width = extents[ drawableLength - 1 ];
@@ -561,19 +519,17 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		public void DrawLine( int fromX, int fromY, int toX, int toY )
 		{
-			IntPtr oldPen;
-
 			fromX -= _Offset.X;
 			fromY -= _Offset.Y;
 			toX -= _Offset.X;
 			toY -= _Offset.Y;
 
-			oldPen = WinApi.SelectObject( DC, _Pen );
-			
+			var oldPen = WinApi.SelectObject( DC, _Pen );
+
 			WinApi.MoveToEx( DC, fromX, fromY, IntPtr.Zero );
 			WinApi.LineTo( DC, toX, toY );
 			WinApi.SetPixel( DC, toX, toY, _ForeColor );
-			
+
 			WinApi.SelectObject( DC, oldPen );
 		}
 
@@ -583,27 +539,25 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		public void DrawRectangle( int x, int y, int width, int height )
 		{
-			IntPtr oldPen;
-
 			x -= _Offset.X;
 			y -= _Offset.Y;
 
 			unsafe
 			{
-				WinApi.POINT[] points = new WinApi.POINT[5];
+				var points = new WinApi.POINT[5];
 				points[0] = new WinApi.POINT( x, y );
 				points[1] = new WinApi.POINT( x+width, y );
 				points[2] = new WinApi.POINT( x+width, y+height );
 				points[3] = new WinApi.POINT( x, y+height );
 				points[4] = new WinApi.POINT( x, y );
 
-				oldPen = WinApi.SelectObject( DC, _Pen );
-				
+				var oldPen = WinApi.SelectObject( DC, _Pen );
+
 				fixed( WinApi.POINT* p = points )
 				{
 					WinApi.Polyline( DC, p, 5 );
 				}
-				
+
 				WinApi.SelectObject( DC, oldPen );
 			}
 		}
@@ -614,13 +568,11 @@ namespace Sgry.Azuki.WinForms
 		/// </summary>
 		public void FillRectangle( int x, int y, int width, int height )
 		{
-			IntPtr oldPen, oldBrush;
-
 			x -= _Offset.X;
 			y -= _Offset.Y;
 
-			oldPen = WinApi.SelectObject( DC, NullPen );
-			oldBrush = WinApi.SelectObject( DC, _Brush );
+			var oldPen = WinApi.SelectObject( DC, NullPen );
+			var oldBrush = WinApi.SelectObject( DC, _Brush );
 
 			WinApi.Rectangle( DC, x, y, x+width+1, y+height+1 );
 
@@ -647,22 +599,15 @@ namespace Sgry.Azuki.WinForms
 		{
 			get
 			{
-				if( _MemDC != IntPtr.Zero )
-					return _MemDC;
-				else
-					return _DC;
+				return (_MemDC != IntPtr.Zero) ? _MemDC
+											   : _DC;
 			}
 		}
 
-		class Utl
+		static void SafeDeleteObject( IntPtr gdiObj )
 		{
-			public static void SafeDeleteObject( IntPtr gdiObj )
-			{
-				if( gdiObj != IntPtr.Zero )
-				{
-					WinApi.DeleteObject( gdiObj );
-				}
-			}
+			if( gdiObj != IntPtr.Zero )
+				WinApi.DeleteObject( gdiObj );
 		}
 		#endregion
 	}

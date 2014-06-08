@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
@@ -42,9 +41,9 @@ namespace Sgry.Azuki
 	/// <seealso cref="Sgry.Azuki.ColorScheme.SetColor">SetColor method</seealso>
 	public class ColorScheme
 	{
-		Color[] _ForeColors = new Color[ Byte.MaxValue ];
-		Color[] _BackColors = new Color[ Byte.MaxValue ];
-		TextDecoration[] _MarkingDecorations = new TextDecoration[ Marking.MaxID+1 ];
+		readonly Color[] _ForeColors = new Color[ Byte.MaxValue ];
+		readonly Color[] _BackColors = new Color[ Byte.MaxValue ];
+		readonly TextDecoration[] _MarkingDecorations = new TextDecoration[ Marking.MaxID+1 ];
 
 		#region Init / Dispose
 		/// <summary>
@@ -270,16 +269,15 @@ namespace Sgry.Azuki
 
 		void SetDefault()
 		{
-			Color bgcolor = Color.FromArgb( 0xff, 0xfa, 0xf0 );
-			Color azuki = Color.FromArgb( 0x92, 0x62, 0x57 ); // azuki iro (japanese)
-			Color shin_bashi = Color.FromArgb( 0x74, 0xa9, 0xd6 ); // shin-bashi iro (japanese)
-			Color hana_asagi = Color.FromArgb( 0x1b, 0x77, 0x92 ); // hana-asagi iro (japanese)
-			Color waka_midori = Color.FromArgb( 0xa8, 0xef, 0xaf ); // waka-midori iro (japanese)
-			Color himawari = Color.FromArgb( 0xff, 0xf1, 0x0f ); // himawari iro (japanese)
-			Color sax_blue = Color.FromArgb( 0x46, 0x48, 0xb8 );
-			Color oreillyPerl = Color.FromArgb( 0x00, 0x97, 0xc2 );
+			Color azuki = Color.FromArgb( 0x00926257 ); // azuki iro (japanese)
+			Color shin_bashi = Color.FromArgb( 0x0074a9d6 ); // shin-bashi iro (japanese)
+			Color hana_asagi = Color.FromArgb( 0x001b7792 ); // hana-asagi iro (japanese)
+			Color waka_midori = Color.FromArgb( 0x00a8efaf ); // waka-midori iro (japanese)
+			Color himawari = Color.FromArgb( 0x00fff10f ); // himawari iro (japanese)
+			Color sax_blue = Color.FromArgb( 0x004648b8 );
+			Color oreillyPerl = Color.FromArgb( 0x000097c2 );
 
-			SetColor( CharClass.Normal, Color.Black, bgcolor );
+			SetColor( CharClass.Normal, Color.Black, Color.White );
 			SetColor( CharClass.Number, Color.Black, Color.Transparent );
 			SetColor( CharClass.String, Color.Teal, Color.Transparent );
 			SetColor( CharClass.Comment, Color.Green, Color.Transparent );
@@ -322,19 +320,19 @@ namespace Sgry.Azuki
 			SetColor( CharClass.ChangeCommandLine, Color.Gray, Color.Transparent );
 			SetColor( CharClass.IndexLine, Color.Black, Color.Silver );
 
-			this.SelectionFore = Color.White;
-			this.SelectionBack = azuki;
-			this.WhiteSpaceColor = Color.Silver;
-			this.EolColor = shin_bashi;
-			this.EofColor = shin_bashi;
-			this.HighlightColor = azuki;
-			this.LineNumberFore = hana_asagi;
-			this.LineNumberBack = Color.FromArgb( 0xef, 0xef, 0xff );
-			this.DirtyLineBar = himawari;
-			this.CleanedLineBar = waka_midori;
-			this.RightEdgeColor = Color.FromArgb( 0xDD, 0xDE, 0xD3 ); // ivory
-			this.MatchedBracketFore = Color.Transparent;
-			this.MatchedBracketBack = Color.FromArgb( 0x93, 0xff, 0xff );
+			SelectionFore = Color.Transparent;
+			SelectionBack = Color.FromArgb( 0x00d2f0ff );
+			WhiteSpaceColor = Color.FromArgb( 0x00d0d0d0 );
+			EolColor = shin_bashi;
+			EofColor = shin_bashi;
+			HighlightColor = azuki;
+			LineNumberFore = hana_asagi;
+			LineNumberBack = Color.Transparent;
+			DirtyLineBar = himawari;
+			CleanedLineBar = waka_midori;
+			RightEdgeColor = WhiteSpaceColor;
+			MatchedBracketFore = Color.Transparent;
+			MatchedBracketBack = Color.FromArgb( 0x0093ffff );
 
 			for( int i=0; i<=Marking.MaxID; i++ )
 			{

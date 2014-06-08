@@ -16,12 +16,13 @@ namespace Sgry.Azuki
 	///   includes <code>ba</code>.
 	/// </para>
 	/// </remarks>
-	public class TextSegment
+	public struct TextSegment
 	{
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
 		public TextSegment( int begin, int end )
+			: this()
 		{
 			Begin = begin;
 			End = end;

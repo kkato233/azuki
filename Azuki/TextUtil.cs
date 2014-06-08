@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
@@ -339,6 +341,173 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Character categorization
+		//-----------------------------------------------------------------------------------------
+		public static bool IsEolChar( char ch )
+		{
+			return (ch == '\r' || ch == '\n');
+		}
+
+		public static bool IsEolChar( string str, int index )
+		{
+			if( index < 0 || str.Length <= index )
+				return false;
+			var ch = str[index];
+			return (ch == '\r' || ch == '\n');
+		}
+
+		public static bool IsEolChar( IList<char> chars, int index )
+		{
+			if( index < 0 || chars.Count <= index )
+				return false;
+			var ch = chars[index];
+			return (ch == '\r' || ch == '\n');
+		}
+
+		public static bool IsEolChar( Document doc, int index )
+		{
+			return IsEolChar( doc.InternalBuffer, index );
+		}
+
+		//-----------------------------------------------------------------------------------------
+		public static bool IsCombiningCharacter( char ch )
+		{
+			var category = Char.GetUnicodeCategory( ch );
+			return (category == UnicodeCategory.NonSpacingMark
+					|| category == UnicodeCategory.SpacingCombiningMark
+					|| category == UnicodeCategory.EnclosingMark);
+		}
+
+		public static bool IsCombiningCharacter( string str, int index )
+		{
+			if( index < 0 || str.Length <= index )
+				return false;
+
+			return IsCombiningCharacter( str[index] );
+		}
+
+		public static bool IsCombiningCharacter( IList<char> chars, int index )
+		{
+			if( index < 0 || chars.Count <= index )
+				return false;
+
+			return IsCombiningCharacter( chars[index] );
+		}
+
+		//-----------------------------------------------------------------------------------------
+		static bool IsVariationSelector( char ch, char nextCh )
+		{
+			if( 0xfe00 <= ch && ch <= 0xfe0f )
+			{
+				return true; // Standard Variation Selectors
+			}
+			if( ch == 0xdb40 && 0xdd00 <= nextCh && nextCh <= 0xddef )
+			{
+				// IVS (ideographic variable sequence) is from 0xE0100 to 0xE01EF, that is from
+				// "db40 dd00" to "db40" "ddef" in UTF-16.
+				return true;
+			}
+
+			return false;
+		}
+
+		public static bool IsVariationSelector( IList<char> chars, int index )
+		{
+			if( index < 0 || chars.Count <= index+1 )
+				return false;
+
+			return IsVariationSelector( chars[index], chars[index+1] );
+		}
+
+		//-----------------------------------------------------------------------------------------
+		static bool IsUndividableIndex( char prevCh, char ch, char nextCh )
+		{
+			if( prevCh == '\r' && ch == '\n' )
+				return true;
+			if( Char.IsHighSurrogate(prevCh) && Char.IsLowSurrogate(ch) )
+				return true;
+			if( IsCombiningCharacter(ch) && IsEolChar(prevCh) == false )
+				return true;
+			if( IsVariationSelector(ch, nextCh) )
+				return true;
+
+			return false;
+		}
+
+		public static bool IsUndividableIndex( string str, int index )
+		{
+			Debug.Assert( str != null );
+			if( str == null || index <= 0 || str.Length <= index )
+				return false;
+
+			return IsUndividableIndex( str[index-1],
+									   str[index],
+									   (index+1 < str.Length) ? str[index+1]
+															  : '\0' );
+		}
+
+		public static bool IsUndividableIndex( IList<char> chars, int index )
+		{
+			Debug.Assert( chars != null );
+			if( chars == null || index <= 0 || chars.Count <= index )
+				return false;
+
+			return IsUndividableIndex( chars[index-1],
+									   chars[index],
+									   (index+1 < chars.Count) ? chars[index+1]
+															   : '\0' );
+		}
+
+		public static bool IsDividableIndex( string str, int index )
+		{
+			Debug.Assert( str != null );
+			if( str == null || index < 0 || str.Length < index )
+				return false;
+
+			return !IsUndividableIndex( str, index );
+		}
+
+		public static bool IsDividableIndex( IList<char> chars, int index )
+		{
+			Debug.Assert( chars != null );
+			if( chars == null || index < 0 || chars.Count < index )
+				return false;
+
+			return !IsUndividableIndex( chars, index );
+		}
+
+		//-----------------------------------------------------------------------------------------
+		public static int NextGraphemeClusterIndex( IList<char> text, int index )
+		{
+			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( index < text.Count );
+
+			do
+			{
+				index++;
+			}
+			while( index < text.Count && IsUndividableIndex(text, index) );
+
+			return index;
+		}
+
+		public static int PrevGraphemeClusterIndex( IList<char> text, int index )
+		{
+			Debug.Assert( text != null );
+			Debug.Assert( 0 <= index );
+			Debug.Assert( index <= text.Count );
+
+			do
+			{
+				index--;
+			}
+			while( 0 < index && IsUndividableIndex(text, index) );
+
+			return index;
+		}
+		#endregion
+
 		#region Utilities
 		public static bool IsMultiLine( string text )
 		{
@@ -366,24 +535,6 @@ namespace Sgry.Azuki
 			}
 
 			return count + 1;
-		}
-
-		public static bool IsEolChar( char ch )
-		{
-			return (ch == '\r' || ch == '\n');
-		}
-
-		public static bool IsEolChar( string str, int index )
-		{
-			if( 0 <= index && index < str.Length )
-			{
-				char ch = str[index];
-				return (ch == '\r' || ch == '\n');
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 		public static int NextLineHead( TextBuffer str, int startIndex )

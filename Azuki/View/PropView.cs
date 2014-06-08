@@ -230,6 +230,8 @@ namespace Sgry.Azuki
 		#region Appearance Invalidating and Updating
 		internal override void HandleSelectionChanged( object sender, SelectionChangedEventArgs e )
 		{
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, e.OldAnchor) );
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, e.OldCaret) );
 			Document doc = Document;
 			int anchor = doc.AnchorIndex;
 			int caret = doc.CaretIndex;
@@ -336,6 +338,7 @@ namespace Sgry.Azuki
 
 		void HandleSelectionChanged_UpdateCurrentLineHighlight( IGraphics g, int oldCaretLine, int newCaretLine )
 		{
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, newCaretLine) );
 			int prevAnchorLine = Document.ViewParam.PrevAnchorLine;
 			int prevCaretLine = Document.ViewParam.PrevCaretLine;
 
@@ -391,6 +394,8 @@ namespace Sgry.Azuki
 		void HandleSelectionChanged_OnExpandSelInLine( IGraphics g, SelectionChangedEventArgs e, int begin, int end, int beginL )
 		{
 			DebugUtl.Assert( beginL < LineCount );
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, begin) );
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, end) );
 			Document doc = Document;
 			Rectangle rect = new Rectangle();
 			int beginLineHead;
@@ -612,6 +617,11 @@ namespace Sgry.Azuki
 			int beginLineHead, endLineHead;
 			int beginL, endL, dummy;
 
+			while( TextUtil.IsUndividableIndex(Document.InternalBuffer, beginIndex) )
+				beginIndex++;
+			while( TextUtil.IsUndividableIndex(Document.InternalBuffer, endIndex) )
+				endIndex++;
+
 			// get needed coordinates
 			GetLineColumnIndexFromCharIndex( beginIndex, out beginL, out dummy );
 			GetLineColumnIndexFromCharIndex( endIndex, out endL, out dummy );
@@ -638,6 +648,9 @@ namespace Sgry.Azuki
 			DebugUtl.Assert( 0 <= beginL, "cond: 0 <= beginL("+beginL+")" );
 			DebugUtl.Assert( beginL <= this.LineCount, "cond: beginL("+beginL+") <= IView.LineCount("+this.LineCount+")" );
 			DebugUtl.Assert( beginLineHead <= begin, "cond: beginLineHead("+beginLineHead+") <= begin("+begin+")" );
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, begin) );
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, end) );
+			Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, beginLineHead) );
 			if( begin == end )
 				return;
 
@@ -850,6 +863,9 @@ namespace Sgry.Azuki
 				&& pos.X < clipRect.Right // or reaches right-end of the clip rect
 				&& end != -1 ) // or reaches the end of text
 			{
+				Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, begin) );
+				Debug.Assert( TextUtil.IsDividableIndex(Document.InternalBuffer, end) );
+
 				// get this token
 				token = Document.GetTextInRangeRef( ref begin, ref end );
 				DebugUtl.Assert( 0 < token.Length );

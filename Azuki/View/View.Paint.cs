@@ -1041,23 +1041,26 @@ namespace Sgry.Azuki
 				}
 			}
 
+			// Caltulate ending position in the longest case
+			int limit = index + MaxPaintTokenLen;
+			while( TextUtil.IsUndividableIndex(doc.InternalBuffer, limit) )
+				limit++;
+
 			if( index < selBegin )
 			{
 				// Token being drawn exist before a selection
 				// so we must extract characters not in a selection range.
 				inSelection = false;
-				return Math.Min( Math.Min( selBegin,
-										   nextLineHead ),
-								 index + MaxPaintTokenLen );
+				return Math.Min( Math.Min(selBegin, nextLineHead ),
+								 limit );
 			}
 			else if( index < selEnd )
 			{
 				// Token being drawin exist in a selection
 				// so we must extract characters in a selection range.
 				inSelection = true;
-				return Math.Min( Math.Min( selEnd,
-										   nextLineHead ),
-								 index + MaxPaintTokenLen );
+				return Math.Min( Math.Min(selEnd, nextLineHead),
+								 limit );
 			}
 			else
 			{
@@ -1065,7 +1068,7 @@ namespace Sgry.Azuki
 				// characters selected so we don't need to care about selection
 				inSelection = false;
 				return Math.Min( nextLineHead,
-								 index + MaxPaintTokenLen );
+								 limit );
 			}
 		}
 
@@ -1108,7 +1111,9 @@ namespace Sgry.Azuki
 			firstKlass = doc.GetCharClass( index );
 			firstMarkingBitMask = doc.GetMarkingBitMaskAt( index );
 			out_klass = firstKlass;
-			if( Utl.IsSpecialChar(firstCh) )
+			if( Utl.IsSpecialChar(firstCh)
+				&& TextUtil.IsCombiningCharacter(doc.InternalBuffer, index+1) == false
+				&& TextUtil.IsVariationSelector(doc.InternalBuffer, index+1) == false )
 			{
 				// treat 1 special char as 1 token
 				if( firstCh == '\r'

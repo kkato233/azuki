@@ -2712,13 +2712,7 @@ namespace Sgry.Azuki
 			if( index < 0 || Length < index )
 				throw new ArgumentOutOfRangeException( "index" );
 
-			do
-			{
-				index++;
-			}
-			while( index < Length && IsNotDividableIndex(index) );
-
-			return index;
+			return TextUtil.NextGraphemeClusterIndex( InternalBuffer, index );
 		}
 
 		/// <summary>
@@ -2755,13 +2749,7 @@ namespace Sgry.Azuki
 			if( index < 0 || Length < index )
 				throw new ArgumentOutOfRangeException( "index" );
 
-			do
-			{
-				index--;
-			}
-			while( 0 < index && IsNotDividableIndex(index) );
-
-			return index;
+			return TextUtil.PrevGraphemeClusterIndex( InternalBuffer, index );
 		}
 
 		/// <summary>
@@ -2840,13 +2828,7 @@ namespace Sgry.Azuki
 		/// <seealso cref="PrevGraphemeClusterIndex"/>
 		public bool IsNotDividableIndex( int index )
 		{
-			if( index <= 0 || Length <= index )
-				return false;
-
-			return IsNotDividableIndex( this[index-1],
-										this[index],
-										(index+1 < Length) ? this[index+1]
-														   : '\0' );
+			return TextUtil.IsUndividableIndex( InternalBuffer, index );
 		}
 
 		/// <summary>
@@ -2866,30 +2848,7 @@ namespace Sgry.Azuki
 		/// <seealso cref="IsNotDividableIndex(int)"/>
 		public static bool IsNotDividableIndex( string text, int index )
 		{
-			if( text == null || index <= 0 || text.Length <= index )
-				return false;
-
-			return IsNotDividableIndex( text[index-1],
-										text[index],
-										(index+1 < text.Length) ? text[index+1]
-																: '\0' );
-		}
-
-		/// <summary>
-		/// Determines whether text should not be divided at given index or not.
-		/// </summary>
-		static bool IsNotDividableIndex( char prevCh, char ch, char nextCh )
-		{
-			if( prevCh == '\r' && ch == '\n' )
-				return true;
-			if( IsHighSurrogate(prevCh) && IsLowSurrogate(ch) )
-				return true;
-			if( IsCombiningCharacter(ch) && TextUtil.IsEolChar(prevCh) == false )
-				return true;
-			if( IsVariationSelector(ch, nextCh) )
-				return true;
-
-			return false;
+			return TextUtil.IsUndividableIndex( text, index );
 		}
 
 		/// <summary>
@@ -2897,7 +2856,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static bool IsHighSurrogate( char ch )
 		{
-			return (0xd800 <= ch && ch <= 0xdbff);
+			return Char.IsHighSurrogate( ch );
 		}
 
 		/// <summary>
@@ -2905,7 +2864,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static bool IsLowSurrogate( char ch )
 		{
-			return (0xdc00 <= ch && ch <= 0xdfff);
+			return Char.IsLowSurrogate( ch );
 		}
 
 		/// <summary>
@@ -2913,10 +2872,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public bool IsCombiningCharacter( int index )
 		{
-			if( index < 0 || Length <= index )
-				return false;
-
-			return IsCombiningCharacter( this[index] );
+			return TextUtil.IsCombiningCharacter( this[index] );
 		}
 
 		/// <summary>
@@ -2924,10 +2880,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static bool IsCombiningCharacter( string text, int index )
 		{
-			if( index < 0 || text.Length <= index )
-				return false;
-
-			return IsCombiningCharacter( text[index] );
+			return TextUtil.IsCombiningCharacter( text, text[index] );
 		}
 
 		/// <summary>
@@ -2935,10 +2888,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static bool IsCombiningCharacter( char ch )
 		{
-			UnicodeCategory category = Char.GetUnicodeCategory( ch );
-			return (category == UnicodeCategory.NonSpacingMark
-					|| category == UnicodeCategory.SpacingCombiningMark
-					|| category == UnicodeCategory.EnclosingMark);
+			return TextUtil.IsCombiningCharacter( ch );
 		}
 
 		/// <summary>
@@ -2949,26 +2899,7 @@ namespace Sgry.Azuki
 			if( index < 0 || Length <= index+1 )
 				return false;
 
-			return IsVariationSelector( this[index], this[index+1] );
-		}
-
-		/// <summary>
-		/// Determines whether given character(s) is a variation selector or not.
-		/// </summary>
-		internal static bool IsVariationSelector( char ch, char nextCh )
-		{
-			if( 0xfe00 <= ch && ch <= 0xfe0f )
-			{
-				return true; // Standard Variation Selectors
-			}
-			if( ch == 0xdb40 && 0xdd00 <= nextCh && nextCh <= 0xddef )
-			{
-				// Code range of an ideographic variation selector is from 0xE0100 to 0xE01EF,
-				// that is, from "db40 dd00" to "db40" "ddef" in UTF-16.
-				return true;
-			}
-
-			return false;
+			return TextUtil.IsVariationSelector( InternalBuffer, index );
 		}
 
 		/// <summary>

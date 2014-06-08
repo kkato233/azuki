@@ -522,21 +522,6 @@ namespace Sgry.Azuki
 			return false;
 		}
 
-		public static int CountLines( string text )
-		{
-			int count = 0;
-			int lineHead = 0;
-
-			lineHead = NextLineHead( text, lineHead );
-			while( lineHead != -1 )
-			{
-				count++;
-				lineHead = NextLineHead( text, lineHead );
-			}
-
-			return count + 1;
-		}
-
 		public static int NextLineHead( TextBuffer str, int startIndex )
 		{
 			DebugUtl.Assert( str != null );

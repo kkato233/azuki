@@ -166,10 +166,11 @@ namespace Sgry.Azuki
 				int lineBegin, lineEnd;
 				TextUtil.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, true,
 										out lineBegin, out lineEnd );
-				string leftPart = Document.GetTextInRange( lineBegin, lineBegin+columnIndex );
 
 				// measure the characters
-				pos.X = MeasureTokenEndX( g, leftPart, pos.X );
+				pos.X = MeasureTokenEndX( g,
+										  new TextSegment(lineBegin, lineBegin + columnIndex),
+										  pos.X );
 			}
 
 			return pos;
@@ -225,8 +226,13 @@ namespace Sgry.Azuki
 				// we should return the index of next one.
 				if( drawableTextLen < line.Length )
 				{
-					string nextChar = line[drawableTextLen].ToString();
-					int nextCharWidth = MeasureTokenEndX( g, nextChar, leftPartWidth ) - leftPartWidth;
+					var nextChar = new TextSegment() {
+						Begin = begin + drawableTextLen,
+						End = TextUtil.NextGraphemeClusterIndex(Document.InternalBuffer,
+																begin + drawableTextLen)
+					};
+					int nextCharWidth = MeasureTokenEndX( g, nextChar, leftPartWidth )
+										- leftPartWidth;
 					if( leftPartWidth + nextCharWidth/2 < pt.X ) // == "x of middle of next char" < "x of click in virtual text area"
 					{
 						columnIndex = drawableTextLen + 1;
@@ -864,7 +870,7 @@ namespace Sgry.Azuki
 				// calc next drawing pos before drawing text
 				{
 					int virLeft = pos.X - (XofTextArea - ScrollPosX);
-					tokenEndPos.X = MeasureTokenEndX( g, token, virLeft );
+					tokenEndPos.X = MeasureTokenEndX( g, new TextSegment(begin, end), virLeft );
 					tokenEndPos.X += (XofTextArea - ScrollPosX);
 				}
 
@@ -902,7 +908,6 @@ namespace Sgry.Azuki
 				{
 					int visCharCount; // visible char count
 					int visPartRight;
-					string peekingChar;
 					int peekingCharRight = 0;
 
 					// calculate number of chars which fits within the clip-rect
@@ -912,21 +917,10 @@ namespace Sgry.Azuki
 					// we must write one more char so that the peeking char appears at the boundary.)
 
 					// try to get graphically peeking (drawn over the border line) char
-					peekingChar = String.Empty;
-					if( visCharCount+1 <= token.Length )
-					{
-						if( Document.IsNotDividableIndex(token, visCharCount+1) )
-						{
-							peekingChar = token.Substring( visCharCount, 2 );
-						}
-						else
-						{
-							peekingChar = token.Substring( visCharCount, 1 );
-						}
-					}
+					var peekingChar = new TextSegment( visCharCount, TextUtil.NextGraphemeClusterIndex(Document.InternalBuffer, visCharCount) );
 
 					// calculate right end coordinate of the peeking char
-					if( peekingChar != String.Empty )
+					if( peekingChar.IsEmpty == false )
 					{
 						peekingCharRight = MeasureTokenEndX( g, peekingChar, visPartRight );
 					}

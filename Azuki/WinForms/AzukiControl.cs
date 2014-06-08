@@ -2903,16 +2903,15 @@ namespace Sgry.Azuki.WinForms
 				if( ch != '\t' )
 				{
 					// this is not a tab so return width of this char
-					return view.MeasureTokenEndX( g, ch.ToString(), 0 );
+					return g.MeasureText( ch.ToString() ).Width;
 				}
 				else
 				{
 					// this is a tab so calculate distance
 					// from current position to next tab-stop and return it
 					int lineHead = view.GetLineHeadIndexFromCharIndex( caretIndex );
-					string leftPart = doc.GetTextInRange( lineHead, caretIndex );
-					int currentX = view.MeasureTokenEndX( g, leftPart, 0 );
-					int nextTabStopX = view.MeasureTokenEndX( g, leftPart+'\t', 0 );
+					int currentX = view.MeasureTokenEndX( g, new TextSegment(lineHead, caretIndex), 0 );
+					int nextTabStopX = view.NextTabStopX( currentX );
 					return nextTabStopX - currentX;
 				}
 			}

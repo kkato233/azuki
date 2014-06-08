@@ -2872,7 +2872,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public bool IsCombiningCharacter( int index )
 		{
-			return TextUtil.IsCombiningCharacter( this[index] );
+			return TextUtil.IsCombiningCharacter( InternalBuffer, index );
 		}
 
 		/// <summary>

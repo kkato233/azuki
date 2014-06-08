@@ -22,6 +22,13 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
+		public TextSegment()
+			: this( 0, 0 )
+		{}
+
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
 		public TextSegment( int begin, int end )
 		{
 			Begin = begin;

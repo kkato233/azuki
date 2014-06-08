@@ -3,7 +3,6 @@
 //=========================================================
 //DEBUG//#define DRAW_SLOWLY
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using StringBuilder = System.Text.StringBuilder;
 using Debug = System.Diagnostics.Debug;
@@ -839,7 +838,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates x-coordinate of the right end of given token drawed at specified position with specified tab-width.
 		/// </summary>
-		internal int MeasureTokenEndX( IGraphics g, string token, int virX )
+		internal int MeasureTokenEndX( IGraphics g, TextSegment segment, int virX )
 		{
 			int dummy;
 			int rightLimitX = Int32.MaxValue;
@@ -849,16 +848,17 @@ namespace Sgry.Azuki
 			{
 				rightLimitX = Int32.MaxValue + virX;
 			}
-			return MeasureTokenEndX( g, token, virX, rightLimitX, out dummy );
+			return MeasureTokenEndX( g, Document.GetTextInRange(segment.Begin, segment.End),
+									 virX, rightLimitX, out dummy );
 		}
 
 		/// <summary>
 		/// Calculates x-coordinate of the right end of given token
 		/// drawed at specified position with specified tab-width.
 		/// </summary>
-		protected int MeasureTokenEndX( IGraphics g, string token, int virX, int rightLimitX, out int drawableLength )
+		protected int MeasureTokenEndX( IGraphics g, string token, int virX, int rightLimitX,
+										out int drawableLength )
 		{
-			StringBuilder subToken;
 			int x = virX;
 			int relDLen; // relatively calculated drawable length
 			int subTokenWidth;
@@ -871,7 +871,7 @@ namespace Sgry.Azuki
 			}
 
 			// for each char
-			subToken = new StringBuilder( token.Length );
+			var subToken = new StringBuilder( token.Length );
 			for( int i=0; i<token.Length; i++ )
 			{
 				if( token[i] == '\t' )
@@ -967,7 +967,9 @@ namespace Sgry.Azuki
 		}
 
 		/// <returns>true if measured right poisition hit the limit.</returns>
-		static bool MeasureTokenEndX_TreatSubToken( IGraphics gra, int i, StringBuilder subToken, int rightLimitX, ref int x, ref int drawableLength )
+		static bool MeasureTokenEndX_TreatSubToken( IGraphics gra, int i, StringBuilder subToken,
+													int rightLimitX, ref int x,
+													ref int drawableLength )
 		{
 			int subTokenWidth;
 			int relDLen;

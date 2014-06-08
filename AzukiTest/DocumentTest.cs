@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 
@@ -802,7 +802,7 @@ namespace Sgry.Azuki.Test
 		public void FindNextR()
 		{
 			Document doc = new Document();
-			SearchResult result;
+			TextSegment result;
 			doc.Replace( "aababcabcd" );
 
 			// black box test

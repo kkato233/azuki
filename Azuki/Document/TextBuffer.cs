@@ -163,7 +163,7 @@ namespace Sgry.Azuki
 		/// <param name="end">End index of the search range.</param>
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
-		public SearchResult FindNext( string value, int begin, int end, bool matchCase )
+		public TextSegment FindNext( string value, int begin, int end, bool matchCase )
 		{
 			// If the gap exists after the search starting position,
 			// it must be moved to before the starting position.
@@ -214,7 +214,7 @@ namespace Sgry.Azuki
 			}
 
 			// return found index
-			return new SearchResult( foundIndex, foundIndex + value.Length );
+			return new TextSegment( foundIndex, foundIndex + value.Length );
 		}
 
 		/// <summary>
@@ -225,7 +225,7 @@ namespace Sgry.Azuki
 		/// <param name="end">The end index of the search range.</param>
 		/// <param name="matchCase">Whether the search should be case-sensitive or not.</param>
 		/// <returns>Search result object if found, otherwise null if not found.</returns>
-		public SearchResult FindPrev( string value, int begin, int end, bool matchCase )
+		public TextSegment FindPrev( string value, int begin, int end, bool matchCase )
 		{
 			// If the gap exists before the search starting position,
 			// it must be moved to after the starting position.
@@ -240,7 +240,7 @@ namespace Sgry.Azuki
 			// if empty string is the value to search, just return search start index
 			if( value.Length == 0 )
 			{
-				return new SearchResult( end, end );
+				return new TextSegment( end, end );
 			}
 
 			// convert begin/end indexes to start/length indexes
@@ -279,7 +279,7 @@ namespace Sgry.Azuki
 			}
 
 			// return found index
-			return new SearchResult( foundIndex, foundIndex + value.Length );
+			return new TextSegment( foundIndex, foundIndex + value.Length );
 		}
 
 		/// <summary>
@@ -296,7 +296,7 @@ namespace Sgry.Azuki
 		/// specified with the <paramref name="end"/> parameter
 		/// and does not stop at line ends nor null-characters.
 		/// </remarks>
-		public SearchResult FindNext( Regex regex, int begin, int end )
+		public TextSegment FindNext( Regex regex, int begin, int end )
 		{
 			int start, length;
 			Match match;
@@ -331,12 +331,12 @@ namespace Sgry.Azuki
 
 			// return found index
 			if( start == begin )
-				return new SearchResult( match.Index, match.Index + match.Length );
+				return new TextSegment( match.Index, match.Index + match.Length );
 			else
-				return new SearchResult( match.Index - _GapLen, match.Index - _GapLen + match.Length );
+				return new TextSegment( match.Index - _GapLen, match.Index - _GapLen + match.Length );
 		}
 
-		public SearchResult FindPrev( Regex regex, int begin, int end )
+		public TextSegment FindPrev( Regex regex, int begin, int end )
 		{
 			int start, length;
 			Match match;
@@ -370,9 +370,9 @@ namespace Sgry.Azuki
 
 			// return found index
 			if( start == begin )
-				return new SearchResult( match.Index, match.Index + match.Length );
+				return new TextSegment( match.Index, match.Index + match.Length );
 			else
-				return new SearchResult( match.Index - _GapLen, match.Index - _GapLen + match.Length );
+				return new TextSegment( match.Index - _GapLen, match.Index - _GapLen + match.Length );
 		}
 		#endregion
 

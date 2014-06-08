@@ -1886,7 +1886,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindNext( string value, int startIndex )
+		public TextSegment FindNext( string value, int startIndex )
 		{
 			return FindNext( value, startIndex, _Buffer.Count, true );
 		}
@@ -1921,7 +1921,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="begin"/>, <paramref name="begin"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindNext( string value, int begin, int end )
+		public TextSegment FindNext( string value, int begin, int end )
 		{
 			return FindNext( value, begin, end, true );
 		}
@@ -1957,7 +1957,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindNext( string value, int startIndex, bool matchCase )
+		public TextSegment FindNext( string value, int startIndex, bool matchCase )
 		{
 			return FindNext( value, startIndex, _Buffer.Count, matchCase );
 		}
@@ -1993,7 +1993,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="begin"/>, <paramref name="begin"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindNext( string value, int begin, int end, bool matchCase )
+		public TextSegment FindNext( string value, int begin, int end, bool matchCase )
 		{
 			if( begin < 0 )
 				throw new ArgumentOutOfRangeException( "begin", "parameter begin must be a"
@@ -2046,7 +2046,7 @@ namespace Sgry.Azuki
 		///   null-characters.
 		///   </para>
 		/// </remarks>
-		public SearchResult FindNext( Regex regex, int startIndex )
+		public TextSegment FindNext( Regex regex, int startIndex )
 		{
 			return FindNext( regex, startIndex, _Buffer.Count );
 		}
@@ -2085,7 +2085,7 @@ namespace Sgry.Azuki
 		///   the range of [<paramref name="begin"/>, <paramref name="begin"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindNext( Regex regex, int begin, int end )
+		public TextSegment FindNext( Regex regex, int begin, int end )
 		{
 			if( begin < 0 )
 				throw new ArgumentOutOfRangeException( "begin", "parameter begin must be a"
@@ -2137,7 +2137,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindPrev( string value, int startIndex )
+		public TextSegment FindPrev( string value, int startIndex )
 		{
 			return FindPrev( value, 0, startIndex, true );
 		}
@@ -2172,7 +2172,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindPrev( string value, int startIndex, bool matchCase )
+		public TextSegment FindPrev( string value, int startIndex, bool matchCase )
 		{
 			return FindPrev( value, 0, startIndex, matchCase );
 		}
@@ -2208,7 +2208,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="begin"/>, <paramref name="begin"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindPrev( string value, int begin, int end )
+		public TextSegment FindPrev( string value, int begin, int end )
 		{
 			return FindPrev( value, begin, end, true );
 		}
@@ -2243,7 +2243,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="end"/>, <paramref name="end"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindPrev( string value, int begin, int end, bool matchCase )
+		public TextSegment FindPrev( string value, int begin, int end, bool matchCase )
 		{
 			if( begin < 0 )
 				throw new ArgumentOutOfRangeException( "begin", "parameter begin must be a"
@@ -2296,7 +2296,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="startIndex"/>, <paramref name="startIndex"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindPrev( Regex regex, int startIndex )
+		public TextSegment FindPrev( Regex regex, int startIndex )
 		{
 			return FindPrev( regex, 0, startIndex );
 		}
@@ -2335,7 +2335,7 @@ namespace Sgry.Azuki
 		///   range of [<paramref name="end"/>, <paramref name="end"/>).
 		///   </para>
 		/// </remarks>
-		public SearchResult FindPrev( Regex regex, int begin, int end )
+		public TextSegment FindPrev( Regex regex, int begin, int end )
 		{
 			if( begin < 0 )
 				throw new ArgumentOutOfRangeException( "begin", "parameter begin must be a"

@@ -2880,7 +2880,7 @@ namespace Sgry.Azuki
 		/// </summary>
 		public static bool IsCombiningCharacter( string text, int index )
 		{
-			return TextUtil.IsCombiningCharacter( text, text[index] );
+			return TextUtil.IsCombiningCharacter( text, index );
 		}
 
 		/// <summary>

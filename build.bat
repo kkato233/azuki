@@ -1,17 +1,10 @@
 @echo off
 setlocal
 
-set _OPT=-nologo -v:m -t:Build
-set _OPT=%_OPT% -p:Configuration=Release
-set _OPT=%_OPT% -clp:ForceNoAlign;ShowCommandLine
-set _SOLUTION_FILE=%~1
+call configure.bat
 
-if "%~1"=="" (
-	echo # no solution file was specified; using All.vs8.sln.
-	set _SOLUTION_FILE=All.vs8.sln
+%MSBUILD% Azuki.vs9.sln %MSBUILD_OPT% -p:Configuration=Release
+if not "%errorlevel%" == "0" (
+    echo Failed to build. ^(code:%errorlevel%^)
+    goto :EOF
 )
-
-:: build
-echo ===== begin msbuild =====
-msbuild.exe "%_SOLUTION_FILE%" %_OPT%
-echo ===== end msbuild =====

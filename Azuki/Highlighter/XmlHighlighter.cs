@@ -1,10 +1,5 @@
-﻿// file: XmlHighlighter.cs
-// brief: Highlighter for XML.
-//=========================================================
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki.Highlighter
 {
@@ -83,17 +78,6 @@ namespace Sgry.Azuki.Highlighter
 		#endregion
 
 		#region Highlighting Logic
-		/// <summary>
-		/// Parse and highlight keywords.
-		/// </summary>
-		/// <param name="doc">Document to highlight.</param>
-		public void Highlight( Document doc )
-		{
-			int begin = 0;
-			int end = doc.Length;
-			Highlight( doc, ref begin, ref end );
-		}
-
 		/// <summary>
 		/// Parse and highlight keywords.
 		/// </summary>

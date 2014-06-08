@@ -1,5 +1,6 @@
 == 1.8.0 (2014-xx-xx) ==
  * mod: [!] Renamed SearchResult to TextSegment
+ * mod: [!] Removed IHighlighter.Highlight method which only takes Document
  * mod: Changed default color scheme
  * mod: Windows Mobile is not supported any more as a runtime environment
  * mod: Visual Studio 2005 (C# language 2.0) is not supported any more as a development environment

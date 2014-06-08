@@ -1,10 +1,6 @@
-﻿// file: Utl.cs
-// brief: common utility for built-in highlighters.
-//=========================================================
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Sgry.Azuki.Highlighter
 {

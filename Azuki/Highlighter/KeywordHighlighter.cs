@@ -1,7 +1,4 @@
-﻿// file: KeywordHighlighter.cs
-// brief: Keyword based highlighter.
-//=========================================================
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Debug = System.Diagnostics.Debug;

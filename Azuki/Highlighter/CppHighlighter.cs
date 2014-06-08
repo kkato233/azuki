@@ -1,11 +1,4 @@
-﻿// file: CppHighlighter.cs
-// brief: C/C++ highlighter.
-// author: YAMAMOTO Suguru
-// update: 2011-02-19
-//=========================================================
-using System;
-using System.Collections.Generic;
-using Color = System.Drawing.Color;
+﻿using System.Collections.Generic;
 
 namespace Sgry.Azuki.Highlighter
 {

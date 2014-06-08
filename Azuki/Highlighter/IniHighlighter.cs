@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-
-namespace Sgry.Azuki.Highlighter
+﻿namespace Sgry.Azuki.Highlighter
 {
 	class IniHighlighter : KeywordHighlighter
 	{

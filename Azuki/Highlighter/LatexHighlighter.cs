@@ -1,6 +1,3 @@
-// file: LatexHighlighter.cs
-// brief: Highlighter for LaTeX.
-//=========================================================
 using System;
 using Sgry.Azuki.Highlighter.Coco.Latex;
 
@@ -33,16 +30,6 @@ namespace Sgry.Azuki.Highlighter
 			set{ _Hook = value; }
 		}
 		#endregion
-
-		/// <summary>
-		/// Creates a new instance.
-		/// </summary>
-		public void Highlight( Document doc )
-		{
-			int begin = 0;
-			int end = doc.Length;
-			Highlight( doc, ref begin, ref end );
-		}
 
 		/// <summary>
 		/// Highlightes a LaTeX document.

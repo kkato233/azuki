@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-
-namespace Sgry.Azuki.Highlighter
+﻿namespace Sgry.Azuki.Highlighter
 {
 	class DiffHighlighter : KeywordHighlighter
 	{
@@ -17,13 +14,6 @@ namespace Sgry.Azuki.Highlighter
 			AddRegex( @"^[>-](?!-- ).*", CharClass.RemovedLine );
 			AddRegex( @"^!.*$", CharClass.ChangedLine );
 			AddRegex( @"^[^-+ :I][^ :]+:.*", CharClass.Comment );
-		}
-
-		public override void Highlight( Document doc,
-										ref int dirtyBegin,
-										ref int dirtyEnd )
-		{
-			base.Highlight( doc, ref dirtyBegin, ref dirtyEnd );
 		}
 	}
 }

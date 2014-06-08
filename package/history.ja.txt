@@ -1,5 +1,6 @@
 == 1.8.0 (2014-xx-xx) ==
  * mod: [!] SearchResult構造体の名前をTextSegmentに変更
+ * mod: [!] Documentだけを引数に受け取るIHighlighter.Highlightメソッドを廃止
  * mod: 標準の配色テーマを変更
  * mod: Windows Mobileでの動作サポートを終了
  * mod: Visual Studio 2005 (C# 2.0言語)を開発環境としてサポートしないように

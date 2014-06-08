@@ -3,7 +3,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
-	static class TextUtil
+	internal static class TextUtil
 	{
 		public static readonly char[] EolChars = new char[]{ '\r', '\n' };
 

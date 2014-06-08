@@ -1,0 +1,1 @@
+This folder contains a subset of NUnit 2.6.3.

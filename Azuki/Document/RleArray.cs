@@ -14,12 +14,9 @@ namespace Sgry.Azuki
 	/// <summary>
 	/// Array of items which compresses contents with RLE compression method.
 	/// </summary>
-	class RleArray<T> : IList<T>
+	internal class RleArray<T> : IList<T>
 	{
-#		if TEST
-		internal
-#		endif
-		SplitArray<Node> _Nodes;
+		internal SplitArray<Node> _Nodes;
 		int _TotalCount = 0;
 
 		#region Init / Dispose

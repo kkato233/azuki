@@ -35,14 +35,7 @@ if "%VER%" == "" (
 echo ========================================
 echo   [1/4] run tests
 echo ========================================
-%FDIR%\MSBuild.exe AzukiTest.vs9.sln %MSBUILD_OPT%
-if not "%ERRORLEVEL%" == "0" (
-	goto ERROR
-)
-
-pushd package
-AzukiTest.exe
-popd
+call test.bat
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )
@@ -52,7 +45,7 @@ echo.
 echo ========================================
 echo   [2/4] build assembly
 echo ========================================
-%FDIR%\MSBuild.exe All.vs9.sln %MSBUILD_OPT% -p:Configuration=Release
+%FDIR%\MSBuild.exe Azuki.vs9.sln %MSBUILD_OPT% -p:Configuration=Release
 if not "%ERRORLEVEL%" == "0" (
 	goto ERROR
 )

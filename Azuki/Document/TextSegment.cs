@@ -16,17 +16,34 @@ namespace Sgry.Azuki
 	///   includes <code>ba</code>.
 	/// </para>
 	/// </remarks>
-	public struct TextSegment
+	public class TextSegment : ICloneable
 	{
+		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
 		public TextSegment( int begin, int end )
-			: this()
 		{
 			Begin = begin;
 			End = end;
 		}
+
+		/// <summary>
+		/// Creates a cloned copy of this Range object.
+		/// </summary>
+		public virtual TextSegment Clone()
+		{
+			return new TextSegment( Begin, End );
+		}
+
+		/// <summary>
+		/// Creates a cloned copy of this object.
+		/// </summary>
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+		#endregion
 
 		/// <summary>
 		/// Gets or sets beginning position of the segment.
@@ -66,6 +83,20 @@ namespace Sgry.Azuki
 		public override string ToString()
 		{
 			return String.Format( "[{0}, {1})", Begin, End );
+		}
+
+		public override bool Equals( object obj )
+		{
+			var another = obj as TextSegment;
+			if( another == null )
+				return false;
+
+			return (another.Begin == Begin && another.End == End);
+		}
+
+		public override int GetHashCode()
+		{
+			return Begin + (End << 16);
 		}
 	}
 }

@@ -766,14 +766,7 @@ namespace Sgry.Azuki
 													   + " (lineIndex:" + lineIndex
 													   + ", LineCount:" + LineCount + ")." );
 
-			int begin, end;
-
-			// get line range
-			TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, includesEolCode,
-									out begin, out end );
-
-			// return length
-			return end - begin;
+			return TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, includesEolCode ).Length;
 		}
 
 		/// <summary>
@@ -789,19 +782,18 @@ namespace Sgry.Azuki
 													   + " (lineIndex:" + lineIndex
 													   + ", LineCount:" + LineCount + ")." );
 
-			int begin, end;
 			char[] lineContent;
 
 			// prepare buffer to store line content
-			TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, false, out begin, out end );
-			if( end <= begin )
+			var range = TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, false );
+			if( range.End <= range.Begin )
 			{
 				return String.Empty;
 			}
-			lineContent = new char[ end-begin ];
+			lineContent = new char[ range.Length ];
 
 			// copy line content
-			_Buffer.CopyTo( begin, end, lineContent );
+			_Buffer.CopyTo( range.Begin, range.End, lineContent );
 
 			return new String( lineContent );
 		}
@@ -819,19 +811,18 @@ namespace Sgry.Azuki
 													   + " (lineIndex:" + lineIndex
 													   + ", LineCount:" + LineCount + ")." );
 
-			int begin, end;
 			char[] lineContent;
 
 			// prepare buffer to store line content
-			TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, true, out begin, out end );
-			if( end <= begin )
+			var range = TextUtil.GetLineRange( _Buffer, _LHI, lineIndex, true );
+			if( range.IsEmpty )
 			{
 				return String.Empty;
 			}
-			lineContent = new char[ end-begin ];
+			lineContent = new char[ range.Length ];
 			
 			// copy line content
-			_Buffer.CopyTo( begin, end, lineContent );
+			_Buffer.CopyTo( range.Begin, range.End, lineContent );
 
 			return new String( lineContent );
 		}

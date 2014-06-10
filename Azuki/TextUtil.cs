@@ -95,49 +95,48 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Line Range
-		public static void GetLineRange( TextBuffer text,
-										 SplitArray<int> lhi,
-										 int lineIndex,
-										 bool includesEolCode,
-										 out int begin,
-										 out int end )
+		public static TextSegment GetLineRange( TextBuffer text,
+												SplitArray<int> lhi,
+												int lineIndex,
+												bool includesEolCode )
 		{
 			DebugUtl.Assert( text != null );
 			DebugUtl.Assert( lhi != null );
 			DebugUtl.Assert( 0 <= lineIndex && lineIndex < lhi.Count,
 							 "argument out of range; given lineIndex is "
 							 + lineIndex + " but lhi.Count is " + lhi.Count );
-			int length;
+			var range = new TextSegment();
 
 			// get range of the specified line
-			begin = lhi[lineIndex];
+			range.Begin = lhi[lineIndex];
 			if( lineIndex+1 < lhi.Count )
 			{
-				end = lhi[lineIndex + 1];
+				range.End = lhi[lineIndex + 1];
 			}
 			else
 			{
-				end = text.Count;
+				range.End = text.Count;
 			}
-			Debug.Assert( 0 <= begin && begin <= end );
-			Debug.Assert( end <= text.Count );
+			Debug.Assert( 0 <= range.Begin && range.Begin <= range.End );
+			Debug.Assert( range.End <= text.Count );
 
 			// subtract length of the trailing EOL code
 			if( includesEolCode == false )
 			{
-				length = end - begin;
-				if( 1 <= length && text[end-1] == '\n' )
+				if( 1 <= range.Length && text[range.End-1] == '\n' )
 				{
-					if( 2 <= length && text[end-2] == '\r' )
-						end -= 2;
+					if( 2 <= range.Length && text[range.End-2] == '\r' )
+						range.End -= 2;
 					else
-						end--;
+						range.End--;
 				}
-				else if( 1 <= length && text[end-1] == '\r' )
+				else if( 1 <= range.Length && text[range.End-1] == '\r' )
 				{
-					end--;
+					range.End--;
 				}
 			}
+
+			return range;
 		}
 		#endregion
 

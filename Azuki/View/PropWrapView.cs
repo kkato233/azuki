@@ -163,9 +163,10 @@ namespace Sgry.Azuki
 			if( 0 < columnIndex )
 			{
 				// get partial content of the line which exists before the caret
-				int lineBegin, lineEnd;
-				TextUtil.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, true,
-										out lineBegin, out lineEnd );
+				var lineBegin = TextUtil.GetLineRange( Document.InternalBuffer,
+													   PLHI,
+													   lineIndex,
+													   true ).Begin;
 
 				// measure the characters
 				pos.X = MeasureTokenEndX( g,
@@ -203,16 +204,14 @@ namespace Sgry.Azuki
 			columnIndex = 0;
 			if( 0 < pt.X )
 			{
-				int begin, end;
 				string line;
 				bool isWrapLine = false;
-				
+
 				// get content of the line
-				TextUtil.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, false,
-										out begin, out end );
-				line = Document.GetTextInRange( begin, end );
-				if( end+1 < Document.Length
-					&& !TextUtil.IsEolChar(Document[end]) )
+				var range = TextUtil.GetLineRange( Document.InternalBuffer, PLHI, lineIndex, false );
+				line = Document.GetTextInRange( range.Begin, range.End );
+				if( range.End+1 < Document.Length
+					&& !TextUtil.IsEolChar(Document[range.End]) )
 				{
 					isWrapLine = true;
 				}
@@ -224,12 +223,12 @@ namespace Sgry.Azuki
 
 				// if the location is nearer to the NEXT of that char,
 				// we should return the index of next one.
-				if( drawableTextLen < line.Length )
+				if( drawableTextLen < range.Length )
 				{
 					var nextChar = new TextSegment() {
-						Begin = begin + drawableTextLen,
+						Begin = range.Begin + drawableTextLen,
 						End = TextUtil.NextGraphemeClusterIndex(Document.InternalBuffer,
-																begin + drawableTextLen)
+																range.Begin + drawableTextLen)
 					};
 					int nextCharWidth = MeasureTokenEndX( g, nextChar, leftPartWidth )
 										- leftPartWidth;

@@ -120,61 +120,61 @@ namespace Sgry.Azuki.Test
 		[Test]
 		public void GetLineRange()
 		{
-			int head, end;
+			TextSegment range;
 			TextBuffer text;
 			SplitArray<int> lhi;
 			SplitArray<LineDirtyState> lds;
 
 			MakeTestData( out text, out lhi, out lds );
 
-			TextUtil.GetLineRange( text, lhi, 0, false, out head, out end );
-			Assert.AreEqual( 0, head );
-			Assert.AreEqual( 30, end );
-			TextUtil.GetLineRange( text, lhi, 0, true, out head, out end );
-			Assert.AreEqual( 0, head );
-			Assert.AreEqual( 32, end );
+			range = TextUtil.GetLineRange( text, lhi, 0, false );
+			Assert.AreEqual( 0, range.Begin );
+			Assert.AreEqual( 30, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 0, true );
+			Assert.AreEqual( 0, range.Begin );
+			Assert.AreEqual( 32, range.End );
 
-			TextUtil.GetLineRange( text, lhi, 1, false, out head, out end );
-			Assert.AreEqual( 32, head );
-			Assert.AreEqual( 32, end );
-			TextUtil.GetLineRange( text, lhi, 1, true, out head, out end );
-			Assert.AreEqual( 32, head );
-			Assert.AreEqual( 33, end );
+			range = TextUtil.GetLineRange( text, lhi, 1, false );
+			Assert.AreEqual( 32, range.Begin );
+			Assert.AreEqual( 32, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 1, true );
+			Assert.AreEqual( 32, range.Begin );
+			Assert.AreEqual( 33, range.End );
 
-			TextUtil.GetLineRange( text, lhi, 2, false, out head, out end );
-			Assert.AreEqual( 33, head );
-			Assert.AreEqual( 36, end );
-			TextUtil.GetLineRange( text, lhi, 2, true, out head, out end );
-			Assert.AreEqual( 33, head );
-			Assert.AreEqual( 37, end );
+			range = TextUtil.GetLineRange( text, lhi, 2, false );
+			Assert.AreEqual( 33, range.Begin );
+			Assert.AreEqual( 36, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 2, true );
+			Assert.AreEqual( 33, range.Begin );
+			Assert.AreEqual( 37, range.End );
 
-			TextUtil.GetLineRange( text, lhi, 3, false, out head, out end );
-			Assert.AreEqual( 37, head );
-			Assert.AreEqual( 37, end );
-			TextUtil.GetLineRange( text, lhi, 3, true, out head, out end );
-			Assert.AreEqual( 37, head );
-			Assert.AreEqual( 38, end );
+			range = TextUtil.GetLineRange( text, lhi, 3, false );
+			Assert.AreEqual( 37, range.Begin );
+			Assert.AreEqual( 37, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 3, true );
+			Assert.AreEqual( 37, range.Begin );
+			Assert.AreEqual( 38, range.End );
 
-			TextUtil.GetLineRange( text, lhi, 4, false, out head, out end );
-			Assert.AreEqual( 38, head );
-			Assert.AreEqual( 51, end );
-			TextUtil.GetLineRange( text, lhi, 4, true, out head, out end );
-			Assert.AreEqual( 38, head );
-			Assert.AreEqual( 52, end );
+			range = TextUtil.GetLineRange( text, lhi, 4, false );
+			Assert.AreEqual( 38, range.Begin );
+			Assert.AreEqual( 51, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 4, true );
+			Assert.AreEqual( 38, range.Begin );
+			Assert.AreEqual( 52, range.End );
 
-			TextUtil.GetLineRange( text, lhi, 5, false, out head, out end );
-			Assert.AreEqual( 52, head );
-			Assert.AreEqual( 52, end );
-			TextUtil.GetLineRange( text, lhi, 5, true, out head, out end );
-			Assert.AreEqual( 52, head );
-			Assert.AreEqual( 53, end );
+			range = TextUtil.GetLineRange( text, lhi, 5, false );
+			Assert.AreEqual( 52, range.Begin );
+			Assert.AreEqual( 52, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 5, true );
+			Assert.AreEqual( 52, range.Begin );
+			Assert.AreEqual( 53, range.End );
 
-			TextUtil.GetLineRange( text, lhi, 6, false, out head, out end );
-			Assert.AreEqual( 53, head );
-			Assert.AreEqual( 71, end );
-			TextUtil.GetLineRange( text, lhi, 6, true, out head, out end );
-			Assert.AreEqual( 53, head );
-			Assert.AreEqual( 71, end );
+			range = TextUtil.GetLineRange( text, lhi, 6, false );
+			Assert.AreEqual( 53, range.Begin );
+			Assert.AreEqual( 71, range.End );
+			range = TextUtil.GetLineRange( text, lhi, 6, true );
+			Assert.AreEqual( 53, range.Begin );
+			Assert.AreEqual( 71, range.End );
 		}
 
 		[Test]

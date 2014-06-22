@@ -1046,7 +1046,7 @@ namespace Sgry.Azuki
 
 			// Is the caret is at end of a line or at non-whitespace character?
 			if( caret == doc.Length
-				|| LineLogic.IsEolChar(doc[caret])
+				|| TextUtil.IsEolChar(doc[caret])
 				|| " \t".IndexOf(doc[caret]) < 0 )
 			{
 				// And isn't there a non-whitespace character before the caret?

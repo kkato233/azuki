@@ -35,7 +35,7 @@ namespace Sgry.Azuki
 		bool _IsOverwriteMode = false;
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
-		bool _UnindentsWithBackspace = true;
+		bool _UnindentsWithBackspace = false;
 
 		// X coordinate of this also be used as a flag to determine
 		// whether the mouse button is down or not.

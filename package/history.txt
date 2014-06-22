@@ -6,6 +6,7 @@
  * mod: Visual Studio 2005 (C# language 2.0) is not supported any more as a development environment
 
 == 1.7.11 (2014-xx-xx) ==
+ * mod: Now IUserInterface.UnindentsWithBackspace is false by default. (The behavior of this mode is not natural in most cases except editing some languages such as Python.)
  * fix: If IUserInterface.UnindentsWithBackspace is true, pressing backspace key while caret is in an empty line could not delete the line. (Special thanks: Frankie)
 
 == 1.7.10 (2014-06-07) ==

@@ -349,43 +349,39 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets whether a tab character should be used for indentation
-		/// or not, instead of space characters.
+		/// Gets or sets whether a tab character should be used for indentation or not, instead of
+		/// space characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property gets or sets whether tab characters are used for
-		/// indentation or not. If this property is false, space characters
-		/// will be used.
+		/// This property gets or sets whether tab characters are used for indentation or not. If
+		/// this property is false, space characters will be used.
 		/// </para>
 		/// <para>
-		/// This property affects every action involving indentation. Next is
-		/// the list of such actions:
+		/// This property affects every action involving indentation. Next is the list of such
+		/// actions:
 		/// </para>
 		/// <list type="bullet">
 		///		<item>
-		///		Inserting an indentation character sequence
-		///		(hitting the &quot;tab&quot; on your keyboard).
+		///		Inserting an indentation character sequence (hitting the &quot;tab&quot; on your
+		///		keyboard).
 		///		</item>
 		///		<item>
 		///		Executing block-indent.
 		///		</item>
 		///		<item>
-		///		Executing auto-indentation which requires to indent lines. An
-		///		example is smart-indentation for C/C++ language. If user hits
-		///		&quot;Enter&quot; key when the caret is at end of line which
-		///		ends with a closing curly bracket (<c> } </c>), newly generated
-		///		line will be indented.
+		///		Executing auto-indentation which requires to indent lines. An example is
+		///		smart-indentation for C/C++ language. If user hits &quot;Enter&quot; key when the
+		///		caret is at end of line which ends with a closing curly bracket (<c> } </c>), newly
+		///		generated line will be indented.
 		///		</item>
 		///		<item>
-		///		Pasting rectangular selection data, under specific condition.
-		///		An example of the condition is; pasting when (1) a rectangular
-		///		selection contains two lines, (2) the caret is at the end
-		///		of a line which is not empty, and (3) the next line is empty.
-		///		In this case, an appropriate amount of whitespaces are needed
-		///		to be appended to the the next (empty) line so that the second
-		///		line in the rectangular selection data will be placed at the
-		///		same column position as the first line.
+		///		Pasting rectangular selection data, under specific condition. An example of the 
+		///		condition is; pasting when (1) a rectangular selection contains two lines, (2) the
+		///		caret is at the end of a line which is not empty, and (3) the next line is empty.
+		///		In this case, an appropriate amount of whitespaces are needed to be appended to the
+		///		the next (empty) line so that the second line in the rectangular selection data
+		///		will be placed at the same column position as the first line.
 		///		</item>
 		/// </list>
 		/// </remarks>
@@ -398,14 +394,14 @@ namespace Sgry.Azuki
 		/// <seealso cref="Sgry.Azuki.Actions.BlockUnIndent">
 		/// Actions.BlockUnIndent action
 		/// </seealso>
+		/// <seealso cref="UnindentsWithBackspace"/>
 		bool UsesTabForIndent
 		{
 			get; set;
 		}
 
 		/// <summary>
-		/// Gets or sets whether to automatically convert
-		/// an input full-width space to a space.
+		/// Gets or sets whether to automatically convert an input full-width space to a space.
 		/// </summary>
 		bool ConvertsFullWidthSpaceToSpace
 		{
@@ -418,9 +414,11 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <remarks>
 		///   <para>
-		///   If this property is set to true, pressing Backspace key removes multiple whitespace
+		///   If this property is set to true, pressing Backspace key removes multiple space
 		///   characters at once so that the indentation level of the line is decreased. Azuki
-		///   performs this action only if the caret is at end of a line or end of the document.
+		///   performs this action only if the one character before the caret is a space and if
+		///   every character between the line beginning and the caret position is a whitespace
+		///   character.
 		///   </para>
 		///   <para>
 		///   This feature is useful for editing source files in which space characters are used

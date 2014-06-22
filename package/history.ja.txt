@@ -5,6 +5,9 @@
  * mod: Windows Mobileでの動作サポートを終了
  * mod: Visual Studio 2005 (C# 2.0言語)を開発環境としてサポートしないように
 
+== 1.7.11 (2014-xx-xx) ==
+ * fix: IUserInterface.UnindentsWithBackspaceを有効化すると空行をバックスペースキーで削除できない問題を修正（Frankieさんに感謝）
+
 == 1.7.10 (2014-06-07) ==
  * add: Python用の自動インデントフックAutoIndentHooks.Pythonを追加
  * add: 空白で終わる行の末尾でBackspaceキーを押すと逆インデントするように改善（IUserInterface.UnindentsWithBackspaceで機能無効化可能）

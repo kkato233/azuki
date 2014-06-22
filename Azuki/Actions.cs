@@ -1035,9 +1035,18 @@ namespace Sgry.Azuki
 			Document doc = ui.Document;
 			int caret = ui.CaretIndex;
 
+			// If the caret is at beginning of a line, or the character before to be removed is not
+			// a space, should not.
+			if( caret == 0
+				//NO_NEED//|| LineLogic.IsEolChar(doc[caret-1])
+				|| doc[caret-1] != ' ' )
+			{
+				return false;
+			}
+
 			// Is the caret is at end of a line or at non-whitespace character?
 			if( caret == doc.Length
-				|| 0 <= "\r\n".IndexOf(doc[caret])
+				|| LineLogic.IsEolChar(doc[caret])
 				|| " \t".IndexOf(doc[caret]) < 0 )
 			{
 				// And isn't there a non-whitespace character before the caret?

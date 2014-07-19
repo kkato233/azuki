@@ -10,11 +10,15 @@ using StringBuilder = System.Text.StringBuilder;
 
 namespace Sgry.Azuki
 {
+	using TextLayouts;
+
 	/// <summary>
 	/// Platform independent view implementation to display wrapped text with proportional font.
 	/// </summary>
 	class PropWrapView : PropView
 	{
+		readonly ITextLayout _Layout;
+
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
@@ -23,6 +27,7 @@ namespace Sgry.Azuki
 		internal PropWrapView( IUserInterface ui )
 			: base( ui )
 		{
+			_Layout = new PropWrapTextLayout( this );
 			Document.ViewParam.ScrollPosX = 0;
 		}
 
@@ -32,17 +37,15 @@ namespace Sgry.Azuki
 		internal PropWrapView( View other )
 			: base( other )
 		{
+			_Layout = new PropWrapTextLayout( this );
 			Document.ViewParam.ScrollPosX = 0;
 		}
 		#endregion
 
 		#region Properties
-		/// <summary>
-		/// Gets number of the screen lines.
-		/// </summary>
-		public override int LineCount
+		public override ITextLayout Layout
 		{
-			get{ return PLHI.Count; }
+			get{ return _Layout; }
 		}
 
 		/// <summary>
@@ -994,7 +997,7 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Utilities
-		SplitArray<int> PLHI
+		internal SplitArray<int> PLHI
 		{
 			get
 			{

@@ -96,6 +96,10 @@
     <Compile Include="IUserInterface.cs" />
     <Compile Include="IWordProc.cs" />
     <Compile Include="Platform.cs" />
+    <Compile Include="TextLayouts\ITextLayout.cs" />
+    <Compile Include="TextLayouts\PropTextLayouts.cs" />
+    <Compile Include="TextLayouts\PropWrapTextLayout.cs" />
+    <Compile Include="TextLayouts\TextLayoutBase.cs" />
     <Compile Include="TextUtil.cs" />
     <Compile Include="UiImpl.cs" />
     <Compile Include="UserPref.cs" />

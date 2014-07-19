@@ -9,6 +9,8 @@ using Debug = System.Diagnostics.Debug;
 
 namespace Sgry.Azuki
 {
+	using TextLayouts;
+
 	/// <summary>
 	/// Platform independent view of Azuki.
 	/// </summary>
@@ -62,6 +64,11 @@ namespace Sgry.Azuki
 			| DrawingOption.HighlightsMatchedBracket;
 		bool _ScrollsBeyondLastLine = true;
 		#endregion
+
+		public abstract ITextLayout Layout
+		{
+			get;
+		}
 
 		#region Init / Dispose
 		/// <summary>
@@ -140,9 +147,9 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets number of the screen lines.
 		/// </summary>
-		public abstract int LineCount
+		public int LineCount
 		{
-			get;
+			get{ return Layout.GetLineCount(); }
 		}
 
 		/// <summary>

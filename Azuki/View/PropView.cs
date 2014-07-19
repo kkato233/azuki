@@ -8,11 +8,15 @@ using System.Diagnostics;
 
 namespace Sgry.Azuki
 {
+	using TextLayouts;
+
 	/// <summary>
 	/// Platform independent view implementation to display text with proportional font.
 	/// </summary>
 	class PropView : View
 	{
+		readonly ITextLayout _Layout;
+
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
@@ -21,6 +25,7 @@ namespace Sgry.Azuki
 		internal PropView( IUserInterface ui )
 			: base( ui )
 		{
+			_Layout = new PropTextLayout( this );
 		}
 
 		/// <summary>
@@ -29,6 +34,8 @@ namespace Sgry.Azuki
 		internal PropView( View other )
 			: base( other )
 		{
+			_Layout = new PropTextLayout( this );
+
 			// release selection
 			// (because changing view while keeping selection makes
 			// pretty difficult problem around invalidation,
@@ -56,12 +63,9 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Properties
-		/// <summary>
-		/// Gets number of the screen lines.
-		/// </summary>
-		public override int LineCount
+		public override ITextLayout Layout
 		{
-			get{ return base.Document.LineCount; }
+			get{ return _Layout; }
 		}
 
 		/// <summary>

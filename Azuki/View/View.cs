@@ -804,7 +804,10 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public abstract Point GetVirPosFromIndex( IGraphics g, int index );
+		public Point GetVirPosFromIndex( IGraphics g, int index )
+		{
+			return Layout.GetVirPos( g, index );
+		}
 
 		/// <summary>
 		/// Calculates location in the virtual space of the character at specified index.
@@ -824,17 +827,20 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public abstract Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex );
+		public Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex )
+		{
+			return Layout.GetVirPos( g, new LineColumnPosition(lineIndex, columnIndex) );
+		}
 
 		/// <summary>
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
-		public int GetIndexFromVirPos( Point pt )
+		public int GetIndexFromVirPos( Point virPos )
 		{
 			using( IGraphics g = _UI.GetIGraphics() )
 			{
-				return GetIndexFromVirPos( g, pt );
+				return GetIndexFromVirPos( g, virPos );
 			}
 		}
 
@@ -842,7 +848,10 @@ namespace Sgry.Azuki
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
-		public abstract int GetIndexFromVirPos( IGraphics g, Point pt );
+		public int GetIndexFromVirPos( IGraphics g, Point virPos )
+		{
+			return Layout.GetIndex( g, virPos );
+		}
 
 		/// <summary>
 		/// Converts a coordinate in virtual space to a coordinate in client area.

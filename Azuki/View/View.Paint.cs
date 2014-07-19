@@ -856,8 +856,8 @@ namespace Sgry.Azuki
 		/// Calculates x-coordinate of the right end of given token
 		/// drawed at specified position with specified tab-width.
 		/// </summary>
-		protected int MeasureTokenEndX( IGraphics g, string token, int virX, int rightLimitX,
-										out int drawableLength )
+		internal int MeasureTokenEndX( IGraphics g, string token, int virX, int rightLimitX,
+									   out int drawableLength )
 		{
 			int x = virX;
 			int relDLen; // relatively calculated drawable length

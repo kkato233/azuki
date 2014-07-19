@@ -277,13 +277,13 @@ namespace Sgry.Azuki
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the character at specified location.</returns>
-		int GetIndexFromVirPos( Point pt );
+		int GetIndexFromVirPos( Point virPos );
 
 		/// <summary>
 		/// Gets char-index of the char at the point specified by location in the virtual space.
 		/// </summary>
 		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
-		int GetIndexFromVirPos( IGraphics g, Point pt );
+		int GetIndexFromVirPos( IGraphics g, Point virPos );
 
 		/// <summary>
 		/// Converts a coordinate in virtual space to a coordinate in client area.

@@ -36,28 +36,11 @@ namespace Sgry.Azuki
 		{
 			_Layout = new PropTextLayout( this );
 
-			// release selection
-			// (because changing view while keeping selection makes
-			// pretty difficult problem around invalidation,
-			// force to release selection here)
+			// Release selection (because changing view while keeping selection makes pretty
+			// difficult problem around invalidation)
 			if( Document != null )
 			{
 				Document.SetSelection( Document.CaretIndex, Document.CaretIndex );
-
-				// scroll to caret manually.
-				// (because text graphic was not drawn yet,
-				// maximum line length is unknown
-				// so ScrollToCaret does not work properly)
-				using( IGraphics g = _UI.GetIGraphics() )
-				{
-					Point pos = GetVirPosFromIndex( g, Document.CaretIndex );
-					int newValue = pos.X - (VisibleTextAreaSize.Width / 2);
-					if( 0 < newValue )
-					{
-						ScrollPosX = newValue;
-						_UI.UpdateScrollBarRange();
-					}
-				}
 			}
 		}
 		#endregion
@@ -81,112 +64,6 @@ namespace Sgry.Azuki
 				_UI.UpdateScrollBarRange();
 			}
 			return TextAreaWidth;
-		}
-		#endregion
-
-		#region Position / Index Conversion
-		/// <summary>
-		/// Calculates location in the virtual space of the character at specified index.
-		/// </summary>
-		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public override Point GetVirPosFromIndex( IGraphics g, int index )
-		{
-			int line, column;
-			Document.GetLineColumnIndexFromCharIndex( index, out line, out column );
-			return GetVirPosFromIndex( g, line, column );
-		}
-
-		/// <summary>
-		/// Calculates location in the virtual space of the character at specified index.
-		/// </summary>
-		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public override Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex )
-		{
-			if( lineIndex < 0 || LineCount <= lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex", "Specified index is out of range. (value:"+lineIndex+", line count:"+LineCount+")" );
-			if( columnIndex < 0 )
-				throw new ArgumentOutOfRangeException( "columnIndex", "Specified index is out of range. (value:"+columnIndex+")" );
-
-			Point pos = new Point();
-
-			// set value for when the columnIndex is 0
-			pos.X = 0;
-			pos.Y = (lineIndex * LineSpacing) + (LinePadding >> 1);
-
-			// if the location is not the head of the line, calculate x-coord.
-			if( 0 < columnIndex )
-			{
-				int begin = GetCharIndexFromLineColumnIndex( lineIndex, 0 );
-				int end = GetCharIndexFromLineColumnIndex( lineIndex, columnIndex );
-				pos.X = MeasureTokenEndX( g, new TextSegment(begin, end), pos.X );
-			}
-
-			return pos;
-		}
-
-		/// <summary>
-		/// Gets char-index of the char at the point specified by location in the virtual space.
-		/// </summary>
-		/// <returns>The index of the character at specified location.</returns>
-		public override int GetIndexFromVirPos( IGraphics g, Point pt )
-		{
-			int lineIndex, columnIndex;
-			int drawableTextLen;
-
-			// calc line index
-			lineIndex = (pt.Y / LineSpacing);
-			if( lineIndex < 0 )
-			{
-				lineIndex = 0;
-			}
-			else if( Document.LineCount <= lineIndex
-				&& Document.LineCount != 0 )
-			{
-				// the point indicates beyond the final line.
-				// treat as if the final line was specified
-				lineIndex = Document.LineCount - 1;
-			}
-
-			// calc column index
-			columnIndex = 0;
-			if( 0 < pt.X )
-			{
-				// get content of the line
-				string line = Document.GetLineContent( lineIndex );
-
-				// calc maximum length of chars in line
-				int rightLimitX = pt.X;
-				int leftPartWidth = MeasureTokenEndX( g, line, 0, rightLimitX, out drawableTextLen );
-				Debug.Assert( Document.IsNotDividableIndex(line, drawableTextLen) == false );
-				columnIndex = drawableTextLen;
-
-				// if the location is nearer to the NEXT of that char,
-				// we should return the index of next one.
-				if( drawableTextLen < line.Length )
-				{
-					// get next grapheme cluster
-					var nextChar = new TextSegment( drawableTextLen, drawableTextLen+1 );
-					while( Document.IsNotDividableIndex(line, nextChar.End) )
-						nextChar.End++;
-
-					// determine which side the location is near
-					int nextCharWidth = MeasureTokenEndX( g,
-														  nextChar,
-														  leftPartWidth ) - leftPartWidth;
-					if( leftPartWidth + nextCharWidth/2 < pt.X ) // == "x of middle of next char" < "x of click in virtual text area"
-					{
-						columnIndex = drawableTextLen + 1;
-						while( Document.IsNotDividableIndex(line, columnIndex) )
-						{
-							columnIndex++;
-						}
-					}
-				}
-			}
-
-			return Document.GetCharIndexFromLineColumnIndex( lineIndex, columnIndex );
 		}
 		#endregion
 

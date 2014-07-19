@@ -95,6 +95,7 @@
     <Compile Include="Highlighter\JavaScriptHighlighter.cs" />
     <Compile Include="IUserInterface.cs" />
     <Compile Include="IWordProc.cs" />
+    <Compile Include="LineColumnPosition.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="TextLayouts\ITextLayout.cs" />
     <Compile Include="TextLayouts\PropTextLayouts.cs" />

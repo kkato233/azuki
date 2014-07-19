@@ -188,24 +188,6 @@ namespace Sgry.Azuki
 
 			return Document.GetCharIndexFromLineColumnIndex( lineIndex, columnIndex );
 		}
-
-		/// <summary>
-		/// Calculates screen line/column index from char-index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
-		{
-			Document.GetLineColumnIndexFromCharIndex( charIndex, out lineIndex, out columnIndex );
-		}
-
-		/// <summary>
-		/// Calculates char-index from screen line/column index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was invalid.</exception>
-		public override int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
-		{
-			return Document.GetCharIndexFromLineColumnIndex( lineIndex, columnIndex );
-		}
 		#endregion
 
 		#region Appearance Invalidating and Updating

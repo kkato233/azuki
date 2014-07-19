@@ -250,36 +250,6 @@ namespace Sgry.Azuki
 
 			return TextUtil.GetCharIndexFromLineColumnIndex( Document.InternalBuffer, PLHI, lineIndex, columnIndex );
 		}
-
-		/// <summary>
-		/// Calculates screen line/column index from char-index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex )
-		{
-			if( charIndex < 0 || Document.Length < charIndex )
-				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", document.Length:"+Document.Length+")." );
-
-			TextUtil.GetLineColumnIndexFromCharIndex(
-					Document.InternalBuffer, PLHI, charIndex, out lineIndex, out columnIndex
-				);
-		}
-
-		/// <summary>
-		/// Calculates char-index from screen line/column index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
-		{
-			if( lineIndex < 0 || LineCount < lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid index was given (lineIndex:"+lineIndex+", LineCount:"+LineCount+")." );
-			if( columnIndex < 0 )
-				throw new ArgumentOutOfRangeException( "columnIndex", "Invalid index was given (columnIndex:"+columnIndex+")." );
-
-			return TextUtil.GetCharIndexFromLineColumnIndex(
-					Document.InternalBuffer, PLHI, lineIndex, columnIndex
-				);
-		}
 		#endregion
 
 		#region Event Handlers

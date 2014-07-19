@@ -908,14 +908,27 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Calculates screen line/column index from char-index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public abstract void GetLineColumnIndexFromCharIndex( int charIndex, out int lineIndex, out int columnIndex );
+		/// <exception cref="ArgumentOutOfRangeException">
+		///   Specified index was out of range.
+		/// </exception>
+		public void GetLineColumnIndexFromCharIndex( int charIndex,
+													 out int lineIndex, out int columnIndex )
+		{
+			var lcPos = Layout.GetLineColumnPosition( charIndex );
+			lineIndex = lcPos.LineIndex;
+			columnIndex = lcPos.ColumnIndex;
+		}
 
 		/// <summary>
 		/// Calculates char-index from screen line/column index.
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public abstract int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex );
+		/// <exception cref="ArgumentOutOfRangeException">
+		///   Specified index was out of range.
+		/// </exception>
+		public int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
+		{
+			return Layout.GetCharIndex( new LineColumnPosition(lineIndex, columnIndex) );
+		}
 
 		/// <summary>
 		/// Calculates and returns text ranges that will be selected by specified rectangle.

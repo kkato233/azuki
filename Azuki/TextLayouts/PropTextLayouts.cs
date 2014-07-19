@@ -23,6 +23,19 @@ namespace Sgry.Azuki.TextLayouts
 			return _View.Document.GetLineHeadIndexFromCharIndex( charIndex );
 		}
 
+		public override LineColumnPosition GetLineColumnPosition( int charIndex )
+		{
+			int line, column;
+			_View.Document.GetLineColumnIndexFromCharIndex( charIndex, out line, out column );
+			return new LineColumnPosition( line, column );
+		}
+
+		public override int GetCharIndex( LineColumnPosition lcPos )
+		{
+			return _View.Document.GetCharIndexFromLineColumnIndex( lcPos.LineIndex,
+																   lcPos.ColumnIndex );
+		}
+
 		public override int GetLineCount()
 		{
 			return _View.Document.LineCount;

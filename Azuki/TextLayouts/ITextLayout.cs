@@ -8,6 +8,8 @@ namespace Sgry.Azuki.TextLayouts
 	{
 		int GetLineHeadIndex( int lineIndex );
 		int GetLineHeadIndexFromCharIndex( int charIndex );
+		LineColumnPosition GetLineColumnPosition( int charIndex );
+		int GetCharIndex( LineColumnPosition lcPos );
 		int GetLineCount();
 	}
 }

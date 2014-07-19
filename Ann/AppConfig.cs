@@ -32,6 +32,7 @@ namespace Sgry.Ann
 		public static int TopMargin = 1;
 		public static ViewType ViewType = ViewType.Proportional;
 		public static bool UsesTabForIndent = true;
+		public static bool UnindentsWithBackspace = false;
 		public static bool ConvertsFullWidthSpaceToSpace = true;
 		public static HRulerIndicatorType HRulerIndicatorType = HRulerIndicatorType.Segment;
 		public static bool ScrollsBeyondLastLine = true;
@@ -74,6 +75,7 @@ namespace Sgry.Ann
 				AppConfig.TopMargin					= Ini.GetInt( "Default", "TopMargin", 0, 100, 1 );
 				AppConfig.ViewType					= Ini.Get( "Default", "ViewType", ViewType.Proportional );
 				AppConfig.UsesTabForIndent			= Ini.Get( "Default", "UsesTabForIndent", true );
+				AppConfig.UnindentsWithBackspace	= Ini.Get( "Default", "UnindentsWithBackspace", false );
 				AppConfig.ConvertsFullWidthSpaceToSpace = Ini.Get( "Default", "ConvertsFullWidthSpaceToSpace", false );
 				AppConfig.HRulerIndicatorType		= Ini.Get( "Default", "HRulerIndicatorType", HRulerIndicatorType.Segment );
 				AppConfig.ScrollsBeyondLastLine		= Ini.Get( "Default", "ScrollsBeyondLastLine", true );
@@ -117,6 +119,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "TopMargin",				AppConfig.TopMargin );
 				Ini.Set( "Default", "ViewType",					AppConfig.ViewType );
 				Ini.Set( "Default", "UsesTabForIndent",			AppConfig.UsesTabForIndent );
+				Ini.Set( "Default", "UnindentsWithBackspace",	AppConfig.UnindentsWithBackspace );
 				Ini.Set( "Default", "ConvertsFullWidthSpaceToSpace", AppConfig.ConvertsFullWidthSpaceToSpace );
 				Ini.Set( "Default", "HRulerIndicatorType",		AppConfig.HRulerIndicatorType );
 				Ini.Set( "Default", "ScrollsBeyondLastLine",	AppConfig.ScrollsBeyondLastLine );

@@ -2,10 +2,11 @@
  * mod: [!] SearchResult構造体の名前をTextSegmentに変更
  * mod: [!] Documentだけを引数に受け取るIHighlighter.Highlightメソッドを廃止
  * mod: 標準の配色テーマを変更
+ * mod: Azukiの対象.NET Frameworkを3.5に
  * mod: Windows Mobileでの動作サポートを終了
  * mod: Visual Studio 2005 (C# 2.0言語)を開発環境としてサポートしないように
 
-== 1.7.11 (2014-xx-xx) ==
+== 1.7.11 (2014-07-19) ==
  * mod: IUserInterface.UnindentsWithBackspaceは標準で無効化するように仕様変更（このモードの動作はPythonなどの適した言語以外では不自然に感じる）
  * fix: IUserInterface.UnindentsWithBackspaceを有効化すると空行をバックスペースキーで削除できない問題を修正（Frankieさんに感謝）
 

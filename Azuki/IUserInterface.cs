@@ -31,8 +31,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets type of the view.
-		/// View type determine how to render text content.
+		/// Gets or sets type of the view which determines how to render text content.
 		/// </summary>
 		ViewType ViewType
 		{
@@ -84,6 +83,7 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets type of the indicator on the horizontal ruler.
 		/// </summary>
+		/// <seealso cref="HRulerIndicatorType"/>
 		HRulerIndicatorType HRulerIndicatorType
 		{
 			get; set;
@@ -105,7 +105,7 @@ namespace Sgry.Azuki
 		void SetCursorGraphic( MouseCursor cursorType );
 
 		/// <summary>
-		/// Font to be used for displaying text.
+		/// Gets or sets font to be used for displaying text.
 		/// </summary>
 		Font Font
 		{
@@ -113,7 +113,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Font information to be used for displaying text.
+		/// Gets or sets raw font information to be used for displaying text.
 		/// </summary>
 		FontInfo FontInfo
 		{
@@ -137,7 +137,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Whether to show line number or not.
+		/// Gets or sets whether to show line number or not.
 		/// </summary>
 		bool ShowsLineNumber
 		{
@@ -145,7 +145,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Whether to show horizontal scroll bar or not.
+		/// Gets or sets whether to show horizontal scroll bar or not.
 		/// </summary>
 		bool ShowsHScrollBar
 		{
@@ -308,6 +308,7 @@ namespace Sgry.Azuki
 
 		/// <summary>
 		/// Gets or sets hook delegate to execute auto-indentation.
+		/// If null, auto-indentation will not be performed.
 		/// </summary>
 		/// <remarks>
 		///   <para>
@@ -349,8 +350,8 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets whether a tab character should be used for indentation or not, instead of
-		/// space characters.
+		/// Gets or sets whether a tab character should be used for indentation, instead of space
+		/// characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -385,12 +386,8 @@ namespace Sgry.Azuki
 		///		</item>
 		/// </list>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.TabWidth">
-		/// IUserInterface.TabWidth property
-		/// </seealso>
-		/// <seealso cref="Sgry.Azuki.Actions.BlockIndent">
-		/// Actions.BlockIndent action
-		/// </seealso>
+		/// <seealso cref="IUserInterface.TabWidth"/>
+		/// <seealso cref="Actions.BlockIndent"/>
 		/// <seealso cref="Sgry.Azuki.Actions.BlockUnIndent">
 		/// Actions.BlockUnIndent action
 		/// </seealso>
@@ -433,7 +430,24 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets whether Azuki is in rectangle selection mode or not.
+		/// Gets or sets whether the content should be limited to a single line.
+		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   If this property was set to true, Azuki does not accept EOL characters so that the
+		///   content is always consisted with just one line.
+		///   </para>
+		///   <para>
+		///   The default value is false.
+		///   </para>
+		/// </remarks>
+		bool IsSingleLineMode
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets whether Azuki is in rectangle selection mode or not.
 		/// </summary>
 		bool IsRectSelectMode
 		{
@@ -441,23 +455,9 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets or sets currently active selection mode.
+		/// Gets or sets how to select text.
 		/// </summary>
 		TextDataType SelectionMode
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Gets or sets whether the content should be limited to a single line.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property determines
-		/// whether the content of Azuki should be kept in single line or not.
-		/// </para>
-		/// </remarks>
-		bool IsSingleLineMode
 		{
 			get; set;
 		}
@@ -466,20 +466,18 @@ namespace Sgry.Azuki
 		/// Gets or sets whether caret behavior is 'sticky' or not.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property determines whether the caret behaves
-		/// 'sticky' or not.
-		/// </para>
-		/// <para>
-		/// Sticky caret tries to keep its desired column position unless user
-		/// explicitly changes it (by hitting right or left key, for instance.)
-		/// Non-sticky caret updates 'desired column position' everytime you
-		/// type so moving up or down never change column position of caret.
-		/// On the other hand, sticky caret does not update desired column
-		/// position by typing (because user does not 'explicitly' changed it,)
-		/// so moving up or down restores the column position to the one
-		/// where you start typing text.
-		/// </para>
+		///   <para>
+		///   This property determines whether the caret behaves 'sticky' or not.
+		///   </para>
+		///   <para>
+		///   Sticky caret tries to keep its desired column position unless user explicitly changes
+		///   it (by hitting right or left key, for instance.) Non-sticky caret updates 'desired
+		///   column position' everytime you type so moving up or down the caret never changes
+		///   column position of the caret.
+		///   On the other hand, sticky caret does not update desired column position by typing
+		///   text (because user does not 'explicitly' changed it,) so moving up or down the caret
+		///   restores the column position of it to the place where you start typing text.
+		///   </para>
 		/// </remarks>
 		bool UsesStickyCaret
 		{
@@ -490,6 +488,16 @@ namespace Sgry.Azuki
 		/// Gets or sets whether URIs in the active document
 		/// should be marked automatically with built-in URI marker or not.
 		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   Note that built-in URI marker marks URIs in document and then Azuki shows the URIs as
+		///   'looks like URI,' but (1) clicking mouse button on them, or (2) pressing keys when
+		///   the caret is at middle of a URI, makes NO ACTION BY DEFAULT. To define action on such
+		///   event, programmer must implement such action as a part of  event handler of standard
+		///   mouse event or keyboard event. Please refer to the
+		///   <see cref="Marking">document of marking feature</see> for details.
+		///   </para>
+		/// </remarks>
 		bool MarksUri
 		{
 			get; set;
@@ -498,12 +506,12 @@ namespace Sgry.Azuki
 
 		#region Edit Actions
 		/// <summary>
-		/// Execute UNDO.
+		/// Executes UNDO.
 		/// </summary>
 		void Undo();
 
 		/// <summary>
-		/// Whether an available undo action exists or not.
+		/// Gets whether an available UNDO action exists or not.
 		/// </summary>
 		bool CanUndo
 		{
@@ -514,16 +522,16 @@ namespace Sgry.Azuki
 		/// Clears all stacked edit histories in currently active document.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This method clears all editing histories for
-		/// UNDO or REDO action in currently active document.
-		/// </para>
+		///   <para>
+		///   This method clears all editing histories for
+		///   UNDO or REDO action in currently active document.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.ClearHistory">AzukiControl.ClearHistory method</seealso>
 		void ClearHistory();
 
 		/// <summary>
-		/// Whether the edit actions will be recorded or not.
+		/// Gets or sets whether the edit actions will be recorded or not.
 		/// </summary>
 		bool IsRecordingHistory
 		{
@@ -623,6 +631,16 @@ namespace Sgry.Azuki
 		/// </summary>
 		/// <param name="anchor">the position where the selection begins</param>
 		/// <param name="caret">the position where the caret is</param>
+		/// <remarks>
+		///   <para>
+		///   This method sets the selection range and also updates the desired column.
+		///   </para>
+		///   <para>
+		///   Normally the caret tries to keep its x-coordinate on moving line to line unless user
+		///   explicitly changes x-coordinate of it. The term 'Desired Column' means this
+		///   x-coordinate which the caret tries to stick close to.
+		///   </para>
+		/// </remarks>
 		void SetSelection( int anchor, int caret );
 
 		/// <summary>
@@ -649,9 +667,7 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets currently inputted character's count.
-		/// Note that a surrogate pair or a combined character sequence
-		/// will be counted as two characters.
+		/// Gets number of (UTF-16) characters in the currently active document.
 		/// </summary>
 		int TextLength
 		{
@@ -729,51 +745,25 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
-		#region Others
-		/// <summary>
-		/// Gets a graphic interface.
-		/// </summary>
-		IGraphics GetIGraphics();
-
-		/// <summary>
-		/// Gets or sets highlighter object to highlight currently active document
-		/// or null to disable highlighting.
-		/// </summary>
-		IHighlighter Highlighter
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// (Internal use only.) Make a highlighter run after a little moment.
-		/// </summary>
-		void RescheduleHighlighting();
-
-		/// <summary>
-		/// Gets this component is focused by user or not.
-		/// </summary>
-		bool Focused
-		{
-			get;
-		}
-		#endregion
-
 		#region Position / Index Conversion
 		/// <summary>
-		/// Calculate screen location of the character at specified index.
+		/// Calculates screen location of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid index was given.</exception>
 		Point GetPositionFromIndex( int index );
 
 		/// <summary>
-		/// Calculate screen location of the character at specified index.
+		/// Calculates screen location of the character at specified index.
 		/// </summary>
+		/// <returns>The location of the character at specified index.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid index was given.</exception>
 		Point GetPositionFromIndex( int lineIndex, int columnIndex );
 
 		/// <summary>
-		/// Get char-index of the char at the point specified by screen location.
+		/// Gets char-index of the char at the point specified by screen location.
 		/// </summary>
+		/// <returns>The index of the character at specified location.</returns>
 		int GetIndexFromPosition( Point pt );
 		#endregion
 
@@ -819,7 +809,7 @@ namespace Sgry.Azuki
 		event EventHandler CaretMoved;
 
 		/// <summary>
-		/// Invokes CaretMoved event.
+		/// (For internal use only) Invokes CaretMoved event.
 		/// </summary>
 		void InvokeCaretMoved();
 
@@ -830,19 +820,19 @@ namespace Sgry.Azuki
 		event EventHandler IsRectSelectModeChanged;
 
 		/// <summary>
-		/// Invokes IsRectSelectModeChanged event.
+		/// (For internal use only) Invokes IsRectSelectModeChanged event.
 		/// </summary>
 		[Obsolete("Use Document.InvokeSelectionModeChanged method instead.", false)]
 		void InvokeIsRectSelectModeChanged();
 
 		/// <summary>
-		/// Occurs soon after the overwrite mode was moved.
+		/// Occurs soon after the overwrite mode was changed.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.IUserInterface.IsOverwriteMode">IUserInterface.IsOverwriteMode property</seealso>
+		/// <seealso cref="IsOverwriteMode"/>
 		event EventHandler OverwriteModeChanged;
 
 		/// <summary>
-		/// Invokes OverwriteModeChanged event.
+		/// (For internal use only) Invokes OverwriteModeChanged event.
 		/// </summary>
 		void InvokeOverwriteModeChanged();
 
@@ -877,7 +867,7 @@ namespace Sgry.Azuki
 		void InvokeVScroll();
 
 		/// <summary>
-		/// Occurres after vertical scroll happened.
+		/// Occurres after horizontal scroll happened.
 		/// </summary>
 		event EventHandler HScroll;
 
@@ -894,14 +884,6 @@ namespace Sgry.Azuki
 		void Scroll( Rectangle rect, int vOffset, int hOffset );
 
 		/// <summary>
-		/// Gets or sets virtual location of currently visible area.
-		/// </summary>
-		Point ScrollPos
-		{
-			get; set;
-		}
-
-		/// <summary>
 		/// Scrolls to where the caret is.
 		/// </summary>
 		void ScrollToCaret();
@@ -910,6 +892,69 @@ namespace Sgry.Azuki
 		/// Updates scrollbar's range.
 		/// </summary>
 		void UpdateScrollBarRange();
+
+		/// <summary>
+		/// Gets or sets virtual location of currently visible area.
+		/// </summary>
+		Point ScrollPos
+		{
+			get; set;
+		}
+		#endregion
+
+		#region Others
+		/// <summary>
+		/// Gets a graphic interface.
+		/// </summary>
+		IGraphics GetIGraphics();
+
+		/// <summary>
+		/// Gets or sets highlighter object to highlight currently active document
+		/// or null to disable highlighting.
+		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   This property gets or sets highlighter for this document.
+		///   </para>
+		///   <para>
+		///   Highlighter objects are used to highlight syntax of documents. They implements
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter"/> interface and called
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Document, ref int, ref int)"
+		///   >Highlight</see> method every time slightly after user input stopped to execute own
+		///   highlighting logic. If null was set to this property, highlighting feature will be
+		///   disabled.
+		///   </para>
+		///   <para>
+		///   Azuki provides some built-in highlighters. See <see cref=
+		///   "Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see> class members.
+		///   </para>
+		///   <para>
+		///   User can create and use custom highlighter object. If you want to create a
+		///   keyword-based highlighter, you can extend <see cref=
+		///   "Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>. If you want to
+		///   create not a keyword based one, create a class which implements <see cref=
+		///   "Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see> and write your own
+		///   highlighting logic.
+		///   </para>
+		/// </remarks>
+		/// <seealso cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</seealso>
+		IHighlighter Highlighter
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// (Internal use only.) Make a highlighter run after a little moment.
+		/// </summary>
+		void RescheduleHighlighting();
+
+		/// <summary>
+		/// Gets whether this component has the input focus or not.
+		/// </summary>
+		bool Focused
+		{
+			get;
+		}
 		#endregion
 	}
 

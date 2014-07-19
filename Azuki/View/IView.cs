@@ -488,8 +488,22 @@ namespace Sgry.Azuki
 
 		#region States
 		/// <summary>
-		/// Gets or sets index of the line which is displayed at top of this view.
+		/// Gets or sets the index of the first visible (graphically top most) line of currently
+		/// active document.
 		/// </summary>
+		/// <remarks>
+		///   <para>
+		///   This property gets or sets the index of the first visible (graphically top most) line
+		///   of currently active document. Changing this property value does not trigger
+		///   redrawing. To redraw manually, you need to call <see cref="Invalidate()"/> method.
+		///   </para>
+		///   <para>
+		///   This property is just a synonym of Document.ViewParam.FirstVisibleLine
+		///   so changing Document property will also changes this property value.
+		///   </para>
+		/// </remarks>
+		/// <seealso cref="Invalidate()"/>
+		/// <seealso cref="ViewParam.FirstVisibleLine"/>
 		int FirstVisibleLine
 		{
 			get; set;

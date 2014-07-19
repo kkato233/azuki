@@ -40,6 +40,7 @@ namespace Sgry.Azuki.WinForms
 	/// using AzukiControl through IUserInterface will be much appropriate.
 	/// </para>
 	/// </remarks>
+	/// <seealso cref="IUserInterface"/>
 	public class AzukiControl : Control, IUserInterface
 	{
 		#region Types, Constants and Fields
@@ -220,8 +221,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets type of the view.
-		/// View type determine how to render text content.
+		/// Gets or sets type of the view which determines how to render text content.
 		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(ViewType.Proportional)]
@@ -387,6 +387,7 @@ namespace Sgry.Azuki.WinForms
 		/// <summary>
 		/// Gets or sets type of the indicator on the horizontal ruler.
 		/// </summary>
+		/// <seealso cref="HRulerIndicatorType"/>
 		[Category("Appearance")]
 		[DefaultValue(HRulerIndicatorType.Segment)]
 		[Description("Specify type of the indicator on the horizontal ruler.")]
@@ -585,19 +586,21 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets the index of the first visible (graphically top most) line
-		/// of currently active document.
+		/// Gets or sets the index of the first visible (graphically top most) line of currently
+		/// active document.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets or sets the index of the first visible (graphically top most) line
-		/// of currently active document.
-		/// </para>
-		/// <para>
-		/// This property is just a synonym of Document.ViewParam.FirstVisibleLine
-		/// so changing Document property will also changes this property value.
-		/// </para>
+		///   <para>
+		///   This property gets or sets the index of the first visible (graphically top most) line
+		///   of currently active document. Changing this property value does not trigger
+		///   redrawing. To redraw manually, you need to call <see cref="Invalidate()"/> method.
+		///   </para>
+		///   <para>
+		///   This property is just a synonym of Document.ViewParam.FirstVisibleLine
+		///   so changing Document property will also changes this property value.
+		///   </para>
 		/// </remarks>
+		/// <seealso cref="Invalidate()"/>
 		/// <seealso cref="Sgry.Azuki.Document.ViewParam">Document.ViewParam</seealso>
 		/// <seealso cref="Sgry.Azuki.ViewParam.FirstVisibleLine">ViewParam.FirstVisibleLine</seealso>
 		[Browsable(false)]
@@ -667,7 +670,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Whether to show horizontal scroll bar or not.
+		/// Gets or sets whether to show horizontal scroll bar or not.
 		/// </summary>
 		[Category("Appearance")]
 		[DefaultValue(true)]
@@ -979,16 +982,18 @@ namespace Sgry.Azuki.WinForms
 		/// If null, auto-indentation will not be performed.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets or sets a delegate object to execute auto-indentation.
-		/// There are some built-in auto-indentation hook delegates
-		/// declared as members of
-		/// <see cref="Sgry.Azuki.AutoIndentHooks">AutoIndentHooks</see> class.
-		/// Use one of the member of AutoIndentHooks or user-made hook to enable auto-indentation,
-		/// otherwise, set null to this property to disable auto-indentation.
-		/// </para>
+		///   <para>
+		///   This property gets or sets a delegate object to execute auto-indentation. If this
+		///   property was null, no auto-indentation will be executed.
+		///   </para>
+		///   <para>
+		///   There are some built-in auto-indentation hook delegates declared as members of
+		///   <see cref="AutoIndentHooks"/> class. You can use one of them, or create your own
+		///   logic. For detail of the hook mechanism, see the document of
+		///   <see cref="AutoIndentHook"/>.
+		///   </para>
 		/// </remarks>
-		/// <seealso cref="Sgry.Azuki.AutoIndentHooks">AutoIndentHooks</seealso>
+		/// <seealso cref="AutoIndentHooks"/>
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public AutoIndentHook AutoIndentHook
@@ -1021,37 +1026,39 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
+		/// Gets or sets whether a tab character should be used for indentation, instead of space
+		/// characters.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property gets or sets whether tab characters are used for indentation,
-		/// instead of space characters.
+		/// This property gets or sets whether tab characters are used for indentation or not. If
+		/// this property is false, space characters will be used.
 		/// </para>
 		/// <para>
-		/// In addition to the case of inserting a new tab character,
-		/// This property affects some other cases like next:
+		/// This property affects every action involving indentation. Next is the list of such
+		/// actions:
 		/// </para>
 		/// <list type="bullet">
 		///		<item>
-		///		When executing block-indent.
+		///		Inserting an indentation character sequence (hitting the &quot;tab&quot; on your
+		///		keyboard).
 		///		</item>
 		///		<item>
-		///		When additional indent characters are needed.
-		///		This case is about auto-indentation for specific syntax such as C/C++ language
-		///		(term <term>smart-indentation</term> is more appropriate here.)
-		///		In C/C++, if user hits the Enter key on a line
-		///		that ends with a closing curly bracket (<c> } </c>),
-		///		newly generated line will be indented one more level
-		///		by inserting additional indent characters.
+		///		Executing block-indent.
 		///		</item>
 		///		<item>
-		///		When pasting rectangle selection data.
-		///		Let's suppose pasting the text data
-		///		when the caret is at end of a long line
-		///		and the lines below is shorter than the line caret is at.
-		///		In this case, whitespaces will be appended automatically
-		///		for the lines below as a padding to make pasted result a 'rectangle.'
+		///		Executing auto-indentation which requires to indent lines. An example is
+		///		smart-indentation for C/C++ language. If user hits &quot;Enter&quot; key when the
+		///		caret is at end of line which ends with a closing curly bracket (<c> } </c>), newly
+		///		generated line will be indented.
+		///		</item>
+		///		<item>
+		///		Pasting rectangular selection data, under specific condition. An example of the 
+		///		condition is; pasting when (1) a rectangular selection contains two lines, (2) the
+		///		caret is at the end of a line which is not empty, and (3) the next line is empty.
+		///		In this case, an appropriate amount of whitespaces are needed to be appended to the
+		///		the next (empty) line so that the second line in the rectangular selection data
+		///		will be placed at the same column position as the first line.
 		///		</item>
 		/// </list>
 		/// </remarks>
@@ -1068,8 +1075,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets whether to automatically convert
-		/// an input full-width space to a space.
+		/// Gets or sets whether to automatically convert an input full-width space to a space.
 		/// </summary>
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1098,10 +1104,16 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets or sets whether the content will be limited to a single line.
+		/// Gets or sets whether the content should be limited to a single line.
 		/// </summary>
 		/// <remarks>
-		/// The default value is false.
+		///   <para>
+		///   If this property was set to true, Azuki does not accept EOL characters so that the
+		///   content is always consisted with just one line.
+		///   </para>
+		///   <para>
+		///   The default value is false.
+		///   </para>
 		/// </remarks>
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1156,7 +1168,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets whether Azuki is in rectangle selection mode or not.
+		/// Gets or sets whether Azuki is in rectangle selection mode or not.
 		/// </summary>
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1186,23 +1198,18 @@ namespace Sgry.Azuki.WinForms
 		/// Gets or sets whether caret behavior is 'sticky' or not.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property determines whether the caret behaves
-		/// 'sticky' or not.
-		/// </para>
-		/// <para>
-		/// Sticky caret tries to keep its desired column position
-		/// unless user explicitly changes it, by hitting right or left key for instance.
-		/// Normal caret updates desired column position on typing text
-		/// so if user moves up or down the caret after typing,
-		/// column position of it will be as same as the position
-		/// finally the caret was located.
-		/// On the other hand, sticky caret does not update
-		/// desired column position by typing text
-		/// (because user does not 'explicitly' changed it,)
-		/// so column position will be restored to the position
-		/// where the caret was placed before user typed text.
-		/// </para>
+		///   <para>
+		///   This property determines whether the caret behaves 'sticky' or not.
+		///   </para>
+		///   <para>
+		///   Sticky caret tries to keep its desired column position unless user explicitly changes
+		///   it (by hitting right or left key, for instance.) Non-sticky caret updates 'desired
+		///   column position' everytime you type so moving up or down the caret never changes
+		///   column position of the caret.
+		///   On the other hand, sticky caret does not update desired column position by typing
+		///   text (because user does not 'explicitly' changed it,) so moving up or down the caret
+		///   restores the column position of it to the place where you start typing text.
+		///   </para>
 		/// </remarks>
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1218,17 +1225,14 @@ namespace Sgry.Azuki.WinForms
 		/// should be marked automatically with built-in URI marker or not.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Note that built-in URI marker marks URIs in document
-		/// and then Azuki shows the URIs as 'looks like URI,'
-		/// but (1) clicking mouse button on them, or
-		/// (2) pressing keys when the caret is at middle of a URI,
-		/// makes NO ACTION BY DEFAULT.
-		/// To define action on such event,
-		/// programmer must implement such action as a part of 
-		/// event handler of standard mouse event or keyboard event.
-		/// Please refer to the <see cref="Sgry.Azuki.Marking">document of marking feature</see> for details.
-		/// </para>
+		///   <para>
+		///   Note that built-in URI marker marks URIs in document and then Azuki shows the URIs as
+		///   'looks like URI,' but (1) clicking mouse button on them, or (2) pressing keys when
+		///   the caret is at middle of a URI, makes NO ACTION BY DEFAULT. To define action on such
+		///   event, programmer must implement such action as a part of  event handler of standard
+		///   mouse event or keyboard event. Please refer to the
+		///   <see cref="Marking">document of marking feature</see> for details.
+		///   </para>
 		/// </remarks>
 		[Category("Behavior")]
 		[DefaultValue(false)]
@@ -1285,10 +1289,10 @@ namespace Sgry.Azuki.WinForms
 		/// Clears all stacked edit histories in currently active document.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This method clears all editing histories for
-		/// UNDO or REDO action in currently active document.
-		/// </para>
+		///   <para>
+		///   This method clears all editing histories for
+		///   UNDO or REDO action in currently active document.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.IUserInterface.ClearHistory">IUserInterface.ClearHistory method</seealso>
 		/// <seealso cref="Sgry.Azuki.Document.ClearHistory">Document.ClearHistory method</seealso>
@@ -1430,15 +1434,14 @@ namespace Sgry.Azuki.WinForms
 		/// <param name="anchor">the position where the selection begins</param>
 		/// <param name="caret">the position where the caret is</param>
 		/// <remarks>
-		/// <para>
-		/// This method sets the selection range and also updates
-		/// the desired column.
-		/// </para>
-		/// <para>
-		/// Normally the caret tries to keep its x-coordinate
-		/// on moving line to line unless user explicitly changes x-coordinate of it.
-		/// The term 'Desired Column' means this x-coordinate which the caret tries to stick close to.
-		/// </para>
+		///   <para>
+		///   This method sets the selection range and also updates the desired column.
+		///   </para>
+		///   <para>
+		///   Normally the caret tries to keep its x-coordinate on moving line to line unless user
+		///   explicitly changes x-coordinate of it. The term 'Desired Column' means this
+		///   x-coordinate which the caret tries to stick close to.
+		///   </para>
 		/// </remarks>
 		public void SetSelection( int anchor, int caret )
 		{
@@ -1491,9 +1494,7 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Gets currently inputted character's count.
-		/// Note that a surrogate pair or a combining character sequence
-		/// will be counted as two characters.
+		/// Gets number of (UTF-16) characters in the currently active document.
 		/// </summary>
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -1737,7 +1738,7 @@ namespace Sgry.Azuki.WinForms
 		public event EventHandler CaretMoved;
 
 		/// <summary>
-		/// For internal use only. Invokes CaretMoved event.
+		/// (For internal use only) Invokes CaretMoved event.
 		/// </summary>
 		public void InvokeCaretMoved()
 		{
@@ -1754,7 +1755,7 @@ namespace Sgry.Azuki.WinForms
 		public event EventHandler IsRectSelectModeChanged;
 
 		/// <summary>
-		/// For internal use only. Invokes IsRectSelectModeChanged event.
+		/// (For internal use only) Invokes IsRectSelectModeChanged event.
 		/// </summary>
 		[Obsolete("Use Document.InvokeSelectionModeChanged method instead.", false)]
 		public void InvokeIsRectSelectModeChanged()
@@ -1768,11 +1769,11 @@ namespace Sgry.Azuki.WinForms
 		/// <summary>
 		/// Occurs soon after the overwrite mode was changed.
 		/// </summary>
-		/// <seealso cref="Sgry.Azuki.WinForms.AzukiControl.IsOverwriteMode">AzukiControl.IsOverwriteMode property</seealso>
+		/// <seealso cref="IsOverwriteMode"/>
 		public event EventHandler OverwriteModeChanged;
 
 		/// <summary>
-		/// For internal use only. Invokes OverwriteModeChanged event.
+		/// (For internal use only) Invokes OverwriteModeChanged event.
 		/// </summary>
 		public void InvokeOverwriteModeChanged()
 		{
@@ -1828,7 +1829,7 @@ namespace Sgry.Azuki.WinForms
 		public event EventHandler VScroll;
 
 		/// <summary>
-		/// Invokes VScroll event.
+		/// (Internal use only.) Invokes VScroll event.
 		/// </summary>
 		public void InvokeVScroll()
 		{
@@ -1837,12 +1838,12 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
-		/// Occurres after norizontal scroll happened.
+		/// Occurres after horizontal scroll happened.
 		/// </summary>
 		public event EventHandler HScroll;
 
 		/// <summary>
-		/// Invokes HScroll event.
+		/// (Internal use only.) Invokes HScroll event.
 		/// </summary>
 		public void InvokeHScroll()
 		{
@@ -1945,34 +1946,29 @@ namespace Sgry.Azuki.WinForms
 		/// or null to disable highlighting.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// This property gets or sets highlighter for this document.
-		/// </para>
-		/// <para>
-		/// Highlighter objects are used to highlight syntax of documents.
-		/// They implements
-		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
-		/// interface and called
-		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Sgry.Azuki.Document, ref int, ref int)">Highlight</see>
-		/// method every time slightly after user input stopped to execute own highlighting logic.
-		/// If null was set to this property, highlighting feature will be disabled.
-		/// </para>
-		/// <para>
-		/// Azuki provides some built-in highlighters.
-		/// See
-		/// <see cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see>
-		/// class members.
-		/// </para>
-		/// <para>
-		/// User can create and use custom highlighter object.
-		/// If you want to create a keyword-based highlighter,
-		/// you can extend
-		/// <see cref="Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>.
-		/// If you want ot create not a keyword based one,
-		/// create a class which implements
-		/// <see cref="Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see>
-		/// and write your own highlighting logic.
-		/// </para>
+		///   <para>
+		///   This property gets or sets highlighter for this document.
+		///   </para>
+		///   <para>
+		///   Highlighter objects are used to highlight syntax of documents. They implements
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter"/> interface and called
+		///   <see cref="Sgry.Azuki.Highlighter.IHighlighter.Highlight(Document, ref int, ref int)"
+		///   >Highlight</see> method every time slightly after user input stopped to execute own
+		///   highlighting logic. If null was set to this property, highlighting feature will be
+		///   disabled.
+		///   </para>
+		///   <para>
+		///   Azuki provides some built-in highlighters. See <see cref=
+		///   "Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</see> class members.
+		///   </para>
+		///   <para>
+		///   User can create and use custom highlighter object. If you want to create a
+		///   keyword-based highlighter, you can extend <see cref=
+		///   "Sgry.Azuki.Highlighter.KeywordHighlighter">KeywordHighlighter</see>. If you want to
+		///   create not a keyword based one, create a class which implements <see cref=
+		///   "Sgry.Azuki.Highlighter.IHighlighter">IHighlighter</see> and write your own
+		///   highlighting logic.
+		///   </para>
 		/// </remarks>
 		/// <seealso cref="Sgry.Azuki.Highlighter.Highlighters">Highlighter.Highlighters</seealso>
 		[Browsable(false)]

@@ -65,11 +65,6 @@ namespace Sgry.Azuki
 		bool _ScrollsBeyondLastLine = true;
 		#endregion
 
-		public abstract ITextLayout Layout
-		{
-			get;
-		}
-
 		#region Init / Dispose
 		/// <summary>
 		/// Creates a new instance.
@@ -270,6 +265,11 @@ namespace Sgry.Azuki
 
 			// calculate minimum text area width
 			_MinimumTextAreaWidth = Math.Max( _FullSpaceWidth, TabWidthInPx ) << 1;
+		}
+
+		public abstract ITextLayout Layout
+		{
+			get;
 		}
 		#endregion
 
@@ -875,14 +875,20 @@ namespace Sgry.Azuki
 		/// Gets the index of the first char in the line.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public abstract int GetLineHeadIndex( int lineIndex );
+		public int GetLineHeadIndex( int lineIndex )
+		{
+			return Layout.GetLineHeadIndex( lineIndex );
+		}
 
 		/// <summary>
 		/// Gets the index of the first char in the screen line
 		/// which contains the specified char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public abstract int GetLineHeadIndexFromCharIndex( int charIndex );
+		public int GetLineHeadIndexFromCharIndex( int charIndex )
+		{
+			return Layout.GetLineHeadIndexFromCharIndex( charIndex );
+		}
 
 		/// <summary>
 		/// Calculates screen line index from char-index.

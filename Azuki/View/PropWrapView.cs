@@ -252,33 +252,6 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
-		/// Gets the index of the first char in the line.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override int GetLineHeadIndex( int lineIndex )
-		{
-			if( lineIndex < 0 || PLHI.Count <= lineIndex )
-				throw new ArgumentOutOfRangeException( "lineIndex", "Invalid index was given (lineIndex:"+lineIndex+", LineCount:"+LineCount+")." );
-
-			return PLHI[ lineIndex ];
-		}
-
-		/// <summary>
-		/// Gets the index of the first char in the screen line
-		/// which contains the specified char-index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public override int GetLineHeadIndexFromCharIndex( int charIndex )
-		{
-			if( charIndex < 0 || Document.Length < charIndex )
-				throw new ArgumentOutOfRangeException( "charIndex", "Invalid index was given (charIndex:"+charIndex+", document.Length:"+Document.Length+")." );
-
-			return TextUtil.GetLineHeadIndexFromCharIndex(
-					Document.InternalBuffer, PLHI, charIndex
-				);
-		}
-
-		/// <summary>
 		/// Calculates screen line/column index from char-index.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>

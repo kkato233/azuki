@@ -10,7 +10,7 @@ namespace Sgry.Azuki.TextLayouts
 		}
 
 		public abstract Point GetVirPos( IGraphics g, LineColumnPosition lcPos );
-		public abstract int GetIndex( IGraphics g, Point virPos );
+		public abstract int GetCharIndex( IGraphics g, Point virPos );
 		public abstract int GetLineHeadIndex( int lineIndex );
 		public abstract int GetLineHeadIndexFromCharIndex( int charIndex );
 		public abstract LineColumnPosition GetLineColumnPosition( int charIndex );

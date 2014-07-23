@@ -40,7 +40,7 @@ namespace Sgry.Azuki.TextLayouts
 			return pos;
 		}
 
-		public override int GetIndex( IGraphics g, Point virPos )
+		public override int GetCharIndex( IGraphics g, Point virPos )
 		{
 			var doc = _View.Document;
 			int lineIndex, columnIndex;

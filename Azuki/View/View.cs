@@ -850,7 +850,7 @@ namespace Sgry.Azuki
 		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
 		public int GetIndexFromVirPos( IGraphics g, Point virPos )
 		{
-			return Layout.GetIndex( g, virPos );
+			return Layout.GetCharIndex( g, virPos );
 		}
 
 		/// <summary>

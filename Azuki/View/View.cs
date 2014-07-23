@@ -786,72 +786,6 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Position / Index Conversion
-		/// <summary>
-		/// Calculates location in the virtual space of the character at specified index.
-		/// </summary>
-		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public Point GetVirPosFromIndex( int index )
-		{
-			using( IGraphics g = _UI.GetIGraphics() )
-			{
-				return GetVirPosFromIndex( g, index );
-			}
-		}
-
-		/// <summary>
-		/// Calculates location in the virtual space of the character at specified index.
-		/// </summary>
-		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public Point GetVirPosFromIndex( IGraphics g, int index )
-		{
-			return Layout.GetVirPos( g, index );
-		}
-
-		/// <summary>
-		/// Calculates location in the virtual space of the character at specified index.
-		/// </summary>
-		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public Point GetVirPosFromIndex( int lineIndex, int columnIndex )
-		{
-			using( IGraphics g = _UI.GetIGraphics() )
-			{
-				return GetVirPosFromIndex( g, lineIndex, columnIndex );
-			}
-		}
-
-		/// <summary>
-		/// Calculates location in the virtual space of the character at specified index.
-		/// </summary>
-		/// <returns>The location of the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index is out of range.</exception>
-		public Point GetVirPosFromIndex( IGraphics g, int lineIndex, int columnIndex )
-		{
-			return Layout.GetVirPos( g, new LineColumnPosition(lineIndex, columnIndex) );
-		}
-
-		/// <summary>
-		/// Gets char-index of the char at the point specified by location in the virtual space.
-		/// </summary>
-		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
-		public int GetIndexFromVirPos( Point virPos )
-		{
-			using( IGraphics g = _UI.GetIGraphics() )
-			{
-				return GetIndexFromVirPos( g, virPos );
-			}
-		}
-
-		/// <summary>
-		/// Gets char-index of the char at the point specified by location in the virtual space.
-		/// </summary>
-		/// <returns>The index of the char or -1 if invalid point was specified.</returns>
-		public int GetIndexFromVirPos( IGraphics g, Point virPos )
-		{
-			return Layout.GetCharIndex( g, virPos );
-		}
 
 		/// <summary>
 		/// Converts a coordinate in virtual space to a coordinate in client area.
@@ -878,65 +812,6 @@ namespace Sgry.Azuki
 		{
 			pt.X = (pt.X + ScrollPosX) - XofTextArea;
 			pt.Y = (pt.Y + FirstVisibleLine * LineSpacing) - YofTextArea;
-		}
-
-		/// <summary>
-		/// Gets the index of the first char in the line.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public int GetLineHeadIndex( int lineIndex )
-		{
-			return Layout.GetLineHeadIndex( lineIndex );
-		}
-
-		/// <summary>
-		/// Gets the index of the first char in the screen line
-		/// which contains the specified char-index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public int GetLineHeadIndexFromCharIndex( int charIndex )
-		{
-			return Layout.GetLineHeadIndexFromCharIndex( charIndex );
-		}
-
-		/// <summary>
-		/// Calculates screen line index from char-index.
-		/// </summary>
-		/// <param name="charIndex">The index of the line which contains the char at this parameter will be calculated.</param>
-		/// <returns>The index of the line which contains the character at specified index.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Specified index was out of range.</exception>
-		public int GetLineIndexFromCharIndex( int charIndex )
-		{
-			int lineIndex, columnIndex;
-
-			GetLineColumnIndexFromCharIndex( charIndex, out lineIndex, out columnIndex );
-
-			return lineIndex;
-		}
-
-		/// <summary>
-		/// Calculates screen line/column index from char-index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">
-		///   Specified index was out of range.
-		/// </exception>
-		public void GetLineColumnIndexFromCharIndex( int charIndex,
-													 out int lineIndex, out int columnIndex )
-		{
-			var lcPos = Layout.GetLineColumnPosition( charIndex );
-			lineIndex = lcPos.LineIndex;
-			columnIndex = lcPos.ColumnIndex;
-		}
-
-		/// <summary>
-		/// Calculates char-index from screen line/column index.
-		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">
-		///   Specified index was out of range.
-		/// </exception>
-		public int GetCharIndexFromLineColumnIndex( int lineIndex, int columnIndex )
-		{
-			return Layout.GetCharIndex( new LineColumnPosition(lineIndex, columnIndex) );
 		}
 
 		/// <summary>

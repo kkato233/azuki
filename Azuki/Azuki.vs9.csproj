@@ -115,6 +115,7 @@
     <Compile Include="View\TextDecoration.cs" />
     <Compile Include="View\View.cs" />
     <Compile Include="View\View.Paint.cs" />
+    <Compile Include="View\View.TextLayout.cs" />
     <Compile Include="View\ViewType.cs" />
     <Compile Include="WinForms\AzukiControl.cs">
       <SubType>Component</SubType>

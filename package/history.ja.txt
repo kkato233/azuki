@@ -6,6 +6,9 @@
  * mod: Windows Mobileでの動作サポートを終了
  * mod: Visual Studio 2005 (C# 2.0言語)を開発環境としてサポートしないように
 
+== 1.7.12 (xxxx-xx-xx) ==
+ * fix: [Ann] 折り返しモード有効状態で任意のファイル中の長い行の末尾にキャレットを置いて終了し、そのファイルをコマンドライン引数に指定して起動すると水平方向のスクロール位置が不正な状態になり、正常に操作できない問題を修正（チケット #34071, himajin100000さんに感謝）
+
 == 1.7.11 (2014-07-19) ==
  * mod: IUserInterface.UnindentsWithBackspaceは標準で無効化するように仕様変更（このモードの動作はPythonなどの適した言語以外では不自然に感じる）
  * fix: IUserInterface.UnindentsWithBackspaceを有効化すると空行をバックスペースキーで削除できない問題を修正（Frankieさんに感謝）

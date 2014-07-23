@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,7 +12,6 @@ using Sgry.Azuki.Highlighter;
 using Sgry.Azuki.WinForms;
 using Assembly = System.Reflection.Assembly;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
-using Color = System.Drawing.Color;
 using Debug = System.Diagnostics.Debug;
 using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 using AzukiDocument = Sgry.Azuki.Document;
@@ -1347,6 +1347,8 @@ namespace Sgry.Ann
 		{
 			AzukiControl azuki = MainForm.Azuki;
 			azuki.ViewWidth = azuki.ClientSize.Width - azuki.View.HRulerUnitWidth * 2;
+			if( azuki.ViewType == ViewType.WrappedProportional )
+				azuki.ScrollPos = new Point( 0, azuki.ScrollPos.Y );
 		}
 
 		void ParseIpcFile()

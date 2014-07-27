@@ -187,7 +187,7 @@ namespace Sgry.Azuki
 			// matched bracket
 			else if( HighlightsMatchedBracket
 				&& doc.CaretIndex == doc.AnchorIndex // ensure nothing is selected
-				&& doc.IsMatchedBracket(tokenIndex) )
+				&& IsMatchedBracket(tokenIndex) )
 			{
 				Color fore = ColorScheme.MatchedBracketFore;
 				Color back = ColorScheme.MatchedBracketBack;
@@ -1101,7 +1101,7 @@ namespace Sgry.Azuki
 
 			// calculate how many chars should be drawn as one token
 			tokenEndLimit = CalcTokenEndAtMost( doc, index, nextLineHead, out out_inSelection );
-			if( doc.IsMatchedBracket(index) )
+			if( IsMatchedBracket(index) )
 			{
 				// if specified index is a bracket paired with a bracket at caret, paint this single char
 				out_klass = doc.GetCharClass( index );
@@ -1145,7 +1145,7 @@ namespace Sgry.Azuki
 					return index;
 				}
 				// or if this is matched bracket, stop seeking
-				else if( doc.IsMatchedBracket(index) )
+				else if( IsMatchedBracket(index) )
 				{
 					return index;
 				}

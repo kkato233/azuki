@@ -21,6 +21,7 @@ namespace Sgry.Azuki
 		const int DefaultTabWidth = 8;
 		const int MinimumFontSize = 1;
 		const int LineNumberAreaPadding = 2;
+		const int MaxMatchedBracketSearchLength = 2048;
 		static readonly int[] _LineNumberSamples = new int[] {
 			9999,
 			99999,
@@ -1255,6 +1256,92 @@ namespace Sgry.Azuki
 		}
 		#endregion
 
+		#region Matched Bracket
+		bool IsMatchedBracket( int index )
+		{
+			Debug.Assert( 0 <= index && index < Document.Length );
+
+			if( 0 <= Array.IndexOf(Document.ViewParam.MatchedBracketIndexes, index) )
+			{
+				return true;
+			}
+			return false;
+		}
+
+		internal void UpdateMatchedBracketPosition( ContentChangedEventArgs e )
+		{
+			var param = Document.ViewParam;
+			for( int i=0; i<param.MatchedBracketIndexes.Length; i++ )
+			{
+				if( e.Index + e.OldText.Length < param.MatchedBracketIndexes[i] )
+				{
+					param.MatchedBracketIndexes[i] = param.MatchedBracketIndexes[i]
+													 - e.OldText.Length
+													 + e.NewText.Length;
+				}
+				else if( e.Index <= param.MatchedBracketIndexes[i] )
+				{
+					param.MatchedBracketIndexes[i] = e.Index + e.NewText.Length;
+				}
+			}
+
+			UpdateMatchedBracketPosition();
+		}
+
+		internal void UpdateMatchedBracketPosition()
+		{
+			var caretIndex = Document.CaretIndex;
+			UpdateMatchedBracketPosition( caretIndex, true );
+			if( 0 < caretIndex )
+				UpdateMatchedBracketPosition( caretIndex-1, false );
+		}
+
+		void UpdateMatchedBracketPosition( int bracketIndex, bool afterCaret )
+		{
+			Debug.Assert( 0 <= bracketIndex );
+			Debug.Assert( bracketIndex <= Document.Length );
+			var doc = Document;
+			var param = doc.ViewParam;
+			int offset = afterCaret ? 0 : 2;
+
+			// Reset matched bracket positions
+			int oldIbbc = param.MatchedBracketIndexes[offset];
+			int oldImbbc = param.MatchedBracketIndexes[offset+1];
+			param.MatchedBracketIndexes[offset] = -1;
+			param.MatchedBracketIndexes[offset+1] = -1;
+			if( HighlightsMatchedBracket == false )
+			{
+				return;
+			}
+
+			// Find matched brackets
+			int newIbbc = bracketIndex;
+			int newImbbc = doc.FindMatchedBracket( newIbbc, MaxMatchedBracketSearchLength );
+
+			// Update matched bracket positions and graphics
+			if( (0 <= newImbbc) != (0 <= oldImbbc) // ON --> OFF, OFF --> ON
+				|| (0 <= newIbbc && 0 <= newImbbc) ) // ON --> ON
+			{
+				// Erase old matched bracket highlight
+				if( 0 <= oldIbbc && oldIbbc+1 <= doc.Length )
+					Invalidate( oldIbbc, oldIbbc+1 );
+				if( 0 <= oldImbbc && oldImbbc+1 <= doc.Length )
+					Invalidate( oldImbbc, oldImbbc+1 );
+
+				// Reraw new matched bracket highlight
+				if( 0 <= newIbbc && newIbbc+1 <= doc.Length )
+					Invalidate( newIbbc, newIbbc+1 );
+				if( 0 <= newImbbc && newImbbc+1 <= doc.Length )
+					Invalidate( newImbbc, newImbbc+1 );
+
+				// Update matched bracket positions
+				param.MatchedBracketIndexes[offset+1] = newImbbc;
+				if( 0 <= newImbbc )
+					param.MatchedBracketIndexes[offset] = newIbbc;
+			}
+		}
+		#endregion
+
 		#region Communication between UI Module
 		/// <summary>
 		/// UI module must call this method
@@ -1523,7 +1610,7 @@ namespace Sgry.Azuki
 			return (  (lineIndex - FirstVisibleLine) * LineSpacing  ) + YofTextArea;
 		}
 
-		internal int EolCodeWidthInPx
+		int EolCodeWidthInPx
 		{
 			get{ return (_LineHeight >> 1) + (_LineHeight >> 2); }
 		}

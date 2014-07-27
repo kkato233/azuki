@@ -22,7 +22,6 @@ namespace Sgry.Azuki
 		/// Width of default caret graphic.
 		/// </summary>
 		public const int DefaultCaretWidth = 2;
-		const int MaxMatchedBracketSearchLength = 2048;
 		internal const int HighlightDelay = 200; // 200[ms]
 		IUserInterface _UI;
 		View _View = null;
@@ -1229,7 +1228,7 @@ namespace Sgry.Azuki
 			// (event handler of ContentChanged already handles this)
 			if( e.ByContentChanged == false )
 			{
-				UpdateMatchedBracketPosition();
+				View.UpdateMatchedBracketPosition();
 			}
 
 			// send event to component users
@@ -1254,21 +1253,8 @@ namespace Sgry.Azuki
 			// redraw caret graphic
 			_UI.UpdateCaretGraphic();
 
-			// update matched bracket positions
-			for( int i=0; i<param.MatchedBracketIndexes.Length; i++ )
-			{
-				if( e.Index + e.OldText.Length < param.MatchedBracketIndexes[i] )
-				{
-					param.MatchedBracketIndexes[i] = param.MatchedBracketIndexes[i]
-													 - e.OldText.Length
-													 + e.NewText.Length;
-				}
-				else if( e.Index <= param.MatchedBracketIndexes[i] )
-				{
-					param.MatchedBracketIndexes[i] = e.Index + e.NewText.Length;
-				}
-			}
-			UpdateMatchedBracketPosition();
+			// let the view update matched bracket positions
+			View.UpdateMatchedBracketPosition( e );
 
 			// update range of scroll bars
 			_UI.UpdateScrollBarRange();
@@ -1301,58 +1287,6 @@ namespace Sgry.Azuki
 
 			// delegate to view object
 			View.HandleDirtyStateChanged( sender, e );
-		}
-
-		void UpdateMatchedBracketPosition()
-		{
-			UpdateMatchedBracketPosition( _Document.CaretIndex, true );
-			if( 0 < _Document.CaretIndex )
-				UpdateMatchedBracketPosition( _Document.CaretIndex-1, false );
-		}
-
-		void UpdateMatchedBracketPosition( int bracketIndex, bool afterCaret )
-		{
-			Debug.Assert( 0 <= bracketIndex );
-			Debug.Assert( bracketIndex <= _Document.Length );
-			var doc = Document;
-			var param = doc.ViewParam;
-			int offset = afterCaret ? 0 : 2;
-
-			// Reset matched bracket positions
-			int oldIbbc = param.MatchedBracketIndexes[offset];
-			int oldImbbc = param.MatchedBracketIndexes[offset+1];
-			param.MatchedBracketIndexes[offset] = -1;
-			param.MatchedBracketIndexes[offset+1] = -1;
-			if( View.HighlightsMatchedBracket == false )
-			{
-				return;
-			}
-
-			// Find matched brackets
-			int newIbbc = bracketIndex;
-			int newImbbc = doc.FindMatchedBracket( newIbbc, MaxMatchedBracketSearchLength );
-
-			// Update matched bracket positions and graphics
-			if( (0 <= newImbbc) != (0 <= oldImbbc) // ON --> OFF, OFF --> ON
-				|| (0 <= newIbbc && 0 <= newImbbc) ) // ON --> ON
-			{
-				// Erase old matched bracket highlight
-				if( 0 <= oldIbbc && oldIbbc+1 <= doc.Length )
-					View.Invalidate( oldIbbc, oldIbbc+1 );
-				if( 0 <= oldImbbc && oldImbbc+1 <= doc.Length )
-					View.Invalidate( oldImbbc, oldImbbc+1 );
-
-				// Reraw new matched bracket highlight
-				if( 0 <= newIbbc && newIbbc+1 <= doc.Length )
-					View.Invalidate( newIbbc, newIbbc+1 );
-				if( 0 <= newImbbc && newImbbc+1 <= doc.Length )
-					View.Invalidate( newImbbc, newImbbc+1 );
-
-				// Update matched bracket positions
-				param.MatchedBracketIndexes[offset+1] = newImbbc;
-				if( 0 <= newImbbc )
-					param.MatchedBracketIndexes[offset] = newIbbc;
-			}
 		}
 		#endregion
 

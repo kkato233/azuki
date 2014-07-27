@@ -2892,21 +2892,6 @@ namespace Sgry.Azuki
 			return TextUtil.IsVariationSelector( InternalBuffer, index );
 		}
 
-		/// <summary>
-		/// Returnes whether the index points to one of the paired matching bracket or not.
-		/// Note that matching bracket position is not maintaned by Document but by UiImpl.
-		/// </summary>
-		internal bool IsMatchedBracket( int index )
-		{
-			Debug.Assert( 0 <= index && index < Length );
-
-			if( 0 <= Array.IndexOf(ViewParam.MatchedBracketIndexes, index) )
-			{
-				return true;
-			}
-			return false;
-		}
-
 		internal void DeleteRectSelectText()
 		{
 			int diff = 0;

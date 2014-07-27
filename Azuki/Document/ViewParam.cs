@@ -47,8 +47,6 @@ namespace Sgry.Azuki
 		/// <summary>Index of a matched brackets; Index of a bracket after caret, counterpart of
 		/// it, a bracket before caret, and counterpart of it.</summary>
 		public readonly int[] MatchedBracketIndexes = {-1, -1, -1, -1};
-		/// <summary>Whether to mark URIs in the document with built-in URI marker or not.</summary>
-		public bool MarksUri = false;
 		#endregion
 
 		#region Init / Dispose

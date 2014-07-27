@@ -1528,8 +1528,7 @@ namespace Sgry.Azuki
 		/// </remarks>
 		public bool MarksUri
 		{
-			get{ return _ViewParam.MarksUri; }
-			set{ _ViewParam.MarksUri = value; }
+			get; set;
 		}
 
 		internal WatchPatternMarker WatchPatternMarker

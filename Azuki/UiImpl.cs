@@ -30,11 +30,9 @@ namespace Sgry.Azuki
 		bool _IsDisposed = false;
 
 		IDictionary< uint, ActionProc > _KeyMap = new Dictionary< uint, ActionProc >( 32 );
-		AutoIndentHook _AutoIndentHook = null;
 		bool _IsOverwriteMode = false;
 		bool _UsesTabForIndent = true;
 		bool _ConvertsFullWidthSpaceToSpace = false;
-		bool _UnindentsWithBackspace = false;
 
 		// X coordinate of this also be used as a flag to determine
 		// whether the mouse button is down or not.
@@ -75,23 +73,11 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region State
-		/// <summary>
-		/// Gets whether cut action can be executed or not.
-		/// </summary>
 		public bool CanCut
 		{
-			get
-			{
-				if( Document.IsReadOnly )
-					return false;
-				else
-					return CanCopy;
-			}
+			get{ return Document.IsReadOnly ? false : CanCopy; }
 		}
 
-		/// <summary>
-		/// Gets whether copy action can be executed or not.
-		/// </summary>
 		public bool CanCopy
 		{
 			get
@@ -114,9 +100,6 @@ namespace Sgry.Azuki
 			}
 		}
 
-		/// <summary>
-		/// Gets whether paste action can be executed or not.
-		/// </summary>
 		public bool CanPaste
 		{
 			get
@@ -232,9 +215,6 @@ namespace Sgry.Azuki
 		#endregion
 
 		#region Behavior and Modes
-		/// <summary>
-		/// Gets or sets whether the input character overwrites the character at where the caret is on.
-		/// </summary>
 		public bool IsOverwriteMode
 		{
 			get{ return _IsOverwriteMode; }
@@ -247,9 +227,6 @@ namespace Sgry.Azuki
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets whether tab characters are used for indentation, instead of space characters.
-		/// </summary>
 		public bool UsesTabForIndent
 		{
 			get{ return _UsesTabForIndent; }
@@ -260,10 +237,6 @@ namespace Sgry.Azuki
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets whether to automatically convert
-		/// an input full-width space to a space.
-		/// </summary>
 		public bool ConvertsFullWidthSpaceToSpace
 		{
 			get{ return _ConvertsFullWidthSpaceToSpace; }
@@ -276,42 +249,19 @@ namespace Sgry.Azuki
 
 		public bool UnindentsWithBackspace
 		{
-			get{ return _UnindentsWithBackspace; }
-			set{ _UnindentsWithBackspace = value; }
+			get; set;
 		}
 
-		/// <summary>
-		/// Gets or sets whether caret behavior is 'sticky' or not.
-		/// </summary>
 		public bool UsesStickyCaret
 		{
 			get; set;
 		}
 
-		/// <summary>
-		/// Gets or sets whether the content should be limited to a single line.
-		/// </summary>
 		public bool IsSingleLineMode
 		{
 			get; set;
 		}
 
-		/// <summary>
-		/// Gets or sets whether URIs in the active document
-		/// should be marked automatically with built-in URI marker or not.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Note that built-in URI marker marks URIs in document
-		/// and then Azuki shows the URIs as 'looks like URI,'
-		/// but (1) clicking mouse button on them, or
-		/// (2) pressing keys when the caret is at middle of a URI,
-		/// makes NO ACTION BY DEFAULT.
-		/// To define action on such event,
-		/// programmer must implement such action as a part of
-		/// event handler of standard mouse event or keyboard event.
-		/// </para>
-		/// </remarks>
 		public bool MarksUri
 		{
 			get{ return _Document.MarksUri; }
@@ -325,19 +275,9 @@ namespace Sgry.Azuki
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets hook delegate to execute auto-indentation.
-		/// If null, auto-indentation will not be performed.
-		/// </summary>
-		/// <seealso cref="AutoIndentHooks">AutoIndentHooks</seealso>
 		public AutoIndentHook AutoIndentHook
 		{
-			get{ return _AutoIndentHook; }
-			set
-			{
-				Debug.Assert( _IsDisposed == false );
-				_AutoIndentHook = value;
-			}
+			get; set;
 		}
 		#endregion
 
@@ -347,14 +287,8 @@ namespace Sgry.Azuki
 			Debug.Assert( _IsDisposed == false );
 			ActionProc proc;
 
-			if( _KeyMap.TryGetValue(keyCode, out proc) == true )
-			{
-				return proc;
-			}
-			else
-			{
-				return null;
-			}
+			return _KeyMap.TryGetValue(keyCode, out proc) ? proc
+														  : null;
 		}
 
 		public void SetKeyBind( uint keyCode, ActionProc action )
@@ -456,8 +390,8 @@ namespace Sgry.Azuki
 				foreach( char ch in text )
 				{
 					// try to use hook delegate
-					if( _AutoIndentHook != null
-						&& _AutoIndentHook(_UI, ch) == true )
+					if( AutoIndentHook != null
+						&& AutoIndentHook(_UI, ch) == true )
 					{
 						// Do nothing if this was handled by the hook
 						continue;
@@ -549,10 +483,8 @@ namespace Sgry.Azuki
 		{
 			get
 			{
-				if( Document == null )
-					return null;
-				else
-					return Document.Highlighter;
+				return (Document == null) ? null
+										  : Document.Highlighter;
 			}
 			set
 			{
@@ -574,8 +506,8 @@ namespace Sgry.Azuki
 				return;
 
 			int dirtyBegin, dirtyEnd;
-			Document doc = _UI.Document;
-			ViewParam param = doc.ViewParam;
+			var doc = _UI.Document;
+			var param = doc.ViewParam;
 
 			// do nothing unless the document needs to be highlighted
 			if( doc.ViewParam.H_IsInvalid == false )
@@ -822,11 +754,10 @@ namespace Sgry.Azuki
 			try
 			{
 				int begin, end;
-				string selText;
 
 				// remove current selection
 				Document.GetSelection( out begin, out end );
-				selText = Document.GetTextInRange( begin, end );
+				var selText = Document.GetTextInRange( begin, end );
 				Document.Replace( "" );
 				if( end <= targetIndex )
 					targetIndex -= selText.Length;
@@ -852,10 +783,10 @@ namespace Sgry.Azuki
 			if( _IsDisposed )
 				return;
 
-			using( IGraphics g = _UI.GetIGraphics() )
+			using( var g = _UI.GetIGraphics() )
 			{
-				Point pos = e.Location;
-				bool onLineNumberArea = false;
+				var pos = e.Location;
+				var onLineNumberArea = false;
 
 				// if mouse-down coordinate is out of window, this is not a normal event so ignore this
 				if( pos.X < 0 || pos.Y < 0 )
@@ -1132,7 +1063,7 @@ namespace Sgry.Azuki
 				}
 				else if( Document.RectSelectRanges == null )
 				{
-					Point virPos = cursorScreenPos.Value;
+					var virPos = cursorScreenPos.Value;
 					View.ScreenToVirtual( ref virPos );
 					index = View.GetIndexFromVirPos( virPos );
 
@@ -1156,19 +1087,10 @@ namespace Sgry.Azuki
 			{
 				_UI.SetCursorGraphic( MouseCursor.DragAndDrop );
 			}
-			else if( _UI.SelectionMode == TextDataType.Rectangle )
-			{
-				_UI.SetCursorGraphic( MouseCursor.Arrow );
-			}
-			else if( onLineNumberArea )
-			{
-				_UI.SetCursorGraphic( MouseCursor.Arrow );
-			}
-			else if( onHRulerArea )
-			{
-				_UI.SetCursorGraphic( MouseCursor.Arrow );
-			}
-			else if( onSelectedText )
+			else if( _UI.SelectionMode == TextDataType.Rectangle
+				|| onLineNumberArea
+				|| onHRulerArea
+				|| onSelectedText )
 			{
 				_UI.SetCursorGraphic( MouseCursor.Arrow );
 			}
@@ -1238,7 +1160,7 @@ namespace Sgry.Azuki
 		public void Doc_ContentChanged( object sender, ContentChangedEventArgs e )
 		{
 			Debug.Assert( _IsDisposed == false );
-			ViewParam param = Document.ViewParam;
+			var param = Document.ViewParam;
 
 			// delegate to marker objects
 			if( _Document.MarksUri )

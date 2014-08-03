@@ -2019,10 +2019,9 @@ namespace Sgry.Azuki
 		///   <para>
 		///   This method finds a text pattern expressed by a regular expression in the range of
 		///   [<paramref name="startIndex"/>, EOD) where EOD means the end-of-document. The text
-		///   matching process continues for the index specified with the <paramref name="end"/>
-		///   parameter and does not stop at line ends nor null-characters. If the search range
-		///   should end before EOD, use <see cref="Document.FindNext(Regex, int, int)">other
-		///   overload method</see>.
+		///   matching process continues for the document end and does not stop at line ends nor
+		///   null-characters. If the search range should end before EOD, use
+		///   <see cref="Document.FindNext(Regex, int, int)">other overload method</see>.
 		///   </para>
 		///   <para>
 		///   <see cref="System.Text.RegularExpressions.RegexOptions.RightToLeft">

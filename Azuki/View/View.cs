@@ -892,14 +892,13 @@ namespace Sgry.Azuki
 		/// <returns>Horizontal ruler index of the character.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method calculates location of character at specified index
-		/// in horizontal ruler index.
+		/// This method calculates location of character at specified index in horizontal ruler
+		/// index.
 		/// </para>
 		/// <para>
 		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
-		/// exist between left-end of the text area
-		/// and the character at index specified by <paramref name="charIndex"/>.
-		/// This value is zero-based index.
+		/// exist between left-end of the text area and the character at index specified by
+		/// <paramref name="charIndex"/>. This value is zero-based index.
 		/// </para>
 		/// </remarks>
 		public int GetHRulerIndex( int charIndex )
@@ -927,14 +926,13 @@ namespace Sgry.Azuki
 		/// <returns>Horizontal ruler index of the character.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method calculates location of character at specified index
-		/// in horizontal ruler index.
+		/// This method calculates location of character at specified index in horizontal ruler
+		/// index.
 		/// </para>
 		/// <para>
 		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
-		/// exist between left-end of the text area
-		/// and the character at index specified by <paramref name="charIndex"/>.
-		/// This value is zero-based index.
+		/// exist between left-end of the text area and the character at specified index. This
+		/// value is zero-based index.
 		/// </para>
 		/// </remarks>
 		public int GetHRulerIndex( int lineIndex, int columnIndex )

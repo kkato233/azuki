@@ -403,14 +403,13 @@ namespace Sgry.Azuki
 		/// <returns>Horizontal ruler index of the character.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method calculates location of character at specified index
-		/// in horizontal ruler index.
+		/// This method calculates location of character at specified index in horizontal ruler
+		/// index.
 		/// </para>
 		/// <para>
 		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
-		/// exist between left-end of the text area
-		/// and the character at index specified by <paramref name="charIndex"/>.
-		/// This value is zero-based index.
+		/// exist between left-end of the text area and the character at the index specified by
+		/// with <paramref name="charIndex"/>. This value is zero-based index.
 		/// </para>
 		/// </remarks>
 		int GetHRulerIndex( int charIndex );
@@ -423,14 +422,13 @@ namespace Sgry.Azuki
 		/// <returns>Horizontal ruler index of the character.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method calculates location of character at specified index
-		/// in horizontal ruler index.
+		/// This method calculates location of character at specified index in horizontal ruler
+		/// index.
 		/// </para>
 		/// <para>
 		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
-		/// exist between left-end of the text area
-		/// and the character at index specified by <paramref name="charIndex"/>.
-		/// This value is zero-based index.
+		/// exist between left-end of the text area and the character at specified index. This
+		/// value is zero-based index.
 		/// </para>
 		/// </remarks>
 		int GetHRulerIndex( int lineIndex, int columnIndex );
@@ -498,12 +496,10 @@ namespace Sgry.Azuki
 		///   redrawing. To redraw manually, you need to call <see cref="Invalidate()"/> method.
 		///   </para>
 		///   <para>
-		///   This property is just a synonym of Document.ViewParam.FirstVisibleLine
-		///   so changing Document property will also changes this property value.
+		///   This property is associated with the currently active Document.
 		///   </para>
 		/// </remarks>
 		/// <seealso cref="Invalidate()"/>
-		/// <seealso cref="ViewParam.FirstVisibleLine"/>
 		int FirstVisibleLine
 		{
 			get; set;

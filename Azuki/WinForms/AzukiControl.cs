@@ -596,13 +596,10 @@ namespace Sgry.Azuki.WinForms
 		///   redrawing. To redraw manually, you need to call <see cref="Invalidate()"/> method.
 		///   </para>
 		///   <para>
-		///   This property is just a synonym of Document.ViewParam.FirstVisibleLine
-		///   so changing Document property will also changes this property value.
+		///   This property is associated with the currently active Document.
 		///   </para>
 		/// </remarks>
 		/// <seealso cref="Invalidate()"/>
-		/// <seealso cref="Sgry.Azuki.Document.ViewParam">Document.ViewParam</seealso>
-		/// <seealso cref="Sgry.Azuki.ViewParam.FirstVisibleLine">ViewParam.FirstVisibleLine</seealso>
 		[Browsable(false)]
 		public int FirstVisibleLine
 		{
@@ -1665,14 +1662,13 @@ namespace Sgry.Azuki.WinForms
 		/// <returns>Horizontal ruler index of the character.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method calculates location of character at specified index
-		/// in horizontal ruler index.
+		/// This method calculates location of character at specified index in horizontal ruler
+		/// index.
 		/// </para>
 		/// <para>
 		/// 'Horizontal ruler index' here means how many small lines drawn on the horizontal ruler
-		/// exist between left-end of the text area
-		/// and the character at index specified by <paramref name="charIndex"/>.
-		/// This value is zero-based index.
+		/// exist between left-end of the text area and the character at specified index. This
+		/// value is zero-based index.
 		/// </para>
 		/// </remarks>
 		public int GetHRulerIndex( int lineIndex, int columnIndex )

@@ -265,11 +265,11 @@ namespace Sgry.Azuki
 		///     When the caret is in a middle of a paired parentheses, additional spaces will be
 		///     inserted so that the caret's column position will be the same as the previous
 		///     opening parenthesis. For example, if there is a code like next:
-		///     <pre><code lang="Python">
+		///     <pre><code language="python">
 		///     fruits = ('apple', 'orange')
 		///     </code></pre>
 		///     and pressing Enter when the caret is at one character ahead of a comma will result:
-		///     <pre><code lang="Python">
+		///     <pre><code language="python">
 		///     fruits = ('apple',
 		///               'orange')
 		///     </code></pre>

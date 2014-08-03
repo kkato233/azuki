@@ -92,6 +92,9 @@ namespace Sgry.Azuki
 			return String.Format( "[{0}, {1})", Begin, End );
 		}
 
+		/// <summary>
+		/// Gets whether the given object is expressing exactly the same range of text or not.
+		/// </summary>
 		public override bool Equals( object obj )
 		{
 			var another = obj as TextSegment;
@@ -101,6 +104,9 @@ namespace Sgry.Azuki
 			return (another.Begin == Begin && another.End == End);
 		}
 
+		/// <summary>
+		/// Gets hash code of this object.
+		/// </summary>
 		public override int GetHashCode()
 		{
 			return Begin + (End << 16);

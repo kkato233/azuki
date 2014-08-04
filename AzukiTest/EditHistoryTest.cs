@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Text;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class EditHistoryTest
 	{
-		[Test]
+		[TestMethod]
 		public void Add()
 		{
 			const int len = 1024;
@@ -40,7 +48,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( true, history.CanRedo );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Case2()
 		{
 			const int len1 = 1024;
@@ -106,7 +114,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( "0-[0]+[97]", history.GetRedoAction().ToString() );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GroupUndoRedo()
 		{
 			// end before begin
@@ -232,7 +240,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void DocumentDirtyState()
 		{
 			// dirty state
@@ -286,7 +294,7 @@ namespace Sgry.Azuki.Test
 			{
 				Document doc = new Document();
 				doc.BeginUndo();
-				Assert.Throws<InvalidOperationException>( delegate{
+				MyAssert.Throws<InvalidOperationException>( delegate{
 					doc.IsDirty = true;
 				} );
 			}
@@ -305,7 +313,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void Test_LineDirtyState()
 		{
 			Document doc = new Document();

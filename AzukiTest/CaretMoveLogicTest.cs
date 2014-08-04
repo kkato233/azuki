@@ -1,10 +1,18 @@
 ﻿using System;
-using NUnit.Framework;
 using Sgry.Azuki.WinForms;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class CaretMoveLogicTest : IDisposable
 	{
 		AzukiControl _Azuki;
@@ -19,7 +27,7 @@ namespace Sgry.Azuki.Test
 			_Azuki.Dispose();
 		}
 
-		[Test]
+		[TestMethod]
 		public void Right()
 		{
 			var view = _Azuki.View as IViewInternal;
@@ -66,7 +74,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 4, CaretMoveLogic.Calc_Right(view) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Left()
 		{
 			var view = _Azuki.View as IViewInternal;
@@ -113,7 +121,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 0, CaretMoveLogic.Calc_Left(view) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void NextWord()
 		{
 			string[][] samples = new string[][] {
@@ -169,7 +177,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void PrevWord()
 		{
 			string[][] samples = new string[][] {

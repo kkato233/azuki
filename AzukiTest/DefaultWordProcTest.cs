@@ -1,12 +1,20 @@
 ﻿using System;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class DefaultWordProcTest
 	{
-		[Test]
+		[TestMethod]
 		public void WordDetection()
 		{
 			Document doc = new Document();
@@ -46,13 +54,13 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 4, wordProc.NextWordStart(doc, 1) );
 			Assert.AreEqual( 4, wordProc.NextWordStart(doc, 2) );
 			Assert.AreEqual( 4, wordProc.NextWordStart(doc, 3) );
-			Assert.Throws<ArgumentNullException>( delegate{
+			MyAssert.Throws<ArgumentNullException>( delegate{
 				wordProc.NextWordStart( null, 0 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.NextWordStart( doc, -1 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.NextWordStart( doc, doc.Length+1 );
 			} );
 
@@ -87,13 +95,13 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 4, wordProc.NextWordEnd(doc, 1) );
 			Assert.AreEqual( 4, wordProc.NextWordEnd(doc, 2) );
 			Assert.AreEqual( 4, wordProc.NextWordEnd(doc, 3) );
-			Assert.Throws<ArgumentNullException>( delegate{
+			MyAssert.Throws<ArgumentNullException>( delegate{
 				wordProc.NextWordEnd( null, 0 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.NextWordEnd( doc, -1 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.NextWordEnd( doc, doc.Length+1 );
 			} );
 
@@ -128,13 +136,13 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 0, wordProc.PrevWordStart(doc, 1) );
 			Assert.AreEqual( 0, wordProc.PrevWordStart(doc, 2) );
 			Assert.AreEqual( 0, wordProc.PrevWordStart(doc, 3) );
-			Assert.Throws<ArgumentNullException>( delegate{
+			MyAssert.Throws<ArgumentNullException>( delegate{
 				wordProc.PrevWordStart( null, 0 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.PrevWordStart( doc, -1 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.PrevWordStart( doc, doc.Length+1 );
 			} );
 
@@ -169,18 +177,18 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 0, wordProc.PrevWordEnd(doc, 1) );
 			Assert.AreEqual( 0, wordProc.PrevWordEnd(doc, 2) );
 			Assert.AreEqual( 0, wordProc.PrevWordEnd(doc, 3) );
-			Assert.Throws<ArgumentNullException>( delegate{
+			MyAssert.Throws<ArgumentNullException>( delegate{
 				wordProc.PrevWordEnd( null, 0 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.PrevWordEnd( doc, -1 );
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				wordProc.PrevWordEnd( doc, doc.Length+1 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Kinsoku()
 		{
 			Document doc = new Document();
@@ -246,7 +254,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 17, wordProc.HandleWordWrapping(doc, 17) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void KinsokuSpecial()
 		{
 			Document doc = new Document();

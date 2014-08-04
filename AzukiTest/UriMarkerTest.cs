@@ -1,11 +1,19 @@
-﻿using NUnit.Framework;
+﻿#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class UriMarkerTest
 	{
-		[Test]
+		[TestMethod]
 		public void Uri_Coverage()
 		{
 			Document doc = new Document();
@@ -135,7 +143,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( false, isMailAddress );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Uri_Char()
 		{
 			Document doc = new Document();
@@ -148,7 +156,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void MailTo_Coverage()
 		{
 			Document doc = new Document();

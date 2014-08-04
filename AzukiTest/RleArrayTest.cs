@@ -1,13 +1,21 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class RleArrayTest
 	{
-		[Test]
+		[TestMethod]
 		public void InitDispose()
 		{
 			RleArray<char> chars;
@@ -23,7 +31,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 'c', chars[2] );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetSet()
 		{
 			RleArray<char> chars;
@@ -35,20 +43,20 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 'a', chars[0] );
 			Assert.AreEqual( 'b', chars[1] );
 			Assert.AreEqual( 'c', chars[2] );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				chars[-1].ToString();
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				chars[5].ToString();
 			} );
 
 			// set - out of bounds
 			chars = new RleArray<char>();
 			Set( chars, "abc" );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				chars[-1] = 'z';
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				chars[4] = 'd';
 			} );
 
@@ -127,7 +135,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void Insert()
 		{
 			RleArray<char> chars = new RleArray<char>();
@@ -140,10 +148,10 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 'a', chars[2] );
 			Assert.AreEqual( 'b', chars[3] );
 			Assert.AreEqual( 'b', chars[4] );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				chars[-1].ToString();
 			} );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				chars[5].ToString();
 			} );
 
@@ -180,7 +188,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 'b', chars[4] );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Remove()
 		{
 			RleArray<char> chars = new RleArray<char>();
@@ -194,7 +202,7 @@ namespace Sgry.Azuki.Test
 				chars.RemoveAt( 0 );
 				Assert.AreEqual( 0, chars.Count );
 				Assert.AreEqual( "", chars._Nodes.ToString() );
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					chars.RemoveAt(0);
 				} );
 
@@ -212,7 +220,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 		
-		[Test]
+		[TestMethod]
 		public void IndexOf()
 		{
 			RleArray<char> chars = new RleArray<char>();
@@ -224,7 +232,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( -1, chars.IndexOf('d') );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Contains()
 		{
 			RleArray<char> chars = new RleArray<char>();

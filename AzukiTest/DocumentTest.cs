@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class DocumentTest
 	{
-		[Test]
+		[TestMethod]
 		public void GetLineColumnIndexFromCharIndex()
 		{
 			// keep it as simple as possible\r\n
@@ -43,12 +51,12 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( i-49, column );
 
 			// out of range
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetLineColumnIndexFromCharIndex(50, out line, out column);
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetLineIndexFromCharIndex()
 		{
 			// keep it as simple as possible\r\n
@@ -75,12 +83,12 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 3, doc.GetLineIndexFromCharIndex(49) );
 
 			// out of range
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetLineIndexFromCharIndex( 50 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetText()
 		{
 			// keep it as simple as possible\r\n
@@ -100,7 +108,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( "", doc.GetLineContentWithEolCode(3) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetTextInRange()
 		{
 			// keep it\r
@@ -113,7 +121,7 @@ namespace Sgry.Azuki.Test
 			// char-index type
 			{
 				// invalid range (before begin to middle)
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.GetTextInRange( -1, 4 );
 				} );
 
@@ -127,12 +135,12 @@ namespace Sgry.Azuki.Test
 				Assert.AreEqual( "simpler.", doc.GetTextInRange(39, 47) );
 
 				// invalid range (middle to after end)
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.GetTextInRange( 39, 48 );
 				} );
 
 				// invalid range (minus range)
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.GetTextInRange( 10, 9 );
 				} );
 			}
@@ -140,13 +148,13 @@ namespace Sgry.Azuki.Test
 			// line/column index type
 			{
 				// invalid range (before begin to middle)
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.GetTextInRange( -1, -1, 1, 1 );
 				} );
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.GetTextInRange( -1, 0, 1, 1 );
 				} );
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.GetTextInRange( 1, -1, 1, 1 );
 				} );
 				
@@ -166,27 +174,27 @@ namespace Sgry.Azuki.Test
 				Assert.AreEqual( "t\nnot simpler.", doc.GetTextInRange(2, 2, 3, 12) );
 				
 				// invalid range (middle to after end)
-				Assert.Throws<ArgumentOutOfRangeException>( delegate {
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate {
 					doc.GetTextInRange( 2, 2, 3, 13 );
 				} );
-				Assert.Throws<ArgumentOutOfRangeException>( delegate {
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate {
 					doc.GetTextInRange( 2, 2, 4, 0 );
 				} );
-				Assert.Throws<ArgumentOutOfRangeException>( delegate {
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate {
 					doc.GetTextInRange( 2, 2, 4, 13 );
 				} );
 
 				// invalid range (minus range)
-				Assert.Throws<ArgumentOutOfRangeException>( delegate {
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate {
 					doc.GetTextInRange( 1, 1, 1, 0 );
 				} );
-				Assert.Throws<ArgumentOutOfRangeException>( delegate {
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate {
 					doc.GetTextInRange( 1, 1, 0, 0 );
 				} );
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetTextInRange_SurrogatePair()
 		{
 			Document doc = new Document();
@@ -243,7 +251,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 2, end );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Replace()
 		{
 			Document doc = new Document();
@@ -263,7 +271,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 11, doc.CaretIndex );
 
 			// invalid range (before begin to middle)
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.Replace( "FOO", -1, 10 );
 			} );
 
@@ -393,12 +401,12 @@ namespace Sgry.Azuki.Test
 			}
 			
 			// invalid range (middle to after end)
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.Replace( "PIYO", 51, 53 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Replace_SelectionRange()
 		{
 			Document doc = new Document();
@@ -519,7 +527,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetLineLength()
 		{
 			// 0 keep it\r
@@ -539,12 +547,12 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 3, doc.GetLineLength(4) );
 			Assert.AreEqual( 0, doc.GetLineLength(5) );
 			Assert.AreEqual( 12, doc.GetLineLength(6) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate {
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate {
 				doc.GetLineLength( 7 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Selection()
 		{
 			Document doc = new Document();
@@ -553,7 +561,7 @@ namespace Sgry.Azuki.Test
 			doc.Text = "臼と似た形をした文字「\xd85a\xdd51」は、UCS 文字空間の第２面に位置する";
 
 			// before head to head
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.SetSelection( -1, 0 );
 			} );
 			
@@ -607,12 +615,12 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( end, 33 );
 
 			// end to after end
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.SetSelection( 33, 36 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void FindNext()
 		{
 			Document doc = new Document();
@@ -621,22 +629,22 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// null target
-				Assert.Throws<ArgumentNullException>( delegate{
+				MyAssert.Throws<ArgumentNullException>( delegate{
 					doc.FindNext( (string)null, 0 );
 				} );
 
 				// negative index
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindNext( "a", -1 );
 				} );
 
 				// end index at out of range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindNext( "a", 0, doc.Length+1, true );
 				} );
 
 				// inverted range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindNext( "a", 1, 0, true );
 				} );
 
@@ -705,7 +713,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void FindPrev()
 		{
 			Document doc = new Document();
@@ -714,22 +722,22 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// null target
-				Assert.Throws<ArgumentNullException>( delegate{
+				MyAssert.Throws<ArgumentNullException>( delegate{
 					doc.FindPrev( (string)null, 0, 10, true );
 				} );
 
 				// negative index
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindPrev( "a", -1, 10, true );
 				} );
 
 				// end index at out of range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindPrev( "a", 0, doc.Length+1, true );
 				} );
 
 				// inverted range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindPrev( "a", 1, 0, true );
 				} );
 
@@ -798,7 +806,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void FindNextR()
 		{
 			Document doc = new Document();
@@ -808,17 +816,17 @@ namespace Sgry.Azuki.Test
 			// black box test
 			{
 				// null argument
-				Assert.Throws<ArgumentNullException>( delegate{
+				MyAssert.Throws<ArgumentNullException>( delegate{
 					doc.FindNext( (Regex)null, 1, 2 );
 				} );
 
 				// negative index
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindNext( new Regex("a[^b]+"), -1, 2 );
 				} );
 
 				// inverted range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindNext( new Regex("a[^b]+"), 2, 1 );
 				} );
 
@@ -827,12 +835,12 @@ namespace Sgry.Azuki.Test
 				Assert.AreEqual( null, result );
 
 				// range exceeding text length
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindNext( new Regex("a[^b]+"), 1, 9999 );
 				} );
 
 				// invalid Regex option
-				Assert.Throws<ArgumentException>( delegate{
+				MyAssert.Throws<ArgumentException>( delegate{
 					doc.FindNext( new Regex("a[^b]+", RegexOptions.RightToLeft), 1, 4 );
 				} );
 
@@ -919,7 +927,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void FindPrevR()
 		{
 			Document doc = new Document();
@@ -928,27 +936,27 @@ namespace Sgry.Azuki.Test
 			// black box test (interface test)
 			{
 				// null target
-				Assert.Throws<ArgumentNullException>( delegate{
+				MyAssert.Throws<ArgumentNullException>( delegate{
 					doc.FindPrev( (Regex)null, 0, 10 );
 				} );
 
 				// negative index
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindPrev( new Regex("a", RegexOptions.RightToLeft), -1, 10 );
 				} );
 
 				// invalid regex option
-				Assert.Throws<ArgumentException>( delegate{
+				MyAssert.Throws<ArgumentException>( delegate{
 					doc.FindPrev( new Regex("a", RegexOptions.None), 0, doc.Length );
 				} );
 
 				// end index at out of range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindPrev( new Regex("a", RegexOptions.RightToLeft), 0, doc.Length+1 );
 				} );
 
 				// inverted range
-				Assert.Throws<ArgumentOutOfRangeException>( delegate{
+				MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 					doc.FindPrev( new Regex("a", RegexOptions.RightToLeft), 1, 0 );
 				} );
 

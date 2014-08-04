@@ -1,12 +1,20 @@
 using System;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class SplitArrayTest
 	{
-		[Test]
+		[TestMethod]
 		public void Init()
 		{
 			SplitArray<char> chars = new SplitArray<char>( 5, 8 );
@@ -14,16 +22,16 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 0, chars.Count );
 			for( int x=0; x<10; x++ )
 			{
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					chars.GetAt( x );
 				} );
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					chars.SetAt( '!', x );
 				} );
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void Add()
 		{
 			SplitArray<char> chars = new SplitArray<char>( 5, 8 );
@@ -33,12 +41,12 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 'a', chars.GetAt(0) );
 			chars.SetAt( 'b', 0 );
 			Assert.AreEqual( 'b', chars.GetAt(0) );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				chars.GetAt( 1 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Clear()
 		{
 			SplitArray<char> chars = new SplitArray<char>( 5, 8 );
@@ -47,10 +55,10 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 0, chars.Count );
 			for( int x=0; x<10; x++ )
 			{
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					chars.GetAt( x );
 				} );
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					chars.SetAt( '!', x );
 				} );
 			}
@@ -60,16 +68,16 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 0, chars.Count );
 			for( int x=0; x<10; x++ )
 			{
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					chars.GetAt( x );
 				} );
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					chars.SetAt( '!', x );
 				} );
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void Insert_One()
 		{
 			const string InitData = "hogepiyo";
@@ -84,7 +92,7 @@ namespace Sgry.Azuki.Test
 			// before head
 			sary.Clear();
 			sary.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.Insert( -1, 'G' );
 			} );
 
@@ -112,12 +120,12 @@ namespace Sgry.Azuki.Test
 			// after end
 			sary.Clear();
 			sary.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.Insert( 9, 'G' );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Insert_Array()
 		{
 			const string InitData = "hogepiyo";
@@ -126,7 +134,7 @@ namespace Sgry.Azuki.Test
 			// null array
 			sary.Clear();
 			sary.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.Insert( 0, null );
 			} );
 
@@ -139,7 +147,7 @@ namespace Sgry.Azuki.Test
 			// before head
 			sary.Clear();
 			sary.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.Insert( -1, "FOO".ToCharArray() );
 			} );
 
@@ -167,12 +175,12 @@ namespace Sgry.Azuki.Test
 			// after end
 			sary.Clear();
 			sary.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.Insert( 9, "FOO".ToCharArray() );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Replace()
 		{
 			const string InitData = "hogepiyo";
@@ -183,7 +191,7 @@ namespace Sgry.Azuki.Test
 				// before head
 				sary.Clear();
 				sary.Add( InitData.ToCharArray() );
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( -1, "000".ToCharArray(), 0, 2 );
 				} );
 
@@ -208,10 +216,10 @@ namespace Sgry.Azuki.Test
 				// after end
 				sary.Clear();
 				sary.Add( InitData.ToCharArray() );
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( 7, "000".ToCharArray(), 0, 2 );
 				} );
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( 8, "000".ToCharArray(), 0, 2 );
 				} );
 			}
@@ -219,7 +227,7 @@ namespace Sgry.Azuki.Test
 			// value array
 			{
 				// giving null
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( 0, null, 0, 1 );
 				} );
 
@@ -232,23 +240,23 @@ namespace Sgry.Azuki.Test
 				Assert.AreEqual( "hogepiyo", ToString(sary) );
 
 				// invalid range (reversed)
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( 0, "000".ToCharArray(), 1, 0 );
 				} );
 
 				// invalid range (before head)
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( 0, "000".ToCharArray(), -1, 0 );
 				} );
 
 				// invalid range (after head)
-				Assert.Throws<AssertException>( delegate {
+				MyAssert.Throws<AssertException>( delegate {
 					sary.Replace( 0, "000".ToCharArray(), 3, 4 );
 				} );
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void RemoveRange()
 		{
 			const string InitData = "hogepiyo";
@@ -259,7 +267,7 @@ namespace Sgry.Azuki.Test
 			chars.RemoveAt( 2 );
 			Assert.AreEqual( 7, chars.Count );
 			Assert.AreEqual( "hoepiyo", ToString(chars) );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				chars.GetAt( 7 );
 			} );
 			
@@ -269,14 +277,14 @@ namespace Sgry.Azuki.Test
 			chars.RemoveRange( 5, 7 );
 			Assert.AreEqual( 6, chars.Count );
 			Assert.AreEqual( "hogepo", ToString(chars) );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				chars.GetAt( 6 );
 			} );
 			
 			// before head to middle
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				chars.RemoveRange( -1, 2 );
 			} );
 			
@@ -301,12 +309,12 @@ namespace Sgry.Azuki.Test
 			// middle to after end
 			chars.Clear();
 			chars.Add( InitData.ToCharArray() );
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				chars.RemoveRange( 5, 9 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void CopyTo()
 		{
 			const string initBufContent = "123456";
@@ -316,7 +324,7 @@ namespace Sgry.Azuki.Test
 
 			// before head to middle
 			buf = initBufContent.ToCharArray();
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.CopyTo( -1, 5, buf );
 			} );
 
@@ -337,7 +345,7 @@ namespace Sgry.Azuki.Test
 
 			// end to after end
 			buf = initBufContent.ToCharArray();
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				sary.CopyTo( 5, 9, buf );
 			} );
 
@@ -360,7 +368,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( "piyo56", new String(buf) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void BinarySearch()
 		{
 			SplitArray<int> ary = new SplitArray<int>( 4 );
@@ -384,7 +392,7 @@ namespace Sgry.Azuki.Test
 
 			SplitArray<System.Drawing.Point> points = new SplitArray<System.Drawing.Point>( 4 );
 			points.Add( new System.Drawing.Point() );
-			Assert.Throws<ArgumentException>( delegate {
+			MyAssert.Throws<ArgumentException>( delegate {
 				points.BinarySearch(new System.Drawing.Point(1,1));
 			} );
 		}

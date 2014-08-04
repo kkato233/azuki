@@ -1,14 +1,22 @@
 ﻿using System;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
 	using Highlighter;
 
-	[TestFixture]
+	[TestClass]
 	public class KeywordHighlighterTest
 	{
-		[Test]
+		[TestMethod]
 		public void LineComment()
 		{
 			Document doc = new Document();
@@ -47,7 +55,7 @@ ho//ge";
 				Assert.AreEqual( CharClass.Comment, doc.GetCharClass(i) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Enclosure()
 		{
 			Document doc = new Document();
@@ -151,7 +159,7 @@ ho//ge";
 			Assert.AreEqual( CharClass.Normal, doc.GetCharClass(6) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void Keywords()
 		{
 			Document doc = new Document();
@@ -178,7 +186,7 @@ ho//ge";
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
 			for( ; i<4; i++ )
 				Assert.AreEqual( CharClass.Normal, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 4 );
 			} );
 
@@ -194,7 +202,7 @@ ho//ge";
 				Assert.AreEqual( CharClass.Normal, doc.GetCharClass(i) );
 			for( ; i<4; i++ )
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 4 );
 			} );
 
@@ -208,7 +216,7 @@ ho//ge";
 			Assert.AreEqual( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 3 );
 			} );
 
@@ -222,7 +230,7 @@ ho//ge";
 			Assert.AreEqual( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 3 );
 			} );
 
@@ -236,7 +244,7 @@ ho//ge";
 			Assert.AreEqual( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 3 );
 			} );
 
@@ -250,7 +258,7 @@ ho//ge";
 			Assert.AreEqual( "int", doc.Text );
 			for( i=0; i<3; i++ )
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 3 );
 			} );
 
@@ -268,7 +276,7 @@ ho//ge";
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
 			for( ; i<7; i++ )
 				Assert.AreEqual( CharClass.Normal, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 7 );
 			} );
 
@@ -284,7 +292,7 @@ ho//ge";
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
 			for( ; i<3; i++ )
 				Assert.AreEqual( CharClass.Normal, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 3 );
 			} );
 
@@ -298,7 +306,7 @@ ho//ge";
 			Assert.AreEqual( "inte", doc.Text );
 			for( i=0; i<4; i++ )
 				Assert.AreEqual( CharClass.Normal, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 4 );
 			} );
 
@@ -312,12 +320,12 @@ ho//ge";
 			Assert.AreEqual( "interface", doc.Text );
 			for( i=0; i<9; i++ )
 				Assert.AreEqual( CharClass.Keyword, doc.GetCharClass(i) );
-			Assert.Throws<ArgumentOutOfRangeException>( delegate{
+			MyAssert.Throws<ArgumentOutOfRangeException>( delegate{
 				doc.GetCharClass( 10 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void WordChar()
 		{
 			Document doc = new Document();
@@ -362,7 +370,7 @@ ho//ge";
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void Hook()
 		{
 			Document doc = new Document();

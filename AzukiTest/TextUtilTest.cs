@@ -1,10 +1,18 @@
 using System.Text;
 using System.Diagnostics;
-using NUnit.Framework;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class TextUtilTest
 	{
 		// --------------------
@@ -18,7 +26,7 @@ namespace Sgry.Azuki.Test
 		// --------------------
 		const string TestData = "\"keep it as simple as possible\r\n\nbut\n\rnot simpler.\"\r\r - Albert Einstein";
 
-		[Test]
+		[TestMethod]
 		public void GetCharIndexFromLineColumnIndex()
 		{
 			TextBuffer text;
@@ -31,22 +39,22 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 34, TextUtil.GetCharIndexFromLineColumnIndex(text, lhi, 2,  1) );
 			Assert.AreEqual( 71, TextUtil.GetCharIndexFromLineColumnIndex(text, lhi, 6, 18) );
 
-			Assert.Throws<AssertException>( delegate{
+			MyAssert.Throws<AssertException>( delegate{
 				TextUtil.GetCharIndexFromLineColumnIndex( text, lhi, 6, 19 );
 			} );
-			Assert.Throws<AssertException>( delegate{
+			MyAssert.Throws<AssertException>( delegate{
 				TextUtil.GetCharIndexFromLineColumnIndex( text, lhi, 0, 100 );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void NextLineHead()
 		{
 			TextBuffer text = new TextBuffer( 1, 32 );
 
 			text.Insert( 0, TestData.ToCharArray() );
 
-			Assert.Throws<AssertException>( delegate{
+			MyAssert.Throws<AssertException>( delegate{
 				TextUtil.NextLineHead( text, -1 );
 			} );
 
@@ -68,7 +76,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( -1, TextUtil.NextLineHead(text, i) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void PrevLineHead()
 		{
 			TextBuffer text = new TextBuffer( 1, 32 );
@@ -92,7 +100,7 @@ namespace Sgry.Azuki.Test
 				Assert.AreEqual( 0,  TextUtil.PrevLineHead(text, i) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetLineLengthByCharIndex()
 		{
 			TextBuffer text = new TextBuffer( 1, 32 );
@@ -117,7 +125,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 17, TextUtil.GetLineLengthByCharIndex(text, i) ); // EOF
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetLineRange()
 		{
 			TextSegment range;
@@ -177,7 +185,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 71, range.End );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetLineIndexFromCharIndex()
 		{
 			SplitArray<int> lhi = new SplitArray<int>( 32, 32 );
@@ -205,7 +213,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( 6, TextUtil.GetLineIndexFromCharIndex(lhi, 54) );
 		}
 
-		[Test]
+		[TestMethod]
 		public void GetLineColumnIndexFromCharIndex()
 		{
 			TextBuffer text;
@@ -226,12 +234,12 @@ namespace Sgry.Azuki.Test
 			TextUtil.GetLineColumnIndexFromCharIndex( text, lhi, 71, out l, out c ); // 71 --> EOF
 			Assert.AreEqual( 6, l );
 			Assert.AreEqual( 18, c );
-			Assert.Throws<AssertException>( delegate{
+			MyAssert.Throws<AssertException>( delegate{
 				TextUtil.GetLineColumnIndexFromCharIndex(text, lhi, 72, out l, out c);
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void LineHeadIndexFromCharIndex()
 		{
 			TextBuffer text;
@@ -254,12 +262,12 @@ namespace Sgry.Azuki.Test
 				Assert.AreEqual( 52, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
 			for( ; i<=71; i++ )
 				Assert.AreEqual( 53, TextUtil.GetLineHeadIndexFromCharIndex(text, lhi, i) );
-			Assert.Throws<AssertException>( delegate{
+			MyAssert.Throws<AssertException>( delegate{
 				TextUtil.GetLineHeadIndexFromCharIndex( text, lhi, i );
 			} );
 		}
 
-		[Test]
+		[TestMethod]
 		public void LHI_Insert()
 		{
 			// TEST DATA:
@@ -374,7 +382,7 @@ namespace Sgry.Azuki.Test
 			}
 		}
 
-		[Test]
+		[TestMethod]
 		public void LHI_Delete()
 		{
 			// TEST DATA:
@@ -410,7 +418,7 @@ namespace Sgry.Azuki.Test
 			Assert.AreEqual( "DCCCCCC", MakeLdsText(lds) );
 
 			// invalid range (before begin to middle)
-			Assert.Throws<AssertException>( delegate {
+			MyAssert.Throws<AssertException>( delegate {
 				TextUtil.LHI_Delete( lhi, lds, text, -1, 5 );
 			} );
 

@@ -1,14 +1,22 @@
 using System;
 using System.Text;
-using NUnit.Framework;
 using Sgry.Azuki.WinForms;
+#if USEING_NUNIT
+using Assert = NUnit.Framework.Assert;
+using TestClassAttribute = NUnit.Framework.TestFixtureAttribute;
+using TestMethodAttribute = NUnit.Framework.TestAttribute;
+#else
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestClassAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethodAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Sgry.Azuki.Test
 {
-	[TestFixture]
+	[TestClass]
 	public class FixedBugsTest
 	{
-		[Test]
+		[TestMethod]
 		public void Forum28741()
 		{
 			StringBuilder textChanged_IsDirty = new StringBuilder();

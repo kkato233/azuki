@@ -1,7 +1,5 @@
 ﻿// file: TextBuffer.cs
 // brief: Specialized SplitArray for char with text search feature without copying content.
-// author: YAMAMOTO Suguru
-// update: 2011-09-23
 //=========================================================
 using System;
 using System.Collections.Generic;
@@ -17,8 +15,8 @@ namespace Sgry.Azuki
 	class TextBuffer : SplitArray<Char>
 	{
 		#region Fields
-		SplitArray<CharClass> _Classes;
-		RleArray<uint> _MarkingBitMasks;
+		readonly RleArray<CharClass> _Classes;
+		readonly RleArray<uint> _MarkingBitMasks;
 		#endregion
 
 		#region Init / Dispose
@@ -28,7 +26,7 @@ namespace Sgry.Azuki
 		public TextBuffer( int initGapSize, int growSize )
 			: base( initGapSize, growSize )
 		{
-			_Classes = new SplitArray<CharClass>( initGapSize, growSize );
+			_Classes = new RleArray<CharClass>();
 			_MarkingBitMasks = new RleArray<uint>();
 		}
 		#endregion
@@ -39,10 +37,8 @@ namespace Sgry.Azuki
 		/// </summary>
 		public void ClearCharClasses()
 		{
-			for( int i=0; i<_Classes.Count; i++ )
-			{
-				_Classes[i] = CharClass.Normal;
-			}
+			_Classes.Clear();
+			_Classes.Insert( 0, CharClass.Normal, Count );
 		}
 
 		/// <summary>
@@ -73,14 +69,14 @@ namespace Sgry.Azuki
 		/// <summary>
 		/// Gets or sets the size of the internal buffer.
 		/// </summary>
-		/// <exception cref="System.OutOfMemoryException">There is no enough memory to expand buffer.</exception>
+		/// <exception cref="OutOfMemoryException"/>
 		public override int Capacity
 		{
 			get{ return base.Capacity; }
 			set
 			{
 				base.Capacity = value;
-				_Classes.Capacity = value;
+				//NO_NEED//_Classes.Xxx = value;
 				//NO_NEED//_MarkingBitMasks.Xxx = value;
 			}
 		}
@@ -107,25 +103,30 @@ namespace Sgry.Azuki
 		public override void Insert( int insertIndex, char[] values, int valueBegin, int valueEnd )
 		{
 			base.Insert( insertIndex, values, valueBegin, valueEnd );
-			_Classes.Insert( insertIndex, new CharClass[valueEnd - valueBegin] );
+			_Classes.Insert( insertIndex, CharClass.Normal, valueEnd - valueBegin );
 			_MarkingBitMasks.Insert( insertIndex, 0, valueEnd - valueBegin );
 		}
 
 		/// <summary>
-		/// Overwrites elements from "replaceIndex" with specified range [valueBegin, valueEnd) of values.
+		/// Overwrites elements from "replaceIndex" with specified range [valueBegin, valueEnd) of
+		/// values.
 		/// </summary>
-		public override void Replace( int replaceIndex, char[] values, int valueBegin, int valueEnd )
+		public override void Replace( int replaceIndex, char[] values,
+									  int valueBegin, int valueEnd )
 		{
 			int replaceLen = valueEnd - valueBegin;
 
 			base.Replace( replaceIndex, values, valueBegin, valueEnd );
 
-			_Classes.Replace( replaceIndex, new CharClass[replaceLen], valueBegin, valueEnd );
+			for( int i=0; i<replaceLen; i++ )
+				_Classes.RemoveAt( replaceIndex + i );
+			for( int i=0; i<replaceLen; i++ )
+				_Classes.Insert( replaceIndex + i, CharClass.Normal );
 
 			for( int i=0; i<replaceLen; i++ )
 				_MarkingBitMasks.RemoveAt( replaceIndex + i );
 			for( int i=0; i<replaceLen; i++ )
-				_MarkingBitMasks.Insert( replaceIndex + i, values[valueBegin+i] );
+				_MarkingBitMasks.Insert( replaceIndex + i, 0 );
 		}
 
 		/// <summary>
@@ -134,11 +135,13 @@ namespace Sgry.Azuki
 		public override void RemoveRange( int begin, int end )
 		{
 			base.RemoveRange( begin, end );
-			_Classes.RemoveRange( begin, end );
+
 			for( int i=begin; i<end; i++ )
-			{
+				_Classes.RemoveAt( begin );
+
+			for( int i=begin; i<end; i++ )
 				_MarkingBitMasks.RemoveAt( begin );
-			}
+
 			Debug.Assert( this.Count == _Classes.Count );
 			Debug.Assert( this.Count == _MarkingBitMasks.Count );
 		}

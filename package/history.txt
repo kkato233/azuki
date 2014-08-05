@@ -5,6 +5,7 @@
  * mod: Now Azuki requires .NET Framework 3.5
  * mod: Windows Mobile is not supported any more as a runtime environment
  * mod: Visual Studio 2005 (C# language 2.0) is not supported any more as a development environment
+ * misc: Reduced memory usage per document
 
 == 1.7.12 (xxxx-xx-xx) ==
  * fix: [Ann] Horizontal scroll position becomes invalid and can't control under rare condition. The condition is, firstly, line-wrapping mode was on and the caret is at end of a long line in a file last time Ann quit, and secondly, Ann was launched with the file. (Ticket #34071, Special thanks: himajin100000)

@@ -806,7 +806,7 @@ namespace Sgry.Azuki
 					// there is a space.
 					// remove them until the count reaches to the tab-width
 					int n = 0;
-					while( doc[lineHead] == ' ' && n < ui.View.TabWidth )
+					while( lineHead < doc.Length && doc[lineHead] == ' ' && n < ui.View.TabWidth )
 					{
 						doc.Replace( String.Empty, lineHead, lineHead+1 );
 

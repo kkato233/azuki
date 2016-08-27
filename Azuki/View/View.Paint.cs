@@ -247,6 +247,8 @@ namespace Sgry.Azuki
 			if( decoration.LineStyle == LineStyle.None )
 				return;
 
+			int lineBottomY = tokenPos.Y + (LinePadding / 2) + LineHeight;
+
 			// prepare drawing
 			if( decoration.LineColor == Color.Transparent )
 			{
@@ -268,7 +270,7 @@ namespace Sgry.Azuki
 				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x += dotSpacing )
 				{
 					g.FillRectangle(
-						x, tokenPos.Y + LineHeight - dotSize,
+						x, lineBottomY - dotSize,
 						dotSize, dotSize );
 				}
 			}
@@ -278,10 +280,10 @@ namespace Sgry.Azuki
 				int lineLength = lineWidthSize + (lineWidthSize << 2);
 				int lineSpacing = lineWidthSize << 3;
 				int offsetX = tokenPos.X % lineSpacing;
-				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x +=lineSpacing )
+				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x += lineSpacing )
 				{
 					g.FillRectangle(
-						x, tokenPos.Y + LineHeight - lineWidthSize,
+						x, lineBottomY - lineWidthSize,
 						lineLength, lineWidthSize );
 				}
 			}
@@ -291,7 +293,7 @@ namespace Sgry.Azuki
 				int waveHeight = (_Font.Size / 6) + 1;
 				int offsetX = tokenPos.X % (waveHeight << 1);
 
-				int valleyY = tokenPos.Y + LineHeight - lineWidthSize;
+				int valleyY = lineBottomY - lineWidthSize;
 				int ridgeY = valleyY - waveHeight;
 				for( int x=tokenPos.X-offsetX; x<tokenEndPos.X; x += (waveHeight<<1) )
 				{
@@ -306,11 +308,11 @@ namespace Sgry.Azuki
 				int lineWidth = (_Font.Size / 24) + 1;
 
 				g.FillRectangle(
-					tokenPos.X, tokenPos.Y + LineHeight - (3*lineWidth),
+					tokenPos.X, lineBottomY - (3*lineWidth),
 					tokenEndPos.X, lineWidth );
 
 				g.FillRectangle(
-					tokenPos.X, tokenPos.Y + LineHeight - lineWidth,
+					tokenPos.X, lineBottomY - lineWidth,
 					tokenEndPos.X, lineWidth );
 			}
 			else if( decoration.LineStyle == LineStyle.Solid )
@@ -318,7 +320,7 @@ namespace Sgry.Azuki
 				int lineWidth = (_Font.Size / 24) + 1;
 
 				g.FillRectangle(
-					tokenPos.X, tokenPos.Y + LineHeight - lineWidth,
+					tokenPos.X, lineBottomY - lineWidth,
 					tokenEndPos.X, lineWidth );
 			}
 		}

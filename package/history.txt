@@ -1,4 +1,4 @@
-== 1.8.0 (2014-xx-xx) ==
+== 1.8.0 (201x-xx-xx) ==
  * mod: [!] Renamed SearchResult to TextSegment
  * mod: [!] Removed IHighlighter.Highlight method which only takes Document
  * mod: Changed default color scheme
@@ -7,7 +7,10 @@
  * mod: Visual Studio 2005 (C# language 2.0) is not supported any more as a development environment
  * misc: Reduced memory usage per document
 
-== 1.7.12 (xxxx-xx-xx) ==
+== 1.7.13 (2016-08-27) ==
+ * fix: The underline of UnderlineTextDecoration will not be drawn properly when LinePadding is not small (Ticket #36590, Special thanks: nabebanosdn)
+
+== 1.7.12 (2014-11-15) ==
  * fix: [Ann] Horizontal scroll position becomes invalid and can't control under rare condition. The condition is, firstly, line-wrapping mode was on and the caret is at end of a long line in a file last time Ann quit, and secondly, Ann was launched with the file. (Ticket #34071, Special thanks: himajin100000)
  * fix: Executing block un-indentation to a line without an EOL code which contains whitespaces only causes an exception. (Special thanks: kakowee)
 

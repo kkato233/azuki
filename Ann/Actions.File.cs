@@ -119,6 +119,14 @@ namespace Sgry.Ann
 		};
 
 		/// <summary>
+		/// Opens the application's settings file.
+		/// </summary>
+		public static void OpenSettingsFile( AppLogic app )
+		{
+			app.OpenDocument( AppConfig.IniFilePath );
+		}
+
+		/// <summary>
 		/// Close all documents and exit application.
 		/// </summary>
 		public static AnnAction Exit

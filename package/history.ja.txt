@@ -1,4 +1,5 @@
 == 1.8.0 (201x-xx-xx) ==
+ * add: [Ann] ファイルメニューから設定ファイルを開く機能を追加
  * mod: [!] SearchResult構造体の名前をTextSegmentに変更
  * mod: [!] Documentだけを引数に受け取るIHighlighter.Highlightメソッドを廃止
  * mod: 標準の配色テーマを変更

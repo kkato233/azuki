@@ -313,6 +313,7 @@ namespace Sgry.Ann
 			_MenuMap[ _MI_File_Encoding_UTF16BEB ]	= Actions.ChangeEncoding_UTF16BEB;
 			_MenuMap[ _MI_File_Close ]		= Actions.CloseDocument;
 			_MenuMap[ _MI_File_ReadOnly ]	= Actions.ToggleReadOnlyMode;
+			_MenuMap[ _MI_File_OpenSettingsFile ]		= Actions.OpenSettingsFile;
 			_MenuMap[ _MI_File_Exit ]		= Actions.Exit;
 
 			_MenuMap[ _MI_Edit_Undo ]		= Actions.Undo;
@@ -696,6 +697,7 @@ namespace Sgry.Ann
 			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
 			_MI_File.MenuItems.Add( _MI_File_Sep2 );
 			_MI_File.MenuItems.Add( _MI_File_Mru );
+			_MI_File.MenuItems.Add( _MI_File_OpenSettingsFile );
 			_MI_File.MenuItems.Add( _MI_File_Sep3 );
 			_MI_File.MenuItems.Add( _MI_File_Exit );
 
@@ -769,6 +771,7 @@ namespace Sgry.Ann
 			_MI_File_ReadOnly.Text = "Read onl&y";
 			_MI_File_Sep2.Text = "-";
 			_MI_File_Mru.Text = "Recent &files";
+			_MI_File_OpenSettingsFile.Text = "Open Se&ttings File";
 			_MI_File_Sep3.Text = "-";
 			_MI_File_Exit.Text = "E&xit";
 			_MI_Edit.Text = "&Edit";
@@ -904,6 +907,7 @@ namespace Sgry.Ann
 		MenuItem _MI_File_Close		= new MenuItem();
 		MenuItem _MI_File_Sep1		= new MenuItem();
 		MenuItem _MI_File_ReadOnly	= new MenuItem();
+		MenuItem _MI_File_OpenSettingsFile	= new MenuItem();
 		MenuItem _MI_File_Sep2		= new MenuItem();
 		MenuItem _MI_File_Mru		= new MenuItem();
 		MenuItem _MI_File_Sep3		= new MenuItem();

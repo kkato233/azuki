@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\package\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;$(PlatformFamilyName)</DefineConstants>
     <NoStdLib>false</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -35,7 +35,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\package\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <NoStdLib>false</NoStdLib>
@@ -47,10 +47,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Azuki\Azuki.vs9.csproj">
-      <Project>{9910474A-AA51-4DFF-8499-CB661216B200}</Project>
-      <Name>Azuki.vs9</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\Azuki\Azuki.vs2010.csproj">
+      <Project>{a93a1cad-4d87-4c24-9448-9fe90f98d2fa}</Project>
+      <Name>Azuki.vs2010</Name>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core">

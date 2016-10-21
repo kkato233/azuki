@@ -17,8 +17,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\package\</OutputPath>
-    <DefineConstants>DEBUG;$(PlatformFamilyName)</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
     <NoStdLib>false</NoStdLib>
     <NoConfig>true</NoConfig>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\package\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <NoStdLib>false</NoStdLib>
@@ -43,9 +43,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Azuki\Azuki.vs9.csproj">
-      <Project>{9910474A-AA51-4DFF-8499-CB661216B200}</Project>
+      <Project>{A93A1CAD-4D87-4C24-9448-9FE90F98D2FA}</Project>
       <Name>Azuki.vs9</Name>
-      <Private>False</Private>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core">

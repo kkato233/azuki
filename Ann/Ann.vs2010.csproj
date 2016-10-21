@@ -90,9 +90,7 @@
     <Compile Include="DocumentListForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SearchPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="SearchPanel.cs" />
     <Compile Include="DrawingOptionForm.cs">
       <SubType>Form</SubType>
     </Compile>

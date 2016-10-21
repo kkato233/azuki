@@ -436,6 +436,24 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets whether to include wrapped screen lines for line numbering.
+		/// </summary>
+		public bool UseScreenLineNumber
+		{
+			get{ return (DrawingOption & DrawingOption.UseScreenLineNumber) != 0; }
+			set
+			{
+				if( value )
+					DrawingOption |= DrawingOption.UseScreenLineNumber;
+				else
+					DrawingOption &= ~DrawingOption.UseScreenLineNumber;
+
+				_UI.UpdateCaretGraphic();
+				Invalidate();
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets whether to show horizontal ruler or not.
 		/// </summary>
 		public bool ShowsHRuler

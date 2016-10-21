@@ -648,6 +648,25 @@ namespace Sgry.Azuki.WinForms
 		}
 
 		/// <summary>
+		/// Gets or sets whether to include wrapped screen lines for line numbering.
+		/// </summary>
+		[Category("Appearance")]
+		[DefaultValue(false)]
+		[Description("Set true to include wrapped screen lines for line numbering.")]
+		public bool UseScreenLineNumber
+		{
+			get{ return View.UseScreenLineNumber; }
+			set
+			{
+				if( View.UseScreenLineNumber != value )
+				{
+					View.UseScreenLineNumber = value;
+					Invalidate();
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets whether to show horizontal ruler or not.
 		/// </summary>
 		[Category("Appearance")]

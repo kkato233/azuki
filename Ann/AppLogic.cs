@@ -1024,6 +1024,7 @@ namespace Sgry.Ann
 			MainForm.Azuki.HighlightsCurrentLine	= AppConfig.HighlightsCurrentLine;
 			MainForm.Azuki.HighlightsMatchedBracket	= AppConfig.HighlightsMatchedBracket;
 			MainForm.Azuki.ShowsLineNumber			= AppConfig.ShowsLineNumber;
+			MainForm.Azuki.UseScreenLineNumber		= AppConfig.UseScreenLineNumber;
 			MainForm.Azuki.ShowsHRuler				= AppConfig.ShowsHRuler;
 			MainForm.Azuki.ShowsDirtBar				= AppConfig.ShowsDirtBar;
 			MainForm.Azuki.TabWidth					= AppConfig.TabWidth;
@@ -1085,6 +1086,13 @@ namespace Sgry.Ann
 
 			// save to file
 			AppConfig.Save();
+		}
+		#endregion
+
+		#region State
+		public bool PreviouslyUsedScreenLineNumberInGotoForm
+		{
+			get; set;
 		}
 		#endregion
 

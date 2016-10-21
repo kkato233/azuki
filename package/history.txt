@@ -1,5 +1,6 @@
 == 1.8.0 (201x-xx-xx) ==
  * add: [Ann] New menu item to open configuration file
+ * add: New option to include wrapped screen lines for line numbering (using DrawingOption.UseScreenLineNumber; ticket #36731)
  * mod: [!] Renamed SearchResult to TextSegment
  * mod: [!] Removed IHighlighter.Highlight method which only takes Document
  * mod: Changed default color scheme

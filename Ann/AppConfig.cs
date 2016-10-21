@@ -17,6 +17,7 @@ namespace Sgry.Ann
 		public static Size WindowSize = new Size( 360, 400 );
 		public static bool WindowMaximized = false;
 		public static bool TabPanelEnabled = false;
+		public static bool UseScreenLineNumber = false;
 		public static bool DrawsEolCode = true;
 		public static bool DrawsFullWidthSpace = true;
 		public static bool DrawsSpace = true;
@@ -61,6 +62,7 @@ namespace Sgry.Ann
 				AppConfig.WindowSize				= new Size( width, height );
 				AppConfig.WindowMaximized			= Ini.Get( "Default", "WindowMaximized", false );
 				AppConfig.TabPanelEnabled			= Ini.Get( "Default", "TabPanelEnabled", false );
+				AppConfig.UseScreenLineNumber		= Ini.Get( "Default", "UseScreenLineNumber", false );
 				AppConfig.DrawsEolCode				= Ini.Get( "Default", "DrawsEolCode", true );
 				AppConfig.DrawsFullWidthSpace		= Ini.Get( "Default", "DrawsFullWidthSpace", true );
 				AppConfig.DrawsSpace				= Ini.Get( "Default", "DrawsSpace", true );
@@ -105,6 +107,7 @@ namespace Sgry.Ann
 				Ini.Set( "Default", "WindowHeight",				AppConfig.WindowSize.Height );
 				Ini.Set( "Default", "WindowMaximized",			AppConfig.WindowMaximized );
 				Ini.Set( "Default", "TabPanelEnabled",			AppConfig.TabPanelEnabled );
+				Ini.Set( "Default", "UseScreenLineNumber",		AppConfig.UseScreenLineNumber );
 				Ini.Set( "Default", "DrawsEolCode",				AppConfig.DrawsEolCode );
 				Ini.Set( "Default", "DrawsFullWidthSpace",		AppConfig.DrawsFullWidthSpace );
 				Ini.Set( "Default", "DrawsSpace",				AppConfig.DrawsSpace );

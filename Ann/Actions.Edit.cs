@@ -91,21 +91,38 @@ namespace Sgry.Ann
 		public static AnnAction ShowGotoDialog
 			= delegate( AppLogic app )
 		{
-			using( GotoForm form = new GotoForm() )
+			var doc = app.ActiveDocument;
+			var view = app.MainForm.Azuki.View;
+			int initLineNumber;
+			bool useScreenLineNumber;
+			int indexToGo;
+
+			// Determine initial UI state
+			useScreenLineNumber = app.PreviouslyUsedScreenLineNumberInGotoForm;
+			if( useScreenLineNumber )
+				initLineNumber = view.GetLineIndexFromCharIndex( doc.CaretIndex ) + 1;
+			else
+				initLineNumber = doc.GetLineIndexFromCharIndex( doc.CaretIndex ) + 1;
+
+			// Show UI and get the destination
+			using( var form = new GotoForm() )
 			{
-				Document doc = app.ActiveDocument;
-				form.LineNumber = doc.GetLineIndexFromCharIndex( doc.CaretIndex ) + 1;
-				DialogResult result = form.ShowDialog();
-				if( result == DialogResult.OK
-					&& form.LineNumber < doc.LineCount)
+				form.LineNumber = initLineNumber;
+				form.UseScreenLineNumber = useScreenLineNumber;
+				if( form.ShowDialog() != DialogResult.OK )
 				{
-					int index = doc.GetLineHeadIndex(
-								form.LineNumber - 1
-							);
-					doc.SetSelection( index, index );
-					app.MainForm.Azuki.ScrollToCaret();
+					return;
 				}
+				app.PreviouslyUsedScreenLineNumberInGotoForm = form.UseScreenLineNumber;
+
+				if( form.UseScreenLineNumber )
+					indexToGo = view.GetLineHeadIndex( Math.Min(form.LineNumber, view.LineCount) - 1 );
+				else
+					indexToGo = doc.GetLineHeadIndex( Math.Min(form.LineNumber, doc.LineCount) - 1 );
 			}
+
+			doc.SetSelection( indexToGo, indexToGo );
+			app.MainForm.Azuki.ScrollToCaret();
 		};
 
 		/// <summary>

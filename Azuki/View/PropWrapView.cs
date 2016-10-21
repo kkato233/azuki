@@ -637,7 +637,7 @@ namespace Sgry.Azuki
 			Point tokenEndPos = pos;
 			bool inSelection;
 
-			// calc position of head/end of this line
+			// calc position of head/end of this screen line
 			lineHead = PLHI[ lineIndex ];
 			if( lineIndex+1 < PLHI.Count )
 				lineEnd = PLHI[ lineIndex + 1 ];
@@ -651,22 +651,21 @@ namespace Sgry.Azuki
 				// redraw line nubmer and shrink clip rect
 				// to avoid overwriting line number by text content
 				bool drawsText;
-				int logicalLineIndex;
+				int lineIndexToDraw;
 
-				// get logical line index from given line head index
-				logicalLineIndex = Document.GetLineIndexFromCharIndex( lineHead );
-				if( Document.GetLineHeadIndex(logicalLineIndex) == lineHead )
+				if( UseScreenLineNumber )
 				{
+					lineIndexToDraw = lineIndex;
 					drawsText = true;
 				}
 				else
 				{
-					// screen line head index is different from logical line head index.
-					// this means this screen line was a wrapped line so do not draw foregorund text.
-					drawsText = false;
+					// Use logical line index if it's a first screen line of the logical line.
+					lineIndexToDraw = Document.GetLineIndexFromCharIndex( lineHead );
+					drawsText = ( Document.GetLineHeadIndex(lineIndexToDraw) == lineHead );
 				}
 
-				DrawLeftOfLine( g, pos.Y, logicalLineIndex+1, drawsText );
+				DrawLeftOfLine( g, pos.Y, lineIndexToDraw+1, drawsText );
 				clipRect.Width -= (XofTextArea - clipRect.X);
 				clipRect.X = XofTextArea;
 			}

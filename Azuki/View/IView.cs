@@ -105,6 +105,14 @@ namespace Sgry.Azuki
 		}
 
 		/// <summary>
+		/// Gets or sets whether to include wrapped screen lines for line numbering.
+		/// </summary>
+		bool UseScreenLineNumber
+		{
+			get; set;
+		}
+
+		/// <summary>
 		/// Gets or sets whether to show horizontal ruler or not.
 		/// </summary>
 		bool ShowsHRuler

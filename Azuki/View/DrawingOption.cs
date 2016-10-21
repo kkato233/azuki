@@ -1,8 +1,3 @@
-// file: DrawingOption.cs
-// brief: Enum to describe view's option.
-// author: YAMAMOTO Suguru
-// update: 2011-07-07
-//=========================================================
 using System;
 
 namespace Sgry.Azuki
@@ -41,6 +36,9 @@ namespace Sgry.Azuki
 		ShowsDirtBar			= 0x0100,
 
 		/// <summary>Highlights matched bracket.</summary>
-		HighlightsMatchedBracket= 0x0200
+		HighlightsMatchedBracket= 0x0200,
+
+		/// <summary>Whether to include wrapped screen lines for line numbering.</summary>
+		UseScreenLineNumber	= 0x0400
 	}
 }

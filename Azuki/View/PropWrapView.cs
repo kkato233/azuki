@@ -731,18 +731,22 @@ namespace Sgry.Azuki
 					// (if the clip-rect's right boundary is NOT the text area's right boundary,
 					// we must write one more char so that the peeking char appears at the boundary.)
 
-					// try to get graphically peeking (drawn over the border line) char
-					var peekingChar = new TextSegment( visCharCount, TextUtil.NextGraphemeClusterIndex(Document.InternalBuffer, visCharCount) );
-
-					// calculate right end coordinate of the peeking char
-					if( peekingChar.IsEmpty == false )
+					// find the graphically peeking character at the right end of the view
+					// and discard characters following it
+					if( visCharCount < token.Length )
 					{
-						peekingCharRight = MeasureTokenEndX( g, peekingChar, visPartRight );
-					}
+						var peekingChar = new TextSegment( visCharCount, TextUtil.NextGraphemeClusterIndex(token, visCharCount) );
 
-					// cut trailing extra
-					token = token.Substring( 0, visCharCount+peekingChar.Length );
-					tokenEndPos.X = (peekingCharRight != 0) ? peekingCharRight : visPartRight;
+						// calculate right end coordinate of the peeking char
+						if( peekingChar.IsEmpty == false )
+						{
+							peekingCharRight = MeasureTokenEndX( g, peekingChar, visPartRight );
+						}
+
+						// cut trailing extra
+						token = token.Substring( 0, visCharCount+peekingChar.Length );
+						tokenEndPos.X = (peekingCharRight != 0) ? peekingCharRight : visPartRight;
+					}
 
 					// to terminate this loop, set token end position to invalid one
 					end = Int32.MaxValue;

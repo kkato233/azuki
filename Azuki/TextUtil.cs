@@ -491,6 +491,21 @@ namespace Sgry.Azuki
 			return index;
 		}
 
+		public static int NextGraphemeClusterIndex(string text, int index)
+		{
+			Debug.Assert(text != null);
+			Debug.Assert(0 <= index);
+			Debug.Assert(index < text.Length);
+
+			do
+			{
+				index++;
+			}
+			while (index < text.Length && IsUndividableIndex(text, index));
+
+			return index;
+		}
+
 		public static int PrevGraphemeClusterIndex( IList<char> text, int index )
 		{
 			Debug.Assert( text != null );

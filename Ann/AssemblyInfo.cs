@@ -9,4 +9,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright (C) 2008-2014, Suguru YAMAMOTO")]
 
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.8.0.*")]
+[assembly: AssemblyVersion("1.8.0.0")]

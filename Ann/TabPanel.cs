@@ -239,13 +239,13 @@ namespace Sgry.Azuki
 			// if triangle at the right-end was clicked, show document list and exit
 			if( Right-_HalfHeight-_QuarterHeight < e.X )
 			{
-				ContextMenu menu= new ContextMenu();
+				ContextMenuStrip menu = new ContextMenuStrip();
 				foreach( T item in _Items )
 				{
-					MenuItem mi = new MenuItem();
+					ToolStripMenuItem mi = new ToolStripMenuItem();
 					mi.Text = item.ToString();
 					mi.Click += ContextMenuItem_Click;
-					menu.MenuItems.Add( mi );
+					menu.Items.Add( mi );
 				}
 				Point menuPos = new Point();
 				menuPos.X = Right-_HalfHeight-_QuarterHeight;
@@ -272,11 +272,11 @@ namespace Sgry.Azuki
 
 		void ContextMenuItem_Click( object sender, EventArgs e )
 		{
-			Debug.Assert( sender is MenuItem );
-			
+			Debug.Assert( sender is ToolStripMenuItem);
+
 			// get the clicked item and select it
-			MenuItem mi = (MenuItem)sender;
-			int miIndex = mi.Parent.MenuItems.IndexOf( mi );
+			ToolStripMenuItem mi = (ToolStripMenuItem)sender;
+			int miIndex = mi.Owner.Items.IndexOf( mi );
 			this.SelectedItem = _Items[miIndex];
 
 			// invoke click event

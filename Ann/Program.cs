@@ -10,6 +10,9 @@ namespace Sgry.Ann
 		[STAThread]
 		static void Main( string[] args )
 		{
+#if NETCOREAPP
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
 			Mutex mutex;
 			bool owned;
 			List<string> initOpenFilePaths = new List<string>();

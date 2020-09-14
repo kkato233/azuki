@@ -14,7 +14,7 @@ namespace Sgry.Ann
 	{
 		#region Fields
 		AppLogic _App;
-		Dictionary<MenuItem, AnnAction> _MenuMap = new Dictionary<MenuItem,AnnAction>();
+		Dictionary<ToolStripMenuItem, AnnAction> _MenuMap = new Dictionary<ToolStripMenuItem,AnnAction>();
 		Dictionary<Keys, AnnAction>	_KeyMap = new Dictionary<Keys, AnnAction>();
 		Timer _TimerForDelayedActivatedEvent = new Timer();
 		const string StatusMsg_CaretPos = "Position:{3:N0} (Line {0:N0}, Col {1:N0}, Char {2:N0})";
@@ -188,11 +188,11 @@ namespace Sgry.Ann
 			_MI_File_Encoding_Auto.Enabled = (doc.FilePath != null);
 
 			// Update check of encoding menu
-			foreach( MenuItem mi in _MI_File_Encoding.MenuItems )
+			foreach( ToolStripMenuItem mi in _MI_File_Encoding.DropDownItems)
 			{
 				mi.Checked = false;
 			}
-			MenuItem encMI;
+			ToolStripMenuItem encMI;
 			switch( _App.ActiveDocument.Encoding.WebName )
 			{
 				case "euc-jp":
@@ -220,7 +220,7 @@ namespace Sgry.Ann
 			encMI.Checked = true;
 
 			// update radio check of file type menu
-			foreach( MenuItem mi in _MI_Mode.MenuItems )
+			foreach( ToolStripMenuItem mi in _MI_Mode.DropDownItems)
 			{
 				mi.Checked = false;
 			}
@@ -272,10 +272,10 @@ namespace Sgry.Ann
 		#region Action Mapping
 		void HandleMenuAction( object sender, EventArgs e )
 		{
-			Debug.Assert( sender is MenuItem );
+			Debug.Assert( sender is ToolStripMenuItem );
 			AnnAction action;
 
-			MenuItem mi = (MenuItem)sender;
+			ToolStripMenuItem mi = (ToolStripMenuItem)sender;
 			if( _MenuMap.TryGetValue(mi, out action) )
 			{
 				action( _App );
@@ -402,22 +402,22 @@ namespace Sgry.Ann
 			_MI_File_Save.Enabled = _Azuki.Document.IsDirty;
 
 			// Refresh MRU menu items
-			_MI_File_Mru.MenuItems.Clear();
+			_MI_File_Mru.DropDownItems.Clear();
 			for( int i=0; i<AppConfig.MruFiles.Count; i++ )
 			{
-				MenuItem mi = new MenuItem();
+				ToolStripMenuItem mi = new ToolStripMenuItem();
 				mi.Text = "&" + i + " " + AppConfig.MruFiles[i].Path;
 				mi.Click += _MI_File_Mru_Foo_Clicked;
-				_MI_File_Mru.MenuItems.Add( mi );
+				_MI_File_Mru.DropDownItems.Add( mi );
 			}
-			_MI_File_Mru.Enabled = (0 < _MI_File_Mru.MenuItems.Count);
+			_MI_File_Mru.Enabled = (0 < _MI_File_Mru.DropDownItems.Count);
 		}
 
 		void _MI_File_Mru_Foo_Clicked( object sender, EventArgs e )
 		{
-			for( int i=0; i<_MI_File_Mru.MenuItems.Count; i++ )
+			for( int i=0; i<_MI_File_Mru.DropDownItems.Count; i++ )
 			{
-				if( _MI_File_Mru.MenuItems[i] == sender )
+				if( _MI_File_Mru.DropDownItems[i] == sender )
 				{
 					_App.OpenDocument( AppConfig.MruFiles[i].Path );
 					break;
@@ -645,15 +645,15 @@ namespace Sgry.Ann
 			//
 			// _MI_File
 			//
-			_MI_File.Popup += _MI_File_Popup;
+			_MI_File.DropDownOpened += _MI_File_Popup;
 			//
 			// _MI_Edit
 			//
-			_MI_Edit.Popup += _MI_Edit_Popup;
+			_MI_Edit.DropDownOpened += _MI_Edit_Popup;
 			//
 			// _MI_Window
 			//
-			_MI_Window.Popup += _MI_Window_Popup;
+			_MI_Window.DropDownOpened += _MI_Window_Popup;
 			//
 			// AnnForm
 			// 
@@ -662,6 +662,7 @@ namespace Sgry.Ann
 			Controls.Add( _TabPanel );
 			Controls.Add( _SearchPanel );
 			Controls.Add( _StatusBar );
+			Controls.Add(_MainMenu);
 			Text = "Ann";
 			ResumeLayout( false );
 		}
@@ -669,85 +670,85 @@ namespace Sgry.Ann
 		void InitMenuComponents()
 		{
 			// construct root menu structure
-			_MainMenu.MenuItems.Add( _MI_File );
-			_MainMenu.MenuItems.Add( _MI_Edit );
-			_MainMenu.MenuItems.Add( _MI_View );
-			_MainMenu.MenuItems.Add( _MI_Mode );
-			_MainMenu.MenuItems.Add( _MI_Window );
-			_MainMenu.MenuItems.Add( _MI_Help );
+			_MainMenu.Items.Add( _MI_File );
+			_MainMenu.Items.Add( _MI_Edit );
+			_MainMenu.Items.Add( _MI_View );
+			_MainMenu.Items.Add( _MI_Mode );
+			_MainMenu.Items.Add( _MI_Window );
+			_MainMenu.Items.Add( _MI_Help );
 
 			// construct descendant menu structure
-			_MI_File.MenuItems.Add( _MI_File_New );
-			_MI_File.MenuItems.Add( _MI_File_Open );
-			_MI_File.MenuItems.Add( _MI_File_Save );
-			_MI_File.MenuItems.Add( _MI_File_SaveAs );
-			_MI_File.MenuItems.Add( _MI_File_Encoding );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_Auto );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_SJIS );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_JIS );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_EUCJP );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF8 );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF8B );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16LE );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16LEB );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16BE );
-			_MI_File_Encoding.MenuItems.Add( _MI_File_Encoding_UTF16BEB );
-			_MI_File.MenuItems.Add( _MI_File_Close );
-			_MI_File.MenuItems.Add( _MI_File_Sep1 );
-			_MI_File.MenuItems.Add( _MI_File_ReadOnly );
-			_MI_File.MenuItems.Add( _MI_File_Sep2 );
-			_MI_File.MenuItems.Add( _MI_File_Mru );
-			_MI_File.MenuItems.Add( _MI_File_OpenSettingsFile );
-			_MI_File.MenuItems.Add( _MI_File_Sep3 );
-			_MI_File.MenuItems.Add( _MI_File_Exit );
+			_MI_File.DropDownItems.Add( _MI_File_New );
+			_MI_File.DropDownItems.Add( _MI_File_Open );
+			_MI_File.DropDownItems.Add( _MI_File_Save );
+			_MI_File.DropDownItems.Add( _MI_File_SaveAs );
+			_MI_File.DropDownItems.Add( _MI_File_Encoding );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_Auto );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_SJIS );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_JIS );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_EUCJP );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_UTF8 );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_UTF8B );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_UTF16LE );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_UTF16LEB );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_UTF16BE );
+			_MI_File_Encoding.DropDownItems.Add( _MI_File_Encoding_UTF16BEB );
+			_MI_File.DropDownItems.Add( _MI_File_Close );
+			_MI_File.DropDownItems.Add( _MI_File_Sep1 );
+			_MI_File.DropDownItems.Add( _MI_File_ReadOnly );
+			_MI_File.DropDownItems.Add( _MI_File_Sep2 );
+			_MI_File.DropDownItems.Add( _MI_File_Mru );
+			_MI_File.DropDownItems.Add( _MI_File_OpenSettingsFile );
+			_MI_File.DropDownItems.Add( _MI_File_Sep3 );
+			_MI_File.DropDownItems.Add( _MI_File_Exit );
 
-			_MI_Edit.MenuItems.Add( _MI_Edit_Undo );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Redo );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Sep0 );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Cut );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Copy );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Paste );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Sep1 );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Find );
-			_MI_Edit.MenuItems.Add( _MI_Edit_FindNext );
-			_MI_Edit.MenuItems.Add( _MI_Edit_FindPrev );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Sep2 );
-			_MI_Edit.MenuItems.Add( _MI_Edit_SelectAll );
-			_MI_Edit.MenuItems.Add( _MI_Edit_GotoLine );
-			_MI_Edit.MenuItems.Add( _MI_Edit_Sep3 );
-			_MI_Edit.MenuItems.Add( _MI_Edit_EolCode );
-			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CRLF );
-			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_LF );
-			_MI_Edit_EolCode.MenuItems.Add( _MI_Edit_EolCode_CR );
-			_MI_Edit.MenuItems.Add( _MI_Edit_BlankOp );
-			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_TrimTrailingSpace );
-			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_TrimLeadingSpace );
-			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_ConvertTabsToSpaces );
-			_MI_Edit_BlankOp.MenuItems.Add( _MI_Edit_BlankOp_ConvertSpacesToTabs );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Undo );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Redo );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Sep0 );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Cut );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Copy );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Paste );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Sep1 );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Find );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_FindNext );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_FindPrev );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Sep2 );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_SelectAll );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_GotoLine );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_Sep3 );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_EolCode );
+			_MI_Edit_EolCode.DropDownItems.Add( _MI_Edit_EolCode_CRLF );
+			_MI_Edit_EolCode.DropDownItems.Add( _MI_Edit_EolCode_LF );
+			_MI_Edit_EolCode.DropDownItems.Add( _MI_Edit_EolCode_CR );
+			_MI_Edit.DropDownItems.Add( _MI_Edit_BlankOp );
+			_MI_Edit_BlankOp.DropDownItems.Add( _MI_Edit_BlankOp_TrimTrailingSpace );
+			_MI_Edit_BlankOp.DropDownItems.Add( _MI_Edit_BlankOp_TrimLeadingSpace );
+			_MI_Edit_BlankOp.DropDownItems.Add( _MI_Edit_BlankOp_ConvertTabsToSpaces );
+			_MI_Edit_BlankOp.DropDownItems.Add( _MI_Edit_BlankOp_ConvertSpacesToTabs );
 
-			_MI_View.MenuItems.Add( _MI_View_ShowSpecialChar );
-			_MI_View.MenuItems.Add( _MI_View_WrapLines );
-			_MI_View.MenuItems.Add( _MI_View_ShowTabPanel );
+			_MI_View.DropDownItems.Add( _MI_View_ShowSpecialChar );
+			_MI_View.DropDownItems.Add( _MI_View_WrapLines );
+			_MI_View.DropDownItems.Add( _MI_View_ShowTabPanel );
 
-			_MI_Mode.MenuItems.Add( _MI_Mode_Text );
-			_MI_Mode.MenuItems.Add( _MI_Mode_BatchFile );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Cpp );
-			_MI_Mode.MenuItems.Add( _MI_Mode_CSharp );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Diff );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Ini );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Java );
-			_MI_Mode.MenuItems.Add( _MI_Mode_JavaScript );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Latex );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Python );
-			_MI_Mode.MenuItems.Add( _MI_Mode_Ruby );
-			_MI_Mode.MenuItems.Add( _MI_Mode_XML );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Text );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_BatchFile );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Cpp );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_CSharp );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Diff );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Ini );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Java );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_JavaScript );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Latex );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Python );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_Ruby );
+			_MI_Mode.DropDownItems.Add( _MI_Mode_XML );
 
-			_MI_Window.MenuItems.Add( _MI_Window_Next );
-			_MI_Window.MenuItems.Add( _MI_Window_Prev );
-			_MI_Window.MenuItems.Add( _MI_Window_List );
+			_MI_Window.DropDownItems.Add( _MI_Window_Next );
+			_MI_Window.DropDownItems.Add( _MI_Window_Prev );
+			_MI_Window.DropDownItems.Add( _MI_Window_List );
 
-			_MI_Help.MenuItems.Add( _MI_Help_MemoryUsage );
-			_MI_Help.MenuItems.Add( _MI_Help_About );
+			_MI_Help.DropDownItems.Add( _MI_Help_MemoryUsage );
+			_MI_Help.DropDownItems.Add( _MI_Help_About );
 
 			// menu labels
 			_MI_File.Text = "&File";
@@ -824,19 +825,19 @@ namespace Sgry.Ann
 			_MI_Help_About.Text = "&About...";
 
 			// other menu settings
-			_MI_Edit_EolCode_CRLF.RadioCheck = true;
-			_MI_Edit_EolCode_LF.RadioCheck = true;
-			_MI_Edit_EolCode_CR.RadioCheck = true;
+			_MI_Edit_EolCode_CRLF.Checked = true;
+			_MI_Edit_EolCode_LF.Checked = true;
+			_MI_Edit_EolCode_CR.Checked = true;
 
 			// bind menu actions
 			EventHandler menuActionHandler = this.HandleMenuAction;
-			foreach( MenuItem mi in _MainMenu.MenuItems )
+			foreach( ToolStripMenuItem mi in _MainMenu.Items )
 			{
-				foreach( MenuItem mi2 in mi.MenuItems )
+				foreach( ToolStripMenuItem mi2 in mi.DropDownItems )
 				{
-					foreach( MenuItem mi3 in mi2.MenuItems )
+					foreach( ToolStripMenuItem mi3 in mi2.DropDownItems)
 					{
-						foreach( MenuItem mi4 in mi3.MenuItems )
+						foreach( ToolStripMenuItem mi4 in mi3.DropDownItems)
 						{
 							mi4.Click += menuActionHandler;
 						}
@@ -847,18 +848,18 @@ namespace Sgry.Ann
 			}
 
 			// set menu
-			Menu = _MainMenu;
+			MainMenuStrip = _MainMenu;
 		}
 
 		void ResetShortcutInMenu()
 		{
 			string newText;
-			MenuItem mi;
+			ToolStripMenuItem mi;
 
 			// find matched pair that both pair has same action from two dictionary
 			foreach( KeyValuePair<Keys, AnnAction> keyEntry in _KeyMap )
 			{
-				foreach( KeyValuePair<MenuItem, AnnAction> menuEntry in _MenuMap )
+				foreach( KeyValuePair<ToolStripMenuItem, AnnAction> menuEntry in _MenuMap )
 				{
 					// has same action?
 					if( keyEntry.Value != menuEntry.Value )
@@ -869,16 +870,7 @@ namespace Sgry.Ann
 					// ok, a pair was found.
 					// reset menu text with found shortcut-key.
 					mi = menuEntry.Key;
-					int tabPos = mi.Text.IndexOf( '\t' );
-					if( tabPos == -1 )
-					{
-						newText = mi.Text + "\t" + Utl.ToString( keyEntry.Key );
-					}
-					else
-					{
-						newText = mi.Text.Substring(0, tabPos) + "\t" + Utl.ToString( keyEntry.Key );
-					}
-					mi.Text = newText;
+					mi.ShortcutKeys = keyEntry.Key;
 
 					break;
 				}
@@ -887,79 +879,79 @@ namespace Sgry.Ann
 		#endregion
 
 		#region UI Components
-		MainMenu _MainMenu			= new MainMenu();
-		MenuItem _MI_File			= new MenuItem();
-		MenuItem _MI_File_New		= new MenuItem();
-		MenuItem _MI_File_Open		= new MenuItem();
-		MenuItem _MI_File_Save		= new MenuItem();
-		MenuItem _MI_File_SaveAs	= new MenuItem();
-		MenuItem _MI_File_Encoding			= new MenuItem();
-		MenuItem _MI_File_Encoding_Auto		= new MenuItem();
-		MenuItem _MI_File_Encoding_SJIS		= new MenuItem();
-		MenuItem _MI_File_Encoding_JIS		= new MenuItem();
-		MenuItem _MI_File_Encoding_EUCJP	= new MenuItem();
-		MenuItem _MI_File_Encoding_UTF8		= new MenuItem();
-		MenuItem _MI_File_Encoding_UTF8B	= new MenuItem();
-		MenuItem _MI_File_Encoding_UTF16LE	= new MenuItem();
-		MenuItem _MI_File_Encoding_UTF16LEB	= new MenuItem();
-		MenuItem _MI_File_Encoding_UTF16BE	= new MenuItem();
-		MenuItem _MI_File_Encoding_UTF16BEB	= new MenuItem();
-		MenuItem _MI_File_Close		= new MenuItem();
-		MenuItem _MI_File_Sep1		= new MenuItem();
-		MenuItem _MI_File_ReadOnly	= new MenuItem();
-		MenuItem _MI_File_OpenSettingsFile	= new MenuItem();
-		MenuItem _MI_File_Sep2		= new MenuItem();
-		MenuItem _MI_File_Mru		= new MenuItem();
-		MenuItem _MI_File_Sep3		= new MenuItem();
-		MenuItem _MI_File_Exit		= new MenuItem();
-		MenuItem _MI_Edit			= new MenuItem();
-		MenuItem _MI_Edit_Undo		= new MenuItem();
-		MenuItem _MI_Edit_Redo		= new MenuItem();
-		MenuItem _MI_Edit_Sep0		= new MenuItem();
-		MenuItem _MI_Edit_Cut		= new MenuItem();
-		MenuItem _MI_Edit_Copy		= new MenuItem();
-		MenuItem _MI_Edit_Paste		= new MenuItem();
-		MenuItem _MI_Edit_Sep1		= new MenuItem();
-		MenuItem _MI_Edit_Find		= new MenuItem();
-		MenuItem _MI_Edit_FindNext	= new MenuItem();
-		MenuItem _MI_Edit_FindPrev	= new MenuItem();
-		MenuItem _MI_Edit_Sep2		= new MenuItem();
-		MenuItem _MI_Edit_SelectAll	= new MenuItem();
-		MenuItem _MI_Edit_GotoLine	= new MenuItem();
-		MenuItem _MI_Edit_Sep3		= new MenuItem();
-		MenuItem _MI_Edit_EolCode		= new MenuItem();
-		MenuItem _MI_Edit_EolCode_CRLF	= new MenuItem();
-		MenuItem _MI_Edit_EolCode_LF	= new MenuItem();
-		MenuItem _MI_Edit_EolCode_CR	= new MenuItem();
-		MenuItem _MI_Edit_BlankOp						= new MenuItem();
-		MenuItem _MI_Edit_BlankOp_TrimTrailingSpace		= new MenuItem();
-		MenuItem _MI_Edit_BlankOp_TrimLeadingSpace		= new MenuItem();
-		MenuItem _MI_Edit_BlankOp_ConvertTabsToSpaces	= new MenuItem();
-		MenuItem _MI_Edit_BlankOp_ConvertSpacesToTabs	= new MenuItem();
-		MenuItem _MI_View					= new MenuItem();
-		MenuItem _MI_View_ShowSpecialChar	= new MenuItem();
-		MenuItem _MI_View_WrapLines			= new MenuItem();
-		MenuItem _MI_View_ShowTabPanel		= new MenuItem();
-		MenuItem _MI_Mode			= new MenuItem();
-		MenuItem _MI_Mode_Text		= new MenuItem();
-		MenuItem _MI_Mode_BatchFile	= new MenuItem();
-		MenuItem _MI_Mode_Cpp		= new MenuItem();
-		MenuItem _MI_Mode_CSharp	= new MenuItem();
-		MenuItem _MI_Mode_Diff		= new MenuItem();
-		MenuItem _MI_Mode_Ini		= new MenuItem();
-		MenuItem _MI_Mode_Java		= new MenuItem();
-		MenuItem _MI_Mode_JavaScript= new MenuItem();
-		MenuItem _MI_Mode_Latex		= new MenuItem();
-		MenuItem _MI_Mode_Python	= new MenuItem();
-		MenuItem _MI_Mode_Ruby		= new MenuItem();
-		MenuItem _MI_Mode_XML		= new MenuItem();
-		MenuItem _MI_Window			= new MenuItem();
-		MenuItem _MI_Window_Next	= new MenuItem();
-		MenuItem _MI_Window_Prev	= new MenuItem();
-		MenuItem _MI_Window_List	= new MenuItem();
-		MenuItem _MI_Help				= new MenuItem();
-		MenuItem _MI_Help_MemoryUsage	= new MenuItem();
-		MenuItem _MI_Help_About			= new MenuItem();
+		MenuStrip _MainMenu			= new MenuStrip();
+		ToolStripMenuItem _MI_File			= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_New		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Open		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Save		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_SaveAs	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding			= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_Auto		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_SJIS		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_JIS		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_EUCJP	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_UTF8		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_UTF8B	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_UTF16LE	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_UTF16LEB	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_UTF16BE	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Encoding_UTF16BEB	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Close		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Sep1		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_ReadOnly	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_OpenSettingsFile	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Sep2		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Mru		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Sep3		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_File_Exit		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit			= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Undo		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Redo		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Sep0		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Cut		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Copy		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Paste		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Sep1		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Find		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_FindNext	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_FindPrev	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Sep2		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_SelectAll	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_GotoLine	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_Sep3		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_EolCode		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_EolCode_CRLF	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_EolCode_LF	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_EolCode_CR	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_BlankOp						= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_BlankOp_TrimTrailingSpace		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_BlankOp_TrimLeadingSpace		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_BlankOp_ConvertTabsToSpaces	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Edit_BlankOp_ConvertSpacesToTabs	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_View					= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_View_ShowSpecialChar	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_View_WrapLines			= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_View_ShowTabPanel		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode			= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Text		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_BatchFile	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Cpp		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_CSharp	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Diff		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Ini		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Java		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_JavaScript= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Latex		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Python	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_Ruby		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Mode_XML		= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Window			= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Window_Next	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Window_Prev	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Window_List	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Help				= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Help_MemoryUsage	= new ToolStripMenuItem();
+		ToolStripMenuItem _MI_Help_About			= new ToolStripMenuItem();
 		AzukiControl _Azuki;
 		TabPanel<Document> _TabPanel = new TabPanel<Document>();
 		SearchPanel _SearchPanel = new SearchPanel();

@@ -58,26 +58,4 @@ if not "%ERRORLEVEL%" == "0" (
 )
 popd
 
-
-echo ------------------------------------------------------------
-echo Making source archive...
-if exist package\temp\src (
-    del /s /q package\temp\src > NUL
-    rmdir /s /q package\temp\src > NUL
-)
-
-svn export -r BASE -q . package\temp\src
-if not "%ERRORLEVEL%" == "0" (
-    echo Failed to export source tree. ^(code:%errorlevel%^)
-    goto :EOF
-)
-
-pushd package\temp\src
-"%SEVENZIP%" a -tzip -mx=9 "..\..\Azuki-%VER%-src.zip" * > NUL
-if not "%ERRORLEVEL%" == "0" (
-    echo Failed to zip source tree. ^(code:%errorlevel%^)
-    goto :EOF
-)
-popd
-
 echo done.

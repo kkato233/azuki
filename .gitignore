@@ -1,0 +1,6 @@
+package/
+doc/Help/
+doc/*.chm
+bin/
+obj/
+build/

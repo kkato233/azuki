@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Azuki</id>
+    <version>1.7.10</version>
+    <authors>Suguru YAMAMOTO</authors>
+    <owners>Suguru YAMAMOTO</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://sgry.b.sourceforge.jp/introduction/license/</licenseUrl>
+    <projectUrl>https://github.com/kkato233/azuki/</projectUrl>
+    <description>C# Text Editor Azuki</description>
+    <repository type="git" url="https://github.com/kkato233/azuki.git" branch="main" commit="86482595d6a63c792ff3cb14976fae311f5b3665" />
+    <tags>Text Editor</tags>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.0">
+        <dependency id="System.Drawing.Common" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework=".NETCoreApp3.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WindowsForms" />
+      </group>
+    </frameworkReferences>
+    
+    <references>
+
+    <group targetFramework="net20">
+        <reference file="Azuki.dll" />
+    </group>
+
+    <group targetFramework=".NETCoreApp3.0">
+        <reference file="Azuki.Core.dll" />
+    </group>
+</references>
+  </metadata>
+</package>

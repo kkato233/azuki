@@ -628,20 +628,39 @@ namespace Sgry.Ann
 			// _StatusBar
 			//
 			_StatusBar.Dock = DockStyle.Bottom;
+			#if NET6_0
+			_StatusBar.Items.AddRange( new ToolStripStatusLabel[] {
+				_Status_Message, _Status_CaretPos,
+				_Status_SelectionMode, _Status_InsertionMode
+			});
+			_Status_Message.BorderSides = ToolStripStatusLabelBorderSides.Right;
+			_Status_CaretPos.BorderSides = ToolStripStatusLabelBorderSides.Right;
+			_Status_SelectionMode.BorderSides = ToolStripStatusLabelBorderSides.Right;
+			_Status_InsertionMode.BorderSides = ToolStripStatusLabelBorderSides.Right;
+			#else
 			_StatusBar.Panels.AddRange( new StatusBarPanel[] {
 				_Status_Message, _Status_CaretPos,
 				_Status_SelectionMode, _Status_InsertionMode
 			});
 			_StatusBar.ShowPanels = true;
 			_StatusBar.SizingGrip = true;
+			#endif
 			//
 			// _Status_CaretPos
 			//
+			#if NET6_0
+			_Status_CaretPos.Alignment = ToolStripItemAlignment.Right;
+			#else
 			_Status_CaretPos.Alignment = HorizontalAlignment.Right;
+			#endif
 			//
 			// _Status_Message
 			//
+			#if NET6_0
+			_Status_Message.Spring = true;
+			#else
 			_Status_Message.AutoSize = StatusBarPanelAutoSize.Spring;
+			#endif
 			//
 			// _MI_File
 			//
@@ -955,11 +974,19 @@ namespace Sgry.Ann
 		AzukiControl _Azuki;
 		TabPanel<Document> _TabPanel = new TabPanel<Document>();
 		SearchPanel _SearchPanel = new SearchPanel();
+		#if NET6_0
+		StatusStrip _StatusBar = new StatusStrip();
+		ToolStripStatusLabel _Status_Message = new ToolStripStatusLabel();
+		ToolStripStatusLabel _Status_CaretPos = new ToolStripStatusLabel();
+		ToolStripStatusLabel _Status_SelectionMode = new ToolStripStatusLabel();
+		ToolStripStatusLabel _Status_InsertionMode = new ToolStripStatusLabel();
+		#else
 		StatusBar _StatusBar = new StatusBar();
 		StatusBarPanel _Status_Message = new StatusBarPanel();
 		StatusBarPanel _Status_CaretPos = new StatusBarPanel();
 		StatusBarPanel _Status_SelectionMode = new StatusBarPanel();
 		StatusBarPanel _Status_InsertionMode = new StatusBarPanel();
+		#endif
 		#endregion
 
 		#region Utilities

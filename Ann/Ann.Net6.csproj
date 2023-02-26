@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<RootNamespace>Sgry.Ann</RootNamespace>	  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Azuki\Azuki.Net6.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+	  <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
+	</ItemGroup>
+</Project>

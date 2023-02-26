@@ -5,8 +5,8 @@ VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azuki.Net6", "Azuki\Azuki.Net6.csproj", "{FDE3E32C-011D-4DE7-BDFD-7B33A6AD5694}"
 EndProject
-#Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzukiTest.Net6", "AzukiTest\AzukiTest.Net6.csproj", "{B65928CC-264F-424E-9AD6-A977D62FB2A3}"
-#EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzukiTest.Net6", "AzukiTest\AzukiTest.Net6.csproj", "{B65928CC-264F-424E-9AD6-A977D62FB2A3}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ann.Net6", "Ann\Ann.Net6.csproj", "{E26EF2E6-0D3C-441C-A971-1CDC176B8AE6}"
 EndProject
 Global
